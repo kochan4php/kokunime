@@ -1,4 +1,4 @@
-# Weebs
+# Kokunime
 
 ## Setup project
 
