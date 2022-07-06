@@ -1,4 +1,6 @@
 import Link from "next/link";
+import axios from "axios";
+import KUSONIME_API from "../../config/kusonime";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { getAnimeDetail } from "../../action";
@@ -13,9 +15,9 @@ const DetailAnime = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   const getData = async (slug) => {
-    const res = await getAnimeDetail(slug);
-    if (res !== undefined) {
-      setDetailAnime(res);
+    const res = await axios.get(`${KUSONIME_API}/anime/${slug}`);
+    if (res) {
+      setDetailAnime(res.data);
       setTimeout(() => {
         setIsLoading(false);
       }, 1000);
