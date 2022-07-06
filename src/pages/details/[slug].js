@@ -1,6 +1,4 @@
 import Link from "next/link";
-import axios from "axios";
-import KUSONIME_API from "../../config/kusonime";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { getAnimeDetail } from "../../action";
