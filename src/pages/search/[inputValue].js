@@ -1,11 +1,11 @@
-import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
 import { getAnimeSearch } from "../../action";
 import {
-  Loading,
-  TitleSection,
   AlertWarning,
+  Loading,
   MainCard,
+  TitleSection,
 } from "../../components";
 import { For, RenderIfFalse, RenderIfTrue } from "../../utils";
 
