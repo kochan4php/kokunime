@@ -15,8 +15,9 @@ const DetailAnime = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   const getData = async (slug) => {
-    const res = await axios.get(`${KUSONIME_API}/anime/${slug}`);
-    if (res) {
+    const res = await getAnimeDetail(slug);
+    console.log(res);
+    if (res.status === 200) {
       setDetailAnime(res.data);
       setTimeout(() => {
         setIsLoading(false);
