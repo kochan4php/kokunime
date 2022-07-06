@@ -20,13 +20,10 @@ const DetailAnime = () => {
 
   const getData = async (slug) => {
     const res = await getAnimeDetail(slug);
-    console.log(res);
     if (res.status === 200) {
       if (res.data.success !== false) {
         setDetailAnime(res.data);
-        setTimeout(() => {
-          setIsLoading(false);
-        }, 1000);
+        setIsLoading(false);
       }
     }
   };
