@@ -14,17 +14,17 @@ const DetailAnime = () => {
 
   const getData = async (slug) => {
     const res = await getAnimeDetail(slug);
-    setDetailAnime(res);
-    setTimeout(() => {
-      setIsLoading(false);
-    }, 1000);
+    if (res !== undefined) {
+      setDetailAnime(res);
+      setTimeout(() => {
+        setIsLoading(false);
+      }, 1000);
+    }
   };
 
   useEffect(() => {
     getData(slug);
-  }, []);
-
-  console.log(detailAnime);
+  }, [slug]);
 
   return (
     <section className="min-w-full bg-gradient-to-tl from-slate-900 via-slate-800 to-slate-900 text-white py-3 min-h-screen">
