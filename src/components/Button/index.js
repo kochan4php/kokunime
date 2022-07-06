@@ -1,3 +1,4 @@
+import { memo } from "react";
 import PropTypes from "prop-types";
 
 const Button = ({ children, onClick, bgcolor, width }) => (
@@ -20,4 +21,4 @@ Button.propTypes = {
   width: PropTypes.string,
 };
 
-export default Button;
+export default memo(Button);

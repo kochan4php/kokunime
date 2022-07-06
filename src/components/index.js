@@ -7,7 +7,6 @@ import CardMobile from "./CardMobile";
 import Dropdown from "./Dropdown";
 import FloatingRating from "./FloatingRating";
 import Footer from "./Footer";
-import Intro from "./Intro";
 import Loading from "./Loading";
 import MainCard from "./MainCard";
 import Navbar from "./Navbar";
@@ -30,7 +29,6 @@ export {
   Dropdown,
   FloatingRating,
   Footer,
-  Intro,
   Loading,
   MainCard,
   Navbar,

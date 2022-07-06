@@ -39,7 +39,7 @@ const DetailAnime = () => {
       </RenderIfTrue>
       <RenderIfFalse isFalse={isLoading}>
         <RenderIfTrue isTrue={Object.keys(detailAnime).length > 0}>
-          <div className="container my-10 p-4">
+          <div className="container mt-2 mb-6 p-4">
             <div className="grid grid-cols-1 md:grid-cols-3">
               <div className="flex justify-center items-center selection:bg-pink-500">
                 <ParallaxImage
