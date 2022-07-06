@@ -40,7 +40,7 @@ const Home = ({ res }) => {
             <div className="my-6">
               <Button
                 onClick={() =>
-                  router.push(`/anime/${res[0]?.link?.endpoint}/details`)
+                  router.push(`/details/${res[0]?.link?.endpoint}`)
                 }
                 width="w-full"
               >
@@ -62,7 +62,7 @@ const Home = ({ res }) => {
                 render={(data, index) => (
                   <MainCard
                     key={index}
-                    path={`/anime/${data?.link?.endpoint}/details`}
+                    path={`/details/${data?.link?.endpoint}`}
                     id={data?.link?.endpoint}
                     image={data?.link?.thumbnail}
                     title={data?.title}
