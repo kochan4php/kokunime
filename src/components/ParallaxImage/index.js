@@ -5,7 +5,7 @@ const ParallaxImage = ({ image, alt }) => (
     <img
       src={image}
       alt={alt}
-      className="rounded shadow shadow-slate-800 w-2/3 md:w-4/5"
+      className="rounded shadow shadow-slate-800 w-full md:w-4/5"
     />
   </div>
 );
