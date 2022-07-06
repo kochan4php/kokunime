@@ -1,15 +1,14 @@
-import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { getAnimeWithPagination } from "../action";
-import { MainCard, Button, TitleSection, AlertWarning } from "../components";
-import { For, RenderIfTrue, RenderIfFalse } from "../utils";
+import { AlertWarning, Button, MainCard, TitleSection } from "../components";
+import { For, RenderIfFalse, RenderIfTrue } from "../utils";
 
 export const getServerSideProps = async () => {
   const res = await getAnimeWithPagination();
 
   return {
     props: {
-      res,
+      res: res.data,
     },
   };
 };
