@@ -74,26 +74,21 @@ const Home = () => {
             <TitleSection>Updatetan Terbaru</TitleSection>
           </div>
           <div className="container px-0 md:px-4 min-h-screen">
-            <RenderIfTrue isTrue={anime.length > 0}>
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 lg:gap-6">
-                <For
-                  each={anime}
-                  render={(data, index) => (
-                    <MainCard
-                      key={index}
-                      path={`/details/${data?.link?.endpoint}`}
-                      image={data?.link?.thumbnail}
-                      title={data?.title}
-                      py="py-5"
-                      fontsize="text-base"
-                    />
-                  )}
-                />
-              </div>
-            </RenderIfTrue>
-            <RenderIfFalse isFalse={anime.length > 0}>
-              <AlertWarning message="Gagal mengambil data dari API, coba refresh ulang browsernya" />
-            </RenderIfFalse>
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 lg:gap-6">
+              <For
+                each={anime}
+                render={(data, index) => (
+                  <MainCard
+                    key={index}
+                    path={`/details/${data?.link?.endpoint}`}
+                    image={data?.link?.thumbnail}
+                    title={data?.title}
+                    py="py-5"
+                    fontsize="text-base"
+                  />
+                )}
+              />
+            </div>
           </div>
         </section>
       </RenderIfFalse>
