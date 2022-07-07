@@ -5,7 +5,6 @@ import CardLink from "../CardLink";
 import FloatingRating from "../FloatingRating";
 
 const MainCard = ({
-  id,
   image,
   title,
   score,
@@ -30,7 +29,6 @@ const MainCard = ({
 );
 
 MainCard.propTypes = {
-  id: PropTypes.number.isRequired,
   image: PropTypes.string.isRequired,
   path: PropTypes.string.isRequired,
   title: PropTypes.string,

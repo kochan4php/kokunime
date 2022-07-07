@@ -62,7 +62,6 @@ const Home = ({ res }) => {
                   <MainCard
                     key={index}
                     path={`/details/${data?.link?.endpoint}`}
-                    id={data?.link?.endpoint}
                     image={data?.link?.thumbnail}
                     title={data?.title}
                     py="py-5"

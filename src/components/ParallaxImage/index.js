@@ -11,8 +11,8 @@ const ParallaxImage = ({ image, alt }) => (
 );
 
 ParallaxImage.propTypes = {
-  image: PropTypes.string.isRequired,
-  alt: PropTypes.string.isRequired,
+  image: PropTypes.string,
+  alt: PropTypes.string,
 };
 
 export default ParallaxImage;
