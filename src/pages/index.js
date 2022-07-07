@@ -1,13 +1,7 @@
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { getAnimeWithPagination } from "../action";
-import {
-  AlertWarning,
-  Button,
-  Loading,
-  MainCard,
-  TitleSection,
-} from "../components";
+import { Button, Loading, MainCard, TitleSection } from "../components";
 import { For, RenderIfFalse, RenderIfTrue } from "../utils";
 
 const Home = () => {
