@@ -10,8 +10,8 @@ const Text = ({ children, category }) => (
 );
 
 Text.propTypes = {
-  children: PropTypes.node.isRequired,
-  category: PropTypes.string.isRequired,
+  children: PropTypes.node,
+  category: PropTypes.string,
 };
 
 export default Text;

@@ -17,6 +17,10 @@ const Layout = ({ children }) => (
         name="keywords"
         content="Kokunime, kokunime, website download anime, download batch anime, download anime, download anime terlengkap, website download anime terlengkap"
       />
+      <link
+        href="https://fonts.googleapis.com/css?family=Lexend+Deca:100,200,300,regular,500,600,700,800,900"
+        rel="stylesheet"
+      />
     </Head>
     <main>{children}</main>
   </>

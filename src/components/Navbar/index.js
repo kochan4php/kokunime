@@ -124,7 +124,7 @@ const Navbar = () => {
               <input
                 type="search"
                 name="search"
-                className="search-input truncate outline-none px-5 lg:px-7 py-1 2xl:py-2 rounded-sm bg-slate-800 text-base ring-2 focus:ring-4 focus:ring-sky-500 transition-all selection:bg-rose-700 selection:text-rose-300"
+                className="search-input truncate outline-none px-5 py-1 2xl:py-2 rounded-sm bg-slate-800 text-base ring-2 focus:ring-4 focus:ring-sky-500 transition-all selection:bg-rose-700 selection:text-rose-300"
                 placeholder="Search Anime Here ..."
                 autoComplete="off"
                 value={inputValue}

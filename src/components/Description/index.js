@@ -24,7 +24,7 @@ Description.defaultProps = {
 };
 
 Description.propTypes = {
-  children: PropTypes.node.isRequired,
+  children: PropTypes.node,
   hasTitle: PropTypes.bool,
   title: PropTypes.string,
 };
