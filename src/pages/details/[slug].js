@@ -21,7 +21,6 @@ const DetailAnime = () => {
 
   const getData = async (slug) => {
     const res = await getAnimeDetail(slug);
-    console.log(res.data);
     if (res.status === 200) {
       if (res.data.success !== false) {
         setDetailAnime(res.data);
@@ -144,46 +143,58 @@ const DetailAnime = () => {
               </Description>
             </RenderIfTrue>
             <div className="mt-10 lg:mt-0 md:pt-10 lg:pt-16">
-              <h1 className="text-3xl md:text-4xl 2xl:text-5xl mb-7 selection:bg-emerald-500 selection:text-emerald-900">
-                Link Download
+              <h1 className="text-3xl md:text-4xl 2xl:text-5xl mb-3 selection:bg-emerald-500 selection:text-emerald-900 text-center">
+                <span className="hover:text-warning transition-all duration-200">
+                  Link Download
+                </span>
               </h1>
-              <For
-                each={detailAnime?.list_download}
-                render={(data, index) => (
-                  <div key={index} className="mb-12">
-                    <p className="bg-slate-700 rounded p-4">{data[0]}</p>
-                    <div>
-                      <For
-                        each={data[1]}
-                        render={(data, index) => (
-                          <Fragment key={index}>
-                            <p className="bg-yellow-600 rounded p-2 my-4 text-center text-base md:text-lg">
-                              {data?.resolusi}
-                            </p>
-                            <div className="w-full grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
-                              <For
-                                each={data?.link_download}
-                                render={(data, index) => (
-                                  <Link key={index} href={data?.link}>
-                                    <a target="_blank">
-                                      <Button
-                                        width="w-full"
-                                        bgcolor="bg-slate-700"
+              <div className="lg:container lg:max-w-4xl">
+                <div className="divide-y-2 divide-slate-600">
+                  <For
+                    each={detailAnime?.list_download}
+                    render={(data, index) => (
+                      <div key={index} className="py-8">
+                        <p className="bg-slate-700 rounded p-4 selection:bg-pink-700 selection:text-pink-200">
+                          {data[0]}
+                        </p>
+                        <div>
+                          <For
+                            each={data[1]}
+                            render={(data, index) => (
+                              <div key={index} className="my-4">
+                                <p className="bg-sky-600 rounded p-2 my-3 text-center text-base md:text-lg selection:bg-violet-700 selection:text-violet-100">
+                                  Resolusi : {data?.resolusi}
+                                </p>
+                                <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 lg:gap-4">
+                                  <For
+                                    each={data?.link_download}
+                                    render={(data, index) => (
+                                      <Link
+                                        key={index}
+                                        href={data?.link}
+                                        passHref
                                       >
-                                        {data?.platform}
-                                      </Button>
-                                    </a>
-                                  </Link>
-                                )}
-                              />
-                            </div>
-                          </Fragment>
-                        )}
-                      />
-                    </div>
-                  </div>
-                )}
-              />
+                                        <a target="_blank">
+                                          <Button
+                                            width="w-full"
+                                            bgcolor="bg-slate-700"
+                                          >
+                                            {data?.platform}
+                                          </Button>
+                                        </a>
+                                      </Link>
+                                    )}
+                                  />
+                                </div>
+                              </div>
+                            )}
+                          />
+                        </div>
+                      </div>
+                    )}
+                  />
+                </div>
+              </div>
             </div>
           </div>
         </RenderIfTrue>
