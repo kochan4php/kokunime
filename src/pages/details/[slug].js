@@ -1,12 +1,13 @@
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useEffect, useState, Fragment } from "react";
 import { getAnimeDetail } from "../../action";
 import {
   AlertWarning,
+  Button,
+  Description,
   Loading,
   ParallaxImage,
-  Description,
   Text,
 } from "../../components";
 import { For, RenderIfFalse, RenderIfTrue } from "../../utils";
@@ -20,6 +21,7 @@ const DetailAnime = () => {
 
   const getData = async (slug) => {
     const res = await getAnimeDetail(slug);
+    console.log(res.data);
     if (res.status === 200) {
       if (res.data.success !== false) {
         setDetailAnime(res.data);
@@ -39,7 +41,7 @@ const DetailAnime = () => {
       </RenderIfTrue>
       <RenderIfFalse isFalse={isLoading}>
         <RenderIfTrue isTrue={Object.keys(detailAnime).length > 0}>
-          <div className="container mt-4 mb-6 p-4">
+          <div className="container mt-4 mb-2 p-4">
             <div className="grid grid-cols-1 lg:grid-cols-3 lg:gap-4">
               <div className="flex justify-center items-center selection:bg-pink-500 mb-5 lg:mb-0 px-4">
                 <ParallaxImage
@@ -141,6 +143,48 @@ const DetailAnime = () => {
                 {detailAnime?.sinopsis}
               </Description>
             </RenderIfTrue>
+            <div className="mt-10 lg:mt-0 md:pt-10 lg:pt-16">
+              <h1 className="text-3xl md:text-4xl 2xl:text-5xl mb-7 selection:bg-emerald-500 selection:text-emerald-900">
+                Link Download
+              </h1>
+              <For
+                each={detailAnime?.list_download}
+                render={(data, index) => (
+                  <div key={index} className="mb-12">
+                    <p className="bg-slate-700 rounded p-4">{data[0]}</p>
+                    <div>
+                      <For
+                        each={data[1]}
+                        render={(data, index) => (
+                          <Fragment key={index}>
+                            <p className="bg-yellow-600 rounded p-2 my-4 text-center text-base md:text-lg">
+                              {data?.resolusi}
+                            </p>
+                            <div className="w-full grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+                              <For
+                                each={data?.link_download}
+                                render={(data, index) => (
+                                  <Link key={index} href={data?.link}>
+                                    <a target="_blank">
+                                      <Button
+                                        width="w-full"
+                                        bgcolor="bg-slate-700"
+                                      >
+                                        {data?.platform}
+                                      </Button>
+                                    </a>
+                                  </Link>
+                                )}
+                              />
+                            </div>
+                          </Fragment>
+                        )}
+                      />
+                    </div>
+                  </div>
+                )}
+              />
+            </div>
           </div>
         </RenderIfTrue>
         <RenderIfFalse isFalse={Object.keys(detailAnime).length > 0}>
