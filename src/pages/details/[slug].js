@@ -6,7 +6,7 @@ import {
   AlertWarning,
   Loading,
   ParallaxImage,
-  Synopsis,
+  Description,
   Text,
 } from "../../components";
 import { For, RenderIfFalse, RenderIfTrue } from "../../utils";
@@ -39,9 +39,9 @@ const DetailAnime = () => {
       </RenderIfTrue>
       <RenderIfFalse isFalse={isLoading}>
         <RenderIfTrue isTrue={Object.keys(detailAnime).length > 0}>
-          <div className="container mt-2 mb-6 p-4">
-            <div className="grid grid-cols-1 lg:grid-cols-3">
-              <div className="flex justify-center items-center selection:bg-pink-500 mb-5 lg:mb-0">
+          <div className="container mt-4 mb-6 p-4">
+            <div className="grid grid-cols-1 lg:grid-cols-3 lg:gap-4">
+              <div className="flex justify-center items-center selection:bg-pink-500 mb-5 lg:mb-0 px-4">
                 <ParallaxImage
                   image={detailAnime?.thumbnail}
                   alt={detailAnime?.title}
@@ -49,12 +49,12 @@ const DetailAnime = () => {
               </div>
               <div className="flex flex-col justify-start lg:col-start-2 lg:col-end-4 p-4 lg:py-0">
                 <RenderIfTrue isTrue={detailAnime?.score}>
-                  <span className="gap-3 mt-3 md:mt-0 md:mb-4 text-2xl flex items-center selection:bg-emerald-500 selection:text-emerald-900">
+                  <span className="gap-3 mt-3 md:mt-0 md:mb-4 text-2xl lg:text-3xl flex items-center selection:bg-emerald-500 selection:text-emerald-900">
                     <span className="text-3xl text-yellow-500">⭐</span>{" "}
                     <span>{detailAnime?.score?.substring(1)}</span>
                   </span>
                 </RenderIfTrue>
-                <h1 className="text-2xl lg:text-3xl xl:text-4xl font-semibold my-6 md:my-0 md:mb-5 selection:bg-violet-500 selection:text-violet-900">
+                <h1 className="text-2xl lg:text-3xl xl:text-4xl 2xl:text-5xl font-medium my-6 md:my-0 md:mb-7 selection:bg-violet-500 selection:text-violet-900">
                   {detailAnime?.title}
                 </h1>
                 <div className="text-lg selection:bg-pink-500 selection:text-pink-900">
@@ -71,7 +71,6 @@ const DetailAnime = () => {
                           {detailAnime?.season?.name}
                         </Text>
                       </RenderIfTrue>
-
                       <RenderIfTrue isTrue={detailAnime?.total_eps}>
                         <Text category="Total Eps">
                           {detailAnime?.total_eps}
@@ -138,7 +137,9 @@ const DetailAnime = () => {
               </div>
             </div>
             <RenderIfTrue isTrue={detailAnime?.sinopsis}>
-              <Synopsis>{detailAnime?.sinopsis}</Synopsis>
+              <Description hasTitle title="Sinopsis">
+                {detailAnime?.sinopsis}
+              </Description>
             </RenderIfTrue>
           </div>
         </RenderIfTrue>

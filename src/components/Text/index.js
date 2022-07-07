@@ -1,12 +1,12 @@
 import PropTypes from "prop-types";
 
 const Text = ({ children, category }) => (
-  <p className="text-base md:text-lg">
-    <span className="font-semibold my-0.5 inline-block">
+  <div className="text-base md:text-lg 2xl:text-xl ">
+    <span className="font-semibold my-1 inline-block">
       {category}&nbsp;:&nbsp;
     </span>
-    {children}
-  </p>
+    <p className="inline">{children}</p>
+  </div>
 );
 
 Text.propTypes = {
