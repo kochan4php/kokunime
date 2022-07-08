@@ -1,5 +1,6 @@
 import Head from "next/head";
 import PropTypes from "prop-types";
+import { Navbar, Footer } from "../components";
 
 const Layout = ({ children }) => (
   <>
@@ -17,12 +18,10 @@ const Layout = ({ children }) => (
         name="keywords"
         content="Kokunime, kokunime, website download anime, download batch anime, download anime, download anime terlengkap, website download anime terlengkap"
       />
-      <link
-        href="https://fonts.googleapis.com/css?family=Lexend+Deca:100,200,300,regular,500,600,700,800,900"
-        rel="stylesheet"
-      />
     </Head>
+    <Navbar />
     <main>{children}</main>
+    <Footer />
   </>
 );
 

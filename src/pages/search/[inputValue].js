@@ -7,6 +7,7 @@ import {
   MainCard,
   TitleSection,
 } from "../../components";
+import Layout from "../../layout";
 import { For, RenderIfFalse, RenderIfTrue } from "../../utils";
 
 const SearchAnime = () => {
@@ -33,41 +34,43 @@ const SearchAnime = () => {
   }, [inputValue, value]);
 
   return (
-    <section className="min-w-full bg-gradient-to-tl from-slate-900 via-slate-800 to-slate-900 pt-4 pb-8 min-h-screen">
-      <div className="container flex items-center pt-4 pb-6">
-        <TitleSection>Result of {inputValue}</TitleSection>
-      </div>
-      <RenderIfTrue isTrue={isLoading}>
-        <Loading />
-      </RenderIfTrue>
-      <RenderIfFalse isFalse={isLoading}>
-        <RenderIfTrue isTrue={anime.length > 0}>
-          <div className="container px-0 lg:px-4">
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 lg:gap-6 my-3">
-              <For
-                each={anime}
-                render={(data, index) => (
-                  <MainCard
-                    key={index}
-                    path={`/details/${data?.link?.endpoint}`}
-                    id={index}
-                    image={data?.link?.thumbnail}
-                    title={data?.title}
-                    py="py-5"
-                    fontsize="text-base"
-                  />
-                )}
-              />
-            </div>
-          </div>
+    <Layout>
+      <section className="min-w-full bg-gradient-to-tl from-slate-900 via-slate-800 to-slate-900 pt-4 pb-8 min-h-screen">
+        <div className="container flex items-center pt-4 pb-6">
+          <TitleSection>Result of {inputValue}</TitleSection>
+        </div>
+        <RenderIfTrue isTrue={isLoading}>
+          <Loading />
         </RenderIfTrue>
-        <RenderIfFalse isFalse={anime.length > 0}>
-          <AlertWarning
-            message={`Anime dengan judul ${inputValue} tidak ada.`}
-          />
+        <RenderIfFalse isFalse={isLoading}>
+          <RenderIfTrue isTrue={anime.length > 0}>
+            <div className="container px-0 lg:px-4">
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 lg:gap-6 my-3">
+                <For
+                  each={anime}
+                  render={(data, index) => (
+                    <MainCard
+                      key={index}
+                      path={`/details/${data?.link?.endpoint}`}
+                      id={index}
+                      image={data?.link?.thumbnail}
+                      title={data?.title}
+                      py="py-5"
+                      fontsize="text-base"
+                    />
+                  )}
+                />
+              </div>
+            </div>
+          </RenderIfTrue>
+          <RenderIfFalse isFalse={anime.length > 0}>
+            <AlertWarning
+              message={`Anime dengan judul ${inputValue} tidak ada.`}
+            />
+          </RenderIfFalse>
         </RenderIfFalse>
-      </RenderIfFalse>
-    </section>
+      </section>
+    </Layout>
   );
 };
 

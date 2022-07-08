@@ -1,3 +1,4 @@
+@import url("https://fonts.googleapis.com/css?family=Lexend+Deca:100,200,300,regular,500,600,700,800,900");
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -5,41 +6,20 @@
 @layer utilities {
   html {
     @apply scroll-smooth;
-    font-family: "Lexend Deca", Arial, Helvetica, sans-serif;
+    font-family: "Lexend Deca", Arial, Helvetica, sans-serif !important;
     color-scheme: dark;
   }
 
   body {
     @apply !overflow-x-hidden;
   }
-
-  .nav-detail {
-    -ms-overflow-style: none; /* for Internet Explorer, Edge */
-    scrollbar-width: none; /* for Firefox */
-    overflow-y: scroll;
-  }
-
-  .nav-detail::-webkit-scrollbar {
-    display: none; /* for Chrome, Safari, and Opera */
-  }
-
-  progress {
-    border: none;
-    height: 15px;
-  }
-  progress::-webkit-progress-bar {
-    border: none;
-    height: 15px;
-  }
-  progress::-webkit-progress-value {
-    border: none;
-    height: 15px;
-  }
-  progress::-moz-progress-bar {
-    border: none;
-    height: 15px;
-  }
 }
+
+/* When Window On Scroll */
+.navbar-fixed {
+  @apply opacity-100 bg-opacity-50 backdrop-blur-xl border-b-slate-600;
+}
+/* When Window On Scroll */
 
 .hamburger-line {
   @apply w-8 h-[3px] rounded bg-white block my-[7px] transition duration-300 -z-[9999];
@@ -171,5 +151,4 @@ nav ul.slide {
     opacity: 0;
   }
 }
-/* Loading Animation */
 /* Loading Animation */
