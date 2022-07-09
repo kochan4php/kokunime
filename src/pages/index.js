@@ -1,19 +1,26 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { getAnimeWithPagination } from "../action";
+import { getAnimeRecommendations, getAnimeWithPagination } from "../action";
 import { Button, Loading, MainCard, TitleSection } from "../components";
 import Layout from "../layout";
 import { For, RenderIfFalse, RenderIfTrue } from "../utils";
 
 const Home = () => {
   const [anime, setAnime] = useState([]);
+  const [animeRecommendations, setAnimeRecommendations] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
   const getData = async () => {
-    const res = await getAnimeWithPagination();
-    if (res.status === 200) {
-      if (res.data.success !== false) {
-        setAnime(res.data);
+    const resAnime = await getAnimeWithPagination();
+    const resAnimeRecommendations = await getAnimeRecommendations();
+
+    if (resAnime.status === 200 && resAnimeRecommendations.status === 200) {
+      if (
+        resAnime.data.success !== false &&
+        resAnimeRecommendations.data.success !== false
+      ) {
+        setAnime(resAnime.data);
+        setAnimeRecommendations(resAnimeRecommendations.data);
         setIsLoading(false);
       }
     }
@@ -58,24 +65,66 @@ const Home = () => {
             </section>
           </section>
           <section className="min-h-screen min-w-full bg-gradient-to-tl from-slate-900 via-slate-800 to-slate-900 py-10">
-            <div className="mb-7 container">
-              <TitleSection>Updatetan Terbaru</TitleSection>
+            <div id="update-now">
+              <div className="mb-7 container">
+                <TitleSection>Updatetan Terbaru</TitleSection>
+              </div>
+              <div className="container px-0 md:px-4">
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 lg:gap-6">
+                  <For
+                    each={anime}
+                    render={(data, index) => (
+                      <MainCard
+                        key={index}
+                        path={`/details/${data?.link?.endpoint}`}
+                        image={data?.link?.thumbnail}
+                        title={data?.title}
+                        py="py-5"
+                        fontsize="text-base"
+                      />
+                    )}
+                  />
+                </div>
+              </div>
             </div>
-            <div className="container px-0 md:px-4 min-h-screen">
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 lg:gap-6">
-                <For
-                  each={anime}
-                  render={(data, index) => (
-                    <MainCard
-                      key={index}
-                      path={`/details/${data?.link?.endpoint}`}
-                      image={data?.link?.thumbnail}
-                      title={data?.title}
-                      py="py-5"
-                      fontsize="text-base"
-                    />
-                  )}
-                />
+            <div id="batas">
+              <div className="container my-16">
+                <hr className="border-t border-t-slate-600" />
+              </div>
+            </div>
+            <div id="recommendations">
+              <div className="mb-7 container">
+                <TitleSection>Rekomendasi</TitleSection>
+              </div>
+              <div className="container">
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-2 md:gap-4">
+                  <For
+                    each={animeRecommendations}
+                    render={(data, index) => (
+                      <div
+                        className="w-full grid grid-cols-3 gap-3 pt-4"
+                        key={index}
+                      >
+                        <div>
+                          <MainCard
+                            path={`/details/${data?.link?.endpoint}`}
+                            image={data?.link?.thumbnail}
+                          />
+                        </div>
+                        <div className="col-span-2 py-2 group">
+                          <Link
+                            href={`/details/${data?.link?.endpoint}`}
+                            passHref
+                          >
+                            <a className="text-lg font-medium group-hover:text-pink-600">
+                              {data?.title}
+                            </a>
+                          </Link>
+                        </div>
+                      </div>
+                    )}
+                  />
+                </div>
               </div>
             </div>
           </section>
