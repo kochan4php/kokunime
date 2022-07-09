@@ -1,4 +1,5 @@
 import PropTypes from "prop-types";
+import { memo } from "react";
 
 const CardLink = ({ children, px, py, fontsize, centerText }) => (
   <a
@@ -18,4 +19,4 @@ CardLink.propTypes = {
   centerText: PropTypes.bool,
 };
 
-export default CardLink;
+export default memo(CardLink);

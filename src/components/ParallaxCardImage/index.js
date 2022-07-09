@@ -1,4 +1,5 @@
 import PropTypes from "prop-types";
+import { memo } from "react";
 import CardImage from "../CardImage";
 
 const ParallaxCardImage = ({ image, alt }) => (
@@ -18,4 +19,4 @@ ParallaxCardImage.propTypes = {
   alt: PropTypes.string.isRequired,
 };
 
-export default ParallaxCardImage;
+export default memo(ParallaxCardImage);
