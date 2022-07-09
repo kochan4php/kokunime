@@ -1,4 +1,5 @@
 import PropTypes from "prop-types";
+import { memo } from "react";
 
 const Text = ({ children, category }) => (
   <div className="text-base md:text-lg 2xl:text-xl ">
@@ -14,4 +15,4 @@ Text.propTypes = {
   category: PropTypes.string,
 };
 
-export default Text;
+export default memo(Text);

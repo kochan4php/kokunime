@@ -1,4 +1,5 @@
 import PropTypes from "prop-types";
+import { memo } from "react";
 
 const ParallaxImage = ({ image, alt }) => (
   <div className="flex justify-center">
@@ -15,4 +16,4 @@ ParallaxImage.propTypes = {
   alt: PropTypes.string,
 };
 
-export default ParallaxImage;
+export default memo(ParallaxImage);

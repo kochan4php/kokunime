@@ -1,4 +1,4 @@
-import { useRouter } from "next/router";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import { getAnimeWithPagination } from "../action";
 import { Button, Loading, MainCard, TitleSection } from "../components";
@@ -6,8 +6,6 @@ import Layout from "../layout";
 import { For, RenderIfFalse, RenderIfTrue } from "../utils";
 
 const Home = () => {
-  const router = useRouter();
-
   const [anime, setAnime] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -15,7 +13,6 @@ const Home = () => {
     const res = await getAnimeWithPagination();
     if (res.status === 200) {
       if (res.data.success !== false) {
-        console.log(res.data);
         setAnime(res.data);
         setIsLoading(false);
       }
@@ -53,14 +50,9 @@ const Home = () => {
                   </p>
                 </div>
                 <div className="my-6">
-                  <Button
-                    onClick={() =>
-                      router.push(`/details/${anime[0]?.link?.endpoint}`)
-                    }
-                    width="w-full"
-                  >
-                    Detail
-                  </Button>
+                  <Link href={`/details/${anime[0]?.link?.endpoint}`} passHref>
+                    <Button width="w-full">Detail</Button>
+                  </Link>
                 </div>
               </div>
             </section>

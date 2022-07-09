@@ -1,8 +1,10 @@
 import Link from "next/link";
+import { memo } from "react";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import createRoute from "../../helper/createRoute";
 import { For } from "../../utils";
+import Input from "../Input";
 
 const routes = [
   createRoute("/", "Home"),
@@ -85,12 +87,12 @@ const Navbar = () => {
             </Link>
           </h1>
           <form onSubmit={submitHandler} className="md:hidden">
-            <input
+            <Input
               type="search"
               name="search"
-              className="search-input truncate outline-none px-4 py-2 rounded-sm bg-slate-800 text-base ring-2 focus:ring-4 focus:ring-sky-500 transition-all selection:bg-rose-700 selection:text-rose-300 w-11/12"
               placeholder="Search Anime Here ..."
               autoComplete="off"
+              width="w-11/12"
               value={inputValue}
               onChange={searchFunc}
             />
@@ -119,10 +121,9 @@ const Navbar = () => {
         <div className="flex items-center justify-center">
           <div className="hidden md:block mr-4">
             <form onSubmit={submitHandler}>
-              <input
+              <Input
                 type="search"
                 name="search"
-                className="search-input truncate outline-none px-5 py-1 2xl:py-2 rounded-sm bg-slate-800 text-base ring-2 focus:ring-4 focus:ring-sky-500 transition-all selection:bg-rose-700 selection:text-rose-300"
                 placeholder="Search Anime Here ..."
                 autoComplete="off"
                 value={inputValue}
@@ -146,4 +147,4 @@ const Navbar = () => {
   );
 };
 
-export default Navbar;
+export default memo(Navbar);

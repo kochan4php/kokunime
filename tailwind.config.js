@@ -13,6 +13,7 @@ module.exports = {
         warning: "#eab308",
         primary: "#2563eb",
         dark: "#171717",
+        light: "#ffffff",
       },
     },
   },

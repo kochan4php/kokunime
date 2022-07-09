@@ -1,6 +1,8 @@
+import { memo } from "react";
+
 const Loading = () => (
   <div className="container flex justify-center items-start">
-    <div className="lds-spinner my-16">
+    <div className="lds-spinner my-20">
       <div></div>
       <div></div>
       <div></div>
@@ -17,4 +19,4 @@ const Loading = () => (
   </div>
 );
 
-export default Loading;
+export default memo(Loading);

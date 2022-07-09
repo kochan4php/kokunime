@@ -1,5 +1,6 @@
 import Link from "next/link";
 import PropTypes from "prop-types";
+import { memo } from "react";
 
 const Card = ({ bgimage, path, children }) => (
   <div
@@ -27,4 +28,4 @@ Card.propTypes = {
   shadowColor: PropTypes.string,
 };
 
-export default Card;
+export default memo(Card);

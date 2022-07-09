@@ -1,14 +1,9 @@
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { getAnimeSearch } from "../../action";
-import {
-  AlertWarning,
-  Loading,
-  MainCard,
-  TitleSection,
-} from "../../components";
+import { Alert, Loading, MainCard, TitleSection } from "../../components";
 import Layout from "../../layout";
-import { For, RenderIfFalse, RenderIfTrue } from "../../utils";
+import { For, RenderAfter, RenderIfFalse, RenderIfTrue } from "../../utils";
 
 const SearchAnime = () => {
   const router = useRouter();
@@ -64,9 +59,13 @@ const SearchAnime = () => {
             </div>
           </RenderIfTrue>
           <RenderIfFalse isFalse={anime.length > 0}>
-            <AlertWarning
-              message={`Anime dengan judul ${inputValue} tidak ada.`}
-            />
+            <RenderAfter delay={1500}>
+              <Alert
+                bgcolor="bg-warning"
+                textColor="text-dark"
+                message={`Anime dengan judul ${inputValue} tidak ada.`}
+              />
+            </RenderAfter>
           </RenderIfFalse>
         </RenderIfFalse>
       </section>

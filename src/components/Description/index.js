@@ -1,4 +1,5 @@
 import PropTypes from "prop-types";
+import { memo } from "react";
 import { RenderIfTrue } from "../../utils";
 
 const Description = ({ children, hasTitle, title }) => (
@@ -29,4 +30,4 @@ Description.propTypes = {
   title: PropTypes.string,
 };
 
-export default Description;
+export default memo(Description);
