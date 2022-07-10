@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { getAnimeRecommendations } from "../action";
-import { MainCard } from "../components";
-import { For, RenderIfFalse, RenderIfTrue } from "../utils";
+import { getAnimeRecommendations } from "../../action";
+import { MainCard } from "../../components";
+import { For, RenderIfFalse, RenderIfTrue } from "../../utils";
 
 const Recommendations = () => {
   const [anime, setAnime] = useState([]);

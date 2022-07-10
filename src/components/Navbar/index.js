@@ -76,74 +76,76 @@ const Navbar = () => {
   }, []);
 
   return (
-    <nav className="bg-gray-900 py-2.5 2xl:py-3 z-[999] w-full transition-all duration-300 text-white border-b relative border-b-slate-700">
-      <div className="container flex justify-between items-center py-1 relative">
-        <div>
-          <h1 className="text-center bg-gradient-to-r from-sky-500 to-indigo-500 bg-clip-text text-transparent font-semibold text-3xl 2xl:text-4xl hidden md:block">
-            <Link href="/">
-              <a className="selection:bg-yellow-700 selection:text-yellow-400">
-                Kokunime
-              </a>
-            </Link>
-          </h1>
-          <form onSubmit={submitHandler} className="md:hidden">
-            <Input
-              type="search"
-              name="search"
-              placeholder="Search Anime Here ..."
-              autoComplete="off"
-              width="w-11/12"
-              value={inputValue}
-              onChange={searchFunc}
-            />
-          </form>
-        </div>
-        <ul className="absolute text-lg font-semibold right-0 flex-col bg-slate-800 backdrop-blur-lg h-[65vh] md:h-[40vh] xl:h-[50vh] top-[75px] bottom-0 justify-evenly items-center -z-[199] w-[70%] md:w-[30%] lg:w-[20%] transition-all duration-200 rounded-md border border-slate-600 navbar-nav px-8 md:px-0 hidden">
-          <For
-            each={routes}
-            render={({ path, name }, index) => {
-              return (
-                <li key={index}>
-                  <Link href={path}>
-                    <a
-                      className={`transition-all duration-200 py-1 border-b-2 border-transparent hover:border-b-slate-200 selection:bg-emerald-500 selection:text-emerald-900 ${
-                        currentPath === path.split("/")[1] ? "active" : ""
-                      }`}
-                    >
-                      {name}
-                    </a>
-                  </Link>
-                </li>
-              );
-            }}
-          />
-        </ul>
-        <div className="flex items-center justify-center">
-          <div className="hidden md:block mr-4">
-            <form onSubmit={submitHandler}>
+    <header>
+      <nav className="bg-gray-900 py-2.5 2xl:py-3 z-[999] w-full transition-all duration-300 text-white border-b relative border-b-slate-700">
+        <div className="container flex justify-between items-center py-1 relative">
+          <div>
+            <h1 className="text-center bg-gradient-to-r from-sky-500 to-indigo-500 bg-clip-text text-transparent font-semibold text-3xl 2xl:text-4xl hidden md:block">
+              <Link href="/">
+                <a className="selection:bg-yellow-700 selection:text-yellow-400">
+                  Kokunime
+                </a>
+              </Link>
+            </h1>
+            <form onSubmit={submitHandler} className="md:hidden">
               <Input
                 type="search"
                 name="search"
                 placeholder="Search Anime Here ..."
                 autoComplete="off"
+                width="w-11/12"
                 value={inputValue}
                 onChange={searchFunc}
               />
             </form>
           </div>
-          <div className="relative">
-            <input
-              type="checkbox"
-              id="toggle"
-              className="absolute w-[30px] h-[30px] z-[999] opacity-0 cursor-pointer"
+          <ul className="absolute text-lg font-semibold right-0 flex-col bg-slate-800 backdrop-blur-lg h-[65vh] md:h-[40vh] xl:h-[50vh] top-[75px] bottom-0 justify-evenly items-center -z-[199] w-[70%] md:w-[30%] lg:w-[20%] transition-all duration-200 rounded-md border border-slate-600 navbar-nav px-8 md:px-0 hidden">
+            <For
+              each={routes}
+              render={({ path, name }, index) => {
+                return (
+                  <li key={index}>
+                    <Link href={path}>
+                      <a
+                        className={`transition-all duration-200 py-1 border-b-2 border-transparent hover:border-b-slate-200 selection:bg-emerald-500 selection:text-emerald-900 ${
+                          currentPath === path.split("/")[1] ? "active" : ""
+                        }`}
+                      >
+                        {name}
+                      </a>
+                    </Link>
+                  </li>
+                );
+              }}
             />
-            <span className="hamburger-line origin-top-right"></span>
-            <span className="hamburger-line"></span>
-            <span className="hamburger-line origin-bottom-right"></span>
+          </ul>
+          <div className="flex items-center justify-center">
+            <div className="hidden md:block mr-4">
+              <form onSubmit={submitHandler}>
+                <Input
+                  type="search"
+                  name="search"
+                  placeholder="Search Anime Here ..."
+                  autoComplete="off"
+                  value={inputValue}
+                  onChange={searchFunc}
+                />
+              </form>
+            </div>
+            <div className="relative">
+              <input
+                type="checkbox"
+                id="toggle"
+                className="absolute w-[30px] h-[30px] z-[999] opacity-0 cursor-pointer"
+              />
+              <span className="hamburger-line origin-top-right"></span>
+              <span className="hamburger-line"></span>
+              <span className="hamburger-line origin-bottom-right"></span>
+            </div>
           </div>
         </div>
-      </div>
-    </nav>
+      </nav>
+    </header>
   );
 };
 
