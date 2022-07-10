@@ -15,7 +15,8 @@ const Home = () => {
 
     if (res.status === 200) {
       if (res.data.success !== false) {
-        setAnime(res.data);
+        const dataAnime = res.data;
+        setAnime(dataAnime);
         setIsLoading(false);
       }
     }
@@ -82,7 +83,7 @@ const Home = () => {
                 </div>
               </div>
             </div>
-            <div id="batas">
+            <div className="batas">
               <div className="container my-12">
                 <hr className="border-t border-t-slate-600" />
               </div>

@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { getAnimeDetail } from "../../action";
 import {
-  AlertWarning,
+  Alert,
   Button,
   Description,
   Loading,
@@ -11,6 +11,7 @@ import {
   Text,
 } from "../../components";
 import Layout from "../../layout";
+import AddNewSeries from "../../section/detail-page/AddNewSeries";
 import { For, RenderIfFalse, RenderIfTrue } from "../../utils";
 
 const DetailAnime = () => {
@@ -24,13 +25,15 @@ const DetailAnime = () => {
     const res = await getAnimeDetail(slug);
     if (res.status === 200) {
       if (res.data.success !== false) {
-        setDetailAnime(res.data);
+        const dataAnime = res.data;
+        setDetailAnime(dataAnime);
         setIsLoading(false);
       }
     }
   };
 
   useEffect(() => {
+    setIsLoading(true);
     getData(slug);
   }, [slug]);
 
@@ -201,9 +204,26 @@ const DetailAnime = () => {
                 </div>
               </div>
             </div>
+            <div className="batas">
+              <div className="container mb-12">
+                <hr className="border-t border-t-slate-600" />
+              </div>
+            </div>
+            <div className="container">
+              <h1 className="text-2xl md:text-3xl mb-6 selection:bg-emerald-500 selection:text-emerald-900">
+                New Add Series
+              </h1>
+            </div>
+            <div className="container px-0 md:px-4 mb-10">
+              <AddNewSeries />
+            </div>
           </RenderIfTrue>
           <RenderIfFalse isFalse={Object.keys(detailAnime).length > 0}>
-            <AlertWarning message="Gagal mengambil data dari api." />
+            <Alert
+              bgcolor="bg-warning"
+              textColor="text-dark"
+              message="Gagal mengambil data dari api."
+            />
           </RenderIfFalse>
         </RenderIfFalse>
       </section>
