@@ -8,7 +8,6 @@ import Input from "../Input";
 
 const routes = [
   createRoute("/", "Home"),
-  createRoute("/anime", "Anime List"),
   createRoute("/genre", "Genre List"),
   createRoute("/season", "Season Anime"),
 ];
@@ -99,7 +98,7 @@ const Navbar = () => {
               />
             </form>
           </div>
-          <ul className="absolute text-lg font-semibold right-0 flex-col bg-slate-800 backdrop-blur-lg h-[65vh] md:h-[40vh] xl:h-[50vh] top-[75px] bottom-0 justify-evenly items-center -z-[199] w-[70%] md:w-[30%] lg:w-[20%] transition-all duration-200 rounded-md border border-slate-600 navbar-nav px-8 md:px-0 hidden">
+          <ul className="absolute text-lg font-semibold right-0 flex-col bg-slate-800 backdrop-blur-lg h-[50vh] md:h-[30vh] xl:h-[40vh] top-[75px] bottom-0 justify-evenly items-center -z-[199] w-[65%] md:w-[30%] lg:w-[20%] transition-all duration-200 rounded-md border border-slate-600 navbar-nav px-8 md:px-0 hidden">
             <For
               each={routes}
               render={({ path, name }, index) => {
