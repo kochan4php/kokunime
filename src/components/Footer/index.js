@@ -1,10 +1,11 @@
 import Link from "next/link";
 import { memo } from "react";
-import { BsGithub, BsInstagram, BsTwitter } from "react-icons/bs";
+import { For } from "../../utils";
+import SocialMedia from "./SocialMedia";
 
 const Footer = () => (
   <footer>
-    <div className="p-4 md:py-4 text-center text-white min-w-full bg-gradient-to-r from-gray-900 to-gray-800 border-t border-slate-600 border-opacity-60">
+    <div className="p-4 md:py-6 text-center text-white min-w-full bg-gradient-to-r from-gray-900 to-gray-800 border-t border-slate-600 border-opacity-60">
       <div className="container">
         <div className="flex flex-col md:flex-row justify-between items-center w-full gap-5">
           <section>
@@ -18,30 +19,19 @@ const Footer = () => (
           </section>
           <section>
             <div className="flex gap-5">
-              <Link href="https://github.com/kochan4php">
-                <a
-                  target="_blank"
-                  className="text-xl md:text-2xl hover:text-sky-500 transition-colors duration-200"
-                >
-                  <BsGithub />
-                </a>
-              </Link>
-              <Link href="https://instagram.com/kochan.php">
-                <a
-                  target="_blank"
-                  className="text-xl md:text-2xl hover:text-sky-500 transition-colors duration-200"
-                >
-                  <BsInstagram />
-                </a>
-              </Link>
-              <Link href="https://twitter.com/deo_sbrn">
-                <a
-                  target="_blank"
-                  className="text-xl md:text-2xl hover:text-sky-500 transition-colors duration-200"
-                >
-                  <BsTwitter />
-                </a>
-              </Link>
+              <For
+                each={SocialMedia}
+                render={({ sosmedName, sosmedPath, sosmedIcon }) => (
+                  <Link href={sosmedPath} key={sosmedName}>
+                    <a
+                      target="_blank"
+                      className="text-xl md:text-2xl hover:text-sky-500 transition-colors duration-200"
+                    >
+                      {sosmedIcon}
+                    </a>
+                  </Link>
+                )}
+              />
             </div>
           </section>
         </div>
