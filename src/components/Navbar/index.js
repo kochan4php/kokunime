@@ -101,21 +101,19 @@ const Navbar = () => {
           <ul className="absolute text-lg font-semibold right-0 flex-col bg-slate-800 backdrop-blur-lg h-[50vh] md:h-[30vh] xl:h-[40vh] top-[75px] bottom-0 justify-evenly items-center -z-[199] w-[65%] md:w-[30%] lg:w-[20%] transition-all duration-200 rounded-md border border-slate-600 navbar-nav px-8 md:px-0 hidden">
             <For
               each={routes}
-              render={({ path, name }, index) => {
-                return (
-                  <li key={index}>
-                    <Link href={path}>
-                      <a
-                        className={`transition-all duration-200 py-1 border-b-2 border-transparent hover:border-b-slate-200 selection:bg-emerald-500 selection:text-emerald-900 ${
-                          currentPath === path.split("/")[1] ? "active" : ""
-                        }`}
-                      >
-                        {name}
-                      </a>
-                    </Link>
-                  </li>
-                );
-              }}
+              render={({ path, name }, index) => (
+                <li key={index}>
+                  <Link href={path}>
+                    <a
+                      className={`transition-all duration-200 py-1 border-b-2 border-transparent hover:border-b-slate-200 selection:bg-emerald-500 selection:text-emerald-900 ${
+                        currentPath === path.split("/")[1] ? "active" : ""
+                      }`}
+                    >
+                      {name}
+                    </a>
+                  </Link>
+                </li>
+              )}
             />
           </ul>
           <div className="flex items-center justify-center">

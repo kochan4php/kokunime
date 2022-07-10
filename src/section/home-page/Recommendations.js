@@ -13,7 +13,8 @@ const Recommendations = () => {
 
     if (res.status === 200) {
       if (res.data.success !== false) {
-        setAnime(res.data);
+        const dataAnime = res.data;
+        setAnime(dataAnime);
         setIsLoading(false);
       }
     }

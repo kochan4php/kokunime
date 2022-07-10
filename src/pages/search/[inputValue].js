@@ -17,7 +17,8 @@ const SearchAnime = () => {
     const res = await getAnimeSearch(keyword);
     if (res.status === 200) {
       if (res.data.success !== false) {
-        setAnime(res.data);
+        const dataAnime = res.data;
+        setAnime(dataAnime);
         setIsLoading(false);
       }
     }
