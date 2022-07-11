@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { getAnimeWithPagination } from "../action";
 import { Button, Loading, MainCard, TitleSection } from "../components";
 import Layout from "../layout";
-import Recommendations from "../section/home-page/Recommendations";
+import Recommendations from "../section/Recommendations";
 import { For, RenderIfFalse, RenderIfTrue } from "../utils";
 
 const Home = () => {
@@ -91,8 +91,9 @@ const Home = () => {
             <div id="recommendations">
               <div className="mb-6 container">
                 <TitleSection>Rekomendasi Anime</TitleSection>
+                <br />
+                <Recommendations />
               </div>
-              <Recommendations />
             </div>
           </section>
         </RenderIfFalse>
