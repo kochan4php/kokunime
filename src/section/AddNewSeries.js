@@ -1,8 +1,8 @@
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import { getAnimeWithPagination } from "../../action";
-import { MainCard } from "../../components";
-import { For, RenderIfFalse, RenderIfTrue } from "../../utils";
+import { getAnimeWithPagination } from "../action";
+import { MainCard } from "../components";
+import { For, RenderIfFalse, RenderIfTrue } from "../utils";
 
 const AddNewSeries = () => {
   const router = useRouter();
@@ -31,7 +31,7 @@ const AddNewSeries = () => {
   return (
     <>
       <RenderIfTrue isTrue={isLoading}>
-        <div className="container">
+        <div className="container md:px-0">
           <p className="text-base font-medium">
             Mengambil data anime terbaru...
           </p>
