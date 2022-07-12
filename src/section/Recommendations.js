@@ -1,10 +1,13 @@
 import Link from "next/link";
+import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { getAnimeRecommendations } from "../action";
 import { MainCard } from "../components";
 import { For, RenderIfFalse, RenderIfTrue } from "../utils";
 
 const Recommendations = () => {
+  const router = useRouter();
+  const { slug } = router.query;
   const [anime, setAnime] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -13,7 +16,11 @@ const Recommendations = () => {
 
     if (res.status === 200) {
       if (res.data.success !== false) {
-        const dataAnime = res.data;
+        const dataAnime = !slug
+          ? res.data
+          : res.data.filter(
+              (data) => data?.link?.endpoint.split("/")[0] !== slug
+            );
         setAnime(dataAnime);
         setIsLoading(false);
       }
