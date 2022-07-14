@@ -7,7 +7,7 @@
 git clone https://github.com/kochan4php/kokunime.git
 
 # go to the project folder
-cd weebs
+cd kokunime
 
 # install dependencies
 yarn install # or npm install
