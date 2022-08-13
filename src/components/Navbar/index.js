@@ -20,7 +20,7 @@ const Navbar = () => {
   const searchFunc = (e) => setInputValue(e.target.value);
   const submitHandler = (e) => {
     e.preventDefault();
-    router.push(`/search/${inputValue.split(" ").join("%20")}`);
+    router.push(`/search/${inputValue.split(" ").join("+")}`);
     setInputValue("");
   };
 
