@@ -29,7 +29,7 @@ const Home = () => {
 
   return (
     <Layout>
-      <section className="min-w-full bg-gradient-to-tl from-slate-900 via-slate-800 to-slate-900 text-white min-h-screen">
+      <section className="min-w-full text-white">
         <RenderIfTrue isTrue={isLoading}>
           <Loading />
         </RenderIfTrue>
@@ -54,7 +54,9 @@ const Home = () => {
                 </div>
                 <div className="my-6">
                   <Link href={`/details/${anime[0]?.link?.endpoint}`} passHref>
-                    <Button width="w-full">Detail</Button>
+                    <Button width="w-full" circle>
+                      Detail
+                    </Button>
                   </Link>
                 </div>
               </div>

@@ -19,9 +19,11 @@ const Layout = ({ children }) => (
         content="Kokunime, kokunime, website download anime, download batch anime, download anime, download anime terlengkap, website download anime terlengkap"
       />
     </Head>
-    <Navbar />
-    <main>{children}</main>
-    <Footer />
+    <div className="min-h-screen flex flex-col justify-between">
+      <Navbar />
+      <main>{children}</main>
+      <Footer className="self-end" />
+    </div>
   </>
 );
 

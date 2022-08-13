@@ -8,6 +8,7 @@ import { For, RenderAfter, RenderIfFalse, RenderIfTrue } from "../../utils";
 const SearchAnime = () => {
   const router = useRouter();
   const { inputValue } = router.query;
+  const input = inputValue?.split("+").join(" ");
   const value = inputValue?.split(" ")?.join("%20");
 
   const [anime, setAnime] = useState([]);
@@ -31,14 +32,14 @@ const SearchAnime = () => {
 
   return (
     <Layout>
-      <section className="min-w-full bg-gradient-to-tl from-slate-900 via-slate-800 to-slate-900 pt-4 pb-8 min-h-screen">
-        <div className="container flex items-center pt-4 pb-6">
-          <TitleSection>Result of {inputValue}</TitleSection>
-        </div>
+      <section className="min-w-full pt-4 pb-8">
         <RenderIfTrue isTrue={isLoading}>
           <Loading />
         </RenderIfTrue>
         <RenderIfFalse isFalse={isLoading}>
+          <div className="container flex items-center pt-4 md:pt-2 pb-6">
+            <TitleSection>Result of {input}</TitleSection>
+          </div>
           <RenderIfTrue isTrue={anime.length > 0}>
             <div className="container px-0 lg:px-4">
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 lg:gap-6 my-3">

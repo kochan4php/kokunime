@@ -3,9 +3,11 @@ import { memo } from "react";
 import { For } from "../../utils";
 import SocialMedia from "./SocialMedia";
 
-const Footer = () => (
+const Footer = ({ className }) => (
   <footer>
-    <div className="p-4 md:py-6 text-center text-white min-w-full bg-gradient-to-r from-gray-900 to-gray-800 border-t border-slate-600 border-opacity-60">
+    <div
+      className={`p-4 text-center text-white min-w-full bg-gradient-to-r from-gray-900 to-gray-800 border-t border-slate-600 border-opacity-60 ${className}`}
+    >
       <div className="container">
         <div className="flex flex-col md:flex-row justify-between items-center w-full gap-5">
           <section>

@@ -40,7 +40,7 @@ const DetailAnime = () => {
 
   return (
     <Layout>
-      <section className="min-w-full bg-gradient-to-tl from-slate-900 via-slate-800 to-slate-900 text-white py-3 min-h-screen">
+      <section className="min-w-full text-white py-3">
         <RenderIfTrue isTrue={isLoading}>
           <Loading />
         </RenderIfTrue>
