@@ -14,8 +14,7 @@ const Document = () => (
         name="keywords"
         content="Kokunime, kokunime, website download anime, download batch anime, download anime, download anime terlengkap, website download anime terlengkap"
       />
-      <meta charset="utf-8" />
-      <meta name="viewport" content="width=device-width, initial-scale=1" />
+      <meta color="#ffc500" />
       <link
         type="image/png"
         sizes="16x16"
