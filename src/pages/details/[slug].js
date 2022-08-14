@@ -10,7 +10,7 @@ import {
   ParallaxImage,
   Text,
 } from "../../components";
-import Layout from "../../layout";
+import Layout from "@/layout";
 import AddNewSeries from "../../section/AddNewSeries";
 import Recommendations from "../../section/Recommendations";
 import { For, RenderIfFalse, RenderIfTrue } from "../../utils";
