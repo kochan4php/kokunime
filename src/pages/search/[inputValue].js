@@ -1,6 +1,6 @@
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import { getAnimeSearch } from "../../action";
+import { getAnimeSearch } from "@/action";
 import { Alert, Loading, MainCard, TitleSection } from "../../components";
 import Layout from "@/layout";
 import { For, RenderAfter, RenderIfFalse, RenderIfTrue } from "../../utils";

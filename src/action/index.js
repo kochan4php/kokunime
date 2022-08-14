@@ -1,5 +1,5 @@
 import axios from "axios";
-import KUSONIME_API from "../config/kusonime";
+import KUSONIME_API from "@/config/kusonime";
 const { get } = axios;
 
 export const getAnimeDetail = async (slug) =>

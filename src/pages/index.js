@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { getAnimeWithPagination } from "../action";
+import { getAnimeWithPagination } from "@/action";
 import { Button, Loading, MainCard, TitleSection } from "../components";
 import Layout from "@/layout";
 import Recommendations from "../section/Recommendations";
