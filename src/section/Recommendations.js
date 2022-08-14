@@ -1,9 +1,9 @@
+import { getAnimeRecommendations } from "@/action";
+import { MainCard } from "@/components";
+import { For, RenderIfFalse, RenderIfTrue } from "@/utils";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import { getAnimeRecommendations } from "../action";
-import { MainCard } from "../components";
-import { For, RenderIfFalse, RenderIfTrue } from "../utils";
 
 const Recommendations = () => {
   const router = useRouter();

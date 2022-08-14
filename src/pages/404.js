@@ -1,6 +1,6 @@
+import { Button } from "@/components";
 import Layout from "@/layout";
 import Link from "next/link";
-import { Button } from "../components";
 
 const NotFound = () => (
   <Layout>

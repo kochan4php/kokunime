@@ -1,6 +1,3 @@
-import Link from "next/link";
-import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
 import { getAnimeDetail } from "@/action";
 import {
   Alert,
@@ -9,11 +6,14 @@ import {
   Loading,
   ParallaxImage,
   Text,
-} from "../../components";
+} from "@/components";
 import Layout from "@/layout";
-import AddNewSeries from "../../section/AddNewSeries";
-import Recommendations from "../../section/Recommendations";
-import { For, RenderIfFalse, RenderIfTrue } from "../../utils";
+import AddNewSeries from "@/section/AddNewSeries";
+import Recommendations from "@/section/Recommendations";
+import { For, RenderIfFalse, RenderIfTrue } from "@/utils";
+import Link from "next/link";
+import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
 
 const DetailAnime = () => {
   const router = useRouter();

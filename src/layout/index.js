@@ -1,6 +1,6 @@
 import Head from "next/head";
 import PropTypes from "prop-types";
-import { Navbar, Footer } from "../components";
+import { Navbar, Footer } from "@/components";
 
 const Layout = ({ children }) => (
   <>
@@ -9,8 +9,8 @@ const Layout = ({ children }) => (
     </Head>
     <div className="min-h-screen flex flex-col justify-between">
       <Navbar />
-      <main>{children}</main>
-      <Footer className="self-end" />
+      <main className="min-h-full">{children}</main>
+      <Footer />
     </div>
   </>
 );
