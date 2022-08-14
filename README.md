@@ -10,10 +10,10 @@ git clone https://github.com/kochan4php/kokunime.git
 cd kokunime
 
 # install dependencies
-yarn install # or npm install
+yarn install # or npm install # or pnpm install
 
 # run the project
-yarn dev # or npm run dev
+yarn dev # or npm run dev # or pnpm dev
 ```
 
 ## Semoga kalian suka :D
