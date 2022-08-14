@@ -1,9 +1,9 @@
+import { getAnimeSearch } from "@/action";
+import { Alert, Loading, MainCard, TitleSection } from "@/components";
+import Layout from "@/layout";
+import { For, RenderAfter, RenderIfFalse, RenderIfTrue } from "@/utils";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import { getAnimeSearch } from "@/action";
-import { Alert, Loading, MainCard, TitleSection } from "../../components";
-import Layout from "@/layout";
-import { For, RenderAfter, RenderIfFalse, RenderIfTrue } from "../../utils";
 
 const SearchAnime = () => {
   const router = useRouter();
@@ -65,7 +65,7 @@ const SearchAnime = () => {
               <Alert
                 bgcolor="bg-warning"
                 textColor="text-dark"
-                message={`Anime dengan judul ${inputValue} tidak ada.`}
+                message={`Anime dengan judul ${input?.toUpperCase()} tidak ada.`}
               />
             </RenderAfter>
           </RenderIfFalse>

@@ -1,8 +1,8 @@
+import { getAnimeWithPagination } from "@/action";
+import { MainCard } from "@/components";
+import { For, RenderIfFalse, RenderIfTrue } from "@/utils";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import { getAnimeWithPagination } from "../action";
-import { MainCard } from "../components";
-import { For, RenderIfFalse, RenderIfTrue } from "../utils";
 
 const AddNewSeries = () => {
   const router = useRouter();

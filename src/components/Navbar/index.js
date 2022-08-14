@@ -2,7 +2,7 @@ import Link from "next/link";
 import { memo } from "react";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import createRoute from "../../helper/createRoute";
+import createRoute from "@/helper/createRoute";
 import { For } from "../../utils";
 import Input from "../Input";
 

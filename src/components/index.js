@@ -1,18 +1,18 @@
-import Alert from "./Alert";
-import Button from "./Button";
-import Card from "./Card";
-import CardImage from "./CardImage";
-import CardLink from "./CardLink";
-import Description from "./Description";
-import Footer from "./Footer";
-import Input from "./Input";
-import Loading from "./Loading";
-import MainCard from "./MainCard";
-import Navbar from "./Navbar";
-import ParallaxCardImage from "./ParallaxCardImage";
-import ParallaxImage from "./ParallaxImage";
-import Text from "./Text";
-import TitleSection from "./TitleSection";
+import Alert from "@/components/Alert";
+import Button from "@/components/Button";
+import Card from "@/components/Card";
+import CardImage from "@/components/CardImage";
+import CardLink from "@/components/CardLink";
+import Description from "@/components/Description";
+import Footer from "@/components/Footer";
+import Input from "@/components/Input";
+import Loading from "@/components/Loading";
+import MainCard from "@/components/MainCard";
+import Navbar from "@/components/Navbar";
+import ParallaxCardImage from "@/components/ParallaxCardImage";
+import ParallaxImage from "@/components/ParallaxImage";
+import Text from "@/components/Text";
+import TitleSection from "@/components/TitleSection";
 
 export {
   Alert,
