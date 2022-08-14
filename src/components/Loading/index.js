@@ -2,11 +2,7 @@ import { memo } from "react";
 
 const Loading = () => (
   <div className="container flex justify-center items-start">
-    <div className="lds-spinner my-20">
-      <div></div>
-      <div></div>
-      <div></div>
-      <div></div>
+    <div className="lds-roller">
       <div></div>
       <div></div>
       <div></div>
