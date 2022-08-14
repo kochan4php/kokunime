@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import { getAnimeDetail } from "../../action";
+import { getAnimeDetail } from "@/action";
 import {
   Alert,
   Button,
