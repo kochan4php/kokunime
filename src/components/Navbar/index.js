@@ -3,8 +3,8 @@ import { memo } from "react";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import createRoute from "@/helper/createRoute";
-import { For } from "../../utils";
-import Input from "../Input";
+import { For } from "@/utils";
+import Input from "@/components/Input";
 
 const routes = [
   createRoute("/", "Home"),
@@ -20,6 +20,7 @@ const Navbar = () => {
   const searchFunc = (e) => setInputValue(e.target.value);
   const submitHandler = (e) => {
     e.preventDefault();
+    if (inputValue.length === 0) return;
     router.push(`/search/${inputValue.split(" ").join("+")}`);
     setInputValue("");
   };
