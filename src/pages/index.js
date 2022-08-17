@@ -43,12 +43,12 @@ const Home = () => {
             <section className="min-h-[40vh] sm:min-h-[50vh] md:min-h-[40vh] lg:min-h-[70vh] xl:min-h-[80vh] 2xl:min-h-[75vh] bg-slate-800 bg-opacity-40 backdrop-blur-lg backdrop-brightness-90 flex items-center justify-start px-2 md:px-6 pb-6">
               <div className="container max-w-full lg:max-w-3xl">
                 <div className="my-6">
-                  <h1 className="text-slate-50 text-2xl md:text-4xl font-semibold mb-4 selection:bg-red-700 selection:text-red-200">
+                  <h1 className="text-slate-50 text-2xl md:text-4xl font-bold mb-4 selection:bg-red-700 selection:text-red-200">
                     {anime[0]?.title}
                   </h1>
                 </div>
                 <div className="my-6">
-                  <p className="text-lg md:text-2xl text-slate-200 font-medium truncate selection:bg-teal-400 selection:text-teal-900">
+                  <p className="text-lg md:text-2xl text-slate-200 font-semibold truncate selection:bg-teal-400 selection:text-teal-900">
                     {anime[0]?.release}
                   </p>
                 </div>
