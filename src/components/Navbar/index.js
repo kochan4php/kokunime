@@ -80,7 +80,7 @@ const Navbar = () => {
       <nav className="bg-gray-900 py-2.5 2xl:py-3 z-[999] w-full transition-all duration-300 text-white border-b relative border-b-slate-700">
         <div className="container flex justify-between items-center py-1 relative">
           <div>
-            <h1 className="text-center bg-gradient-to-r from-sky-500 to-indigo-500 bg-clip-text text-transparent font-semibold text-3xl 2xl:text-4xl hidden md:block">
+            <h1 className="text-center bg-gradient-to-r from-sky-500 to-indigo-500 bg-clip-text text-transparent font-bold text-3xl 2xl:text-4xl hidden md:block">
               <Link href="/">
                 <a className="selection:bg-yellow-700 selection:text-yellow-400">
                   Kokunime

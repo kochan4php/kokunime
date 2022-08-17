@@ -62,11 +62,11 @@ const DetailAnime = () => {
                         <span>{detailAnime?.score?.substring(1)}</span>
                       </span>
                     </RenderIfTrue>
-                    <h1 className="text-2xl lg:text-3xl xl:text-4xl 2xl:text-5xl font-medium my-6 md:my-0 md:mb-7 selection:bg-violet-500 selection:text-violet-900">
+                    <h1 className="text-2xl lg:text-3xl xl:text-4xl 2xl:text-5xl font-bold my-6 md:my-0 md:mb-7 selection:bg-violet-500 selection:text-violet-900">
                       {detailAnime?.title}
                     </h1>
                     <div className="text-lg selection:bg-pink-500 selection:text-pink-900">
-                      <div className="lg:flex lg:justify-between lg:gap-3">
+                      <div className="lg:flex lg:justify-between lg:gap-3 font-medium">
                         <div className="lg:px-2">
                           <RenderIfTrue isTrue={detailAnime?.japanese}>
                             <Text category="Japanese">
@@ -159,12 +159,12 @@ const DetailAnime = () => {
                   </Description>
                 </RenderIfTrue>
                 <div className="mt-10 lg:mt-0 md:pt-10 lg:pt-16">
-                  <h1 className="text-3xl md:text-4xl 2xl:text-5xl mb-3 selection:bg-emerald-500 selection:text-emerald-900 text-center">
+                  <h1 className="text-3xl md:text-4xl 2xl:text-5xl mb-3 selection:bg-emerald-500 selection:text-emerald-900 text-center font-medium">
                     <span className="hover:text-warning transition-all duration-200">
                       Link Download
                     </span>
                   </h1>
-                  <div className="lg:container lg:max-w-4xl">
+                  <div className="lg:container lg:max-w-4xl font-medium">
                     <div className="divide-y-2 divide-slate-600">
                       <For
                         each={detailAnime?.list_download}
@@ -221,11 +221,9 @@ const DetailAnime = () => {
                 </div>
               </div>
               <div className="container">
-                <h1 className="text-2xl md:text-3xl mb-6 selection:bg-emerald-500 selection:text-emerald-900">
+                <h1 className="text-2xl md:text-3xl mb-6 selection:bg-emerald-500 selection:text-emerald-900 font-bold">
                   New Add Series
                 </h1>
-              </div>
-              <div className="container px-0 md:px-4 mb-10">
                 <AddNewSeries />
               </div>
             </section>
@@ -236,7 +234,7 @@ const DetailAnime = () => {
                 </div>
               </div>
               <div className="container">
-                <h1 className="text-2xl md:text-3xl mb-6 selection:bg-emerald-500 selection:text-emerald-900">
+                <h1 className="text-2xl md:text-3xl mb-6 selection:bg-emerald-500 selection:text-emerald-900 font-bold">
                   Rekomendasi Anime
                 </h1>
                 <Recommendations />

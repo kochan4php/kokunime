@@ -53,7 +53,7 @@ const Recommendations = () => {
                 </div>
                 <div className="col-span-2 py-2">
                   <Link href={`/details/${data?.link?.endpoint}`} passHref>
-                    <a className="text-lg font-medium group-hover:text-pink-500 transition-colors duration-300">
+                    <a className="text-lg font-semibold group-hover:text-pink-500 transition-colors duration-300">
                       {data?.title}
                     </a>
                   </Link>

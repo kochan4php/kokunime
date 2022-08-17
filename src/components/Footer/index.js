@@ -11,7 +11,7 @@ const Footer = ({ className }) => (
       <div className="container">
         <div className="flex flex-col md:flex-row justify-between items-center w-full gap-5">
           <section>
-            <h1 className="text-center bg-gradient-to-r from-sky-500 to-indigo-500 bg-clip-text text-transparent font-semibold text-2xl md:text-3xl">
+            <h1 className="text-center bg-gradient-to-r from-sky-500 to-indigo-500 bg-clip-text text-transparent font-bold text-2xl md:text-3xl">
               <Link href="/">
                 <a className="selection:bg-yellow-700 selection:text-yellow-400">
                   Kokunime
