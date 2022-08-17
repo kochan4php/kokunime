@@ -9,6 +9,7 @@ class MyDocument extends Document {
           <meta name="description" content="Kokunime" />
           <meta charSet="utf-8" />
           <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
+          <meta name="theme-color" content="#fff" />
           <meta
             name="keywords"
             content="Kokunime, kokunime, website download anime, download batch anime, download anime, download anime terlengkap, website download anime terlengkap"
