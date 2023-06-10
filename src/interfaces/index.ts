@@ -13,3 +13,14 @@ export interface InputProps {
     value: string;
     onChange: (e: any) => void;
 }
+
+export interface ResponseGetAllType {
+    title: string;
+    release: string;
+    genres: string[];
+    link: {
+        endpoint: string;
+        url: string;
+        image: string;
+    };
+}

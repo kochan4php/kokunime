@@ -13,7 +13,7 @@ export default function RootLayout({ children }: ChildrenProps): JSX.Element {
         <html lang="en">
             <body suppressHydrationWarning>
                 <Navbar />
-                <div>{children}</div>
+                <main>{children}</main>
                 <Footer />
             </body>
         </html>
