@@ -1,6 +1,7 @@
 import CardAnime from "@/components/CardAnime";
 import { axiosInstance } from "@/config";
 import { ResponseGetAllType, ResponseGetRekomendasiType } from "@/interfaces";
+import strLimit from "@/utils/strLimit";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -124,7 +125,7 @@ const Home = async (props: any): Promise<JSX.Element> => {
                                                     href={`/anime/${item.endpoint}`}
                                                     className="text-lg font-semibold group-hover:text-pink-500 transition-colors duration-300"
                                                 >
-                                                    {item.title}
+                                                    {strLimit(item.title, 40)}
                                                 </Link>
                                             </div>
                                         </div>

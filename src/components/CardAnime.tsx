@@ -1,4 +1,5 @@
 import { CardAnimeProps } from "@/interfaces";
+import strLimit from "@/utils/strLimit";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -21,7 +22,7 @@ const CardAnime = ({ src, alt, title, path }: CardAnimeProps): JSX.Element => (
                         <p
                             className={`text-white group-hover:text-teal-300 tracking-wide transition-colors duration-300 selection:bg-teal-500 selection:text-teal-800 block font-semibold pt-4`}
                         >
-                            {title}
+                            {strLimit(title, 40)}
                         </p>
                     </div>
                 </div>
