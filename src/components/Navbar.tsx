@@ -48,7 +48,7 @@ const Navbar = (): JSX.Element => {
                         </div>
                     </div>
                 </div>
-                <div className="container pb-2 md:hidden">
+                <div className="container pb-2 md:hidden px-3">
                     <form onSubmit={submitHandler} className="md:hidden">
                         <Input
                             type="search"
