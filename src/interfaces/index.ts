@@ -14,6 +14,13 @@ export interface InputProps {
     onChange: (e: any) => void;
 }
 
+export interface CardAnimeProps {
+    src: string;
+    alt: string;
+    title: string;
+    path: string;
+}
+
 export interface ResponseGetAllType {
     title: string;
     release: string;
