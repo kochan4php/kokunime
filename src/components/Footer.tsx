@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-export default function Footer(): JSX.Element {
+const Footer = (): JSX.Element => {
     return (
         <footer>
             <div className="p-4 text-center text-white min-w-full bg-gradient-to-r from-gray-900 to-gray-800 border-t border-slate-600 border-opacity-60">
@@ -21,4 +21,6 @@ export default function Footer(): JSX.Element {
             </div>
         </footer>
     );
-}
+};
+
+export default Footer;

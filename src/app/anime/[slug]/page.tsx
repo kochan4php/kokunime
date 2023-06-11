@@ -1,4 +1,4 @@
-export default function DetailAnime(props: any): JSX.Element {
+const DetailAnime = (props: any): JSX.Element => {
     const { slug } = props.params;
 
     return (
@@ -6,4 +6,6 @@ export default function DetailAnime(props: any): JSX.Element {
             <h1>{slug}</h1>
         </>
     );
-}
+};
+
+export default DetailAnime;

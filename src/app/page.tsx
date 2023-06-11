@@ -4,7 +4,7 @@ import { ResponseGetAllType, ResponseGetRekomendasiType } from "@/interfaces";
 import Image from "next/image";
 import Link from "next/link";
 
-export default async function Home(props: any): Promise<JSX.Element> {
+const Home = async (props: any): Promise<JSX.Element> => {
     const page = props.searchParams.page || 1;
     const getAll = await axiosInstance.get(`/page/${page}`);
     const getRekomendasi = await axiosInstance.get("/rekomendasi");
@@ -13,7 +13,7 @@ export default async function Home(props: any): Promise<JSX.Element> {
 
     return (
         <main className="min-h-full">
-            <div className="min-w-full text-white">
+            <div className="min-w-full">
                 <section
                     className="bg-slate-800 min-w-full bg-cover bg-center bg-no-repeat object-cover"
                     style={{
@@ -135,4 +135,6 @@ export default async function Home(props: any): Promise<JSX.Element> {
             </div>
         </main>
     );
-}
+};
+
+export default Home;

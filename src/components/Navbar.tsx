@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import Input from "./Input";
 
-export default function Navbar(): JSX.Element {
+const Navbar = (): JSX.Element => {
     const router = useRouter();
     const [inputValue, setInputValue] = useState<string>("");
 
@@ -64,4 +64,6 @@ export default function Navbar(): JSX.Element {
             </nav>
         </header>
     );
-}
+};
+
+export default Navbar;

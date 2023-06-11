@@ -2,12 +2,7 @@ import { CardAnimeProps } from "@/interfaces";
 import Image from "next/image";
 import Link from "next/link";
 
-export default function CardAnime({
-    src,
-    alt,
-    title,
-    path,
-}: CardAnimeProps): JSX.Element {
+const CardAnime = ({ src, alt, title, path }: CardAnimeProps): JSX.Element => {
     return (
         <div className="bg-cover bg-center h-full bg-no-repeat selection:bg-violet-500 rounded overflow-hidden bg-slate-700">
             <div className="min-w-full h-full py-4">
@@ -33,4 +28,6 @@ export default function CardAnime({
             </div>
         </div>
     );
-}
+};
+
+export default CardAnime;
