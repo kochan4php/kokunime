@@ -16,7 +16,7 @@ export interface InputProps {
 
 export interface CardAnimeProps {
     src: string;
-    alt: string;
+    alt?: string;
     title: string;
     path: string;
 }
@@ -30,4 +30,11 @@ export interface ResponseGetAllType {
         url: string;
         image: string;
     };
+}
+
+export interface ResponseGetRekomendasiType {
+    title: string;
+    endpoint: string;
+    image: string;
+    url: string;
 }
