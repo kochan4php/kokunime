@@ -110,6 +110,8 @@ const Home = async (props: any): Promise<JSX.Element> => {
                                                                             width: "100%",
                                                                             height: "auto",
                                                                         }}
+                                                                        blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAY"
+                                                                        placeholder="blur"
                                                                     />
                                                                 </div>
                                                             </div>
