@@ -91,12 +91,12 @@ export default async function Home(props: any): Promise<JSX.Element> {
                                         >
                                             <div>
                                                 <div className="bg-cover bg-center h-full bg-no-repeat selection:bg-violet-500 rounded overflow-hidden bg-slate-700">
-                                                    <div className="min-w-full h-full py-4">
+                                                    <div className="min-w-full h-full py-3">
                                                         <Link
                                                             href={`/anime/${item.endpoint}`}
                                                         >
                                                             <div className="cursor-pointer group px-2 relative min-h-full">
-                                                                <div className="group px-2 relative min-h-full">
+                                                                <div className="group px-1 relative min-h-full">
                                                                     <Image
                                                                         src={
                                                                             item.image
@@ -105,6 +105,7 @@ export default async function Home(props: any): Promise<JSX.Element> {
                                                                         width="0"
                                                                         height="0"
                                                                         sizes="100vw"
+                                                                        className="rounded-sm"
                                                                         style={{
                                                                             width: "100%",
                                                                             height: "auto",
