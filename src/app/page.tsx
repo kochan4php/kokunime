@@ -13,7 +13,7 @@ const Home = async (props: any): Promise<JSX.Element> => {
     const rekomendasiAnime = getRekomendasi.data.data;
 
     return (
-        <main className="min-h-full min-w-full">
+        <div className="min-h-full min-w-full">
             <section
                 className="bg-slate-800 min-w-full bg-cover bg-center bg-no-repeat object-cover"
                 style={{
@@ -119,9 +119,9 @@ const Home = async (props: any): Promise<JSX.Element> => {
                                         <div className="col-span-2 py-2">
                                             <Link
                                                 href={`/anime/${item.endpoint}`}
-                                                className="text-lg font-semibold group-hover:text-pink-500 transition-colors duration-300"
+                                                className="text-base md:text-lg font-semibold group-hover:text-pink-500 transition-colors duration-300"
                                             >
-                                                {strLimit(item.title, 40)}
+                                                {strLimit(item.title, 45)}
                                             </Link>
                                         </div>
                                     </div>
@@ -131,7 +131,7 @@ const Home = async (props: any): Promise<JSX.Element> => {
                     </div>
                 </div>
             </section>
-        </main>
+        </div>
     );
 };
 
