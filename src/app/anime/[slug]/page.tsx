@@ -24,6 +24,7 @@ const anime = async (props: any): Promise<JSX.Element> => {
                             width={0}
                             height={0}
                             sizes="100vw"
+                            priority={true}
                             style={{ width: "100%", height: "auto" }}
                             className="rounded shadow shadow-slate-800 w-[100%]"
                         />
