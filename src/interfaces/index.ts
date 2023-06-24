@@ -38,3 +38,24 @@ export interface ResponseGetRekomendasiType {
     image: string;
     url: string;
 }
+
+export interface AnimeGenresType {
+    name: string;
+    url: string;
+    endpoint: string;
+}
+
+export interface AnimeDownloadOptionType {
+    title: string;
+    link_download: AnimeLinkDownloadType[];
+}
+
+export interface AnimeLinkDownloadType {
+    resolusi: string;
+    link: AnimeLinkPlatformType[];
+}
+
+export interface AnimeLinkPlatformType {
+    platform: string;
+    url: string;
+}
