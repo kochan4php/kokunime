@@ -1,6 +1,7 @@
 import CardAnime from "@/components/CardAnime";
 import { axiosInstance } from "@/config";
 import { ResponseGetAllType, ResponseGetRekomendasiType } from "@/interfaces";
+import RekomendasiAnime from "@/sections/RekomendasiAnime";
 import strLimit from "@/utils/strLimit";
 import Image from "next/image";
 import Link from "next/link";
@@ -59,60 +60,15 @@ const Home = async (props: any): Promise<JSX.Element> => {
             </div>
           </div>
         </div>
-        <div className="batas">
-          <div className="container my-12 px-3 md:px-4">
-            <hr className="border-t border-t-slate-600" />
-          </div>
+        <div className="container my-12 px-3 md:px-4">
+          <hr className="border-t border-t-slate-600" />
         </div>
         <div id="recommendations">
           <div className="mb-6 container px-3 md:px-4">
             <h1 className="text-sky-300 mb-6 font-bold text-2xl md:text-3xl lg:text-4xl selection:bg-teal-500 selection:text-teal-900 ">
               Rekomendasi Anime
             </h1>
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-2 md:gap-4">
-              {rekomendasiAnime.map(
-                (item: ResponseGetRekomendasiType, index: number) => (
-                  <div
-                    className="w-full grid grid-cols-3 gap-3 pt-4 group"
-                    key={index}
-                  >
-                    <div>
-                      <div className="bg-cover bg-center h-full bg-no-repeat selection:bg-violet-500 rounded overflow-hidden bg-slate-700">
-                        <div className="min-w-full h-full py-3">
-                          <Link href={`/anime/${item.endpoint}`}>
-                            <div className="cursor-pointer group px-2 relative min-h-full">
-                              <div className="group px-1 relative min-h-full">
-                                <Image
-                                  src={item.image}
-                                  alt="thumbnail"
-                                  width="0"
-                                  height="0"
-                                  sizes="100vw"
-                                  className="rounded-sm"
-                                  style={{
-                                    width: "100%",
-                                    height: "auto",
-                                  }}
-                                  priority={true}
-                                />
-                              </div>
-                            </div>
-                          </Link>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="col-span-2 py-2">
-                      <Link
-                        href={`/anime/${item.endpoint}`}
-                        className="text-base md:text-lg font-semibold group-hover:text-pink-500 transition-colors duration-300"
-                      >
-                        {strLimit(item.title, 45)}
-                      </Link>
-                    </div>
-                  </div>
-                )
-              )}
-            </div>
+            <RekomendasiAnime />
           </div>
         </div>
       </section>

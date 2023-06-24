@@ -5,8 +5,8 @@ import {
   AnimeLinkDownloadType,
   AnimeLinkPlatformType,
   ResponseGetAllType,
-  ResponseGetRekomendasiType,
 } from "@/interfaces";
+import RekomendasiAnime from "@/sections/RekomendasiAnime";
 import strLimit from "@/utils/strLimit";
 import Image from "next/image";
 import Link from "next/link";
@@ -15,9 +15,7 @@ const anime = async (props: any): Promise<JSX.Element> => {
   const { slug } = props.params;
   const { data: getDetailAnime } = await axiosInstance.get(`/anime/${slug}`);
   const { data: getNewSeriesAnime } = await axiosInstance.get("/page/1");
-  const { data: getRekomendasi } = await axiosInstance.get("/rekomendasi");
   const anime = getDetailAnime.data;
-  const rekomendasiAnime = getRekomendasi.data;
   const newSeriesAnime = getNewSeriesAnime.data.anime.filter(
     (data: ResponseGetAllType) => data.link.endpoint.split("/")[0] !== slug
   );
@@ -184,7 +182,7 @@ const anime = async (props: any): Promise<JSX.Element> => {
           </div>
         </div>
       </section>
-      <section className="my-12">
+      <section className="my-12 px-4">
         <div className="container mb-12">
           <hr className="border-t border-t-slate-600" />
         </div>
@@ -236,60 +234,15 @@ const anime = async (props: any): Promise<JSX.Element> => {
           </div>
         </div>
       </section>
-      <section className="my-12">
-        <div className="batas">
-          <div className="container mb-12">
-            <hr className="border-t border-t-slate-600" />
-          </div>
+      <section className="my-12 px-4">
+        <div className="container mb-12">
+          <hr className="border-t border-t-slate-600" />
         </div>
         <div className="container">
           <h1 className="text-2xl md:text-3xl mb-6 text-sky-300 selection:bg-emerald-500 selection:text-emerald-900 font-bold">
             Rekomendasi Anime
           </h1>
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-2 md:gap-4">
-            {rekomendasiAnime.map(
-              (item: ResponseGetRekomendasiType, index: number) => (
-                <div
-                  className="w-full grid grid-cols-3 gap-3 pt-4 group"
-                  key={index}
-                >
-                  <div>
-                    <div className="bg-cover bg-center h-full bg-no-repeat selection:bg-violet-500 rounded overflow-hidden bg-slate-700">
-                      <div className="min-w-full h-full py-2.5">
-                        <Link href={`/anime/${item.endpoint}`}>
-                          <div className="cursor-pointer group px-2.5 relative min-h-full">
-                            <div className="group relative min-h-full">
-                              <Image
-                                src={item.image}
-                                alt="thumbnail"
-                                width="0"
-                                height="0"
-                                sizes="100vw"
-                                className="rounded-sm"
-                                style={{
-                                  width: "100%",
-                                  height: "auto",
-                                }}
-                                priority={true}
-                              />
-                            </div>
-                          </div>
-                        </Link>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="col-span-2 py-2">
-                    <Link
-                      href={`/anime/${item.endpoint}`}
-                      className="text-base md:text-lg font-semibold group-hover:text-pink-500 transition-colors duration-300"
-                    >
-                      {strLimit(item.title, 45)}
-                    </Link>
-                  </div>
-                </div>
-              )
-            )}
-          </div>
+          <RekomendasiAnime />
         </div>
       </section>
     </div>
