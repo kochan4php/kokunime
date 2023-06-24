@@ -1,7 +1,7 @@
 import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
 import { ChildrenProps } from "@/interfaces";
-import { nunito, quicksand } from "@/utils/fonts";
+import { nunito } from "@/utils/fonts";
 import "./globals.css";
 
 export const metadata = {

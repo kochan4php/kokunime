@@ -7,7 +7,6 @@ import {
 } from "@/interfaces";
 import Image from "next/image";
 import Link from "next/link";
-import { Fragment } from "react";
 
 const anime = async (props: any): Promise<JSX.Element> => {
     const { slug } = props.params;
@@ -146,7 +145,7 @@ const anime = async (props: any): Promise<JSX.Element> => {
                         Sinopsis
                     </h1>
                     <div className="text-lg lg:text-xl selection:bg-green-500 selection:text-green-900 font-medium">
-                        <p className="leading-loose text-justify md:text-left">
+                        <p className="leading-loose text-left md:text-justify">
                             {anime.synopsis}
                         </p>
                     </div>
