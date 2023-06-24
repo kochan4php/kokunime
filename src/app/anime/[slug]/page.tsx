@@ -4,21 +4,16 @@ import {
   AnimeGenresType,
   AnimeLinkDownloadType,
   AnimeLinkPlatformType,
-  ResponseGetAllType,
 } from "@/interfaces";
+import NewSeriesAnime from "@/sections/NewSeriesAnime";
 import RekomendasiAnime from "@/sections/RekomendasiAnime";
-import strLimit from "@/utils/strLimit";
 import Image from "next/image";
 import Link from "next/link";
 
 const anime = async (props: any): Promise<JSX.Element> => {
   const { slug } = props.params;
   const { data: getDetailAnime } = await axiosInstance.get(`/anime/${slug}`);
-  const { data: getNewSeriesAnime } = await axiosInstance.get("/page/1");
   const anime = getDetailAnime.data;
-  const newSeriesAnime = getNewSeriesAnime.data.anime.filter(
-    (data: ResponseGetAllType) => data.link.endpoint.split("/")[0] !== slug
-  );
 
   return (
     <div className="min-w-full text-white py-3">
@@ -190,48 +185,7 @@ const anime = async (props: any): Promise<JSX.Element> => {
           <h1 className="text-2xl md:text-3xl mb-6 text-sky-300 selection:bg-emerald-500 selection:text-emerald-900 font-bold">
             New Add Series
           </h1>
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-2 md:gap-4">
-            {newSeriesAnime.map((item: ResponseGetAllType, index: number) => (
-              <div
-                className="w-full grid grid-cols-3 gap-3 pt-4 group"
-                key={index}
-              >
-                <div>
-                  <div className="bg-cover bg-center h-full bg-no-repeat selection:bg-violet-500 rounded overflow-hidden bg-slate-700">
-                    <div className="min-w-full h-full py-2.5">
-                      <Link href={`/anime/${item.link.endpoint}`}>
-                        <div className="cursor-pointer group px-2.5 relative min-h-full">
-                          <div className="group relative min-h-full">
-                            <Image
-                              src={item.link.image}
-                              alt="thumbnail"
-                              width="0"
-                              height="0"
-                              sizes="100vw"
-                              className="rounded-sm"
-                              style={{
-                                width: "100%",
-                                height: "auto",
-                              }}
-                              priority={true}
-                            />
-                          </div>
-                        </div>
-                      </Link>
-                    </div>
-                  </div>
-                </div>
-                <div className="col-span-2 py-2">
-                  <Link
-                    href={`/anime/${item.link.endpoint}`}
-                    className="text-base md:text-lg font-semibold group-hover:text-pink-500 transition-colors duration-300"
-                  >
-                    {strLimit(item.title, 45)}
-                  </Link>
-                </div>
-              </div>
-            ))}
-          </div>
+          <NewSeriesAnime slug={slug} />
         </div>
       </section>
       <section className="my-12 px-4">
