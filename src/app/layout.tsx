@@ -1,7 +1,7 @@
 import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
 import { ChildrenProps } from "@/interfaces";
-import { quicksand } from "@/utils/fonts";
+import { nunito, quicksand } from "@/utils/fonts";
 import "./globals.css";
 
 export const metadata = {
@@ -10,7 +10,7 @@ export const metadata = {
 };
 
 const RootLayout = ({ children }: ChildrenProps): JSX.Element => (
-    <html lang="en" className={`${quicksand.className} scroll-smooth`}>
+    <html lang="en" className={`${nunito.className} scroll-smooth`}>
         <body
             suppressHydrationWarning
             className="!overflow-x-hidden bg-gradient-to-tl from-slate-900 via-slate-800 to-slate-900"
