@@ -2,8 +2,14 @@
 @tailwind components;
 @tailwind utilities;
 
+@font-face {
+  font-family: "Nunito";
+  src: url("/fonts/Nunito/Nunito-VariableFont_wght.ttf");
+}
+
 @layer utilities {
   html {
     color-scheme: dark;
+    font-family: "Nunito", sans-serif;
   }
 }
