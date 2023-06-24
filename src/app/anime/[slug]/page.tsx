@@ -29,7 +29,7 @@ const anime = async (props: any): Promise<JSX.Element> => {
                             className="rounded shadow shadow-slate-800 w-[100%]"
                         />
                     </div>
-                    <div className="flex flex-col justify-start lg:col-start-2 lg:col-end-4 p-4 lg:py-0">
+                    <div className="flex flex-col justify-start lg:col-start-2 lg:col-end-4 py-4 px-2 lg:px-4 lg:py-0">
                         <div className="gap-3 mt-3 md:mt-0 md:mb-4 text-2xl lg:text-3xl flex items-center selection:bg-emerald-500 selection:text-emerald-900">
                             <span className="font-bold">{anime.score}</span>
                         </div>
