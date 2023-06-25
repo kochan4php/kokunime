@@ -10,7 +10,7 @@ const SearchAnime = async (props: any): Promise<JSX.Element> => {
   const anime = getSearchAnime.data;
 
   return (
-    <section className="min-w-full pt-4 pb-8 !h-full">
+    <section className="min-w-full pt-4 pb-8">
       <div className="container flex items-center pt-4 md:pt-2 px-4 mb-5 md:px-0">
         <h1 className="text-3xl md:text-4xl text-sky-300 selection:bg-emerald-500 selection:text-emerald-900 font-bold">
           Hasil pencarian {input.split("%2B").join(" ")}
