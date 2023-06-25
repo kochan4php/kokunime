@@ -32,7 +32,8 @@ const NewSeriesAnime = async (props: any): Promise<JSX.Element> => {
                           width: "100%",
                           height: "auto",
                         }}
-                        priority={true}
+                        priority
+                        quality={40}
                       />
                     </div>
                   </div>

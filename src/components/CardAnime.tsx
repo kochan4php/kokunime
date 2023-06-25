@@ -16,7 +16,7 @@ const CardAnime = ({ src, alt, title, path }: CardAnimeProps): JSX.Element => (
               height={0}
               sizes="100vw"
               style={{ width: "100%", height: "auto" }}
-              priority={true}
+              priority
               className="rounded-sm"
             />
             <p className="text-white group-hover:text-teal-300 tracking-wide transition-colors duration-300 selection:bg-teal-500 selection:text-teal-800 block font-semibold">
