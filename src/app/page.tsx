@@ -1,9 +1,7 @@
 import CardAnime from "@/components/CardAnime";
 import { axiosInstance } from "@/config";
-import { ResponseGetAllType, ResponseGetRekomendasiType } from "@/interfaces";
+import { ResponseGetAllType } from "@/interfaces";
 import RekomendasiAnime from "@/sections/RekomendasiAnime";
-import strLimit from "@/utils/strLimit";
-import Image from "next/image";
 import Link from "next/link";
 
 const Home = async (props: any): Promise<JSX.Element> => {

@@ -10,7 +10,7 @@ import RekomendasiAnime from "@/sections/RekomendasiAnime";
 import Image from "next/image";
 import Link from "next/link";
 
-const anime = async (props: any): Promise<JSX.Element> => {
+const Anime = async (props: any): Promise<JSX.Element> => {
   const { slug } = props.params;
   const { data: getDetailAnime } = await axiosInstance.get(`/anime/${slug}`);
   const anime = getDetailAnime.data;
@@ -203,4 +203,4 @@ const anime = async (props: any): Promise<JSX.Element> => {
   );
 };
 
-export default anime;
+export default Anime;
