@@ -17,8 +17,7 @@ const Navbar = (): JSX.Element => {
   const submitHandler = (e: React.FormEvent<HTMLFormElement>): void => {
     e.preventDefault();
     if (inputValue.length === 0) return;
-    router.push(`/search/${inputValue.split(" ").join("+")}`);
-    setInputValue("");
+    router.replace(`/search/${inputValue.split(" ").join("+")}`);
   };
 
   return (
