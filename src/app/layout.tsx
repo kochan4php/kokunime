@@ -1,3 +1,4 @@
+import NextTopLoader from "nextjs-toploader";
 import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
 import { ChildrenProps } from "@/interfaces";
@@ -14,6 +15,7 @@ const RootLayout = ({ children }: ChildrenProps): JSX.Element => (
       suppressHydrationWarning
       className="!overflow-x-hidden bg-gradient-to-tl from-slate-900 via-slate-800 to-slate-900 min-h-screen flex flex-col justify-between"
     >
+      <NextTopLoader />
       <Navbar />
       <main className="flex-auto">{children}</main>
       <Footer />
