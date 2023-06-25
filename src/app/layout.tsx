@@ -1,8 +1,10 @@
-import NextTopLoader from "nextjs-toploader";
 import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
 import { ChildrenProps } from "@/interfaces";
+import NextTopLoader from "nextjs-toploader";
+import { Suspense } from "react";
 import "./globals.css";
+import Loading from "./loading";
 
 export const metadata = {
   title: "Kokunime",
@@ -16,9 +18,11 @@ const RootLayout = ({ children }: ChildrenProps): JSX.Element => (
       className="!overflow-x-hidden bg-gradient-to-tl from-slate-900 via-slate-800 to-slate-900 min-h-screen flex flex-col justify-between"
     >
       <NextTopLoader showSpinner={false} />
-      <Navbar />
-      <main className="flex-auto">{children}</main>
-      <Footer />
+      <Suspense fallback={<Loading />}>
+        <Navbar />
+        <main className="flex-auto">{children}</main>
+        <Footer />
+      </Suspense>
     </body>
   </html>
 );
