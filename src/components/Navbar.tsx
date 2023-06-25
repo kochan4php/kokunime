@@ -1,22 +1,24 @@
 "use client";
 
+import { AppRouterInstance } from "next/dist/shared/lib/app-router-context";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import Input from "./Input";
 
 const Navbar = (): JSX.Element => {
-  const router = useRouter();
+  const router: AppRouterInstance = useRouter();
   const [inputValue, setInputValue] = useState<string>("");
 
-  const searchFunc = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const searchFunc = (e: React.ChangeEvent<HTMLInputElement>): void => {
     setInputValue(e.target.value);
   };
 
-  const submitHandler = (e: React.FormEvent<HTMLFormElement>) => {
+  const submitHandler = (e: React.FormEvent<HTMLFormElement>): void => {
     e.preventDefault();
     if (inputValue.length === 0) return;
-    router.replace(`/search/${inputValue.split(" ").join("+")}`);
+    router.push(`/search/${inputValue.split(" ").join("+")}`);
+    setInputValue("");
   };
 
   return (

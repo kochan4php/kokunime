@@ -13,10 +13,10 @@ const RootLayout = ({ children }: ChildrenProps): JSX.Element => (
   <html lang="en" className={`${nunito.className} scroll-smooth`}>
     <body
       suppressHydrationWarning
-      className="!overflow-x-hidden bg-gradient-to-tl from-slate-900 via-slate-800 to-slate-900"
+      className="!overflow-x-hidden bg-gradient-to-tl from-slate-900 via-slate-800 to-slate-900 min-h-screen flex flex-col justify-between"
     >
       <Navbar />
-      <main>{children}</main>
+      <main className="flex-auto">{children}</main>
       <Footer />
     </body>
   </html>
