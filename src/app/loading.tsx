@@ -1,18 +1,16 @@
 import "./loading.css";
 
-const Loading = (): JSX.Element => {
-  return (
-    <section className="min-h-screen flex justify-center items-center">
-      <div className="semicircle">
+const Loading = (): JSX.Element => (
+  <section className="min-h-screen flex justify-center items-center">
+    <div className="semicircle">
+      <div>
         <div>
           <div>
             <div>
               <div>
                 <div>
                   <div>
-                    <div>
-                      <div></div>
-                    </div>
+                    <div></div>
                   </div>
                 </div>
               </div>
@@ -20,8 +18,8 @@ const Loading = (): JSX.Element => {
           </div>
         </div>
       </div>
-    </section>
-  );
-};
+    </div>
+  </section>
+);
 
 export default Loading;

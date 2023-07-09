@@ -21,22 +21,26 @@ export interface CardAnimeProps {
   path: string;
 }
 
-export interface ResponseGetAllType {
-  title: string;
-  release: string;
-  genres: string[];
-  link: {
-    endpoint: string;
-    url: string;
-    image: string;
-  };
+export interface GetAnimePerPageType {
+  anime: AnimeType[];
+  pagination: PaginationType;
 }
 
-export interface ResponseGetRekomendasiType {
-  title: string;
-  endpoint: string;
-  image: string;
-  url: string;
+export interface PaginationType {
+  first_page_endpoint: string;
+  next_page_endpoint: string | null;
+  current_page: number;
+  pages_of: string;
+  total_page: number;
+  prev_page_endpoint: string | null;
+  last_page_endpoint: string;
+}
+
+export interface RekomendasiType {
+  title?: string;
+  endpoint?: string;
+  image?: string;
+  url?: string;
 }
 
 export interface AnimeGenresType {
@@ -58,4 +62,46 @@ export interface AnimeLinkDownloadType {
 export interface AnimeLinkPlatformType {
   platform: string;
   url: string;
+}
+
+export interface ParamType {
+  params: { number: string };
+}
+
+export interface AnimeType {
+  title: string;
+  release: string;
+  genres: string[];
+  link: {
+    endpoint?: string;
+    url?: string;
+    image?: string;
+  };
+}
+
+export interface DownloadType {
+  title: string;
+  link_download: DownloadLinkType[];
+}
+
+export interface DownloadLinkType {
+  resolusi: string;
+  link: PlatformType[];
+}
+
+export interface PlatformType {
+  platform: string;
+  url: string | undefined;
+}
+
+export interface GenreType {
+  name: string;
+  url?: string;
+  endpoint?: string;
+}
+
+export interface SeasonType {
+  name: string;
+  endpoint?: string;
+  url?: string;
 }

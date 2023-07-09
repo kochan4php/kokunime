@@ -1,13 +1,12 @@
 import CardAnime from "@/components/CardAnime";
-import { axiosInstance } from "@/config";
-import { ResponseGetAllType } from "@/interfaces";
+import AnimeController from "@/controllers/AnimeController";
+import { AnimeType } from "@/interfaces";
 
 const SearchAnime = async (props: any): Promise<JSX.Element> => {
   const { input } = props.params;
-  const { data: getSearchAnime } = await axiosInstance.get(
-    `/search/${input.split("%2B").join("+") as string}`
+  const anime = await AnimeController.searchAnime(
+    input.split("%2B").join("+") as string
   );
-  const anime = getSearchAnime.data;
 
   return (
     <section className="min-w-full pt-4 pb-8">
@@ -17,11 +16,11 @@ const SearchAnime = async (props: any): Promise<JSX.Element> => {
         </h1>
       </div>
       <div className="container px-4 md:px-0 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 lg:gap-6 my-3">
-        {anime.map((item: ResponseGetAllType, index: number) => (
+        {anime.map((item: AnimeType, index: number) => (
           <CardAnime
             key={index}
             path={`/anime/${item?.link?.endpoint}`}
-            src={item?.link?.image}
+            src={item?.link?.image as string}
             title={item?.title}
             alt={item?.title}
           />

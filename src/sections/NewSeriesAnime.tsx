@@ -1,19 +1,19 @@
-import { axiosInstance } from "@/config";
-import { ResponseGetAllType } from "@/interfaces";
+import AnimeController from "@/controllers/AnimeController";
+import { AnimeType } from "@/interfaces";
 import strLimit from "@/utils/strLimit";
 import Image from "next/image";
 import Link from "next/link";
 
 const NewSeriesAnime = async (props: any): Promise<JSX.Element> => {
-  const slug = props.slug;
-  const { data: getNewSeriesAnime } = await axiosInstance.get("/page/1");
-  const newSeriesAnime = getNewSeriesAnime.data.anime.filter(
-    (data: ResponseGetAllType) => data.link.endpoint.split("/")[0] !== slug
+  const slug: string = props.slug;
+  const getNewSeriesAnime = await AnimeController.getAnimePerPage(1);
+  const newSeriesAnime = getNewSeriesAnime.anime?.filter(
+    (data: AnimeType) => !data?.link?.endpoint?.includes(slug)
   );
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-2 md:gap-4">
-      {newSeriesAnime.map((item: ResponseGetAllType, index: number) => (
+      {newSeriesAnime?.map((item: AnimeType, index: number) => (
         <div className="w-full grid grid-cols-3 gap-3 pt-4 group" key={index}>
           <div>
             <div className="bg-cover bg-center h-full bg-no-repeat selection:bg-violet-500 rounded overflow-hidden bg-slate-700">
@@ -22,7 +22,7 @@ const NewSeriesAnime = async (props: any): Promise<JSX.Element> => {
                   <div className="cursor-pointer group px-2.5 relative min-h-full">
                     <div className="group relative min-h-full">
                       <Image
-                        src={item.link.image}
+                        src={item.link.image as string}
                         alt="thumbnail"
                         width="0"
                         height="0"

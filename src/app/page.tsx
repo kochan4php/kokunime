@@ -1,15 +1,13 @@
 import CardAnime from "@/components/CardAnime";
-import { axiosInstance } from "@/config";
-import { ResponseGetAllType } from "@/interfaces";
+import AnimeController from "@/controllers/AnimeController";
+import { AnimeType, GetAnimePerPageType } from "@/interfaces";
 import RekomendasiAnime from "@/sections/RekomendasiAnime";
 import Link from "next/link";
 
 const Home = async (props: any): Promise<JSX.Element> => {
   const page = props.searchParams.page || 1;
-  const getAll = await axiosInstance.get(`/page/${page}`);
-  const getRekomendasi = await axiosInstance.get("/rekomendasi");
-  const latestAnime = getAll.data.data.anime;
-  const rekomendasiAnime = getRekomendasi.data.data;
+  const { anime: latestAnime }: GetAnimePerPageType =
+    await AnimeController.getAnimePerPage(page);
 
   return (
     <div className="min-h-full min-w-full">
@@ -17,7 +15,7 @@ const Home = async (props: any): Promise<JSX.Element> => {
         className="bg-slate-800 min-w-full bg-cover bg-center bg-no-repeat object-cover"
         style={{ backgroundImage: `url(${latestAnime[0]?.link?.image})` }}
       >
-        <div className="min-h-[40vh] sm:min-h-[50vh] md:min-h-[60vh] lg:min-h-[70vh] xl:min-h-[80vh] 2xl:min-h-[75vh] bg-slate-800 bg-opacity-30 backdrop-blur-lg backdrop-brightness-105 flex items-center justify-start px-2 md:px-6 pb-6">
+        <div className="min-h-[40vh] sm:min-h-[50vh] md:min-h-[60vh] lg:min-h-[70vh] xl:min-h-[80vh] 2xl:min-h-[75vh] bg-slate-800 bg-opacity-30 backdrop-blur-md backdrop-brightness-105 flex items-center justify-start px-2 md:px-6 pb-6">
           <div className="container max-w-full px-3 lg:px-0 lg:max-w-3xl">
             <div className="my-6">
               <h1 className="text-slate-50 text-2xl md:text-4xl font-bold mb-4 selection:bg-red-700 selection:text-red-200">
@@ -46,11 +44,11 @@ const Home = async (props: any): Promise<JSX.Element> => {
               Update Terbaru
             </h1>
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 lg:gap-6">
-              {latestAnime.map((item: ResponseGetAllType, index: number) => (
+              {latestAnime.map((item: AnimeType, index: number) => (
                 <CardAnime
                   key={index}
                   path={`/anime/${item?.link?.endpoint}`}
-                  src={item?.link?.image}
+                  src={item?.link?.image as string}
                   title={item?.title}
                   alt={item?.title}
                 />
