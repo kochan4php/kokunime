@@ -1,4 +1,4 @@
-version: '3.8'
+version: "3.8"
 
 services:
   kokunime-web:
@@ -6,7 +6,7 @@ services:
     build:
       context: "./"
       dockerfile: Dockerfile
-    image: kokunime
+    image: kokunime:latest
     restart: always
     ports:
       - "3000:3000"
