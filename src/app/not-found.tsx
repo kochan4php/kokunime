@@ -2,8 +2,8 @@ import Link from "next/link";
 
 const NotFoundPage = (): JSX.Element => (
   <section className="flex flex-col items-center justify-center min-h-screen">
-    <h1 className="text-3xl md:text-4xl font-medium mb-4">
-      {"Not Found this URL :("}
+    <h1 className="text-3xl md:text-4xl font-bold mb-4">
+      {"Not Found this Page. Maybe you lost :("}
     </h1>
     <Link
       href="/"

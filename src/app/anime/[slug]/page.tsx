@@ -5,6 +5,7 @@ import {
   AnimeLinkDownloadType,
   AnimeLinkPlatformType,
 } from "@/interfaces";
+import MainLayout from "@/layouts/MainLayout";
 import NewSeriesAnime from "@/sections/NewSeriesAnime";
 import RekomendasiAnime from "@/sections/RekomendasiAnime";
 import Image from "next/image";
@@ -15,7 +16,7 @@ const Anime = async (props: any): Promise<JSX.Element> => {
   const anime = await AnimeController.getAnimeDetail(slug);
 
   return (
-    <main className="flex-auto">
+    <MainLayout>
       <div className="min-w-full text-white py-3">
         <section>
           <div className="container mt-4 p-4">
@@ -202,7 +203,7 @@ const Anime = async (props: any): Promise<JSX.Element> => {
           </div>
         </section>
       </div>
-    </main>
+    </MainLayout>
   );
 };
 
