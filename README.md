@@ -9,11 +9,30 @@ git clone https://github.com/kochan4php/kokunime.git
 # go to the project folder
 cd kokunime
 
+# install pnpm if you does'nt have
+npm i -g pnpm
+
 # install dependencies
-yarn install # or npm install # or pnpm install
+pnpm install
 
 # run the project
-yarn dev # or npm run dev # or pnpm dev
+pnpm dev
+```
+
+## With Docker
+
+```bash
+# cloning this project
+git clone https://github.com/kochan4php/kokunime.git
+
+# go to the project folder
+cd kokunime
+
+# run docker compose
+docker compose create
+
+# start the container
+docker compose start
 ```
 
 ## Semoga kalian suka :D
