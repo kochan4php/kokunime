@@ -1,13 +1,13 @@
 import { KUSONIME_URL, kusonime } from "@/config";
-import { 
-  AnimeType, 
-  DownloadLinkType, 
-  DownloadType, 
-  GenreType, 
-  GetAnimePerPageType, 
-  PlatformType, 
-  RekomendasiType, 
-  SeasonType 
+import {
+  AnimeType,
+  DownloadLinkType,
+  DownloadType,
+  GenreType,
+  GetAnimePerPageType,
+  PlatformType,
+  RekomendasiType,
+  SeasonType
 } from "@/interfaces";
 import cheerio, { CheerioAPI } from 'cheerio';
 
