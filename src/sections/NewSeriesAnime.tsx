@@ -18,30 +18,26 @@ const NewSeriesAnime = async (props: any): Promise<JSX.Element> => {
                     className="w-full grid grid-cols-3 gap-3 pt-4 group"
                     key={index}
                 >
-                    <div>
-                        <div className="bg-cover bg-center h-full bg-no-repeat selection:bg-violet-500 rounded overflow-hidden bg-slate-700">
-                            <div className="min-w-full h-full py-2.5">
-                                <Link href={`/anime/${item.link.endpoint}`}>
-                                    <div className="cursor-pointer group px-2.5 relative min-h-full">
-                                        <div className="group relative min-h-full">
-                                            <Image
-                                                src={item.link.image as string}
-                                                alt="thumbnail"
-                                                width="0"
-                                                height="0"
-                                                sizes="100vw"
-                                                className="rounded-sm"
-                                                style={{
-                                                    width: "100%",
-                                                    height: "auto",
-                                                }}
-                                                priority
-                                                quality={40}
-                                            />
-                                        </div>
-                                    </div>
-                                </Link>
-                            </div>
+                    <div className="selection:bg-violet-500 rounded overflow-hidden bg-slate-700 min-w-full h-full py-3">
+                        <div className="min-w-full h-full py-2.5">
+                            <Link href={`/anime/${item.link.endpoint}`}>
+                                <div className="cursor-pointer px-2.5 relative min-h-full flex">
+                                    <Image
+                                        src={item.link.image as string}
+                                        alt="thumbnail"
+                                        width="0"
+                                        height="0"
+                                        sizes="100vw"
+                                        className="rounded-sm"
+                                        style={{
+                                            width: "100%",
+                                            height: "auto",
+                                        }}
+                                        priority
+                                        quality={40}
+                                    />
+                                </div>
+                            </Link>
                         </div>
                     </div>
                     <div className="col-span-2 py-2">
