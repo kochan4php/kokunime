@@ -1,17 +1,17 @@
 version: "3.8"
 
 services:
-  kokunime-web:
-    container_name: kokunime-web
-    build:
-      context: "./"
-      dockerfile: Dockerfile
-    image: kokunime:latest
-    restart: always
-    ports:
-      - "3000:3000"
-    deploy:
-      resources:
-        limits:
-          cpus: '0.5'
-          memory: 512M
+    kokunime-web:
+        container_name: kokunime-web
+        build:
+            context: "./"
+            dockerfile: Dockerfile
+        image: kokunime:latest
+        restart: always
+        ports:
+            - "3000:3000"
+        deploy:
+            resources:
+                limits:
+                    cpus: '0.5'
+                    memory: 512M
