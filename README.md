@@ -33,11 +33,8 @@ git clone https://github.com/kochan4php/kokunime.git
 # go to the project folder
 cd kokunime
 
-# run docker compose
-docker compose create
-
-# start the container
-docker compose start
+# run docker command in shell file
+./docker.sh
 ```
 
 ## Semoga kalian suka :D
