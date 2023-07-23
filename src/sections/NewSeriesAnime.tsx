@@ -19,26 +19,24 @@ const NewSeriesAnime = async (props: any): Promise<JSX.Element> => {
                     key={index}
                 >
                     <div className="selection:bg-violet-500 rounded overflow-hidden bg-slate-700 min-w-full h-full py-3">
-                        <div className="min-w-full h-full py-2.5">
-                            <Link href={`/anime/${item.link.endpoint}`}>
-                                <div className="cursor-pointer px-2.5 relative min-h-full flex">
-                                    <Image
-                                        src={item.link.image as string}
-                                        alt="thumbnail"
-                                        width="0"
-                                        height="0"
-                                        sizes="100vw"
-                                        className="rounded-sm"
-                                        style={{
-                                            width: "100%",
-                                            height: "auto",
-                                        }}
-                                        priority
-                                        quality={40}
-                                    />
-                                </div>
-                            </Link>
-                        </div>
+                        <Link href={`/anime/${item.link.endpoint}`}>
+                            <div className="cursor-pointer px-2.5 relative min-h-full flex">
+                                <Image
+                                    src={item.link.image as string}
+                                    alt="thumbnail"
+                                    width="0"
+                                    height="0"
+                                    sizes="100vw"
+                                    className="rounded-sm"
+                                    style={{
+                                        width: "100%",
+                                        height: "auto",
+                                    }}
+                                    priority
+                                    quality={40}
+                                />
+                            </div>
+                        </Link>
                     </div>
                     <div className="col-span-2 py-2">
                         <Link
