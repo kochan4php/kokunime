@@ -4,12 +4,12 @@ services:
     kokunime-web:
         container_name: kokunime-web
         build:
-            context: "./"
+            context: .
             dockerfile: Dockerfile
         image: kokunime:latest
         restart: always
         ports:
-            - "4000:3000"
+            - "3000:3000"
         deploy:
             resources:
                 limits:

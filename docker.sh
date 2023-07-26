@@ -1,1 +1,1 @@
-docker compose down && docker compose create && docker compose start
+docker compose down && docker compose up -d
