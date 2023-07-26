@@ -28,11 +28,11 @@ export interface GetAnimePerPageType {
 
 export interface PaginationType {
     first_page_endpoint: string;
-    next_page_endpoint: string | null;
+    next_page_endpoint: string;
     current_page: number;
     pages_of: string;
     total_page: number;
-    prev_page_endpoint: string | null;
+    prev_page_endpoint: string;
     last_page_endpoint: string;
 }
 

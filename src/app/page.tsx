@@ -2,12 +2,13 @@ import CardAnime from "@/components/CardAnime";
 import AnimeController from "@/controllers/AnimeController";
 import { AnimeType, GetAnimePerPageType } from "@/interfaces";
 import MainLayout from "@/layouts/MainLayout";
+import Pagination from "@/sections/Pagination";
 import RekomendasiAnime from "@/sections/RekomendasiAnime";
 import Link from "next/link";
 
 const Home = async (props: any): Promise<JSX.Element> => {
     const page = props.searchParams.page || 1;
-    const { anime: latestAnime }: GetAnimePerPageType =
+    const { anime: latestAnime, pagination }: GetAnimePerPageType =
         await AnimeController.getAnimePerPage(page);
 
     return (
@@ -70,6 +71,9 @@ const Home = async (props: any): Promise<JSX.Element> => {
                                 )}
                             </div>
                         </div>
+                    </div>
+                    <div className="container my-8 px-3 md:px-4 flex flex-col items-center gap-2">
+                        <Pagination pagination={pagination} />
                     </div>
                     <div className="container my-12 px-3 md:px-4">
                         <hr className="border-t border-t-slate-600" />
