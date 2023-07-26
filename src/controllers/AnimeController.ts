@@ -77,13 +77,13 @@ export default class AnimeController {
             const total_page = Number($(element).find(".pagination .wp-pagenavi .pages").text().split("of")[1].trim());
 
             const pagination = {
-                first_page_endpoint: "page/1",
-                next_page_endpoint: current_page === total_page ? null : `page/${current_page + 1}`,
+                first_page_endpoint: "?page=1",
+                next_page_endpoint: current_page === total_page ? `?page=${current_page}` : `?page=${current_page + 1}`,
                 current_page,
                 pages_of: $(element).find(".pagination .wp-pagenavi .pages").text(),
                 total_page,
-                prev_page_endpoint: current_page > 1 ? `page/${current_page - 1}` : null,
-                last_page_endpoint: `page/${total_page}`,
+                prev_page_endpoint: current_page > 1 ? `?page=${current_page - 1}` : `?page=${current_page}`,
+                last_page_endpoint: `?page=${total_page}`,
             };
 
             return { anime, pagination };
