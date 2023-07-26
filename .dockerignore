@@ -19,3 +19,6 @@
 /.editorconfig
 /README.md
 /LICENSE
+/.docker-compose*
+/.git
+/docker.sh
