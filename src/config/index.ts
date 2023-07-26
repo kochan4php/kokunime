@@ -1,6 +1,6 @@
 import axios, { AxiosInstance } from "axios";
 
-export const KUSONIME_URL: string = "https://kusonime.com";
+export const KUSONIME_URL: string = "https://kusonime.com/";
 
 export const kusonime: AxiosInstance = axios.create({
     baseURL: KUSONIME_URL,

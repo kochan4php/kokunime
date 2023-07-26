@@ -1,4 +1,5 @@
 import AnimeController from "@/controllers/AnimeController";
+import blurDataUrl from "@/data/blur-data-url";
 import { RekomendasiType } from "@/interfaces";
 import strLimit from "@/utils/strLimit";
 import Image from "next/image";
@@ -16,7 +17,12 @@ const RekomendasiAnime = async (): Promise<JSX.Element> => {
                     key={index}
                 >
                     <div className="selection:bg-violet-500 rounded overflow-hidden bg-slate-700 min-w-full h-full py-3">
-                        <Link href={`/anime/${item.endpoint}`}>
+                        <Link
+                            href={`/anime/${item.endpoint
+                                ?.split("/")
+                                .join(" ")
+                                .trim()}`}
+                        >
                             <div className="cursor-pointer px-2.5 relative min-h-full flex">
                                 <Image
                                     src={item.image as string}
@@ -29,8 +35,9 @@ const RekomendasiAnime = async (): Promise<JSX.Element> => {
                                         width: "100%",
                                         height: "auto",
                                     }}
-                                    priority
-                                    quality={40}
+                                    placeholder="blur"
+                                    blurDataURL={blurDataUrl}
+                                    loading="lazy"
                                 />
                             </div>
                         </Link>
