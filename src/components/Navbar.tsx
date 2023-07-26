@@ -8,7 +8,7 @@ import Input from "./Input";
 
 const Navbar = (): JSX.Element => {
     const router: AppRouterInstance = useRouter();
-    const [inputValue, setInputValue] = useState<string>("");
+    const [inputValue, setInputValue] = useState<string | null>();
 
     const searchFunc = (e: React.ChangeEvent<HTMLInputElement>): void => {
         setInputValue(e.target.value);
@@ -16,8 +16,8 @@ const Navbar = (): JSX.Element => {
 
     const submitHandler = (e: React.FormEvent<HTMLFormElement>): void => {
         e.preventDefault();
-        if (inputValue.length === 0) return;
-        router.replace(`/search/${inputValue.split(" ").join("+")}`);
+        if (!inputValue) return;
+        router.push(`/search/${inputValue.split(" ").join("+")}`);
     };
 
     return (
@@ -42,7 +42,7 @@ const Navbar = (): JSX.Element => {
                                     name="search"
                                     placeholder="Search Anime Here ..."
                                     autoComplete="off"
-                                    value={inputValue}
+                                    value={(inputValue as string) || ""}
                                     onChange={searchFunc}
                                 />
                             </form>
@@ -57,7 +57,7 @@ const Navbar = (): JSX.Element => {
                             placeholder="Search Anime Here ..."
                             autoComplete="off"
                             width="w-full"
-                            value={inputValue}
+                            value={(inputValue as string) || ""}
                             onChange={searchFunc}
                         />
                     </form>

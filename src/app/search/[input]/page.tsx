@@ -21,7 +21,10 @@ const SearchAnime = async (props: any): Promise<JSX.Element> => {
                     {anime.map((item: AnimeType, index: number) => (
                         <CardAnime
                             key={index}
-                            path={`/anime/${item?.link?.endpoint}`}
+                            path={`/anime/${item?.link?.endpoint
+                                ?.split("/")
+                                .join(" ")
+                                .trim()}`}
                             src={item?.link?.image as string}
                             title={item?.title}
                             alt={item?.title}

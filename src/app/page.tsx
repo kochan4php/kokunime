@@ -33,7 +33,10 @@ const Home = async (props: any): Promise<JSX.Element> => {
                             </div>
                             <div className="my-6">
                                 <Link
-                                    href={`/anime/${latestAnime[0]?.link?.endpoint}`}
+                                    href={`/anime/${latestAnime[0]?.link?.endpoint
+                                        ?.split("/")
+                                        .join(" ")
+                                        .trim()}`}
                                     passHref
                                 >
                                     <button className="px-1 py-1.5 bg-slate-900 rounded-full text-slate-5 active:ring active:ring-sky-500 hover:border-sky-500 border-2 border-transparent transition-all duration-300 selection:bg-orange-500 selection:text-orange-900 text-base md:text-lg font-semibold w-full h-full">
@@ -55,7 +58,10 @@ const Home = async (props: any): Promise<JSX.Element> => {
                                     (item: AnimeType, index: number) => (
                                         <CardAnime
                                             key={index}
-                                            path={`/anime/${item?.link?.endpoint}`}
+                                            path={`/anime/${item?.link?.endpoint
+                                                ?.split("/")
+                                                .join(" ")
+                                                .trim()}`}
                                             src={item?.link?.image as string}
                                             title={item?.title}
                                             alt={item?.title}

@@ -1,4 +1,5 @@
 import AnimeController from "@/controllers/AnimeController";
+import blurDataUrl from "@/data/blur-data-url";
 import {
     AnimeDownloadOptionType,
     AnimeGenresType,
@@ -50,9 +51,11 @@ const Anime = async (props: any): Promise<JSX.Element> => {
                             width={0}
                             height={0}
                             sizes="100vw"
-                            priority
                             style={{ width: "100%", height: "auto" }}
                             className="rounded shadow shadow-slate-800 w-[100%]"
+                            placeholder="blur"
+                            blurDataURL={blurDataUrl}
+                            loading="lazy"
                         />
                     </div>
                     <div className="flex flex-col justify-start lg:col-start-2 lg:col-end-4 py-4 px-2 lg:px-4 lg:py-0">
