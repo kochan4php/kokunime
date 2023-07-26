@@ -1,6 +1,8 @@
 <h1 align="center">🌟 Kokunime 🌟</h1>
 
-## Setup project
+<h3>
+    Setup Local
+</h3>
 
 ```bash
 # cloning this project
@@ -19,11 +21,9 @@ pnpm install
 pnpm dev
 ```
 
-## With Docker (Required Docker)
-
 <h3>
-    <span>Install Docker </span>
-    <a href="https://www.docker.com/">Here</a>
+    <span>With Docker </span>
+    (<a href="https://www.docker.com/">Install Here</a>)
 </h3>
 
 ```bash
