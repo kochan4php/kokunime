@@ -8,13 +8,9 @@ const Pagination = (props: any) => {
         <>
             <div className="text-lg text-slate-400">
                 <span>Page </span>
-                <span className="font-semibold text-white">
-                    {pagination.current_page}
-                </span>
+                <span className="font-semibold text-white">{pagination.current_page}</span>
                 <span> of </span>
-                <span className="font-semibold text-white">
-                    {pagination.total_page}
-                </span>
+                <span className="font-semibold text-white">{pagination.total_page}</span>
                 <span> pages</span>
             </div>
             <div className="inline-flex mt-2 xs:mt-0">
@@ -30,11 +26,7 @@ const Pagination = (props: any) => {
                         stroke="currentColor"
                         className="w-5 h-5"
                     >
-                        <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"
-                        />
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
                     </svg>
                     <span>Prev</span>
                 </Link>
