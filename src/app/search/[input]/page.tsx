@@ -5,9 +5,7 @@ import MainLayout from "@/layouts/MainLayout";
 
 const SearchAnime = async (props: any): Promise<JSX.Element> => {
     const { input } = props.params;
-    const anime = await AnimeController.searchAnime(
-        input.split("%2B").join("+") as string
-    );
+    const anime = await AnimeController.searchAnime(input.split("%2B").join("+") as string);
 
     return (
         <MainLayout>
@@ -21,10 +19,7 @@ const SearchAnime = async (props: any): Promise<JSX.Element> => {
                     {anime.map((item: AnimeType, index: number) => (
                         <CardAnime
                             key={index}
-                            path={`/anime/${item?.link?.endpoint
-                                ?.split("/")
-                                .join(" ")
-                                .trim()}`}
+                            path={`/anime/${item?.link?.endpoint?.split("/").join(" ").trim()}`}
                             src={item?.link?.image as string}
                             title={item?.title}
                             alt={item?.title}

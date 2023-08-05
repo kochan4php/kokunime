@@ -6,23 +6,14 @@ import Image from "next/image";
 import Link from "next/link";
 
 const RekomendasiAnime = async (): Promise<JSX.Element> => {
-    const rekomendasiAnime: RekomendasiType[] =
-        await AnimeController.getRekomendasi();
+    const rekomendasiAnime: RekomendasiType[] = await AnimeController.getRekomendasi();
 
     return (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-2 md:gap-4">
             {rekomendasiAnime.map((item: RekomendasiType, index: number) => (
-                <div
-                    className="w-full grid grid-cols-3 gap-3 pt-4 group"
-                    key={index}
-                >
+                <div className="w-full grid grid-cols-3 gap-3 pt-4 group" key={index}>
                     <div className="selection:bg-violet-500 rounded overflow-hidden bg-slate-700 min-w-full h-full py-3">
-                        <Link
-                            href={`/anime/${item.endpoint
-                                ?.split("/")
-                                .join(" ")
-                                .trim()}`}
-                        >
+                        <Link href={`/anime/${item.endpoint?.split("/").join(" ").trim()}`}>
                             <div className="cursor-pointer px-2.5 relative min-h-full flex">
                                 <Image
                                     src={item.image as string}

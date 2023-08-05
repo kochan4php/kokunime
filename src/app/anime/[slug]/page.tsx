@@ -1,11 +1,6 @@
 import AnimeController from "@/controllers/AnimeController";
 import blurDataUrl from "@/data/blur-data-url";
-import {
-    AnimeDownloadOptionType,
-    AnimeGenresType,
-    AnimeLinkDownloadType,
-    AnimeLinkPlatformType,
-} from "@/interfaces";
+import { AnimeDownloadOptionType, AnimeGenresType, AnimeLinkDownloadType, AnimeLinkPlatformType } from "@/interfaces";
 import MainLayout from "@/layouts/MainLayout";
 import NewSeriesAnime from "@/sections/NewSeriesAnime";
 import RekomendasiAnime from "@/sections/RekomendasiAnime";
@@ -21,23 +16,16 @@ const Anime = async (props: any): Promise<JSX.Element> => {
             const Genres = () => {
                 return (
                     <span>
-                        {anime.genre.map(
-                            (item: AnimeGenresType, index: number) => {
-                                const { genre } = anime;
-                                const coma =
-                                    genre.length - 1 === index ? "" : ", ";
+                        {anime.genre.map((item: AnimeGenresType, index: number) => {
+                            const { genre } = anime;
+                            const coma = genre.length - 1 === index ? "" : ", ";
 
-                                return (
-                                    <Link
-                                        href="/"
-                                        key={index}
-                                        className="hover:text-pink-500 transition-colors duration-300 font-bold"
-                                    >
-                                        {`${item.name}${coma}`}
-                                    </Link>
-                                );
-                            }
-                        )}
+                            return (
+                                <Link href="/" key={index} className="hover:text-pink-500 transition-colors duration-300 font-bold">
+                                    {`${item.name}${coma}`}
+                                </Link>
+                            );
+                        })}
                     </span>
                 );
             };
@@ -70,42 +58,27 @@ const Anime = async (props: any): Promise<JSX.Element> => {
                                 <div className="lg:px-2">
                                     <div className="text-base md:text-lg 2xl:text-xl">
                                         <p className="font-semibold my-1 w-full">
-                                            Japanese :{" "}
-                                            <span className="font-bold">
-                                                {anime.japanase}
-                                            </span>
+                                            Japanese : <span className="font-bold">{anime.japanase}</span>
                                         </p>
                                     </div>
                                     <div className="text-base md:text-lg 2xl:text-xl">
                                         <p className="font-semibold my-1 w-full">
-                                            Release :{" "}
-                                            <span className="font-bold">
-                                                {anime.release_on}
-                                            </span>
+                                            Release : <span className="font-bold">{anime.release_on}</span>
                                         </p>
                                     </div>
                                     <div className="text-base md:text-lg 2xl:text-xl">
                                         <p className="font-semibold my-1 w-full">
-                                            Season :{" "}
-                                            <span className="font-bold">
-                                                {anime.season.name}
-                                            </span>
+                                            Season : <span className="font-bold">{anime.season.name}</span>
                                         </p>
                                     </div>
                                     <div className="text-base md:text-lg 2xl:text-xl">
                                         <p className="font-semibold my-1 w-full">
-                                            Total Eps :{" "}
-                                            <span className="font-bold">
-                                                {anime.total_episode}
-                                            </span>
+                                            Total Eps : <span className="font-bold">{anime.total_episode}</span>
                                         </p>
                                     </div>
                                     <div className="text-base md:text-lg 2xl:text-xl">
                                         <p className="font-semibold my-1 w-full">
-                                            Duration :{" "}
-                                            <span className="font-bold">
-                                                {anime.duration}
-                                            </span>
+                                            Duration : <span className="font-bold">{anime.duration}</span>
                                         </p>
                                     </div>
                                 </div>
@@ -117,26 +90,17 @@ const Anime = async (props: any): Promise<JSX.Element> => {
                                     </div>
                                     <div className="text-base md:text-lg 2xl:text-xl">
                                         <p className="font-semibold my-1 w-full">
-                                            Producers :{" "}
-                                            <span className="font-bold">
-                                                {anime.producer}
-                                            </span>
+                                            Producers : <span className="font-bold">{anime.producer}</span>
                                         </p>
                                     </div>
                                     <div className="text-base md:text-lg 2xl:text-xl">
                                         <p className="font-semibold my-1 w-full">
-                                            Type :{" "}
-                                            <span className="font-bold">
-                                                {anime.type}
-                                            </span>
+                                            Type : <span className="font-bold">{anime.type}</span>
                                         </p>
                                     </div>
                                     <div className="text-base md:text-lg 2xl:text-xl">
                                         <p className="font-semibold my-1 w-full">
-                                            Status :{" "}
-                                            <span className="font-bold">
-                                                {anime.status}
-                                            </span>
+                                            Status : <span className="font-bold">{anime.status}</span>
                                         </p>
                                     </div>
                                 </div>
@@ -150,56 +114,43 @@ const Anime = async (props: any): Promise<JSX.Element> => {
         const AnimeSynopsis = () => {
             return (
                 <>
-                    <h1 className="text-3xl md:text-4xl 2xl:text-5xl mb-7 selection:bg-emerald-500 selection:text-emerald-900 font-bold">
-                        Sinopsis
-                    </h1>
+                    <h1 className="text-3xl md:text-4xl 2xl:text-5xl mb-7 selection:bg-emerald-500 selection:text-emerald-900 font-bold">Sinopsis</h1>
                     <div className="text-lg lg:text-xl selection:bg-green-500 selection:text-green-900 font-medium">
-                        <p className="leading-loose text-left md:text-justify">
-                            {anime.synopsis}
-                        </p>
+                        <p className="leading-loose text-left md:text-justify">{anime.synopsis}</p>
                     </div>
                 </>
             );
         };
 
         const LinkDownload = () => {
-            const DownloadResolutionAndPlatform = ({
-                link_download,
-            }: AnimeDownloadOptionType) => {
+            const DownloadResolutionAndPlatform = ({ link_download }: AnimeDownloadOptionType) => {
                 const LinkPlatform = ({ link }: AnimeLinkDownloadType) => {
                     return (
                         <div className="mt-5 grid grid-cols-3 lg:grid-cols-5 gap-4">
-                            {link.map(
-                                (
-                                    item: AnimeLinkPlatformType,
-                                    index: number
-                                ) => (
-                                    <Link
-                                        key={index}
-                                        href={item?.url}
-                                        target="_blank"
-                                        className="px-1 py-1.5 text-slate-5 active:ring active:ring-sky-500 hover:border-sky-500 border-2 border-transparent transition-all duration-300 selection:bg-orange-500 selection:text-orange-900 text-base bg-slate-700 w-full h-full text-center rounded font-medium"
-                                    >
-                                        {item.platform}
-                                    </Link>
-                                )
-                            )}
+                            {link.map((item: AnimeLinkPlatformType, index: number) => (
+                                <Link
+                                    key={index}
+                                    href={item?.url}
+                                    target="_blank"
+                                    className="px-1 py-1.5 text-slate-5 active:ring active:ring-sky-500 hover:border-sky-500 border-2 border-transparent transition-all duration-300 selection:bg-orange-500 selection:text-orange-900 text-base bg-slate-700 w-full h-full text-center rounded font-medium"
+                                >
+                                    {item.platform}
+                                </Link>
+                            ))}
                         </div>
                     );
                 };
 
                 return (
                     <div className="divide-y-2 divide-slate-700">
-                        {link_download.map(
-                            (data: AnimeLinkDownloadType, index: number) => (
-                                <div key={index} className="py-4">
-                                    <p className="bg-slate-700 rounded p-4 selection:bg-pink-700 selection:text-pink-200 text-center font-semibold text-base">
-                                        {`Resolusi : ${data.resolusi}`}
-                                    </p>
-                                    <LinkPlatform link={data.link} />
-                                </div>
-                            )
-                        )}
+                        {link_download.map((data: AnimeLinkDownloadType, index: number) => (
+                            <div key={index} className="py-4">
+                                <p className="bg-slate-700 rounded p-4 selection:bg-pink-700 selection:text-pink-200 text-center font-semibold text-base">
+                                    {`Resolusi : ${data.resolusi}`}
+                                </p>
+                                <LinkPlatform link={data.link} />
+                            </div>
+                        ))}
                     </div>
                 );
             };
@@ -207,18 +158,14 @@ const Anime = async (props: any): Promise<JSX.Element> => {
             const DownloadOption = () => {
                 return (
                     <div className="flex flex-col gap-8 mt-5">
-                        {anime.download.map(
-                            (item: AnimeDownloadOptionType, index: number) => (
-                                <div key={index}>
-                                    <p className="bg-sky-600 rounded p-2 my-3 text-center text-base md:text-lg selection:bg-violet-700 selection:text-violet-100 font-bold">
-                                        {item.title}
-                                    </p>
-                                    <DownloadResolutionAndPlatform
-                                        link_download={item.link_download}
-                                    />
-                                </div>
-                            )
-                        )}
+                        {anime.download.map((item: AnimeDownloadOptionType, index: number) => (
+                            <div key={index}>
+                                <p className="bg-sky-600 rounded p-2 my-3 text-center text-base md:text-lg selection:bg-violet-700 selection:text-violet-100 font-bold">
+                                    {item.title}
+                                </p>
+                                <DownloadResolutionAndPlatform link_download={item.link_download} />
+                            </div>
+                        ))}
                     </div>
                 );
             };

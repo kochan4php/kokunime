@@ -16,30 +16,28 @@ export default class AnimeController {
         const element = $(".venser");
 
         const download: DownloadType[] = [];
-        $(element)
-            .find(wrapperClass)
-            .each((_, element) => {
-                const temp_res: DownloadLinkType[] = [];
-                $(element).find(urlClass).each((_, el) => {
-                    const temp_dl: PlatformType[] = [];
-                    $(el).find("a").each((_, elm) => {
-                        temp_dl.push({
-                            platform: $(elm).text(),
-                            url: $(elm).attr("href"),
-                        });
-                    });
-
-                    temp_res.push({
-                        resolusi: $(el).find("strong").text(),
-                        link: temp_dl,
+        $(element).find(wrapperClass).each((_, element) => {
+            const temp_res: DownloadLinkType[] = [];
+            $(element).find(urlClass).each((_, el) => {
+                const temp_dl: PlatformType[] = [];
+                $(el).find("a").each((_, elm) => {
+                    temp_dl.push({
+                        platform: $(elm).text(),
+                        url: $(elm).attr("href"),
                     });
                 });
 
-                download.push({
-                    title: $(element).find(titleClass).text(),
-                    link_download: temp_res,
+                temp_res.push({
+                    resolusi: $(el).find("strong").text(),
+                    link: temp_dl,
                 });
             });
+
+            download.push({
+                title: $(element).find(titleClass).text(),
+                link_download: temp_res,
+            });
+        });
 
         return download;
     }
