@@ -15,7 +15,7 @@
         "nextjs-toploader": "^1.4.2",
         "react": "18.2.0",
         "react-dom": "18.2.0",
-        "sharp": "^0.32.4"
+        "sharp": "^0.32.5"
     },
     "devDependencies": {
         "@types/node": "20.5.0",
@@ -24,7 +24,7 @@
         "autoprefixer": "10.4.15",
         "eslint": "8.47.0",
         "eslint-config-next": "13.4.16",
-        "postcss": "8.4.27",
+        "postcss": "8.4.28",
         "tailwindcss": "3.3.3",
         "typescript": "5.1.6"
     }
