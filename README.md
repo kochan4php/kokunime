@@ -34,7 +34,7 @@ git clone https://github.com/kochan4php/kokunime.git
 cd kokunime
 
 # run docker command in shell file
-./docker.sh
+sh docker.sh
 ```
 
 ## Semoga kalian suka :D
