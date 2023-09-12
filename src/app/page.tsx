@@ -1,5 +1,5 @@
 import CardAnime from "@/components/CardAnime";
-import AnimeController from "@/controllers/AnimeController";
+import axiosInstance from "@/config/axiosInstance";
 import { AnimeType, GetAnimePerPageType } from "@/interfaces";
 import MainLayout from "@/layouts/MainLayout";
 import Pagination from "@/sections/Pagination";
@@ -8,7 +8,8 @@ import Link from "next/link";
 
 const Home = async (props: any): Promise<JSX.Element> => {
     const page = props.searchParams.page || 1;
-    const { anime: latestAnime, pagination }: GetAnimePerPageType = await AnimeController.getAnimePerPage(page);
+    const { data } = await axiosInstance.get(`/page/${page}`);
+    const { anime: latestAnime, pagination }: GetAnimePerPageType = data.data;
 
     return (
         <MainLayout>
