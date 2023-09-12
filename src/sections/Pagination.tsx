@@ -15,7 +15,11 @@ const Pagination = (props: any) => {
             </div>
             <div className="inline-flex mt-2 xs:mt-0">
                 <Link
-                    href={(pagination.prev_page_endpoint as string) || "/"}
+                    href={
+                        pagination.prev_page_endpoint?.split("/")[1]
+                            ? `?page=${pagination.prev_page_endpoint?.split("/")[1]}`
+                            : "/"
+                    }
                     className="flex gap-2 items-center justify-center transition-all duration-200 px-4 h-10 text-lg font-medium text-white bg-slate-700 rounded-l hover:bg-slate-600 hover:text-teal-300 border-slate-700"
                 >
                     <svg
@@ -31,7 +35,11 @@ const Pagination = (props: any) => {
                     <span>Prev</span>
                 </Link>
                 <Link
-                    href={pagination.next_page_endpoint as string}
+                    href={
+                        pagination.next_page_endpoint?.split("/")[1]
+                            ? `?page=${pagination.next_page_endpoint?.split("/")[1]}`
+                            : `?page=${pagination.total_page}`
+                    }
                     className="flex gap-2 items-center justify-center transition-all duration-200 px-4 h-10 text-lg font-medium text-white bg-slate-700 border-0 border-l border-slate-700 rounded-r hover:bg-slate-600 hover:text-teal-300"
                 >
                     <span>Next</span>
