@@ -1,3 +1,4 @@
+import axiosInstance from "@/config/axiosInstance";
 import AnimeController from "@/controllers/AnimeController";
 import blurDataUrl from "@/data/blur-data-url";
 import { AnimeDownloadOptionType, AnimeGenresType, AnimeLinkDownloadType, AnimeLinkPlatformType } from "@/interfaces";
@@ -9,7 +10,8 @@ import Link from "next/link";
 
 const Anime = async (props: any): Promise<JSX.Element> => {
     const { slug } = props.params;
-    const anime = await AnimeController.getAnimeDetail(slug);
+    const { data } = await axiosInstance.get(`/anime/${slug}`);
+    const anime = data.data;
 
     const SectionDetailAnime = () => {
         const AnimeDetail = () => {
@@ -21,7 +23,11 @@ const Anime = async (props: any): Promise<JSX.Element> => {
                             const coma = genre.length - 1 === index ? "" : ", ";
 
                             return (
-                                <Link href="/" key={index} className="hover:text-pink-500 transition-colors duration-300 font-bold">
+                                <Link
+                                    href="/"
+                                    key={index}
+                                    className="hover:text-pink-500 transition-colors duration-300 font-bold"
+                                >
                                     {`${item.name}${coma}`}
                                 </Link>
                             );
@@ -114,7 +120,9 @@ const Anime = async (props: any): Promise<JSX.Element> => {
         const AnimeSynopsis = () => {
             return (
                 <>
-                    <h1 className="text-3xl md:text-4xl 2xl:text-5xl mb-7 selection:bg-emerald-500 selection:text-emerald-900 font-bold">Sinopsis</h1>
+                    <h1 className="text-3xl md:text-4xl 2xl:text-5xl mb-7 selection:bg-emerald-500 selection:text-emerald-900 font-bold">
+                        Sinopsis
+                    </h1>
                     <div className="text-lg lg:text-xl selection:bg-green-500 selection:text-green-900 font-medium">
                         <p className="leading-loose text-left md:text-justify">{anime.synopsis}</p>
                     </div>
