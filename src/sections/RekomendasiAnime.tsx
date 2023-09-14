@@ -1,4 +1,4 @@
-import AnimeController from "@/controllers/AnimeController";
+import axiosInstance from "@/config/axiosInstance";
 import blurDataUrl from "@/data/blur-data-url";
 import { RekomendasiType } from "@/interfaces";
 import strLimit from "@/utils/strLimit";
@@ -6,7 +6,8 @@ import Image from "next/image";
 import Link from "next/link";
 
 const RekomendasiAnime = async (): Promise<JSX.Element> => {
-    const rekomendasiAnime: RekomendasiType[] = await AnimeController.getRekomendasi();
+    const { data } = await axiosInstance.get("/rekomendasi");
+    const rekomendasiAnime: RekomendasiType[] = data.data;
 
     return (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-2 md:gap-4">
