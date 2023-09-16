@@ -8,6 +8,8 @@
         "build": "next build",
         "start": "next start",
         "lint": "next lint",
+        "docker:up": "pnpm docker:down && docker compose up -d",
+        "docker:down": "docker compose down",
         "prepare": "husky install"
     },
     "dependencies": {
