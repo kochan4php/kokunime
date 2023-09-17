@@ -1,1 +1,5 @@
-/src/controllers
+,husky
+*.yaml
+*.yml
+Dockerfile
+.dockerignore
