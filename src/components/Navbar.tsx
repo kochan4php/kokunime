@@ -26,10 +26,7 @@ const Navbar = (): JSX.Element => {
                 <div className="container flex justify-between items-center py-1 relative">
                     <div>
                         <h1 className="text-center bg-gradient-to-r from-sky-500 to-indigo-500 bg-clip-text text-transparent font-bold text-3xl 2xl:text-4xl hidden md:block">
-                            <Link
-                                href="/"
-                                className="selection:bg-yellow-700 selection:text-yellow-400"
-                            >
+                            <Link href="/" className="selection:bg-yellow-700 selection:text-yellow-400">
                                 Kokunime
                             </Link>
                         </h1>
