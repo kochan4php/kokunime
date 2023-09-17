@@ -8,6 +8,8 @@
         "build": "next build",
         "start": "next start",
         "lint": "next lint",
+        "prettier:check": "prettier . --check",
+        "prettier:fix": "prettier . --write",
         "docker:up": "pnpm docker:down && docker compose up -d",
         "docker:down": "docker compose down",
         "prepare": "husky install"
@@ -29,8 +31,16 @@
         "autoprefixer": "10.4.15",
         "eslint": "8.49.0",
         "eslint-config-next": "13.4.19",
+        "lint-staged": "^14.0.1",
         "postcss": "8.4.29",
+        "prettier": "^3.0.3",
         "tailwindcss": "3.3.3",
         "typescript": "5.2.2"
+    },
+    "lint-staged": {
+        "**/*.{js,jsx,ts,tsx}": [
+            "pnpm lint",
+            "pnpm prettier:fix"
+        ]
     }
 }
