@@ -16,28 +16,34 @@ export default class AnimeController {
         const element = $(".venser");
 
         const download: DownloadType[] = [];
-        $(element).find(wrapperClass).each((_, element) => {
-            const temp_res: DownloadLinkType[] = [];
-            $(element).find(urlClass).each((_, el) => {
-                const temp_dl: PlatformType[] = [];
-                $(el).find("a").each((_, elm) => {
-                    temp_dl.push({
-                        platform: $(elm).text(),
-                        url: $(elm).attr("href"),
+        $(element)
+            .find(wrapperClass)
+            .each((_, element) => {
+                const temp_res: DownloadLinkType[] = [];
+                $(element)
+                    .find(urlClass)
+                    .each((_, el) => {
+                        const temp_dl: PlatformType[] = [];
+                        $(el)
+                            .find("a")
+                            .each((_, elm) => {
+                                temp_dl.push({
+                                    platform: $(elm).text(),
+                                    url: $(elm).attr("href"),
+                                });
+                            });
+
+                        temp_res.push({
+                            resolusi: $(el).find("strong").text(),
+                            link: temp_dl,
+                        });
                     });
-                });
 
-                temp_res.push({
-                    resolusi: $(el).find("strong").text(),
-                    link: temp_dl,
+                download.push({
+                    title: $(element).find(titleClass).text(),
+                    link_download: temp_res,
                 });
             });
-
-            download.push({
-                title: $(element).find(titleClass).text(),
-                link_download: temp_res,
-            });
-        });
 
         return download;
     }
@@ -50,7 +56,14 @@ export default class AnimeController {
             .find(".venz ul .kover")
             .each((_, el) => {
                 const title = $(el).find(".content > h2 > a").text();
-                const release = $(el).find(".content > p").text().trim().split("Genre")[0].trim().split("Admin")[1].trim();
+                const release = $(el)
+                    .find(".content > p")
+                    .text()
+                    .trim()
+                    .split("Genre")[0]
+                    .trim()
+                    .split("Admin")[1]
+                    .trim();
                 const genres = $(el).find(".content > p").text().trim().split("Genre")[1].trim().split(", ");
                 const link = {
                     endpoint: $(el).find(".thumb a").attr("href")?.replace(KUSONIME_URL, ""),
@@ -118,14 +131,15 @@ export default class AnimeController {
                 }
             }
 
-            download = download.filter(
-                (element) => element.link_download.length > 0 && element.title !== ""
-            );
+            download = download.filter((element) => element.link_download.length > 0 && element.title !== "");
 
             const season = {
                 name: $(element).find(".lexot .info > p:nth-of-type(3) > a").text(),
                 url: $(element).find(".lexot .info > p:nth-of-type(3) > a").attr("href"),
-                endpoint: $(element).find(".lexot .info > p:nth-of-type(3) > a").attr("href")?.replace(KUSONIME_URL, ""),
+                endpoint: $(element)
+                    .find(".lexot .info > p:nth-of-type(3) > a")
+                    .attr("href")
+                    ?.replace(KUSONIME_URL, ""),
             };
 
             const animeDetail = {
