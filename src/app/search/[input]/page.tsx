@@ -1,6 +1,5 @@
 import CardAnime from "@/components/CardAnime";
 import axiosInstance from "@/config/axiosInstance";
-import AnimeController from "@/controllers/AnimeController";
 import { AnimeType } from "@/interfaces";
 import MainLayout from "@/layouts/MainLayout";
 
