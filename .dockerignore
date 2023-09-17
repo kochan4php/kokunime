@@ -21,4 +21,8 @@
 /LICENSE
 /.docker-compose*
 /.git
-/docker.sh
+.husky
+*.yaml
+*.yml
+Dockerfile
+.dockerignore
