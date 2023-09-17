@@ -23,10 +23,7 @@ const RekomendasiAnime = async (): Promise<JSX.Element> => {
                                     height="0"
                                     sizes="100vw"
                                     className="rounded-sm"
-                                    style={{
-                                        width: "100%",
-                                        height: "auto",
-                                    }}
+                                    style={{ width: "100%", height: "auto" }}
                                     placeholder="blur"
                                     blurDataURL={blurDataUrl}
                                     loading="lazy"

@@ -1,4 +1,4 @@
-import AnimeController from "@/controllers/AnimeController";
+import axiosInstance from "@/config/axiosInstance";
 import blurDataUrl from "@/data/blur-data-url";
 import { AnimeType } from "@/interfaces";
 import strLimit from "@/utils/strLimit";
@@ -7,7 +7,8 @@ import Link from "next/link";
 
 const NewSeriesAnime = async (props: any): Promise<JSX.Element> => {
     const slug: string = props.slug;
-    const getNewSeriesAnime = await AnimeController.getAnimePerPage(1);
+    const { data } = await axiosInstance.get("/page/1");
+    const getNewSeriesAnime = data.data;
     const newSeriesAnime = getNewSeriesAnime.anime?.filter((data: AnimeType) => !data?.link?.endpoint?.includes(slug));
 
     return (
@@ -24,10 +25,7 @@ const NewSeriesAnime = async (props: any): Promise<JSX.Element> => {
                                     height="0"
                                     sizes="100vw"
                                     className="rounded-sm"
-                                    style={{
-                                        width: "100%",
-                                        height: "auto",
-                                    }}
+                                    style={{ width: "100%", height: "auto" }}
                                     placeholder="blur"
                                     blurDataURL={blurDataUrl}
                                     loading="lazy"

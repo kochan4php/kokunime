@@ -1,5 +1,4 @@
 import axiosInstance from "@/config/axiosInstance";
-import AnimeController from "@/controllers/AnimeController";
 import blurDataUrl from "@/data/blur-data-url";
 import { AnimeDownloadOptionType, AnimeGenresType, AnimeLinkDownloadType, AnimeLinkPlatformType } from "@/interfaces";
 import MainLayout from "@/layouts/MainLayout";
