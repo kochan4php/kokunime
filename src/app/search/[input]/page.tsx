@@ -1,11 +1,13 @@
 import CardAnime from "@/components/CardAnime";
+import axiosInstance from "@/config/axiosInstance";
 import AnimeController from "@/controllers/AnimeController";
 import { AnimeType } from "@/interfaces";
 import MainLayout from "@/layouts/MainLayout";
 
 const SearchAnime = async (props: any): Promise<JSX.Element> => {
     const { input } = props.params;
-    const anime = await AnimeController.searchAnime(input.split("%2B").join("+") as string);
+    const { data } = await axiosInstance.get(`/search/${input.split("%2B").join("+")}`);
+    const anime: AnimeType[] = data.data;
 
     return (
         <MainLayout>
