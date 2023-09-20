@@ -1,13 +1,12 @@
 "use client";
 
-import { AppRouterInstance } from "next/dist/shared/lib/app-router-context";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import Input from "./Input";
 
 const Navbar = (): JSX.Element => {
-    const router: AppRouterInstance = useRouter();
+    const router = useRouter();
     const [inputValue, setInputValue] = useState<string | null>();
 
     const searchFunc = (e: React.ChangeEvent<HTMLInputElement>): void => {
