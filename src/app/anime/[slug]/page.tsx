@@ -63,7 +63,7 @@ const Anime = async (props: any): Promise<JSX.Element> => {
                                 <div className="lg:px-2">
                                     <div className="text-base md:text-lg 2xl:text-xl">
                                         <p className="font-semibold my-1 w-full">
-                                            Japanese : <span className="font-bold">{anime.japanase}</span>
+                                            Japanese : <span className="font-bold">{anime.japanese}</span>
                                         </p>
                                     </div>
                                     <div className="text-base md:text-lg 2xl:text-xl">
