@@ -5,7 +5,7 @@ services:
         container_name: kokunime-web
         build:
             context: .
-            dockerfile: Dockerfile
+            dockerfile: ./dockerfiles/production/Dockerfile
         image: kokunime:latest
         restart: always
         ports:
