@@ -28,6 +28,6 @@ git clone https://github.com/kochan4php/kokunime.git
 # go to the project folder
 cd kokunime
 
-# run docker command in shell file
-sh docker.sh
+# run docker compose using pnpm
+pnpm docker:up
 ```
