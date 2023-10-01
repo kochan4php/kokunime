@@ -30,4 +30,7 @@ cd kokunime
 
 # run docker compose using pnpm
 pnpm docker:up
+
+# after run docker:up command, now open the url in :
+http://localhost:4000
 ```
