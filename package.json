@@ -42,5 +42,8 @@
         "**/*.{js,jsx,ts,tsx}": [
             "pnpm prettier:fix"
         ]
+    },
+    "engines": {
+        "node": ">=16.0.0"
     }
 }
