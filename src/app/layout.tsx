@@ -4,36 +4,28 @@ import NextTopLoader from "nextjs-toploader";
 import { Suspense } from "react";
 import "./globals.css";
 import Loading from "./loading";
+import { OpenGraph } from "next/dist/lib/metadata/types/opengraph-types";
+
+const openGraph: OpenGraph = {
+    title: "Kokunime",
+    description: "Website buat download anime dan baca manga tanpa iklan 😎",
+    url: "https://kokunime.netlify.app",
+    siteName: "Kokunime",
+    images: [
+        { url: "/haah-lah.jpg", alt: "Alt nya kalo preview gambarnya ga ada hehe" },
+        { url: "/farhan-kebab.jpg", alt: "Alt nya kalo preview gambarnya ga ada hehe" },
+        { url: "/ironi-mamah-aku-takut.jpg", alt: "Alt nya kalo preview gambarnya ga ada hehe" },
+        { url: "/maxresdefault.jpg", alt: "Alt nya kalo preview gambarnya ga ada hehe" },
+    ],
+    locale: "en_US",
+    type: "website",
+};
 
 export const metadata: Metadata = {
     title: "Kokunime",
+    metadataBase: new URL("https://kokunime.netlify.app"),
     description: "Website download anime dan baca manga",
-    openGraph: {
-        title: "Kokunime",
-        description: "Website buat download anime dan baca manga tanpa iklan 😎",
-        url: "https://kokunime.netlify.app",
-        siteName: "Kokunime",
-        images: [
-            {
-                url: "https://kokunime.netlify.app/farhan-kebab.jpg",
-                alt: "Alt nya kalo preview gambarnya ga ada hehe",
-            },
-            {
-                url: "https://kokunime.netlify.app/ironi-mamah-aku-takut.jpg",
-                alt: "Alt nya kalo preview gambarnya ga ada hehe",
-            },
-            {
-                url: "https://kokunime.netlify.app/haah-lah.jpg",
-                alt: "Alt nya kalo preview gambarnya ga ada hehe",
-            },
-            {
-                url: "https://kokunime.netlify.app/maxresdefault.jpg",
-                alt: "Alt nya kalo preview gambarnya ga ada hehe",
-            },
-        ],
-        locale: "en_US",
-        type: "website",
-    },
+    openGraph,
 };
 
 const RootLayout = ({ children }: ChildrenProps): JSX.Element => (
