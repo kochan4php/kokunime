@@ -3,13 +3,13 @@
 ## Setup locally
 
 ```bash
-# cloning this project
+# clone this project
 git clone https://github.com/kochan4php/kokunime.git
 
 # go to the project folder
 cd kokunime
 
-# install pnpm if you does'nt have
+# install pnpm if you don't have
 npm i -g pnpm
 
 # install dependencies
@@ -22,7 +22,7 @@ pnpm dev
 ## Setup with docker
 
 ```bash
-# cloning this project
+# clone this project
 git clone https://github.com/kochan4php/kokunime.git
 
 # go to the project folder
@@ -31,6 +31,6 @@ cd kokunime
 # run docker compose using pnpm
 pnpm docker:up
 
-# after run docker:up command, now open the url in :
+# after run docker:up command, then open the url below :
 http://localhost:4000
 ```
