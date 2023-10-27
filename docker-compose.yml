@@ -1,8 +1,8 @@
 version: "3.8"
 
 services:
-    kokunime-web:
-        container_name: kokunime-web
+    kokunime:
+        container_name: web
         build:
             context: .
             dockerfile: ./dockerfiles/production/Dockerfile
