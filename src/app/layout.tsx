@@ -11,12 +11,7 @@ const openGraph: OpenGraph = {
     description: "Website buat download anime dan baca manga tanpa iklan 😎",
     url: "https://kokunime.netlify.app",
     siteName: "Kokunime",
-    images: [
-        { url: "/haah-lah.jpg", alt: "Alt nya kalo preview gambarnya ga ada hehe" },
-        { url: "/farhan-kebab.jpg", alt: "Alt nya kalo preview gambarnya ga ada hehe" },
-        { url: "/ironi-mamah-aku-takut.jpg", alt: "Alt nya kalo preview gambarnya ga ada hehe" },
-        { url: "/maxresdefault.jpg", alt: "Alt nya kalo preview gambarnya ga ada hehe" },
-    ],
+    images: [{ url: "/farhan-kebab.jpg", alt: "Alt nya kalo preview gambarnya ga ada hehe" }],
     locale: "en_US",
     type: "website",
 };
