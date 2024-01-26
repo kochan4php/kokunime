@@ -16,24 +16,24 @@
         "prepare": "husky install"
     },
     "dependencies": {
-        "axios": "^1.6.5",
-        "husky": "^8.0.3",
-        "next": "14.0.4",
+        "axios": "^1.6.7",
+        "husky": "^9.0.6",
+        "next": "14.1.0",
         "nextjs-toploader": "^1.6.4",
         "react": "18.2.0",
         "react-dom": "18.2.0",
         "sharp": "^0.33.2"
     },
     "devDependencies": {
-        "@types/node": "20.11.3",
+        "@types/node": "20.11.6",
         "@types/react": "18.2.48",
         "@types/react-dom": "18.2.18",
-        "autoprefixer": "10.4.16",
+        "autoprefixer": "10.4.17",
         "eslint": "8.56.0",
-        "eslint-config-next": "14.0.4",
+        "eslint-config-next": "14.1.0",
         "lint-staged": "^15.2.0",
         "postcss": "8.4.33",
-        "prettier": "^3.2.2",
+        "prettier": "^3.2.4",
         "tailwindcss": "3.4.1",
         "typescript": "5.3.3"
     },
