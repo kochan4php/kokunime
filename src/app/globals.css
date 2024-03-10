@@ -3,13 +3,18 @@
 @tailwind utilities;
 
 @font-face {
-    font-family: "Nunito";
-    src: url("/fonts/Nunito/Nunito-VariableFont_wght.ttf");
+  font-family: "Nunito";
+  src: url("/fonts/Nunito/Nunito-VariableFont_wght.ttf");
 }
 
 @layer utilities {
-    html {
-        color-scheme: dark;
-        font-family: "Nunito", sans-serif;
-    }
+  html {
+    color-scheme: dark;
+    font-family: "Nunito", sans-serif;
+  }
+}
+
+::-webkit-scrollbar {
+  width: 0;
+  background: transparent;
 }

@@ -9,10 +9,7 @@ services:
         image: kokunime:latest
         restart: always
         ports:
-            - 4000:3000
-        env_file: .env
-        environment:
-            NEXT_PUBLIC_KUSONIME_API: "https://brick-red-cricket-gown.cyclic.app/api"
+            - 3000:3000
         deploy:
             resources:
                 limits:

@@ -11,7 +11,6 @@ RUN npm run build
 # Production stage
 FROM base AS production
 RUN npm uninstall -g yarn
-ENV NEXT_PUBLIC_KUSONIME_API=https://brick-red-cricket-gown.cyclic.app/api
 WORKDIR /usr/src/app
 COPY --from=builder /app/.next /usr/src/app/.next
 COPY --from=builder /app/public /usr/src/app/public
