@@ -1,5 +1,7 @@
 "use client";
 
+import { JSX } from "react";
+
 const NotFoundPage = (): JSX.Element => (
   <section className="flex flex-col items-start md:items-center justify-center min-h-screen mx-4">
     <h1 className="text-3xl md:text-4xl font-bold mb-4">{"Not Found this Page. Maybe you lost :("}</h1>

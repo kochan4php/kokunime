@@ -2,9 +2,10 @@ import CardAnime from "@/components/CardAnime";
 import MainController from "@/controllers/main.controller";
 import { AnimeType } from "@/interfaces";
 import MainLayout from "@/layouts/MainLayout";
+import { JSX } from "react";
 
 const SearchAnime = async (props: any): Promise<JSX.Element> => {
-  const { input } = props.params;
+  const { input } = await props.params;
   const anime: AnimeType[] = await MainController.searchAnime(`${input.split("%2B").join("+")}`);
 
   return (

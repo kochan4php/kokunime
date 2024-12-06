@@ -4,6 +4,7 @@ import { AnimeType } from "@/interfaces";
 import strLimit from "@/utils/strLimit";
 import Image from "next/image";
 import Link from "next/link";
+import { JSX } from "react";
 
 const NewSeriesAnime = async (props: any): Promise<JSX.Element> => {
   const slug: string = props.slug;

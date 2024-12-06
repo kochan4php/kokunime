@@ -2,7 +2,7 @@ import { ChildrenProps } from "@/interfaces";
 import { Metadata } from "next";
 import { OpenGraph } from "next/dist/lib/metadata/types/opengraph-types";
 import NextTopLoader from "nextjs-toploader";
-import { Suspense } from "react";
+import { JSX, Suspense } from "react";
 import "./globals.css";
 import Loading from "./loading";
 

@@ -1,4 +1,3 @@
-import cheerio, { CheerioAPI } from "cheerio";
 import kusonime from "@/config/kusonime";
 import {
   AnimeType,
@@ -11,6 +10,7 @@ import {
   SeasonType,
 } from "@/interfaces";
 import logger from "@/utils/logger";
+import { CheerioAPI, load } from "cheerio";
 
 const KUSONIME_URL = "https://kusonime.com/";
 
@@ -77,7 +77,7 @@ export default class MainController {
   public static async getAnimePerPage(page: number): Promise<GetAnimePerPageType> {
     try {
       const response = await kusonime.get(`/page/${page}`);
-      const $ = cheerio.load(response.data);
+      const $ = load(response.data);
       const anime = MainController.formatAnimeData($);
 
       const element = $(".venutama");
@@ -104,7 +104,7 @@ export default class MainController {
   public static async getAnimeDetail(slug: string) {
     try {
       const response = await kusonime.get(`/${slug}`);
-      const $ = cheerio.load(response.data);
+      const $ = load(response.data);
       const element = $(".venser");
 
       const genre: GenreType[] = [];
@@ -166,7 +166,7 @@ export default class MainController {
   public static async getRekomendasi(): Promise<RekomendasiType[]> {
     try {
       const response = await kusonime.get("/");
-      const $ = cheerio.load(response.data);
+      const $ = load(response.data);
       const rekomendAnime: RekomendasiType[] = [];
       const element = $(".rekomf");
 
@@ -193,7 +193,7 @@ export default class MainController {
   public static async getGenres() {
     try {
       const response = await kusonime.get("/genres");
-      const $ = cheerio.load(response.data);
+      const $ = load(response.data);
       const genres: GenreType[] = [];
       const element = $(".venser > .venutama");
 
@@ -220,7 +220,7 @@ export default class MainController {
   public static async getAnimeByGenres(genre: string, page: number | string) {
     try {
       const response = await kusonime.get(`/genres/${genre}/page/${page}`);
-      const $ = cheerio.load(response.data);
+      const $ = load(response.data);
       const anime = MainController.formatAnimeData($);
 
       return anime;
@@ -233,7 +233,7 @@ export default class MainController {
   public static async getSeasons() {
     try {
       const response = await kusonime.get("/seasons-list");
-      const $ = cheerio.load(response.data);
+      const $ = load(response.data);
       const seasons: SeasonType[] = [];
       const element = $(".venser > .venutama");
 
@@ -260,7 +260,7 @@ export default class MainController {
   public static async getAnimeBySeasons(season: string, page: string | number) {
     try {
       const response = await kusonime.get(`/seasons/${season}/page/${page}`);
-      const $ = cheerio.load(response.data);
+      const $ = load(response.data);
       const anime = MainController.formatAnimeData($);
 
       return anime;
@@ -273,7 +273,7 @@ export default class MainController {
   public static async searchAnime(query: string) {
     try {
       const response = await kusonime.get(`/?s=${query}&post_type=post`);
-      const $ = cheerio.load(response.data);
+      const $ = load(response.data);
       const anime = MainController.formatAnimeData($);
 
       return anime;

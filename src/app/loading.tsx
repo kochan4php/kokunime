@@ -1,3 +1,4 @@
+import { JSX } from "react";
 import "./loading.css";
 
 const Loading = (): JSX.Element => (

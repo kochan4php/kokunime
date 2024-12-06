@@ -4,6 +4,7 @@ import { RekomendasiType } from "@/interfaces";
 import strLimit from "@/utils/strLimit";
 import Image from "next/image";
 import Link from "next/link";
+import { JSX } from "react";
 
 const RekomendasiAnime = async (): Promise<JSX.Element> => {
   const rekomendasiAnime: RekomendasiType[] = await MainController.getRekomendasi();

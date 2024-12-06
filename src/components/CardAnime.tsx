@@ -3,6 +3,7 @@ import { CardAnimeProps } from "@/interfaces";
 import strLimit from "@/utils/strLimit";
 import Image from "next/image";
 import Link from "next/link";
+import { JSX } from "react";
 
 const CardAnime = ({ src, alt, title, path }: CardAnimeProps): JSX.Element => (
   <div className="bg-cover bg-center h-full bg-no-repeat selection:bg-violet-500 rounded overflow-hidden bg-slate-700">
