@@ -1,4 +1,5 @@
 import { InputProps } from "@/interfaces";
+import { JSX } from "react";
 
 const Input = ({ width, type, name, placeholder, autoComplete, value, onChange }: InputProps): JSX.Element => (
   <input

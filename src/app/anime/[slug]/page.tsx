@@ -6,9 +6,10 @@ import NewSeriesAnime from "@/sections/NewSeriesAnime";
 import RekomendasiAnime from "@/sections/RekomendasiAnime";
 import Image from "next/image";
 import Link from "next/link";
+import { JSX } from "react";
 
 const Anime = async (props: any): Promise<JSX.Element> => {
-  const { slug } = props.params;
+  const { slug } = await props.params;
   const anime: any = await MainController.getAnimeDetail(slug);
 
   const SectionDetailAnime = () => {

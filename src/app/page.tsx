@@ -5,9 +5,10 @@ import MainLayout from "@/layouts/MainLayout";
 import Pagination from "@/sections/Pagination";
 import RekomendasiAnime from "@/sections/RekomendasiAnime";
 import Link from "next/link";
+import { JSX } from "react";
 
 const Home = async (props: any): Promise<JSX.Element> => {
-  const page = props.searchParams.page || 1;
+  const page = (await props.params.page) || 1;
   const { anime: latestAnime, pagination } = await MainController.getAnimePerPage(page);
 
   return (
