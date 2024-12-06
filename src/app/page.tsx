@@ -3,7 +3,7 @@ import MainController from "@/controllers/main.controller";
 import { AnimeType } from "@/interfaces";
 import MainLayout from "@/layouts/MainLayout";
 import Pagination from "@/sections/Pagination";
-import RekomendasiAnime from "@/sections/RekomendasiAnime";
+// import RekomendasiAnime from "@/sections/RekomendasiAnime";
 import Link from "next/link";
 import { JSX } from "react";
 
