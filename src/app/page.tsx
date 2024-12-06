@@ -40,7 +40,7 @@ const Home = async (props: any): Promise<JSX.Element> => {
             </div>
           </div>
         </section>
-        <section className="min-h-screen min-w-full bg-gradient-to-tl from-slate-900 via-slate-800 to-slate-900 py-10 px-4">
+        <section className="min-h-screen min-w-full bg-gradient-to-tl from-slate-900 via-slate-800 to-slate-900 pt-16 pb-2 px-4">
           <div id="update-now">
             <div className="container md:px-4">
               <h1 className="text-sky-300 mb-6 font-bold text-2xl md:text-3xl selection:bg-teal-500 selection:text-teal-900 ">
@@ -62,7 +62,7 @@ const Home = async (props: any): Promise<JSX.Element> => {
           <div className="container my-8 px-3 md:px-4 flex flex-col items-center gap-2">
             <Pagination pagination={pagination} />
           </div>
-          <div className="container my-12 md:px-4">
+          {/* <div className="container my-12 md:px-4">
             <hr className="border-t border-t-slate-600" />
           </div>
           <div id="recommendations">
@@ -72,7 +72,7 @@ const Home = async (props: any): Promise<JSX.Element> => {
               </h1>
               <RekomendasiAnime />
             </div>
-          </div>
+          </div> */}
         </section>
       </div>
     </MainLayout>
