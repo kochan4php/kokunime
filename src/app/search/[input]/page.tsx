@@ -5,7 +5,7 @@ import MainLayout from "@/layouts/MainLayout";
 import { JSX } from "react";
 
 const SearchAnime = async (props: any): Promise<JSX.Element> => {
-  const { input } = await props.params;
+  const { input } = (await props.params) ?? "";
   const anime: AnimeType[] = await MainController.searchAnime(`${input.split("%2B").join("+")}`);
 
   return (

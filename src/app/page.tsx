@@ -8,7 +8,7 @@ import Link from "next/link";
 import { JSX } from "react";
 
 const Home = async (props: any): Promise<JSX.Element> => {
-  const page = (await props.params.page) || 1;
+  const page = (await props.params.page) ?? 1;
   const { anime: latestAnime, pagination } = await MainController.getAnimePerPage(page);
 
   return (
