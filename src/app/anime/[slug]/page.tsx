@@ -3,13 +3,13 @@ import blurDataUrl from "@/data/blur-data-url";
 import { AnimeDownloadOptionType, AnimeGenresType, AnimeLinkDownloadType, AnimeLinkPlatformType } from "@/interfaces";
 import MainLayout from "@/layouts/MainLayout";
 import NewSeriesAnime from "@/sections/NewSeriesAnime";
-import RekomendasiAnime from "@/sections/RekomendasiAnime";
+// import RekomendasiAnime from "@/sections/RekomendasiAnime";
 import Image from "next/image";
 import Link from "next/link";
 import { JSX } from "react";
 
 const Anime = async (props: any): Promise<JSX.Element> => {
-  const { slug } = await props.params;
+  const { slug } = (await props.params) ?? "";
   const anime: any = await MainController.getAnimeDetail(slug);
 
   const SectionDetailAnime = () => {
@@ -216,28 +216,28 @@ const Anime = async (props: any): Promise<JSX.Element> => {
     );
   };
 
-  const SectionRekomendasiAnime = () => {
-    return (
-      <section className="my-12 px-4">
-        <div className="container mb-12">
-          <hr className="border-t border-t-slate-600" />
-        </div>
-        <div className="container">
-          <h1 className="text-2xl md:text-3xl mb-6 text-sky-300 selection:bg-emerald-500 selection:text-emerald-900 font-bold">
-            Rekomendasi Anime
-          </h1>
-          <RekomendasiAnime />
-        </div>
-      </section>
-    );
-  };
+  // const SectionRekomendasiAnime = () => {
+  //   return (
+  //     <section className="my-12 px-4">
+  //       <div className="container mb-12">
+  //         <hr className="border-t border-t-slate-600" />
+  //       </div>
+  //       <div className="container">
+  //         <h1 className="text-2xl md:text-3xl mb-6 text-sky-300 selection:bg-emerald-500 selection:text-emerald-900 font-bold">
+  //           Rekomendasi Anime
+  //         </h1>
+  //         <RekomendasiAnime />
+  //       </div>
+  //     </section>
+  //   );
+  // };
 
   return (
     <MainLayout>
       <div className="min-w-full text-white py-3 md:px-4">
         <SectionDetailAnime />
         <SectionNewSeriesAnime />
-        <SectionRekomendasiAnime />
+        {/* <SectionRekomendasiAnime /> */}
       </div>
     </MainLayout>
   );

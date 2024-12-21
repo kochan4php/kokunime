@@ -7,7 +7,7 @@ import Link from "next/link";
 import { JSX } from "react";
 
 const NewSeriesAnime = async (props: any): Promise<JSX.Element> => {
-  const slug: string = props.slug;
+  const slug: string = await props.params.slug;
   const getNewSeriesAnime = await MainController.getAnimePerPage(1);
   const newSeriesAnime = getNewSeriesAnime.anime?.filter((data: AnimeType) => !data?.link?.endpoint?.includes(slug));
 

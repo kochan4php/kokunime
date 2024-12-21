@@ -1,7 +1,8 @@
 import { PaginationType } from "@/interfaces";
 import Link from "next/link";
+import { JSX } from "react";
 
-const Pagination = (props: any) => {
+const Pagination = async (props: any): Promise<JSX.Element> => {
   const pagination: PaginationType = props.pagination;
 
   return (
