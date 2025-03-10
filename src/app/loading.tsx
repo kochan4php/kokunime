@@ -1,4 +1,25 @@
-export default function Loading() {
-  return null
-}
+import { JSX } from "react";
 
+const Loading = (): JSX.Element => (
+  <section className="min-h-screen flex justify-center items-center">
+    <div className="semicircle">
+      <div>
+        <div>
+          <div>
+            <div>
+              <div>
+                <div>
+                  <div>
+                    <div></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+);
+
+export default Loading;

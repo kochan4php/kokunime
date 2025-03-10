@@ -3,6 +3,8 @@ import Navbar from "@/components/navbar";
 import { Metadata } from "next";
 import { OpenGraph } from "next/dist/lib/metadata/types/opengraph-types";
 import { cn } from "../lib/utils";
+import { Suspense } from "react";
+import Loading from "./loading";
 
 const openGraph: OpenGraph = {
   title: "Kokunime",
@@ -26,7 +28,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" suppressHydrationWarning className="scroll-smooth">
       <body className={cn(`min-h-screen bg-background font-sans antialiased !overflow-x-hidden nunito`)}>
         <Navbar />
-        <main>{children}</main>
+        <Suspense fallback={<Loading />}>
+          <main>{children}</main>
+        </Suspense>
       </body>
     </html>
   );

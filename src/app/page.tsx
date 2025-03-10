@@ -1,10 +1,14 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import Image from "next/image";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
+  const router = useRouter();
+
   return (
     <div className="min-h-screen flex flex-col bg-slate-900">
       <section
@@ -19,13 +23,14 @@ export default function Home() {
                 Itai no wa Iya nano de Bougyoryoku ni Kyokufuri Shitai to Omoimasu Season 2 BD Batch Subtitle Indonesia
               </h2>
               <p className="text-white/80">Released on 5:00 am</p>
-              <div>
-                <Link href={`/anime/1`} passHref>
-                  <Button className="rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 px-8 w-full">
-                    Detail
-                  </Button>
-                </Link>
-              </div>
+              <Button
+                className="rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 px-8 w-full"
+                onClick={() => {
+                  router.push("/anime/1", { scroll: false });
+                }}
+              >
+                Detail
+              </Button>
             </div>
           </div>
         </div>

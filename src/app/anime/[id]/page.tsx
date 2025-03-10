@@ -23,7 +23,7 @@ export default function AnimePage() {
         <div className="grid grid-cols-1 md:grid-cols-[300px_1fr] gap-8">
           <div className="space-y-4">
             <AspectRatio ratio={3 / 4} className="overflow-hidden rounded-md border border-slate-500">
-              <Image src="https://placehold.co/600x400" alt="Anime Cover" fill className="object-cover" />
+              <Image src="https://placehold.co/600x400" alt="Anime Cover" fill className="object-cover" priority />
             </AspectRatio>
             <div className="flex flex-col gap-2">
               <Button className="w-full gap-2 rounded-md">

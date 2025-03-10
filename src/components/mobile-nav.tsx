@@ -6,6 +6,7 @@ import { Menu } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { Separator } from "@/components/ui/separator";
+import { useClientMediaQuery } from "@/hooks/useClientMediaQuery";
 
 const routes = [
   {
@@ -28,6 +29,7 @@ const routes = [
 
 export function MobileNav() {
   const [open, setOpen] = useState(false);
+  const isMobile = useClientMediaQuery("(max-width: 576px)");
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
@@ -37,7 +39,7 @@ export function MobileNav() {
           <span className="sr-only">Toggle menu</span>
         </Button>
       </SheetTrigger>
-      <SheetContent side="left" className="bg-slate-900 border-r-slate-800">
+      <SheetContent side={`${isMobile ? "bottom" : "left"}`} className="bg-slate-900 border-r-slate-800">
         <SheetHeader>
           <SheetTitle className="text-left text-[#38bdf8]">Kokunime</SheetTitle>
         </SheetHeader>
