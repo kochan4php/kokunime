@@ -27,16 +27,13 @@ export default function GenresPage() {
   ];
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-900">
+    <div className="min-h-screen flex flex-col">
       {/* Page Content */}
       <div className="container py-8">
         <h1 className="text-3xl font-bold mb-8 text-white">Anime Genres</h1>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
           {genres.map((genre) => (
-            <Card
-              key={genre}
-              className="overflow-hidden bg-slate-700 hover:bg-slate-600 transition-colors border border-slate-700 rounded-lg"
-            >
+            <Card key={genre} className="overflow-hidden transition-colors border rounded-sm">
               <CardContent className="p-6 flex items-center justify-center">
                 <Link
                   href={`/genres/${genre.toLowerCase()}`}

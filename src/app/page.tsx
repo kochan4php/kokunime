@@ -10,7 +10,7 @@ export default function Home() {
   const router = useRouter();
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-900">
+    <div className="min-h-screen flex flex-col">
       <section
         className="relative min-w-full h-[65vh] sm:h-[50vh] md:h-[60vh] lg:h-[70vh] xl:h-[80vh] 2xl:h-[75vh] bg-cover bg-center bg-no-repeat object-cover"
         style={{ backgroundImage: `url(https://placehold.co/600x400)` }}
@@ -24,7 +24,7 @@ export default function Home() {
               </h2>
               <p className="text-white/80">Released on 5:00 am</p>
               <Button
-                className="rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 px-8 w-full"
+                className="rounded-sm bg-primary text-primary-foreground hover:bg-primary/90 px-8 w-full"
                 onClick={() => {
                   router.push("/anime/1", { scroll: false });
                 }}
@@ -51,7 +51,7 @@ export default function Home() {
 
 function AnimeCard() {
   return (
-    <Card className="overflow-hidden bg-slate-700 hover:bg-slate-600 transition-colors border border-slate-700 rounded-lg">
+    <Card className="overflow-hidden transition-colors border rounded-sm">
       <AspectRatio ratio={15 / 10}>
         <Image
           src="https://placehold.co/600x400"
@@ -62,7 +62,7 @@ function AnimeCard() {
       </AspectRatio>
       <CardContent className="p-3">
         <h3 className="font-medium text-sm line-clamp-2 text-white">Anime Title Goes Here</h3>
-        <p className="text-xs text-slate-300 mt-1">Episode 12</p>
+        <p className="text-xs mt-1">Episode 12</p>
       </CardContent>
     </Card>
   );

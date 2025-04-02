@@ -16,16 +16,13 @@ export default function SeasonsPage() {
   ];
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-900">
+    <div className="min-h-screen flex flex-col">
       {/* Page Content */}
       <div className="container py-8">
         <h1 className="text-3xl font-bold mb-8 text-white">Anime Seasons</h1>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {seasons.map((season) => (
-            <Card
-              key={season.name}
-              className="overflow-hidden bg-slate-700 hover:bg-slate-600 transition-colors border border-slate-600 rounded-md"
-            >
+            <Card key={season.name} className="overflow-hidden transition-colors border rounded-sm">
               <AspectRatio ratio={16 / 9}>
                 <Image
                   src={season.image || "/placeholder.svg"}

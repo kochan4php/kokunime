@@ -4,7 +4,7 @@ import { AspectRatio } from "@/components/ui/aspect-ratio";
 
 export default function AnimeListPage() {
   return (
-    <div className="min-h-screen flex flex-col bg-slate-900">
+    <div className="min-h-screen flex flex-col">
       {/* Page Content */}
       <div className="container py-8">
         <h1 className="text-3xl font-bold mb-8 text-white">Anime List</h1>
@@ -20,7 +20,7 @@ export default function AnimeListPage() {
 
 function AnimeCard() {
   return (
-    <Card className="overflow-hidden bg-slate-700 hover:bg-slate-600 transition-colors border border-slate-700 rounded-md">
+    <Card className="overflow-hidden transition-colors border rounded-sm">
       <AspectRatio ratio={16 / 9}>
         <Image
           src="https://placehold.co/600x400"
@@ -31,7 +31,7 @@ function AnimeCard() {
       </AspectRatio>
       <CardContent className="p-3">
         <h3 className="font-medium text-sm line-clamp-2 text-white">Anime Title Goes Here</h3>
-        <p className="text-xs text-slate-300 mt-1">TV • 2023</p>
+        <p className="text-xs mt-1">TV • 2023</p>
       </CardContent>
     </Card>
   );

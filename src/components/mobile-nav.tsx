@@ -39,19 +39,14 @@ export function MobileNav() {
           <span className="sr-only">Toggle menu</span>
         </Button>
       </SheetTrigger>
-      <SheetContent side={`${isMobile ? "bottom" : "left"}`} className="bg-slate-900 border-r-slate-800">
+      <SheetContent side={`${isMobile ? "bottom" : "left"}`} className="">
         <SheetHeader>
           <SheetTitle className="text-left text-[#38bdf8]">Kokunime</SheetTitle>
         </SheetHeader>
-        <Separator className="my-4 bg-slate-700" />
+        <Separator className="my-4 " />
         <nav className="flex flex-col gap-4">
           {routes.map((route) => (
-            <Button
-              key={route.path}
-              variant="link"
-              className="justify-start px-2 hover:bg-slate-800/50 text-white"
-              asChild
-            >
+            <Button key={route.path} variant="link" className="justify-start px-2 text-white" asChild>
               <Link href={route.path} onClick={() => setOpen(false)} className="hover:text-[#38bdf8] transition-colors">
                 {route.name}
               </Link>
