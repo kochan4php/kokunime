@@ -88,9 +88,9 @@ export default function AnimeDetailPage() {
       </div>
 
       <div className="container mx-auto px-4 -mt-32 relative z-10">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 pb-14">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 pb-14">
           {/* Poster and Quick Actions */}
-          <div className="lg:col-span-1">
+          <div className="md:col-span-1">
             <div className="sticky top-24">
               <div className="relative aspect-[3/4] rounded-xl overflow-hidden mb-6 shadow-2xl">
                 <Image src={anime.coverImage || '/placeholder.svg'} alt={anime.title} fill className="object-cover" />
@@ -144,7 +144,7 @@ export default function AnimeDetailPage() {
           </div>
 
           {/* Main Content */}
-          <div className="lg:col-span-2">
+          <div className="md:col-span-2">
             <div className="mb-6">
               <h1 className="text-4xl font-bold text-white mb-2">{anime.title}</h1>
               <p className="text-xl text-purple-300 mb-4">{anime.japaneseTitle}</p>

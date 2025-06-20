@@ -218,6 +218,7 @@ export default function HomePage() {
             <Button
               variant="ghost"
               onClick={toggleMenu}
+              aria-label='Toggle menu'
               className="w-12 h-12 shrink-0 bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl text-white hover:bg-white/10 hover:border-white/20 transition-all duration-300 hamburger-button">
               <div className="relative w-6 h-6 flex items-center justify-center">
                 <Menu

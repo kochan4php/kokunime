@@ -1,6 +1,6 @@
 {
   "name": "kokunime",
-  "version": "1.0.0-beta1",
+  "version": "2.0.0-beta1",
   "private": true,
   "scripts": {
     "dev": "next dev",
