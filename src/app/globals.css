@@ -122,6 +122,9 @@
   body {
     @apply bg-background text-foreground;
   }
+  #home-page {
+    @apply bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900;
+  }
 }
 
 /* Custom scrollbar for navigation menu */

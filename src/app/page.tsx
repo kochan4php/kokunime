@@ -169,7 +169,7 @@ export default function HomePage() {
   if (!mounted || typeof window === 'undefined') return <Loading />;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+    <div className="min-h-screen" id="home-page">
       {/* Navigation */}
       <nav className="sticky top-0 z-50">
         {/* Navbar Background - Changes based on menu state */}
