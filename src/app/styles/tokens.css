@@ -1,0 +1,50 @@
+:root {
+  --bg: #fdf5eb;
+  --surface: rgba(251, 236, 225, 0.7);
+  --surface-solid: #fbece1;
+  --surface-muted: #f3dfcd;
+  --border: #e6cbb8;
+  --ink: #32201d;
+  --ink-muted: #8f7567;
+  --accent: #ff6a33;
+  --accent-strong: #e8551e;
+  --accent-2: #ea4f2e;
+  --accent-amber: #d98e2b;
+  --glow-accent: rgba(255, 106, 51, 0.35);
+  --glow-2: rgba(234, 79, 46, 0.28);
+  --glow-amber: rgba(217, 142, 43, 0.22);
+}
+
+.dark {
+  --bg: #201613;
+  --surface: rgba(47, 31, 28, 0.6);
+  --surface-solid: #2f1f1c;
+  --surface-muted: #3d2a24;
+  --border: #504136;
+  --ink: #f4e7df;
+  --ink-muted: #c7a693;
+  --accent: #ff7c47;
+  --accent-strong: #ff9a6b;
+  --accent-2: #ff8a5c;
+  --accent-amber: #f0b45f;
+  --glow-accent: rgba(255, 124, 71, 0.3);
+  --glow-2: rgba(255, 138, 92, 0.25);
+  --glow-amber: rgba(240, 180, 95, 0.2);
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-solid: var(--surface-solid);
+  --color-surface-muted: var(--surface-muted);
+  --color-border: var(--border);
+  --color-ink: var(--ink);
+  --color-ink-muted: var(--ink-muted);
+  --color-accent: var(--accent);
+  --color-accent-strong: var(--accent-strong);
+  --color-accent-2: var(--accent-2);
+  --color-accent-amber: var(--accent-amber);
+  --font-display: "Plus Jakarta Sans", "Segoe UI", system-ui, sans-serif;
+  --font-sans: "Plus Jakarta Sans", "Segoe UI", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", "SF Mono", Consolas, monospace;
+}

@@ -8,7 +8,7 @@ const Error = (): JSX.Element => (
       <div className="card-core flex flex-col items-center gap-4 p-10 text-center">
         <span className="chip">Error</span>
         <h1 className="font-display text-3xl font-extrabold tracking-tight text-ink">Terjadi kesalahan</h1>
-        <p className="text-ink-muted">Halaman ini gagal dimuat. Coba lagi dalam beberapa saat.</p>
+        <p className="text-ink-muted">Halaman ini gagal dimuat. Coba muat ulang nanti.</p>
         <button onClick={() => window.location.reload()} className="btn-primary mt-2">
           Coba lagi
         </button>

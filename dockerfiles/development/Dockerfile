@@ -1,10 +1,10 @@
-FROM node:lts-alpine AS base
-
-FROM base AS builder
+FROM node:lts-alpine
+ENV PNPM_HOME="/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
+RUN corepack enable
 WORKDIR /usr/src/app
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+RUN pnpm install --frozen-lockfile --ignore-scripts
 COPY . .
-RUN npm i --frozen-lockfile
-RUN npm uninstall -g yarn
 EXPOSE 3000
-ENTRYPOINT [ "npm", "run" ]
-CMD [ "dev" ]
+CMD ["pnpm", "dev"]

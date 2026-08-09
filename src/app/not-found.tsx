@@ -12,7 +12,7 @@ const NotFoundPage = (): JSX.Element => {
         <div className="card-core flex flex-col items-center gap-4 p-10 text-center">
           <span className="chip">404</span>
           <h1 className="font-display text-3xl font-extrabold tracking-tight text-ink">Halaman tidak ditemukan</h1>
-          <p className="text-ink-muted">Mungkin kamu tersesat. Kembali ke beranda untuk melanjutkan.</p>
+          <p className="text-ink-muted">Halaman ini nggak ada. Mungkin link-nya salah atau sudah dihapus.</p>
           <button onClick={() => router.push("/")} className="btn-primary mt-2">
             Kembali ke beranda
           </button>

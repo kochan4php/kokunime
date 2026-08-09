@@ -1,36 +1,58 @@
-<h1 align="center">🌟 Kokunime 🌟</h1>
+# Kokunime
 
-## Setup locally
+Download anime batches and episodes, all with Indonesian subtitles.
+
+This site is just a collection of download links — there's no streaming player here. You get an anime list, details, per-resolution download links, plus search and recommendations.
+
+## Getting started
+
+You'll need Node.js and pnpm.
 
 ```bash
-# cloning this project
 git clone https://github.com/kochan4php/kokunime.git
-
-# go to the project folder
 cd kokunime
 
-# install pnpm if you does'nt have
-npm i -g pnpm
-
-# install dependencies
+npm i -g pnpm   # if you don't have it
 pnpm install
-
-# run the project
 pnpm dev
 ```
 
-## Setup with docker
+Open [http://localhost:3000](http://localhost:3000).
+
+## Docker
 
 ```bash
-# cloning this project
-git clone https://github.com/kochan4php/kokunime.git
-
-# go to the project folder
-cd kokunime
-
-# run docker compose using pnpm
-pnpm docker:up
-
-# after run docker:up command, now open the url in :
-http://localhost:4000
+pnpm docker:up     # build and start the container
+pnpm docker:down   # stop the container
 ```
+
+The production image is built with pnpm multi-stage + Next.js standalone output, so it stays slim. The compose file ships with a healthcheck and resource limits.
+
+## Env
+
+| Variable | What it's for | Default |
+| --- | --- | --- |
+| `NEXT_PUBLIC_SITE_URL` | canonical, sitemap, Open Graph | `https://kokunime.netlify.app` |
+| `INTERNAL_API_URL` | URL for fetching its own API. Required when deploying behind Docker/proxy | `http://localhost:3000` |
+
+## API
+
+Every page pulls data from the internal API:
+
+- `GET /api/anime?page=N` — anime list + pagination
+- `GET /api/anime/[slug]` — anime detail
+- `GET /api/search?q=` — search anime
+- `GET /api/recommendations` — recommendations
+- `GET /api/genres` — genre list
+- `GET /api/genres/[genre]?page=N` — anime by genre
+- `GET /api/seasons` — season list
+- `GET /api/seasons/[season]?page=N` — anime by season
+
+## Scripts
+
+- `pnpm dev` — dev server
+- `pnpm build` — production build
+- `pnpm start` — run the production build
+- `pnpm lint` — ESLint
+- `pnpm prettier:fix` — format everything
+- `pnpm docker:up` / `pnpm docker:down` — start / stop the container

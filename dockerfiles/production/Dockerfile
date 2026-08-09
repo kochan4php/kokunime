@@ -1,23 +1,29 @@
 FROM node:lts-alpine AS base
-
-# Build stage
-FROM base AS builder
+ENV PNPM_HOME="/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
+RUN corepack enable
 WORKDIR /app
-COPY package.json .
-RUN npm i --frozen-lockfile
-COPY . .
-RUN npm run build
 
-# Production stage
-FROM base AS production
-RUN npm uninstall -g yarn
-WORKDIR /usr/src/app
-COPY --from=builder /app/.next /usr/src/app/.next
-COPY --from=builder /app/public /usr/src/app/public
-COPY --from=builder /app/next.config.mjs /usr/src/app/next.config.mjs
-COPY --from=builder /app/package.json /usr/src/app/package.json
-RUN npm install --omit=dev
-EXPOSE 3000
+FROM base AS deps
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+RUN pnpm install --frozen-lockfile --ignore-scripts
+
+FROM base AS builder
+ENV NEXT_TELEMETRY_DISABLED=1
+COPY --from=deps /app/node_modules ./node_modules
+COPY . .
+RUN pnpm build
+
+FROM base AS runner
 ENV NODE_ENV=production
-ENTRYPOINT [ "npm", "run" ]
-CMD [ "start" ]
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV PORT=3000
+ENV HOSTNAME="0.0.0.0"
+RUN addgroup --system --gid 1001 nodejs \
+    && adduser --system --uid 1001 nextjs
+COPY --from=builder --chown=nextjs:nodejs /app/public ./public
+COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+USER nextjs
+EXPOSE 3000
+CMD ["node", "server.js"]

@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "author": "Deo Subarno",
+  "packageManager": "pnpm@11.18.0",
   "scripts": {
     "dev": "next dev",
     "build": "next build",

@@ -1,4 +1,5 @@
 import CardSkeleton from "@/components/card-skeleton";
+import RecommendedSkeleton from "@/components/recommended-skeleton";
 import MainLayout from "@/layouts/main-layout";
 import { JSX } from "react";
 
@@ -28,6 +29,13 @@ const Loading = (): JSX.Element => (
             <CardSkeleton key={index} />
           ))}
         </div>
+      </div>
+      <div className="pb-8 md:pb-16">
+        <div className="mb-6 flex items-center gap-4">
+          <div className="skeleton h-3 w-28 rounded-full" />
+          <div className="skeleton h-7 w-48 rounded-lg" />
+        </div>
+        <RecommendedSkeleton />
       </div>
     </section>
   </MainLayout>
