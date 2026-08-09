@@ -1,17 +1,17 @@
-import MainController from "@/controllers/main.controller";
+import { getRecommendations } from "@/lib/api-client";
 import blurDataUrl from "@/data/blur-data-url";
-import { RekomendasiType } from "@/interfaces";
-import isGif from "@/utils/isGif";
+import { RecommendationType } from "@/interfaces";
+import isGif from "@/utils/is-gif";
 import Image from "next/image";
 import Link from "next/link";
 import { JSX } from "react";
 
-const RekomendasiAnime = async (): Promise<JSX.Element> => {
-  const rekomendasi = await MainController.getRekomendasi();
+const RecommendedAnime = async (): Promise<JSX.Element> => {
+  const recommendations = await getRecommendations();
 
   return (
     <div className="flex snap-x gap-4 overflow-x-auto pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-      {(rekomendasi ?? []).map((item: RekomendasiType, index: number) => {
+      {(recommendations ?? []).map((item: RecommendationType, index: number) => {
         const path = item.endpoint ? `/anime/${item.endpoint.split("/").join(" ").trim()}` : "#";
 
         return (
@@ -44,4 +44,4 @@ const RekomendasiAnime = async (): Promise<JSX.Element> => {
   );
 };
 
-export default RekomendasiAnime;
+export default RecommendedAnime;

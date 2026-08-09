@@ -1,5 +1,5 @@
-import CardSkeleton from "@/components/CardSkeleton";
-import MainLayout from "@/layouts/MainLayout";
+import CardSkeleton from "@/components/card-skeleton";
+import MainLayout from "@/layouts/main-layout";
 import { JSX } from "react";
 
 const Loading = (): JSX.Element => (

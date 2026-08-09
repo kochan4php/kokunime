@@ -1,15 +1,14 @@
-import CardAnime from "@/components/CardAnime";
-import MainController from "@/controllers/main.controller";
+import CardAnime from "@/components/card-anime";
+import { searchAnime } from "@/lib/api-client";
 import { AnimeType } from "@/interfaces";
-import MainLayout from "@/layouts/MainLayout";
-import Reveal from "@/components/Reveal";
+import MainLayout from "@/layouts/main-layout";
+import Reveal from "@/components/reveal";
 import Link from "next/link";
 import { JSX } from "react";
 
 const SearchAnime = async (props: any): Promise<JSX.Element> => {
-  const { input } = (await props.params) ?? "";
-  const query = input.split("%2B").join("+");
-  const anime: AnimeType[] = await MainController.searchAnime(query);
+  const { query } = (await props.params) ?? "";
+  const anime: AnimeType[] = await searchAnime(query);
 
   return (
     <MainLayout>

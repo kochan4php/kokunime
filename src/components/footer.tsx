@@ -13,7 +13,6 @@ const Footer = (): JSX.Element => (
         </span>
         nime
       </Link>
-      <p className="font-mono text-xs text-ink-muted">Data sumber: kusonime.com</p>
       <p className="font-mono text-xs text-ink-muted">&copy; {new Date().getFullYear()} Kokunime</p>
     </div>
   </footer>

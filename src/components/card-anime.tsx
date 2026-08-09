@@ -1,6 +1,6 @@
 import blurDataUrl from "@/data/blur-data-url";
 import { CardAnimeProps } from "@/interfaces";
-import isGif from "@/utils/isGif";
+import isGif from "@/utils/is-gif";
 import Image from "next/image";
 import Link from "next/link";
 import { JSX } from "react";

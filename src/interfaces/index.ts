@@ -38,7 +38,7 @@ export interface PaginationType {
   last_page_endpoint: string;
 }
 
-export interface RekomendasiType {
+export interface RecommendationType {
   title?: string;
   endpoint?: string;
   image?: string;

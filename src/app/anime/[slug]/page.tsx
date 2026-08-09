@@ -1,10 +1,10 @@
-import MainController from "@/controllers/main.controller";
+import { getAnimeDetail } from "@/lib/api-client";
 import blurDataUrl from "@/data/blur-data-url";
 import { AnimeGenresType, AnimeLinkPlatformType } from "@/interfaces";
-import MainLayout from "@/layouts/MainLayout";
-import NewSeriesAnime from "@/sections/NewSeriesAnime";
-import Reveal from "@/components/Reveal";
-import isGif from "@/utils/isGif";
+import MainLayout from "@/layouts/main-layout";
+import NewSeriesAnime from "@/sections/new-series-anime";
+import Reveal from "@/components/reveal";
+import isGif from "@/utils/is-gif";
 import Image from "next/image";
 import { JSX } from "react";
 
@@ -236,7 +236,7 @@ const SectionDetailAnime = ({ anime, slug }: any): JSX.Element => (
 
 const Anime = async (props: any): Promise<JSX.Element> => {
   const { slug } = (await props.params) ?? "";
-  const anime: any = await MainController.getAnimeDetail(slug);
+  const anime: any = await getAnimeDetail(slug);
 
   return (
     <MainLayout>

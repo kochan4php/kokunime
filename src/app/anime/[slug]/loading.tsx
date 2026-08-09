@@ -1,4 +1,4 @@
-import MainLayout from "@/layouts/MainLayout";
+import MainLayout from "@/layouts/main-layout";
 import { JSX } from "react";
 
 const AnimeLoading = (): JSX.Element => (

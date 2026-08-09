@@ -1,8 +1,8 @@
-import MainController from "@/controllers/main.controller";
+import { getAnimePerPage } from "@/lib/api-client";
 import blurDataUrl from "@/data/blur-data-url";
 import { AnimeType } from "@/interfaces";
-import Reveal from "@/components/Reveal";
-import isGif from "@/utils/isGif";
+import Reveal from "@/components/reveal";
+import isGif from "@/utils/is-gif";
 import Image from "next/image";
 import Link from "next/link";
 import { JSX } from "react";
@@ -24,7 +24,7 @@ const ArrowRight = (): JSX.Element => (
 
 const NewSeriesAnime = async (props: any): Promise<JSX.Element> => {
   const slug: string = props.slug;
-  const getNewSeriesAnime = await MainController.getAnimePerPage(1);
+  const getNewSeriesAnime = await getAnimePerPage(1);
   const newSeriesAnime = getNewSeriesAnime.anime?.filter((data: AnimeType) => !data?.link?.endpoint?.includes(slug));
 
   return (

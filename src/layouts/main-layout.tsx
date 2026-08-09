@@ -1,6 +1,6 @@
-import Navbar from "@/components/Navbar";
+import Navbar from "@/components/navbar";
 import { ChildrenProps } from "@/interfaces";
-import Footer from "@/components/Footer";
+import Footer from "@/components/footer";
 
 const MainLayout = ({ children }: ChildrenProps) => (
   <>

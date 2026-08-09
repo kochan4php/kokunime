@@ -3,8 +3,8 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React, { JSX, useState } from "react";
-import Input from "./Input";
-import ThemeToggle from "./ThemeToggle";
+import Input from "./input";
+import ThemeToggle from "./theme-toggle";
 
 const SearchIcon = (): JSX.Element => (
   <svg

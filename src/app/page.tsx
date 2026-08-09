@@ -1,11 +1,11 @@
-import CardAnime from "@/components/CardAnime";
-import MainController from "@/controllers/main.controller";
+import CardAnime from "@/components/card-anime";
+import { getAnimePerPage } from "@/lib/api-client";
 import { AnimeType } from "@/interfaces";
-import MainLayout from "@/layouts/MainLayout";
-import Pagination from "@/sections/Pagination";
-import RekomendasiAnime from "@/sections/RekomendasiAnime";
-import Reveal from "@/components/Reveal";
-import isGif from "@/utils/isGif";
+import MainLayout from "@/layouts/main-layout";
+import Pagination from "@/sections/pagination";
+import RecommendedAnime from "@/sections/recommended-anime";
+import Reveal from "@/components/reveal";
+import isGif from "@/utils/is-gif";
 import Image from "next/image";
 import Link from "next/link";
 import { JSX } from "react";
@@ -27,7 +27,7 @@ const DownloadIcon = (): JSX.Element => (
 
 const Home = async ({ searchParams }: any): Promise<JSX.Element> => {
   const page = Number((await searchParams)?.page) || 1;
-  const { anime: latestAnime = [], pagination } = await MainController.getAnimePerPage(page);
+  const { anime: latestAnime = [], pagination } = await getAnimePerPage(page);
   const featured = latestAnime[0];
 
   return (
@@ -120,7 +120,7 @@ const Home = async ({ searchParams }: any): Promise<JSX.Element> => {
           </div>
         </Reveal>
         <Reveal>
-          <RekomendasiAnime />
+          <RecommendedAnime />
         </Reveal>
       </section>
     </MainLayout>
