@@ -28,5 +28,8 @@ export const metadata: Metadata = {
   },
   robots: { index: true, follow: true },
   alternates: { canonical: "/", languages: { "id-ID": "/" } },
-  icons: { icon: "/favicon.ico" },
+  icons: {
+    icon: [{ url: "/icon.svg", type: "image/svg+xml" }],
+    apple: "/apple-touch-icon.png",
+  },
 };

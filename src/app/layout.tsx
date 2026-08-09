@@ -1,5 +1,6 @@
 import { ChildrenProps } from "@/interfaces";
 import NextTopLoader from "nextjs-toploader";
+import ServiceWorkerRegister from "@/components/sw-register";
 import { JetBrains_Mono, Plus_Jakarta_Sans } from "next/font/google";
 import { JSX } from "react";
 import { Viewport } from "next";
@@ -44,6 +45,7 @@ const RootLayout = ({ children }: ChildrenProps): JSX.Element => (
         <div className="absolute right-[-12%] top-2/3 h-[30rem] w-[30rem] rounded-full bg-accent-amber/10 blur-[130px]" />
       </div>
       <NextTopLoader showSpinner={false} color="#8b5cf6" />
+      <ServiceWorkerRegister />
       {children}
     </body>
   </html>
