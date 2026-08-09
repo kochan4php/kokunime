@@ -9,7 +9,7 @@ interface AnimeGridProps {
 }
 
 const AnimeGrid = ({ anime, eagerCount = 0 }: AnimeGridProps): JSX.Element => (
-  <div className="grid grid-cols-2 gap-4 md:grid-cols-3 md:gap-5 lg:grid-cols-4 xl:grid-cols-5">
+  <div className="grid grid-cols-2 gap-2 md:grid-cols-3 md:gap-3 lg:grid-cols-4 lg:gap-4 xl:grid-cols-5">
     {anime.map((item: Anime, index: number) => (
       <Reveal key={index} className="h-full" delay={(index % 5) * 80}>
         <CardAnime

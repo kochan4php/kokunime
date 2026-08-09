@@ -40,7 +40,7 @@ const ThemeToggle = (): JSX.Element => {
       type="button"
       onClick={toggle}
       aria-label={dark ? "Gunakan mode terang" : "Gunakan mode gelap"}
-      className="glass inline-flex h-10 w-10 items-center justify-center rounded-full text-ink transition-all duration-300 hover:text-accent"
+      className="glass inline-flex h-11 w-11 items-center justify-center rounded-full text-ink transition-all duration-300 hover:text-accent"
     >
       {dark ? <SunIcon /> : <MoonIcon />}
     </button>

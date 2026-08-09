@@ -1,8 +1,8 @@
-import { DownloadTarget } from "@/interfaces";
+import { DownloadOption, DownloadResolution, DownloadTarget } from "@/interfaces";
 import DownloadPlatform from "./download-platform";
 import { JSX } from "react";
 
-const DownloadGroup = ({ group }: any): JSX.Element => (
+const DownloadGroup = ({ group }: { group: DownloadOption }): JSX.Element => (
   <div className="card-shell">
     <div className="card-core p-6 md:p-8">
       <div className="flex flex-wrap items-center justify-between gap-3">

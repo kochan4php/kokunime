@@ -1,11 +1,8 @@
-import FeaturedHero from "@/sections/featured-hero";
-import LatestGrid from "@/sections/latest-grid";
-import RecommendationSection from "@/sections/recommendation-section";
-import { getAnimePerPage } from "@/lib/api-client";
-import { buildWebSiteJsonLd } from "@/lib/seo";
+import HomeContent from "@/sections/home-content";
+import HomeSkeleton from "@/sections/home-skeleton";
 import MainLayout from "@/layouts/main-layout";
 import { Metadata } from "next";
-import { JSX } from "react";
+import { JSX, Suspense } from "react";
 
 export async function generateMetadata(): Promise<Metadata> {
   return {
@@ -14,18 +11,15 @@ export async function generateMetadata(): Promise<Metadata> {
     alternates: { canonical: "/", languages: { "id-ID": "/" } },
   };
 }
+
 const Home = async ({ searchParams }: any): Promise<JSX.Element> => {
   const page = Number((await searchParams)?.page) || 1;
-  const { anime: latestAnime = [], pagination } = await getAnimePerPage(page);
 
   return (
     <MainLayout>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(buildWebSiteJsonLd()) }} />
-      <section className="container px-4 pt-6 md:pt-10">
-        <FeaturedHero featured={latestAnime[0]} />
-      </section>
-      <LatestGrid anime={latestAnime} pagination={pagination} />
-      <RecommendationSection />
+      <Suspense fallback={<HomeSkeleton />}>
+        <HomeContent page={page} />
+      </Suspense>
     </MainLayout>
   );
 };

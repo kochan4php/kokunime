@@ -1,8 +1,8 @@
 import { JSX } from "react";
 
 const RecommendedSkeleton = (): JSX.Element => (
-  <div className="flex snap-x gap-4 overflow-x-auto pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-    {Array.from({ length: 6 }).map((_, index) => (
+  <div className="flex snap-x gap-3 overflow-x-auto pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+    {Array.from({ length: 14 }).map((_, index) => (
       <div key={index} className="card-shell w-36 shrink-0 snap-start sm:w-40">
         <div className="card-core">
           <div className="skeleton aspect-[3/4]" />

@@ -6,7 +6,7 @@ import { JSX, Suspense } from "react";
 const NewSeriesSection = ({ slug }: any): JSX.Element => (
   <div className="mt-20">
     <Reveal>
-      <div className="mb-6 flex items-center gap-4">
+      <div className="mb-6 flex flex-wrap items-center gap-x-4 gap-y-2">
         <span className="chip">
           <span className="h-1.5 w-1.5 rounded-full bg-accent-2" />
           Lainnya

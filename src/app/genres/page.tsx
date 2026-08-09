@@ -1,4 +1,4 @@
-import { getGenres } from "@/lib/api-client";
+import { loadGenres } from "@/lib/loaders";
 import { buildPaginationInfo } from "@/utils/pagination";
 import { endpointSlug } from "@/utils/endpoint-slug";
 import TaxonomyCard from "@/sections/taxonomy-card";
@@ -17,7 +17,7 @@ export const metadata: Metadata = {
 const PAGE_SIZE = 24;
 
 const GenresPage = async ({ searchParams }: any): Promise<JSX.Element> => {
-  const genres = (await getGenres()) ?? [];
+  const genres = (await loadGenres()) ?? [];
   const requestedPage = Number((await searchParams)?.page) || 1;
   const totalPages = Math.max(1, Math.ceil(genres.length / PAGE_SIZE));
   const current = Math.min(requestedPage, totalPages);
@@ -35,7 +35,7 @@ const GenresPage = async ({ searchParams }: any): Promise<JSX.Element> => {
             Daftar Genre
           </h1>
         </Reveal>
-        <div className="mt-10 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
+        <div className="mt-10 grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
           {pageGenres.map((genre) => {
             const slug = endpointSlug(genre.endpoint, "genres");
             if (!slug) return null;

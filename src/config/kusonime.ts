@@ -1,4 +1,11 @@
-import axios, { AxiosInstance } from "axios";
+import axios, { AxiosError, AxiosInstance, InternalAxiosRequestConfig } from "axios";
+
+const MAX_RETRIES = 2;
+const RETRY_BASE_MS = 500;
+
+interface RetryConfig extends InternalAxiosRequestConfig {
+  retryCount?: number;
+}
 
 const kusonime: AxiosInstance = axios.create({
   baseURL: "https://kusonime.com",
@@ -20,5 +27,23 @@ const kusonime: AxiosInstance = axios.create({
     "Sec-Fetch-Site": "none",
   },
 });
+
+kusonime.interceptors.response.use(
+  (response) => response,
+  async (error: AxiosError) => {
+    const config = error.config as RetryConfig | undefined;
+    const status = error.response?.status;
+    const retryable = !status || status === 429 || status >= 500;
+
+    if (!config || !retryable || (config.retryCount ?? 0) >= MAX_RETRIES) {
+      return Promise.reject(error);
+    }
+
+    config.retryCount = (config.retryCount ?? 0) + 1;
+    const delay = RETRY_BASE_MS * 2 ** config.retryCount;
+    await new Promise((resolve) => setTimeout(resolve, delay));
+    return kusonime.request(config);
+  },
+);
 
 export default kusonime;

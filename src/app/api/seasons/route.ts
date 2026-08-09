@@ -1,9 +1,9 @@
 import { getSeasons } from "@/services/scraper";
-import { NextResponse } from "next/server";
+import { respond } from "@/lib/api-handler";
+import { NextRequest } from "next/server";
 
 export const dynamic = "force-dynamic";
 
-export async function GET() {
-  const data = await getSeasons();
-  return NextResponse.json(data);
+export async function GET(request: NextRequest) {
+  return respond(request, () => getSeasons());
 }

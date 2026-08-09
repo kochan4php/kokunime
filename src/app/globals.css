@@ -3,6 +3,7 @@
 @import "./styles/surfaces.css";
 @import "./styles/elements.css";
 @import "./styles/base.css";
+@import "./styles/navbar.css";
 @import "./styles/reveal.css";
 @import "./styles/skeleton.css";
 @import "./styles/theme-transition.css";

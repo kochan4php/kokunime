@@ -10,7 +10,6 @@ services:
             - 3000:3000
         environment:
             - NODE_ENV=production
-            - INTERNAL_API_URL=http://localhost:3000
             # - NEXT_PUBLIC_SITE_URL=https://example.com
         healthcheck:
             test: ["CMD", "wget", "--spider", "-q", "http://localhost:3000"]

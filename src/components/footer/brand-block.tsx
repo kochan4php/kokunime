@@ -6,17 +6,17 @@ const BrandBlock = (): JSX.Element => (
   <div className="max-w-sm">
     <Link
       href="/"
-      className="font-display text-2xl font-extrabold tracking-tight text-ink transition-colors duration-200 hover:text-ink-muted"
+      className="font-display text-3xl font-extrabold tracking-tight text-ink transition-colors duration-200 hover:text-ink-muted"
     >
       <span className="bg-gradient-to-r from-accent via-accent-2 to-accent-amber bg-clip-text text-transparent">
         Koku
       </span>
       nime
     </Link>
-    <p className="mt-3 text-sm leading-relaxed text-ink-muted">
+    <p className="mt-4 text-sm leading-relaxed text-ink-muted">
       Kumpulan link download anime batch dan episode, semua dengan subtitle Indonesia.
     </p>
-    <div className="mt-5 flex flex-wrap gap-2">
+    <div className="mt-6 flex flex-wrap gap-2">
       {footerTags.map((tag) => (
         <span
           key={tag}

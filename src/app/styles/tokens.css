@@ -44,7 +44,7 @@
   --color-accent-strong: var(--accent-strong);
   --color-accent-2: var(--accent-2);
   --color-accent-amber: var(--accent-amber);
-  --font-display: "Plus Jakarta Sans", "Segoe UI", system-ui, sans-serif;
+  --font-display: var(--font-sans);
   --font-sans: "Plus Jakarta Sans", "Segoe UI", system-ui, sans-serif;
   --font-mono: "JetBrains Mono", "SF Mono", Consolas, monospace;
 }

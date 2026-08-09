@@ -4,9 +4,10 @@ import InfoSide from "./info-side";
 import NewSeriesSection from "./new-series-section";
 import Synopsis from "./synopsis";
 import Reveal from "@/components/reveal";
+import { AnimeDetail } from "@/interfaces";
 import { JSX } from "react";
 
-const SectionDetail = ({ anime, slug }: any): JSX.Element => (
+const SectionDetail = ({ anime, slug }: { anime: AnimeDetail; slug: string }): JSX.Element => (
   <section className="container px-4 py-8 md:py-12">
     <Reveal>
       <DetailHero anime={anime} />

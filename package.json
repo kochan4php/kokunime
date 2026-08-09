@@ -9,6 +9,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
+    "test": "vitest run",
     "prettier:check": "prettier . --check",
     "prettier:fix": "prettier . --write",
     "docker:up": "pnpm docker:down && docker compose up -d",
@@ -36,7 +37,8 @@
     "postcss": "^8.5.26",
     "prettier": "^3.9.6",
     "tailwindcss": "^4.3.3",
-    "typescript": "^6.0.3"
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.10"
   },
   "lint-staged": {
     "**/*.{js,jsx,ts,tsx}": [

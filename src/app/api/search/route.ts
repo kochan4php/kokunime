@@ -1,10 +1,10 @@
 import { searchAnime } from "@/services/scraper";
-import { NextRequest, NextResponse } from "next/server";
+import { respond } from "@/lib/api-handler";
+import { NextRequest } from "next/server";
 
 export const dynamic = "force-dynamic";
 
 export async function GET(request: NextRequest) {
   const query = request.nextUrl.searchParams.get("q") ?? "";
-  const data = await searchAnime(query);
-  return NextResponse.json(data);
+  return respond(request, () => searchAnime(query));
 }

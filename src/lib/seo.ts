@@ -1,3 +1,4 @@
+import { AnimeDetail } from "@/interfaces";
 import { SITE_NAME, SITE_URL } from "./site";
 
 export const buildWebSiteJsonLd = (): Record<string, unknown> => ({
@@ -15,7 +16,7 @@ export const buildWebSiteJsonLd = (): Record<string, unknown> => ({
   },
 });
 
-export const buildAnimeJsonLd = (anime: any, slug: string): Record<string, unknown> => ({
+export const buildAnimeJsonLd = (anime: AnimeDetail, slug: string): Record<string, unknown> => ({
   "@context": "https://schema.org",
   "@type": "TVSeries",
   name: anime.title,

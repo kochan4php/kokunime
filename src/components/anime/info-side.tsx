@@ -1,7 +1,8 @@
 import { ArrowDownIcon } from "@/components/icons";
+import { AnimeDetail } from "@/interfaces";
 import { JSX } from "react";
 
-const InfoSide = ({ anime }: any): JSX.Element => (
+const InfoSide = ({ anime }: { anime: AnimeDetail }): JSX.Element => (
   <div className="card-shell">
     <div className="card-core flex flex-col justify-between gap-6 p-7 md:p-8">
       <div>

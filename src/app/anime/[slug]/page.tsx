@@ -1,8 +1,9 @@
 import SectionDetail from "@/components/anime/section-detail";
-import { getAnimeDetail } from "@/lib/api-client";
+import { loadAnimeDetail } from "@/lib/loaders";
 import { buildAnimeJsonLd, buildBreadcrumbJsonLd } from "@/lib/seo";
 import { buildDetailMetadata } from "@/lib/detail-metadata";
 import MainLayout from "@/layouts/main-layout";
+import { AnimeDetail } from "@/interfaces";
 import { Metadata } from "next";
 import { JSX } from "react";
 
@@ -12,13 +13,13 @@ export async function generateMetadata({ params }: any): Promise<Metadata> {
 
 const Anime = async (props: any): Promise<JSX.Element> => {
   const { slug } = (await props.params) ?? "";
-  const anime: any = await getAnimeDetail(slug);
+  const anime: AnimeDetail = await loadAnimeDetail(slug);
 
   return (
     <MainLayout>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(buildBreadcrumbJsonLd(anime.title, slug)) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(buildBreadcrumbJsonLd(anime.title ?? "Anime", slug)) }}
       />
       <script
         type="application/ld+json"

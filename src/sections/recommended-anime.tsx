@@ -1,15 +1,15 @@
 import AnimeImage from "@/components/anime-image";
 import Reveal from "@/components/reveal";
-import { getRecommendations } from "@/lib/api-client";
+import { loadRecommendations } from "@/lib/loaders";
 import { Recommendation } from "@/interfaces";
 import Link from "next/link";
 import { JSX } from "react";
 
 const RecommendedAnime = async (): Promise<JSX.Element> => {
-  const recommendations = await getRecommendations();
+  const recommendations = await loadRecommendations();
 
   return (
-    <div className="flex snap-x gap-4 overflow-x-auto pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+    <div className="flex snap-x gap-3 overflow-x-auto pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
       {(recommendations ?? []).map((item: Recommendation, index: number) => {
         const path = item.endpoint ? `/anime/${item.endpoint.split("/").join(" ").trim()}` : "#";
 

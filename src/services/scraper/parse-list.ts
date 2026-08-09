@@ -11,7 +11,7 @@ export function formatAnimeData($: CheerioAPI): Anime[] {
     .each((_, el) => {
       const title = $(el).find(".content > h2 > a").text();
       const release = $(el).find(".content > p").text().trim().split("Genre")[0].trim().split("Admin")[1].trim();
-      const genres = $(el).find(".content > p").text().trim().split("Genre")[1].trim().split(", ");
+      const genres = $(el).find(".content > p").text().trim().split("Genre")[1].replace(/^:\s*/, "").trim().split(", ");
       const link = {
         endpoint: $(el).find(".thumb a").attr("href")?.replace(KUSONIME_URL, ""),
         url: $(el).find(".thumb a").attr("href"),

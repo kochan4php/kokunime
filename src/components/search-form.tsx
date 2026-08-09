@@ -8,9 +8,10 @@ import React, { JSX, useState } from "react";
 interface SearchFormProps {
   className?: string;
   inputClassName?: string;
+  onSubmit?: () => void;
 }
 
-const SearchForm = ({ className = "", inputClassName = "pl-10" }: SearchFormProps): JSX.Element => {
+const SearchForm = ({ className = "", inputClassName = "pl-10", onSubmit }: SearchFormProps): JSX.Element => {
   const router = useRouter();
   const [inputValue, setInputValue] = useState<string>("");
 
@@ -19,6 +20,7 @@ const SearchForm = ({ className = "", inputClassName = "pl-10" }: SearchFormProp
     const query = inputValue.trim();
     if (!query) return;
     router.push(`/search/${query.split(" ").join("+")}`);
+    onSubmit?.();
   };
 
   return (

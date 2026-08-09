@@ -1,0 +1,31 @@
+import { describe, expect, it } from "vitest";
+import { load } from "cheerio";
+import { getDownloadLinks } from "@/services/scraper/parse-download";
+
+const html = `
+<div class="venser">
+  <div class="smokeddl">
+    <div class="smokettl">Batch</div>
+    <div class="smokeurl">
+      <strong>360p</strong>
+      <a href="https://example.com/a.mp4">Mega</a>
+      <a href="https://example.com/b.mp4">Mediafire</a>
+    </div>
+    <div class="smokeurl">
+      <strong>1080p</strong>
+      <a href="https://example.com/c.mp4">Google Drive</a>
+    </div>
+  </div>
+</div>`;
+
+describe("getDownloadLinks", () => {
+  it("parses download groups, resolutions and platforms", () => {
+    const download = getDownloadLinks(load(html), ".smokeddl", ".smokeurl", ".smokettl");
+    expect(download).toHaveLength(1);
+    expect(download[0].title).toBe("Batch");
+    expect(download[0].link_download).toHaveLength(2);
+    expect(download[0].link_download[0].resolusi).toBe("360p");
+    expect(download[0].link_download[0].link).toHaveLength(2);
+    expect(download[0].link_download[0].link[0].platform).toBe("Mega");
+  });
+});

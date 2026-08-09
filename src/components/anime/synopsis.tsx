@@ -1,7 +1,8 @@
 import Reveal from "@/components/reveal";
+import { AnimeDetail } from "@/interfaces";
 import { JSX } from "react";
 
-const Synopsis = ({ anime }: any): JSX.Element => (
+const Synopsis = ({ anime }: { anime: AnimeDetail }): JSX.Element => (
   <Reveal>
     <div className="card-shell">
       <div className="card-core p-7 md:p-10">

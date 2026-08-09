@@ -1,8 +1,7 @@
-import { getSeasons } from "@/lib/api-client";
+import { loadSeasons } from "@/lib/loaders";
 import { buildPaginationInfo } from "@/utils/pagination";
-import { endpointSlug } from "@/utils/endpoint-slug";
 import { groupSeasonsByYear, orderYears } from "@/utils/seasons";
-import TaxonomyCard from "@/sections/taxonomy-card";
+import SeasonYearGroup from "@/sections/season-year-group";
 import PaginationBar from "@/sections/pagination/bar";
 import MainLayout from "@/layouts/main-layout";
 import Reveal from "@/components/reveal";
@@ -18,7 +17,7 @@ export const metadata: Metadata = {
 const YEARS_PER_PAGE = 4;
 
 const SeasonsPage = async ({ searchParams }: any): Promise<JSX.Element> => {
-  const seasons = (await getSeasons()) ?? [];
+  const seasons = await loadSeasons();
   const groups = groupSeasonsByYear(seasons);
   const years = orderYears(groups);
 
@@ -41,19 +40,7 @@ const SeasonsPage = async ({ searchParams }: any): Promise<JSX.Element> => {
         </Reveal>
         <div className="mt-10 space-y-12">
           {pageYears.map((year) => (
-            <div key={year}>
-              <Reveal>
-                <h2 className="mb-4 font-display text-xl font-bold tracking-tight text-ink">{year}</h2>
-              </Reveal>
-              <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
-                {groups[year].map((season) => {
-                  const slug = endpointSlug(season.endpoint, "seasons");
-                  if (!slug) return null;
-
-                  return <TaxonomyCard key={slug} href={`/seasons/${slug}`} title={season.name} meta="Musim" />;
-                })}
-              </div>
-            </div>
+            <SeasonYearGroup key={year} year={year} seasons={groups[year]} />
           ))}
         </div>
         <PaginationBar pagination={buildPaginationInfo(current, totalPages)} />

@@ -30,10 +30,9 @@ The production image is built with pnpm multi-stage + Next.js standalone output,
 
 ## Env
 
-| Variable               | What it's for                                                             | Default                        |
-| ---------------------- | ------------------------------------------------------------------------- | ------------------------------ |
-| `NEXT_PUBLIC_SITE_URL` | canonical, sitemap, Open Graph                                            | `https://kokunime.netlify.app` |
-| `INTERNAL_API_URL`     | URL for fetching its own API. Required when deploying behind Docker/proxy | `http://localhost:3000`        |
+| Variable               | What it's for                  | Default                        |
+| ---------------------- | ------------------------------ | ------------------------------ |
+| `NEXT_PUBLIC_SITE_URL` | canonical, sitemap, Open Graph | `https://kokunime.netlify.app` |
 
 ## API
 

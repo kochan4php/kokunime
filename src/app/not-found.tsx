@@ -1,5 +1,6 @@
 "use client";
 
+import ErrorCard from "@/components/error-card";
 import { useRouter } from "next/navigation";
 import { JSX } from "react";
 
@@ -7,18 +8,24 @@ const NotFoundPage = (): JSX.Element => {
   const router = useRouter();
 
   return (
-    <section className="flex min-h-screen items-center justify-center px-4">
-      <div className="card-shell max-w-lg w-full">
-        <div className="card-core flex flex-col items-center gap-4 p-10 text-center">
-          <span className="chip">404</span>
-          <h1 className="font-display text-3xl font-extrabold tracking-tight text-ink">Halaman tidak ditemukan</h1>
-          <p className="text-ink-muted">Halaman ini nggak ada. Mungkin link-nya salah atau sudah dihapus.</p>
-          <button onClick={() => router.push("/")} className="btn-primary mt-2">
-            Kembali ke beranda
-          </button>
-        </div>
+    <ErrorCard
+      code="404"
+      label="Halaman tidak ditemukan"
+      title="Kayaknya kamu nyasar"
+      message="Halaman ini nggak ada. Mungkin link-nya salah atau sudah dihapus."
+    >
+      <div className="mt-2 flex flex-wrap items-center justify-center gap-2">
+        <button onClick={() => router.push("/")} className="btn-primary">
+          Kembali ke beranda
+        </button>
+        <button
+          onClick={() => router.back()}
+          className="glass inline-flex h-11 items-center gap-2 rounded-full px-6 text-sm font-semibold text-ink transition-all duration-300 hover:text-accent active:scale-95"
+        >
+          Balik ke halaman sebelumnya
+        </button>
       </div>
-    </section>
+    </ErrorCard>
   );
 };
 

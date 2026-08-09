@@ -1,5 +1,6 @@
 import { ChildrenProps } from "@/interfaces";
 import NextTopLoader from "nextjs-toploader";
+import { JetBrains_Mono, Plus_Jakarta_Sans } from "next/font/google";
 import { JSX } from "react";
 import { Viewport } from "next";
 import "./globals.css";
@@ -12,18 +13,29 @@ export const viewport: Viewport = {
   themeColor: "#fdf5eb",
 };
 
+const plusJakartaSans = Plus_Jakarta_Sans({
+  subsets: ["latin"],
+  variable: "--font-sans",
+  weight: ["400", "500", "600", "700", "800"],
+});
+
+const jetBrainsMono = JetBrains_Mono({
+  subsets: ["latin"],
+  variable: "--font-mono",
+  weight: ["400", "500"],
+});
+
 const themeScript = `(function(){try{var t=localStorage.getItem("theme");var d=t?t==="dark":true;document.documentElement.classList.toggle("dark",d);}catch(e){}})();`;
 
 const RootLayout = ({ children }: ChildrenProps): JSX.Element => (
-  <html lang="id" className="scroll-smooth" data-scroll-behavior="smooth" suppressHydrationWarning>
+  <html
+    lang="id"
+    className={`scroll-smooth ${plusJakartaSans.variable} ${jetBrainsMono.variable}`}
+    data-scroll-behavior="smooth"
+    suppressHydrationWarning
+  >
     <head>
       <script dangerouslySetInnerHTML={{ __html: themeScript }} />
-      <link rel="preconnect" href="https://fonts.googleapis.com" />
-      <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-      <link
-        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
-        rel="stylesheet"
-      />
     </head>
     <body suppressHydrationWarning className="min-h-screen">
       <div aria-hidden className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">

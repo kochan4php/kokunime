@@ -2,18 +2,20 @@ import AnimeImage from "@/components/anime-image";
 import DetailMeta from "./detail-meta";
 import GenreTags from "./genre-tags";
 import blurDataUrl from "@/data/blur-data-url";
+import { AnimeDetail } from "@/interfaces";
 import { JSX } from "react";
 
-const DetailHero = ({ anime }: any): JSX.Element => (
+const DetailHero = ({ anime }: { anime: AnimeDetail }): JSX.Element => (
   <div className="card-shell">
     <div className="card-core grid md:grid-cols-[320px_1fr]">
       <div className="relative aspect-[3/4] md:aspect-auto md:min-h-full">
         {anime.image && (
           <AnimeImage
             fill
+            priority
             sizes="(max-width: 768px) 100vw, 320px"
             src={anime.image}
-            alt={anime.title}
+            alt={anime.title ?? ""}
             placeholder="blur"
             blurDataURL={blurDataUrl}
           />

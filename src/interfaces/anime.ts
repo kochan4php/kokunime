@@ -1,3 +1,6 @@
+import { Genre } from "./reference";
+import { DownloadOption } from "./download";
+
 export interface Anime {
   title: string;
   release: string;
@@ -11,7 +14,24 @@ export interface Anime {
 
 export interface AnimePage {
   anime: Anime[];
-  pagination: PaginationInfo;
+  pagination: PaginationInfo | null;
+}
+
+export interface AnimeDetail {
+  title?: string;
+  japanese?: string;
+  image?: string;
+  producer?: string;
+  type?: string;
+  status?: string;
+  total_episode?: string;
+  score?: string;
+  duration?: string;
+  release_on?: string;
+  synopsis?: string;
+  genre: Genre[];
+  season?: { name?: string; url?: string; endpoint?: string };
+  download: DownloadOption[];
 }
 
 export interface PaginationInfo {

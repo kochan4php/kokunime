@@ -1,12 +1,12 @@
 import kusonime from "@/config/kusonime";
 import { AnimePage } from "@/interfaces";
-import logger from "@/utils/logger";
+import { cached, TTL } from "@/services/cache";
 import { load } from "cheerio";
 import { formatAnimeData } from "./parse";
 import { parsePagination } from "./parse-pagination";
 
 export async function getAnimePerPage(page: number): Promise<AnimePage> {
-  try {
+  return cached(`anime:${page}`, TTL.anime, async () => {
     const response = await kusonime.get(`/page/${page}`);
     const $ = load(response.data);
     const anime = formatAnimeData($);
@@ -21,8 +21,5 @@ export async function getAnimePerPage(page: number): Promise<AnimePage> {
     };
 
     return { anime, pagination } as AnimePage;
-  } catch (err: any) {
-    logger.log("Error", err.message, err.stack);
-    return {} as AnimePage;
-  }
+  });
 }

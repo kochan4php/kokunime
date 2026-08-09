@@ -24,6 +24,17 @@
     outline: 2px solid var(--accent);
     outline-offset: 2px;
   }
+
+  a,
+  button,
+  input,
+  select,
+  textarea,
+  label,
+  summary,
+  [role="button"] {
+    cursor: pointer;
+  }
 }
 
 ::-webkit-scrollbar {

@@ -6,7 +6,7 @@ import { JSX, Suspense } from "react";
 const RecommendationSection = (): JSX.Element => (
   <section id="recommendations" className="container scroll-mt-28 px-4 pb-16 md:pb-24">
     <Reveal>
-      <div className="mb-6 flex items-center gap-4">
+      <div className="mb-6 flex flex-wrap items-center gap-x-4 gap-y-2">
         <span className="chip">
           <span className="h-1.5 w-1.5 rounded-full bg-accent-amber" />
           Rekomendasi

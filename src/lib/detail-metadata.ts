@@ -1,10 +1,10 @@
-import { getAnimeDetail } from "@/lib/api-client";
+import { loadAnimeDetail } from "@/lib/loaders";
 import { truncate } from "@/utils/truncate";
 import { Metadata } from "next";
 
 export async function buildDetailMetadata(params: any): Promise<Metadata> {
   const { slug } = await params;
-  const anime = await getAnimeDetail(slug);
+  const anime = await loadAnimeDetail(slug);
   const title = anime.title ?? "Detail Anime";
   const description = truncate(anime.synopsis, 160);
   const images = anime.image ? [{ url: anime.image, alt: title }] : [];

@@ -1,15 +1,13 @@
 import kusonime from "@/config/kusonime";
-import logger from "@/utils/logger";
+import { AnimeDetail } from "@/interfaces";
+import { cached, TTL } from "@/services/cache";
 import { load } from "cheerio";
 import { parseAnimeDetail } from "./parse";
 
-export async function getAnimeDetail(slug: string) {
-  try {
+export async function getAnimeDetail(slug: string): Promise<AnimeDetail> {
+  return cached(`anime-detail:${slug}`, TTL.detail, async () => {
     const response = await kusonime.get(`/${slug}`);
     const $ = load(response.data);
-    return parseAnimeDetail($);
-  } catch (err: any) {
-    logger.log("Error", err.message, err.stack);
-    return {};
-  }
+    return parseAnimeDetail($) as AnimeDetail;
+  });
 }

@@ -1,17 +1,17 @@
 import AnimeImage from "@/components/anime-image";
 import Reveal from "@/components/reveal";
-import { getAnimePerPage } from "@/lib/api-client";
+import { loadAnimePage } from "@/lib/loaders";
 import { Anime } from "@/interfaces";
 import Link from "next/link";
 import { JSX } from "react";
 
 const NewSeriesAnime = async (props: any): Promise<JSX.Element> => {
   const slug: string = props.slug;
-  const getNewSeriesAnime = await getAnimePerPage(1);
+  const getNewSeriesAnime = await loadAnimePage(1);
   const newSeriesAnime = getNewSeriesAnime.anime?.filter((data: Anime) => !data?.link?.endpoint?.includes(slug));
 
   return (
-    <div className="flex snap-x gap-4 overflow-x-auto pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+    <div className="flex snap-x gap-3 overflow-x-auto pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
       {newSeriesAnime?.map((item: Anime, index: number) => (
         <Link
           key={index}
