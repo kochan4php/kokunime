@@ -6,6 +6,7 @@ export interface ChildrenProps {
 
 export interface InputProps {
   width?: string;
+  className?: string;
   type: string;
   name: string;
   placeholder: string;
@@ -19,6 +20,7 @@ export interface CardAnimeProps {
   alt?: string;
   title: string;
   path: string;
+  meta?: string;
 }
 
 export interface GetAnimePerPageType {

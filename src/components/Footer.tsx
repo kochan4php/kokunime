@@ -2,19 +2,19 @@ import Link from "next/link";
 import { JSX } from "react";
 
 const Footer = (): JSX.Element => (
-  <footer>
-    <div className="px-4 py-2.5 text-center text-white min-w-full bg-gradient-to-r from-gray-900 to-gray-800 border-t border-slate-600 border-opacity-60">
-      <div className="container">
-        <div className="flex flex-col md:flex-row justify-center items-center w-full gap-5">
-          <section>
-            <h1 className="text-center bg-gradient-to-r from-sky-500 to-indigo-500 bg-clip-text text-transparent font-bold text-2xl md:text-3xl">
-              <Link href="/" className="selection:bg-yellow-700 selection:text-yellow-400">
-                Kokunime
-              </Link>
-            </h1>
-          </section>
-        </div>
-      </div>
+  <footer className="border-t border-border">
+    <div className="container flex flex-col items-center justify-between gap-3 px-4 py-10 md:flex-row md:px-6">
+      <Link
+        href="/"
+        className="font-display text-lg font-extrabold tracking-tight text-ink transition-colors duration-200 hover:text-ink-muted"
+      >
+        <span className="bg-gradient-to-r from-accent via-accent-2 to-accent-cyan bg-clip-text text-transparent">
+          Koku
+        </span>
+        nime
+      </Link>
+      <p className="font-mono text-xs text-ink-muted">Data sumber: kusonime.com</p>
+      <p className="font-mono text-xs text-ink-muted">&copy; {new Date().getFullYear()} Kokunime</p>
     </div>
   </footer>
 );

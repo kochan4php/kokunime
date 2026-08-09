@@ -3,14 +3,17 @@
 import { JSX } from "react";
 
 const Error = (): JSX.Element => (
-  <section className="flex flex-col items-start md:items-center justify-center min-h-screen mx-4">
-    <h1 className="text-3xl md:text-4xl font-bold mb-4">Something went wrong! Try again later.</h1>
-    <button
-      onClick={() => window.location.reload()}
-      className="px-3 py-1.5 md:mx-7 rounded text-slate-5 active:ring active:ring-sky-500 hover:border-sky-500 border-2 border-transparent transition-all duration-300 selection:bg-orange-500 selection:text-orange-900 text-base md:text-lg font-semibold bg-slate-900"
-    >
-      Or try again now
-    </button>
+  <section className="flex min-h-screen items-center justify-center px-4">
+    <div className="card-shell max-w-lg w-full">
+      <div className="card-core flex flex-col items-center gap-4 p-10 text-center">
+        <span className="chip">Error</span>
+        <h1 className="font-display text-3xl font-extrabold tracking-tight text-ink">Terjadi kesalahan</h1>
+        <p className="text-ink-muted">Halaman ini gagal dimuat. Coba lagi dalam beberapa saat.</p>
+        <button onClick={() => window.location.reload()} className="btn-primary mt-2">
+          Coba lagi
+        </button>
+      </div>
+    </div>
   </section>
 );
 

@@ -3,78 +3,126 @@ import MainController from "@/controllers/main.controller";
 import { AnimeType } from "@/interfaces";
 import MainLayout from "@/layouts/MainLayout";
 import Pagination from "@/sections/Pagination";
-// import RekomendasiAnime from "@/sections/RekomendasiAnime";
+import RekomendasiAnime from "@/sections/RekomendasiAnime";
+import Reveal from "@/components/Reveal";
+import isGif from "@/utils/isGif";
+import Image from "next/image";
 import Link from "next/link";
 import { JSX } from "react";
 
-const Home = async (props: any): Promise<JSX.Element> => {
-  const page = (await props.params.page) ?? 1;
-  const { anime: latestAnime, pagination } = await MainController.getAnimePerPage(page);
+const DownloadIcon = (): JSX.Element => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className="h-3.5 w-3.5"
+  >
+    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" />
+  </svg>
+);
+
+const Home = async ({ searchParams }: any): Promise<JSX.Element> => {
+  const page = Number((await searchParams)?.page) || 1;
+  const { anime: latestAnime = [], pagination } = await MainController.getAnimePerPage(page);
+  const featured = latestAnime[0];
 
   return (
     <MainLayout>
-      <div className="min-h-full min-w-full">
-        <section
-          className="bg-slate-800 min-w-full bg-cover bg-center bg-no-repeat object-cover"
-          style={{ backgroundImage: `url(${latestAnime[0]?.link?.image})` }}
-        >
-          <div className="min-h-[40vh] sm:min-h-[50vh] md:min-h-[60vh] lg:min-h-[70vh] xl:min-h-[80vh] 2xl:min-h-[75vh] bg-slate-800 bg-opacity-30 backdrop-blur-lg backdrop-brightness-105 flex items-center justify-start px-2 md:px-6 pb-6">
-            <div className="container max-w-full px-3 lg:px-0 lg:max-w-3xl">
-              <div className="my-6">
-                <h1 className="text-slate-50 text-2xl md:text-4xl font-bold mb-4 selection:bg-red-700 selection:text-red-200">
-                  {latestAnime[0]?.title}
-                </h1>
-              </div>
-              <div className="my-6">
-                <p className="text-lg md:text-2xl text-slate-200 font-semibold truncate selection:bg-teal-400 selection:text-teal-900">
-                  {latestAnime[0]?.release}
-                </p>
-              </div>
-              <div className="my-6">
-                <Link href={`/anime/${latestAnime[0]?.link?.endpoint?.split("/").join(" ").trim()}`} passHref>
-                  <button className="px-1 py-1.5 bg-slate-900 rounded-full text-slate-5 active:ring active:ring-sky-500 hover:border-sky-500 border-2 border-transparent transition-all duration-300 selection:bg-orange-500 selection:text-orange-900 text-base md:text-lg font-semibold w-full h-full">
-                    Detail
-                  </button>
-                </Link>
+      <section className="container px-4 pt-6 md:pt-10">
+        <Reveal>
+          <div className="card-shell group">
+            <div className="card-core">
+              <div className="grid md:grid-cols-2">
+                <div className="relative aspect-[16/10] overflow-hidden md:aspect-auto md:min-h-[26rem]">
+                  {featured?.link?.image && (
+                    <Image
+                      src={featured.link.image}
+                      alt=""
+                      fill
+                      priority
+                      unoptimized={isGif(featured.link.image)}
+                      sizes="(max-width: 768px) 100vw, 50vw"
+                      className="object-cover transition-transform duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:scale-[1.02]"
+                    />
+                  )}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent md:bg-gradient-to-r" />
+                  <span className="absolute left-5 top-5 rounded-full bg-black/40 px-3 py-1 font-mono text-[10px] uppercase tracking-[0.15em] text-white backdrop-blur-md">
+                    Update Terbaru
+                  </span>
+                </div>
+                <div className="flex flex-col justify-center gap-4 p-7 md:p-12">
+                  <h1 className="font-display text-3xl font-extrabold leading-[1.1] tracking-tight text-ink md:text-5xl">
+                    {featured?.title ?? "Katalog anime terbaru"}
+                  </h1>
+                  <p className="text-ink-muted">{featured?.release ?? "Koleksi anime terbaru setiap hari."}</p>
+                  {featured?.link?.endpoint && (
+                    <Link
+                      href={`/anime/${featured.link.endpoint.split("/").join(" ").trim()}`}
+                      className="btn-primary mt-2 w-max"
+                    >
+                      Download Anime
+                      <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-white/20 transition-transform duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:translate-y-0.5">
+                        <DownloadIcon />
+                      </span>
+                    </Link>
+                  )}
+                </div>
               </div>
             </div>
           </div>
-        </section>
-        <section className="min-h-screen min-w-full bg-gradient-to-tl from-slate-900 via-slate-800 to-slate-900 pt-16 pb-2 px-4">
-          <div id="update-now">
-            <div className="container md:px-4">
-              <h1 className="text-sky-300 mb-6 font-bold text-2xl md:text-3xl selection:bg-teal-500 selection:text-teal-900 ">
+        </Reveal>
+      </section>
+
+      <section className="container px-4 py-16 md:py-24">
+        <Reveal>
+          <div className="mb-8 flex items-end justify-between gap-6">
+            <div>
+              <span className="chip">
+                <span className="h-1.5 w-1.5 rounded-full bg-accent" />
+                Katalog
+              </span>
+              <h2 className="mt-3 font-display text-2xl font-extrabold tracking-tight text-ink md:text-3xl">
                 Update Terbaru
-              </h1>
-              <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 lg:gap-6">
-                {latestAnime.map((item: AnimeType, index: number) => (
-                  <CardAnime
-                    key={index}
-                    path={`/anime/${item?.link?.endpoint?.split("/").join(" ").trim()}`}
-                    src={item?.link?.image as string}
-                    title={item?.title}
-                    alt={item?.title}
-                  />
-                ))}
-              </div>
+              </h2>
             </div>
+            <p className="hidden font-mono text-xs uppercase tracking-widest text-ink-muted md:block">
+              Halaman {pagination?.current_page ?? 1} dari {pagination?.total_page ?? 1}
+            </p>
           </div>
-          <div className="container my-8 px-3 md:px-4 flex flex-col items-center gap-2">
-            <Pagination pagination={pagination} />
+        </Reveal>
+        <div className="grid grid-cols-2 gap-4 md:grid-cols-3 md:gap-5 lg:grid-cols-4 xl:grid-cols-5">
+          {latestAnime.map((item: AnimeType, index: number) => (
+            <Reveal key={index} className="h-full" delay={(index % 5) * 80}>
+              <CardAnime
+                path={`/anime/${item?.link?.endpoint?.split("/").join(" ").trim()}`}
+                src={item?.link?.image as string}
+                title={item?.title}
+                meta={item?.release}
+              />
+            </Reveal>
+          ))}
+        </div>
+        <Pagination pagination={pagination} />
+      </section>
+
+      <section className="container px-4 pb-16 md:pb-24">
+        <Reveal>
+          <div className="mb-6 flex items-center gap-4">
+            <span className="chip">
+              <span className="h-1.5 w-1.5 rounded-full bg-accent-cyan" />
+              Rekomendasi
+            </span>
+            <h2 className="font-display text-2xl font-extrabold tracking-tight text-ink">Rekomendasi Anime</h2>
           </div>
-          {/* <div className="container my-12 md:px-4">
-            <hr className="border-t border-t-slate-600" />
-          </div>
-          <div id="recommendations">
-            <div className="mb-6 container md:px-4">
-              <h1 className="text-sky-300 mb-6 font-bold text-2xl md:text-3xl selection:bg-teal-500 selection:text-teal-900 ">
-                Rekomendasi Anime
-              </h1>
-              <RekomendasiAnime />
-            </div>
-          </div> */}
-        </section>
-      </div>
+        </Reveal>
+        <Reveal>
+          <RekomendasiAnime />
+        </Reveal>
+      </section>
     </MainLayout>
   );
 };

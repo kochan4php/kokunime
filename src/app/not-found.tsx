@@ -7,14 +7,17 @@ const NotFoundPage = (): JSX.Element => {
   const router = useRouter();
 
   return (
-    <section className="flex flex-col items-start md:items-center justify-center min-h-screen mx-4">
-      <h1 className="text-3xl md:text-4xl font-bold mb-4">{"Not Found this Page. Maybe you lost :("}</h1>
-      <button
-        onClick={() => router.push("/")}
-        className="px-3 py-1.5 md:mx-7 rounded text-slate-5 active:ring active:ring-sky-500 hover:border-sky-500 border-2 border-transparent transition-all duration-300 selection:bg-orange-500 selection:text-orange-900 text-base md:text-lg font-semibold bg-slate-900"
-      >
-        Back to Home
-      </button>
+    <section className="flex min-h-screen items-center justify-center px-4">
+      <div className="card-shell max-w-lg w-full">
+        <div className="card-core flex flex-col items-center gap-4 p-10 text-center">
+          <span className="chip">404</span>
+          <h1 className="font-display text-3xl font-extrabold tracking-tight text-ink">Halaman tidak ditemukan</h1>
+          <p className="text-ink-muted">Mungkin kamu tersesat. Kembali ke beranda untuk melanjutkan.</p>
+          <button onClick={() => router.push("/")} className="btn-primary mt-2">
+            Kembali ke beranda
+          </button>
+        </div>
+      </div>
     </section>
   );
 };

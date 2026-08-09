@@ -4,59 +4,84 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React, { JSX, useState } from "react";
 import Input from "./Input";
+import ThemeToggle from "./ThemeToggle";
+
+const SearchIcon = (): JSX.Element => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.75"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className="h-4 w-4"
+  >
+    <circle cx="11" cy="11" r="7" />
+    <path d="m20 20-3.5-3.5" />
+  </svg>
+);
 
 const Navbar = (): JSX.Element => {
   const router = useRouter();
-  const [inputValue, setInputValue] = useState<string | null>();
+  const [inputValue, setInputValue] = useState<string>("");
 
   const searchFunc = (e: React.ChangeEvent<HTMLInputElement>): void => setInputValue(e.target.value);
 
   const submitHandler = (e: React.FormEvent<HTMLFormElement>): void => {
     e.preventDefault();
-    if (!inputValue) return;
-    router.push(`/search/${inputValue.split(" ").join("+")}`);
+    const query = inputValue.trim();
+    if (!query) return;
+    router.push(`/search/${query.split(" ").join("+")}`);
   };
 
   return (
-    <header>
-      <nav className="bg-gray-900 py-1.5 md:py-2.5 z-[999] w-full transition-all duration-300 text-white border-b relative border-b-slate-700 px-4 md:px-8">
-        <div className="container flex justify-between items-center py-1 relative">
-          <div>
-            <h1 className="text-center bg-gradient-to-r from-sky-500 to-indigo-500 bg-clip-text text-transparent font-bold text-3xl hidden md:block">
-              <Link href="/" className="selection:bg-yellow-700 selection:text-yellow-400">
-                Kokunime
-              </Link>
-            </h1>
-          </div>
-          <div className="flex items-center justify-center">
-            <div className="hidden md:block mr-4">
-              <form onSubmit={submitHandler}>
-                <Input
-                  type="search"
-                  name="search"
-                  placeholder="Search Anime Here..."
-                  autoComplete="off"
-                  value={(inputValue as string) || ""}
-                  onChange={searchFunc}
-                />
-              </form>
-            </div>
-          </div>
-        </div>
-        <div className="container pb-3 md:hidden">
-          <form onSubmit={submitHandler} className="md:hidden">
+    <header className="sticky top-0 z-50 px-4 pt-3">
+      <nav className="glass mx-auto flex w-full max-w-5xl items-center justify-between gap-4 rounded-full py-2 pl-5 pr-2">
+        <Link
+          href="/"
+          className="font-display text-xl font-extrabold tracking-tight text-ink transition-colors duration-200 hover:text-ink-muted"
+        >
+          <span className="bg-gradient-to-r from-accent via-accent-2 to-accent-cyan bg-clip-text text-transparent">
+            Koku
+          </span>
+          nime
+        </Link>
+        <div className="flex items-center gap-2">
+          <form onSubmit={submitHandler} className="relative hidden md:block">
+            <span className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-ink-muted">
+              <SearchIcon />
+            </span>
             <Input
               type="search"
               name="search"
-              placeholder="Search Anime Here..."
+              placeholder="Cari anime…"
               autoComplete="off"
-              width="w-full"
-              value={(inputValue as string) || ""}
+              value={inputValue}
               onChange={searchFunc}
+              className="w-56 pl-10 lg:w-64"
             />
           </form>
+          <ThemeToggle />
         </div>
       </nav>
+      <div className="mx-auto mt-2 max-w-5xl md:hidden">
+        <form onSubmit={submitHandler} className="relative">
+          <span className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-ink-muted">
+            <SearchIcon />
+          </span>
+          <Input
+            type="search"
+            name="search"
+            placeholder="Cari anime…"
+            autoComplete="off"
+            value={inputValue}
+            onChange={searchFunc}
+            width="w-full"
+            className="pl-10"
+          />
+        </form>
+      </div>
     </header>
   );
 };

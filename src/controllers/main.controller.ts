@@ -147,7 +147,7 @@ export default class MainController {
         type: $(element).find(".lexot .info > p:nth-of-type(5)").text().split(":")[1].trim(),
         status: $(element).find(".lexot .info > p:nth-of-type(6)").text().split(":")[1].trim(),
         total_episode: $(element).find(".lexot .info > p:nth-of-type(7)").text().split(":")[1].trim(),
-        score: `⭐ ${$(element).find(".lexot .info > p:nth-of-type(8)").text().split(":")[1].trim()}`,
+        score: $(element).find(".lexot .info > p:nth-of-type(8)").text().split(":")[1].trim(),
         duration: $(element).find(".lexot .info > p:nth-of-type(9)").text().split(":")[1].trim(),
         release_on: $(element).find(".lexot .info > p:nth-of-type(10)").text().split(":")[1].trim(),
         synopsis: $(element).find(".lexot > p:nth-of-type(1)").text().trim(),
