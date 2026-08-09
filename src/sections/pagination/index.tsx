@@ -1,5 +1,6 @@
 import MobilePagination from "./mobile-buttons";
 import PageNumbers from "./numbers";
+import { paginationHref } from "@/utils/pagination";
 import { JSX } from "react";
 
 const Pagination = (props: any): JSX.Element => {
@@ -7,8 +8,8 @@ const Pagination = (props: any): JSX.Element => {
   const current = current_page ?? 1;
   const total = total_page ?? 1;
 
-  const prevHref = prev_page_endpoint?.split("/")[1] ? `?page=${prev_page_endpoint.split("/")[1]}` : null;
-  const nextHref = next_page_endpoint?.split("/")[1] ? `?page=${next_page_endpoint.split("/")[1]}` : null;
+  const prevHref = paginationHref(prev_page_endpoint);
+  const nextHref = paginationHref(next_page_endpoint);
 
   return (
     <div className="mt-14 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">

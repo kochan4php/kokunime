@@ -1,3 +1,5 @@
+import { PaginationInfo } from "@/interfaces";
+
 export type PageItem = number | "…";
 
 export const getPages = (current: number, total: number): PageItem[] => {
@@ -11,3 +13,18 @@ export const getPages = (current: number, total: number): PageItem[] => {
   pages.push(total);
   return pages;
 };
+
+export const paginationHref = (endpoint: string | null): string | null => {
+  const page = endpoint?.split("/")[1];
+  return page ? `?page=${page}` : null;
+};
+
+export const buildPaginationInfo = (current: number, total: number): PaginationInfo => ({
+  first_page_endpoint: "page/1",
+  next_page_endpoint: current < total ? `page/${current + 1}` : null,
+  current_page: current,
+  pages_of: `Page ${current} of ${total}`,
+  total_page: total,
+  prev_page_endpoint: current > 1 ? `page/${current - 1}` : null,
+  last_page_endpoint: `page/${total}`,
+});

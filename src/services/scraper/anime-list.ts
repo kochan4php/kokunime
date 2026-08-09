@@ -3,25 +3,21 @@ import { AnimePage } from "@/interfaces";
 import logger from "@/utils/logger";
 import { load } from "cheerio";
 import { formatAnimeData } from "./parse";
+import { parsePagination } from "./parse-pagination";
 
 export async function getAnimePerPage(page: number): Promise<AnimePage> {
   try {
     const response = await kusonime.get(`/page/${page}`);
     const $ = load(response.data);
     const anime = formatAnimeData($);
-
-    const element = $(".venutama");
-    const current_page = Number($(element).find(".pagination .wp-pagenavi .current").text());
-    const total_page = Number($(element).find(".pagination .wp-pagenavi .pages").text().split("of")[1].trim());
-
-    const pagination = {
+    const pagination = parsePagination($) ?? {
       first_page_endpoint: "page/1",
-      next_page_endpoint: current_page === total_page ? null : `page/${current_page + 1}`,
-      current_page,
-      pages_of: $(element).find(".pagination .wp-pagenavi .pages").text(),
-      total_page,
-      prev_page_endpoint: current_page > 1 ? `page/${current_page - 1}` : null,
-      last_page_endpoint: `page/${total_page}`,
+      next_page_endpoint: null,
+      current_page: page,
+      pages_of: "",
+      total_page: 1,
+      prev_page_endpoint: null,
+      last_page_endpoint: "page/1",
     };
 
     return { anime, pagination } as AnimePage;

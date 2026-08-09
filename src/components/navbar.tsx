@@ -7,8 +7,8 @@ import Link from "next/link";
 import { JSX } from "react";
 
 const Navbar = (): JSX.Element => (
-  <header className="sticky top-0 z-50 px-4 pt-3">
-    <nav className="glass mx-auto flex w-full max-w-5xl items-center justify-between gap-4 rounded-full py-2 pl-5 pr-2">
+  <header className="sticky top-0 z-50 border-b border-border bg-bg/80 backdrop-blur-xl">
+    <div className="container flex items-center justify-between gap-4 px-4 py-3 md:px-6">
       <div className="flex items-center gap-6">
         <Link
           href="/"
@@ -19,25 +19,24 @@ const Navbar = (): JSX.Element => (
           </span>
           nime
         </Link>
-        <ul className="hidden items-center gap-5 lg:flex">
+        <nav aria-label="Utama" className="hidden items-center gap-5 lg:flex">
           {siteLinks.map((link) => (
-            <li key={link.href}>
-              <Link
-                href={link.href}
-                className="text-sm font-medium text-ink-muted transition-colors duration-200 hover:text-accent"
-              >
-                {link.label}
-              </Link>
-            </li>
+            <Link
+              key={link.href}
+              href={link.href}
+              className="text-sm font-medium text-ink-muted transition-colors duration-200 hover:text-accent"
+            >
+              {link.label}
+            </Link>
           ))}
-        </ul>
+        </nav>
       </div>
       <div className="flex items-center gap-2">
         <SearchForm className="hidden md:block" inputClassName="w-56 pl-10 lg:w-64" />
         <ThemeToggle />
       </div>
-    </nav>
-    <div className="mx-auto mt-2 max-w-5xl md:hidden">
+    </div>
+    <div className="container px-4 pb-3 md:hidden">
       <SearchForm inputClassName="w-full pl-10" />
     </div>
   </header>

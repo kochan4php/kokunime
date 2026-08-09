@@ -1,4 +1,4 @@
-import { Anime, AnimePage, Recommendation } from "@/interfaces";
+import { Anime, AnimePage, Genre, Recommendation, Season } from "@/interfaces";
 
 const API_BASE = process.env.INTERNAL_API_URL ?? process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
 
@@ -15,3 +15,13 @@ export const getAnimeDetail = (slug: string): Promise<any> => get(`/anime/${enco
 export const getRecommendations = (): Promise<Recommendation[]> => get(`/recommendations`);
 
 export const searchAnime = (query: string): Promise<Anime[]> => get(`/search?q=${encodeURIComponent(query)}`);
+
+export const getGenres = (): Promise<Genre[]> => get(`/genres`);
+
+export const getAnimeByGenres = (genre: string, page: number): Promise<AnimePage> =>
+  get(`/genres/${encodeURIComponent(genre)}?page=${page}`);
+
+export const getSeasons = (): Promise<Season[]> => get(`/seasons`);
+
+export const getAnimeBySeasons = (season: string, page: number): Promise<AnimePage> =>
+  get(`/seasons/${encodeURIComponent(season)}?page=${page}`);

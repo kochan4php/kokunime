@@ -16,10 +16,10 @@ export interface AnimePage {
 
 export interface PaginationInfo {
   first_page_endpoint: string;
-  next_page_endpoint: string;
+  next_page_endpoint: string | null;
   current_page: number;
   pages_of: string;
   total_page: number;
-  prev_page_endpoint: string;
+  prev_page_endpoint: string | null;
   last_page_endpoint: string;
 }

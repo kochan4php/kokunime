@@ -3,6 +3,7 @@ import { Season } from "@/interfaces";
 import logger from "@/utils/logger";
 import { load } from "cheerio";
 import { formatAnimeData } from "./parse";
+import { parseSimplePagination } from "./parse-simple-pagination";
 import { KUSONIME_URL } from "./constants";
 
 export async function getSeasons(): Promise<Season[] | null> {
@@ -36,9 +37,8 @@ export async function getAnimeBySeasons(season: string, page: number | string) {
   try {
     const response = await kusonime.get(`/seasons/${season}/page/${page}`);
     const $ = load(response.data);
-    const anime = formatAnimeData($);
 
-    return anime;
+    return { anime: formatAnimeData($), pagination: parseSimplePagination($, Number(page)) };
   } catch (err: any) {
     logger.log("Error", err.message, err.stack);
     return null;
