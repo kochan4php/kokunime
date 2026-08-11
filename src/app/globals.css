@@ -6,7 +6,7 @@
 @import "./styles/navbar.css";
 @import "./styles/reveal.css";
 @import "./styles/skeleton.css";
-@import "./styles/theme-transition.css";
+
 
 @config "../../tailwind.config.js";
 @custom-variant dark (&:where(.dark, .dark *));

@@ -25,14 +25,17 @@ const ThemeToggle = (): JSX.Element => {
 
   const toggle = (): void => {
     const next = !getSnapshot();
-    const root = document.documentElement;
-    root.classList.add("theme-transition");
-    window.requestAnimationFrame(() => {
-      root.classList.toggle("dark", next);
+    const applyTheme = () => {
+      document.documentElement.classList.toggle("dark", next);
       localStorage.setItem("theme", next ? "dark" : "light");
       emit();
-    });
-    window.setTimeout(() => root.classList.remove("theme-transition"), 350);
+    };
+
+    if ((document as any).startViewTransition) {
+      (document as any).startViewTransition(applyTheme);
+    } else {
+      applyTheme();
+    }
   };
 
   return (

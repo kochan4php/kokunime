@@ -48,8 +48,10 @@ const Navbar = (): JSX.Element => {
               <Link
                 key={link.href}
                 href={link.href}
-                className={`relative px-4 py-2 text-sm font-medium transition-all duration-200 rounded-full ${
-                  isActive(link.href) ? "bg-accent/10 text-accent" : "text-ink-muted hover:bg-white/5 hover:text-ink"
+                className={`relative px-4 py-2 text-sm font-medium transition-all duration-300 rounded-full border ${
+                  isActive(link.href)
+                    ? "bg-accent/5 border-accent/20 shadow-[0_0_8px_var(--glow-accent)] text-ink"
+                    : "border-transparent text-ink-muted hover:bg-surface hover:text-ink"
                 }`}
               >
                 {link.label}
@@ -100,8 +102,10 @@ const Navbar = (): JSX.Element => {
                 key={link.href}
                 href={link.href}
                 onClick={() => setOpen(false)}
-                className={`px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${
-                  isActive(link.href) ? "bg-accent/10 text-accent" : "text-ink-muted hover:bg-white/5 hover:text-ink"
+                className={`px-4 py-3 rounded-xl text-sm font-medium transition-all duration-300 border ${
+                  isActive(link.href)
+                    ? "bg-accent/5 border-accent/20 shadow-[0_0_8px_var(--glow-accent)] text-ink"
+                    : "border-transparent text-ink-muted hover:bg-surface hover:text-ink"
                 }`}
               >
                 {link.label}
