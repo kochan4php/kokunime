@@ -35,9 +35,9 @@ const RootLayout = ({ children }: ChildrenProps): JSX.Element => (
     </head>
     <body suppressHydrationWarning className="min-h-screen">
       <div aria-hidden className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
-        <div className="absolute left-1/2 top-[-22rem] h-[42rem] w-[42rem] -translate-x-1/2 rounded-full bg-accent/15 blur-[130px]" />
-        <div className="absolute -left-40 top-1/3 h-[34rem] w-[34rem] rounded-full bg-accent-2/10 blur-[130px]" />
-        <div className="absolute right-[-12%] top-2/3 h-[30rem] w-[30rem] rounded-full bg-accent-amber/10 blur-[130px]" />
+        <div className="absolute left-1/2 top-[-30rem] h-[60rem] w-[60rem] -translate-x-1/2 rounded-full bg-[radial-gradient(circle_at_center,var(--glow-accent)_0%,transparent_60%)] opacity-60" />
+        <div className="absolute -left-40 top-1/4 h-[45rem] w-[45rem] rounded-full bg-[radial-gradient(circle_at_center,var(--glow-2)_0%,transparent_60%)] opacity-50" />
+        <div className="absolute right-[-15%] top-1/2 h-[40rem] w-[40rem] rounded-full bg-[radial-gradient(circle_at_center,var(--glow-amber)_0%,transparent_60%)] opacity-50" />
       </div>
       <NextTopLoader showSpinner={false} color="#8b5cf6" />
       <ServiceWorkerRegister />
