@@ -8,12 +8,13 @@ interface PageNumbersProps {
   total: number;
   prevHref: string | null;
   nextHref: string | null;
+  basePath?: string;
 }
 
 const navButton =
   "flex h-10 w-10 items-center justify-center rounded-full text-ink-muted transition-all duration-300 hover:bg-surface-muted hover:text-accent active:scale-95";
 
-const PageNumbers = ({ current, total, prevHref, nextHref }: PageNumbersProps): JSX.Element => (
+const PageNumbers = ({ current, total, prevHref, nextHref, basePath }: PageNumbersProps): JSX.Element => (
   <div className="hidden items-center gap-1.5 md:flex">
     {prevHref ? (
       <Link href={prevHref} aria-label="Halaman sebelumnya" className={navButton}>
@@ -32,7 +33,7 @@ const PageNumbers = ({ current, total, prevHref, nextHref }: PageNumbersProps): 
       ) : (
         <Link
           key={index}
-          href={`?page=${page}`}
+          href={basePath ? `${basePath}/${page}` : `?page=${page}`}
           aria-label={`Halaman ${page}`}
           aria-current={page === current ? "page" : undefined}
           className={

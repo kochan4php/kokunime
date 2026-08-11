@@ -22,17 +22,11 @@ const Navbar = (): JSX.Element => {
         scrolled ? "bg-bg/90 shadow-[0_8px_30px_-12px_rgba(0,0,0,0.12)]" : "bg-bg/80"
       }`}
     >
-      <div
-        className={`container flex items-center justify-between gap-4 px-4 transition-[padding] duration-300 md:px-6 ${
-          scrolled ? "py-2.5" : "py-5"
-        }`}
-      >
+      <div className="container flex items-center justify-between gap-4 px-4 py-4 md:px-6">
         <div className="flex items-center gap-7">
           <Link
             href="/"
-            className={`font-display font-extrabold tracking-tight text-ink transition-all duration-300 hover:text-ink-muted ${
-              scrolled ? "text-xl" : "text-2xl"
-            }`}
+            className="font-display text-2xl font-extrabold tracking-tight text-ink transition-all duration-300 hover:text-ink-muted"
           >
             <span className="bg-gradient-to-r from-accent via-accent-2 to-accent-amber bg-clip-text text-transparent">
               Koku

@@ -7,9 +7,10 @@ import { JSX } from "react";
 interface LatestGridProps {
   anime: Anime[];
   pagination: PaginationInfo | null;
+  basePath?: string;
 }
 
-const LatestGrid = ({ anime, pagination }: LatestGridProps): JSX.Element => (
+const LatestGrid = ({ anime, pagination, basePath }: LatestGridProps): JSX.Element => (
   <section id="update-now" className="container scroll-mt-28 px-4 py-16 md:py-24">
     <Reveal>
       <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
@@ -28,7 +29,7 @@ const LatestGrid = ({ anime, pagination }: LatestGridProps): JSX.Element => (
       </div>
     </Reveal>
     <AnimeGrid anime={anime} eagerCount={anime.length} />
-    <Pagination pagination={pagination} />
+    <Pagination pagination={pagination} basePath={basePath} />
   </section>
 );
 

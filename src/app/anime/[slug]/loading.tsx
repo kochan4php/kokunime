@@ -5,7 +5,7 @@ import { JSX } from "react";
 
 const AnimeLoading = (): JSX.Element => (
   <MainLayout>
-    <section className="container px-4 py-8 md:py-12" aria-label="Memuat detail anime">
+    <section className="container px-4 pb-8 pt-12 md:pb-12 md:pt-16" aria-label="Memuat detail anime">
       <DetailSkeleton />
       <div className="mt-20">
         <div className="mb-6 flex items-center gap-4">

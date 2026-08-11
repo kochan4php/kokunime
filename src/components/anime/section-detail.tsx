@@ -8,7 +8,7 @@ import { AnimeDetail } from "@/interfaces";
 import { JSX } from "react";
 
 const SectionDetail = ({ anime, slug }: { anime: AnimeDetail; slug: string }): JSX.Element => (
-  <section className="container px-4 py-8 md:py-12">
+  <section className="container px-4 pb-8 pt-12 md:pb-12 md:pt-16">
     <Reveal>
       <DetailHero anime={anime} />
     </Reveal>

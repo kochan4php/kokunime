@@ -12,13 +12,11 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-const Home = async ({ searchParams }: any): Promise<JSX.Element> => {
-  const page = Number((await searchParams)?.page) || 1;
-
+const Home = async (): Promise<JSX.Element> => {
   return (
     <MainLayout>
       <Suspense fallback={<HomeSkeleton />}>
-        <HomeContent page={page} />
+        <HomeContent page={1} basePath="/page" />
       </Suspense>
     </MainLayout>
   );

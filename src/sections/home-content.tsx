@@ -4,7 +4,7 @@ import RecommendationSection from "@/sections/recommendation-section";
 import { loadAnimePage } from "@/lib/loaders";
 import { JSX } from "react";
 
-const HomeContent = async ({ page }: { page: number }): Promise<JSX.Element> => {
+const HomeContent = async ({ page, basePath }: { page: number; basePath?: string }): Promise<JSX.Element> => {
   const { anime = [], pagination } = await loadAnimePage(page);
 
   return (
@@ -12,7 +12,7 @@ const HomeContent = async ({ page }: { page: number }): Promise<JSX.Element> => 
       <section className="container px-4 pt-6 md:pt-10">
         <FeaturedHero featured={anime[0]} />
       </section>
-      <LatestGrid anime={anime} pagination={pagination} />
+      <LatestGrid anime={anime} pagination={pagination} basePath={basePath} />
       <RecommendationSection />
     </>
   );

@@ -14,9 +14,10 @@ export const getPages = (current: number, total: number): PageItem[] => {
   return pages;
 };
 
-export const paginationHref = (endpoint: string | null): string | null => {
+export const paginationHref = (endpoint: string | null, basePath?: string): string | null => {
   const page = endpoint?.split("/")[1];
-  return page ? `?page=${page}` : null;
+  if (!page) return null;
+  return basePath ? `${basePath}/${page}` : `?page=${page}`;
 };
 
 export const buildPaginationInfo = (current: number, total: number): PaginationInfo => ({
