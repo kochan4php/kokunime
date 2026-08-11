@@ -14,7 +14,7 @@ interface AnimeListingProps {
 }
 
 const AnimeListing = ({ chip, title, anime, pagination, eagerCount = 0 }: AnimeListingProps): JSX.Element => {
-  const hasNumbers = (pagination?.total_page ?? 0) > (pagination?.current_page ?? 0);
+  const hasNumbers = (pagination?.total_page ?? 0) > 0;
 
   return (
     <section className="container px-4 pt-6 pb-8 md:pt-10 md:pb-16">

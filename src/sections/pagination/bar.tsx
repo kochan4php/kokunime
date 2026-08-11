@@ -12,7 +12,7 @@ const PaginationBar = ({ pagination }: PaginationBarProps): JSX.Element => {
   const { current_page, total_page, prev_page_endpoint, next_page_endpoint } = pagination;
   const prevHref = paginationHref(prev_page_endpoint);
   const nextHref = paginationHref(next_page_endpoint);
-  const knownTotal = total_page > current_page;
+  const knownTotal = total_page > 0;
 
   return (
     <div className="mt-12 flex flex-col items-center gap-4">

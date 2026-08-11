@@ -2,7 +2,7 @@ import { loadGenres } from "@/lib/loaders";
 import { buildPaginationInfo } from "@/utils/pagination";
 import { endpointSlug } from "@/utils/endpoint-slug";
 import TaxonomyCard from "@/sections/taxonomy-card";
-import PaginationBar from "@/sections/pagination/bar";
+import Pagination from "@/sections/pagination";
 import MainLayout from "@/layouts/main-layout";
 import Reveal from "@/components/reveal";
 import { Metadata } from "next";
@@ -43,7 +43,7 @@ const GenresPage = async ({ searchParams }: any): Promise<JSX.Element> => {
             return <TaxonomyCard key={slug} href={`/genres/${slug}`} title={genre.name} dot />;
           })}
         </div>
-        <PaginationBar pagination={buildPaginationInfo(current, totalPages)} />
+        <Pagination pagination={buildPaginationInfo(current, totalPages)} />
       </section>
     </MainLayout>
   );

@@ -2,7 +2,7 @@ import { loadSeasons } from "@/lib/loaders";
 import { buildPaginationInfo } from "@/utils/pagination";
 import { groupSeasonsByYear, orderYears } from "@/utils/seasons";
 import SeasonYearGroup from "@/sections/season-year-group";
-import PaginationBar from "@/sections/pagination/bar";
+import Pagination from "@/sections/pagination";
 import MainLayout from "@/layouts/main-layout";
 import Reveal from "@/components/reveal";
 import { Metadata } from "next";
@@ -43,7 +43,7 @@ const SeasonsPage = async ({ searchParams }: any): Promise<JSX.Element> => {
             <SeasonYearGroup key={year} year={year} seasons={groups[year]} />
           ))}
         </div>
-        <PaginationBar pagination={buildPaginationInfo(current, totalPages)} />
+        <Pagination pagination={buildPaginationInfo(current, totalPages)} />
       </section>
     </MainLayout>
   );
