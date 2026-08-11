@@ -2,8 +2,6 @@
   .glass {
     border: 1px solid var(--border);
     background: var(--surface);
-    -webkit-backdrop-filter: blur(18px);
-    backdrop-filter: blur(18px);
   }
 
   .card-shell {

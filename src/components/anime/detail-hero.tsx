@@ -22,7 +22,7 @@ const DetailHero = ({ anime }: { anime: AnimeDetail }): JSX.Element => (
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
         {anime.score && (
-          <span className="absolute bottom-4 left-4 rounded-full bg-black/50 px-3 py-1 font-mono text-xs font-medium text-white backdrop-blur-md">
+          <span className="absolute bottom-4 left-4 rounded-full bg-black/60 px-3 py-1 font-mono text-xs font-medium text-white">
             Skor {anime.score}
           </span>
         )}

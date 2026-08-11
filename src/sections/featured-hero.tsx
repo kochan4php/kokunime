@@ -21,7 +21,7 @@ const FeaturedHero = ({ featured }: any): JSX.Element => (
               />
             )}
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent md:bg-gradient-to-r" />
-            <span className="absolute left-5 top-5 rounded-full bg-black/40 px-3 py-1 font-mono text-[10px] uppercase tracking-[0.15em] text-white backdrop-blur-md">
+            <span className="absolute left-5 top-5 rounded-full bg-black/60 px-3 py-1 font-mono text-[10px] uppercase tracking-[0.15em] text-white">
               Update Terbaru
             </span>
           </div>

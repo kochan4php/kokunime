@@ -11,7 +11,7 @@ const Footer = (): JSX.Element => (
     />
     <div
       aria-hidden
-      className="pointer-events-none absolute -top-28 left-1/2 h-56 w-[36rem] -translate-x-1/2 rounded-full bg-accent/10 blur-3xl"
+      className="pointer-events-none absolute -top-28 left-1/2 h-56 w-[36rem] -translate-x-1/2 rounded-[100%] bg-[radial-gradient(ellipse_at_center,var(--glow-accent)_0%,transparent_70%)] opacity-70"
     />
     <div
       aria-hidden

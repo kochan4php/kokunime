@@ -35,9 +35,29 @@ const RootLayout = ({ children }: ChildrenProps): JSX.Element => (
     </head>
     <body suppressHydrationWarning className="min-h-screen">
       <div aria-hidden className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
-        <div className="absolute left-1/2 top-[-30rem] h-[60rem] w-[60rem] -translate-x-1/2 rounded-full bg-[radial-gradient(circle_at_center,var(--glow-accent)_0%,transparent_60%)] opacity-60" />
-        <div className="absolute -left-40 top-1/4 h-[45rem] w-[45rem] rounded-full bg-[radial-gradient(circle_at_center,var(--glow-2)_0%,transparent_60%)] opacity-50" />
-        <div className="absolute right-[-15%] top-1/2 h-[40rem] w-[40rem] rounded-full bg-[radial-gradient(circle_at_center,var(--glow-amber)_0%,transparent_60%)] opacity-50" />
+        <svg
+          className="absolute inset-0 h-full w-full"
+          preserveAspectRatio="xMidYMid slice"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <defs>
+            <radialGradient id="blob1" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stopColor="var(--color-accent)" stopOpacity="0.12" />
+              <stop offset="100%" stopColor="var(--color-accent)" stopOpacity="0" />
+            </radialGradient>
+            <radialGradient id="blob2" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stopColor="var(--color-accent-2)" stopOpacity="0.08" />
+              <stop offset="100%" stopColor="var(--color-accent-2)" stopOpacity="0" />
+            </radialGradient>
+            <radialGradient id="blob3" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stopColor="var(--color-accent-amber)" stopOpacity="0.08" />
+              <stop offset="100%" stopColor="var(--color-accent-amber)" stopOpacity="0" />
+            </radialGradient>
+          </defs>
+          <circle cx="50%" cy="-10%" r="40%" fill="url(#blob1)" />
+          <circle cx="-10%" cy="25%" r="35%" fill="url(#blob2)" />
+          <circle cx="110%" cy="50%" r="30%" fill="url(#blob3)" />
+        </svg>
       </div>
       <NextTopLoader showSpinner={false} color="var(--accent)" />
       <ServiceWorkerRegister />
