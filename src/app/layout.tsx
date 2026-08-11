@@ -29,12 +29,7 @@ const jetBrainsMono = JetBrains_Mono({
 const themeScript = `(function(){try{var t=localStorage.getItem("theme");var d=t?t==="dark":true;document.documentElement.classList.toggle("dark",d);}catch(e){}})();`;
 
 const RootLayout = ({ children }: ChildrenProps): JSX.Element => (
-  <html
-    lang="id"
-    className={`scroll-smooth ${plusJakartaSans.variable} ${jetBrainsMono.variable}`}
-    data-scroll-behavior="smooth"
-    suppressHydrationWarning
-  >
+  <html lang="id" className={`${plusJakartaSans.variable} ${jetBrainsMono.variable}`} suppressHydrationWarning>
     <head>
       <script dangerouslySetInnerHTML={{ __html: themeScript }} />
     </head>
