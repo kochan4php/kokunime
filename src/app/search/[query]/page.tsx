@@ -18,7 +18,7 @@ const SearchAnime = async (props: any): Promise<JSX.Element> => {
 
   return (
     <MainLayout>
-      <section className="container px-4 py-12 md:py-20">
+      <section className="container px-4 pt-6 pb-8 md:pt-10 md:pb-16">
         <Reveal>
           <span className="chip">
             <span className="h-1.5 w-1.5 rounded-full bg-accent" />

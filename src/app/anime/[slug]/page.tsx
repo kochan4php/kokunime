@@ -1,5 +1,4 @@
 import SectionDetail from "@/components/anime/section-detail";
-import ScrollToTop from "@/components/scroll-to-top";
 import { loadAnimeDetail } from "@/lib/loaders";
 import { buildAnimeJsonLd, buildBreadcrumbJsonLd } from "@/lib/seo";
 import { buildDetailMetadata } from "@/lib/detail-metadata";
@@ -18,7 +17,6 @@ const Anime = async (props: any): Promise<JSX.Element> => {
 
   return (
     <MainLayout>
-      <ScrollToTop />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(buildBreadcrumbJsonLd(anime.title ?? "Anime", slug)) }}

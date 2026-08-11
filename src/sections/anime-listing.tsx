@@ -17,7 +17,7 @@ const AnimeListing = ({ chip, title, anime, pagination, eagerCount = 0 }: AnimeL
   const hasNumbers = (pagination?.total_page ?? 0) > (pagination?.current_page ?? 0);
 
   return (
-    <section className="container px-4 py-12 md:py-20">
+    <section className="container px-4 pt-6 pb-8 md:pt-10 md:pb-16">
       <Reveal>
         <div className="mb-8">
           <span className="chip">
