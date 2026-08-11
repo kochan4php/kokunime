@@ -39,7 +39,7 @@ const RootLayout = ({ children }: ChildrenProps): JSX.Element => (
         <div className="absolute -left-40 top-1/4 h-[45rem] w-[45rem] rounded-full bg-[radial-gradient(circle_at_center,var(--glow-2)_0%,transparent_60%)] opacity-50" />
         <div className="absolute right-[-15%] top-1/2 h-[40rem] w-[40rem] rounded-full bg-[radial-gradient(circle_at_center,var(--glow-amber)_0%,transparent_60%)] opacity-50" />
       </div>
-      <NextTopLoader showSpinner={false} color="#8b5cf6" />
+      <NextTopLoader showSpinner={false} color="var(--accent)" />
       <ServiceWorkerRegister />
       {children}
     </body>
