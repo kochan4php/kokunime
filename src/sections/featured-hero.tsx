@@ -18,7 +18,7 @@ const FeaturedHero = ({ featured }: { featured?: Anime }): JSX.Element => (
                 priority
                 sizes="(max-width: 768px) 100vw, 50vw"
                 src={featured.link.image}
-                alt=""
+                alt={featured.title}
                 className="transition-transform duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:scale-[1.02]"
               />
             )}

@@ -33,7 +33,7 @@ const NewSeriesAnime = async ({ slug }: { slug: string }): Promise<JSX.Element> 
                   fill
                   sizes="144px"
                   src={item.link.image as string}
-                  alt=""
+                  alt={item.title}
                   className="transition-transform duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:scale-105"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/0 to-transparent" />

@@ -27,7 +27,7 @@ const RecommendedAnime = async (): Promise<JSX.Element> => {
                   fill
                   sizes="160px"
                   src={item.image as string}
-                  alt=""
+                  alt={item.title}
                   className="transition-transform duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:scale-105"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/0 to-transparent" />
