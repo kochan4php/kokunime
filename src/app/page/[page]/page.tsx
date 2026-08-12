@@ -16,6 +16,7 @@ export async function generateMetadata({ params }: { params: Promise<{ page: str
   return {
     title: `Download Anime Subtitle Indonesia · Halaman ${page}`,
     description: `Kumpulan link download anime batch dan episode, semua dengan subtitle Indonesia. Halaman ${page}.`,
+    alternates: { canonical: `/page/${page}` },
   };
 }
 
