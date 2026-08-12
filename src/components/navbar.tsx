@@ -33,6 +33,19 @@ const Navbar = (): JSX.Element => {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  // "/" focuses the search box (ignore when typing in a field).
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key !== "/" || e.metaKey || e.ctrlKey || e.altKey) return;
+      const target = e.target as HTMLElement | null;
+      if (target?.matches?.("input, textarea, select, [contenteditable]")) return;
+      e.preventDefault();
+      document.querySelector<HTMLInputElement>('input[type="search"]')?.focus();
+    };
+    document.addEventListener("keydown", onKeyDown);
+    return () => document.removeEventListener("keydown", onKeyDown);
+  }, []);
+
   useEffect(() => {
     if (!open) return;
     const onKeyDown = (e: KeyboardEvent) => {
@@ -77,6 +90,7 @@ const Navbar = (): JSX.Element => {
               <Link
                 key={link.href}
                 href={link.href}
+                aria-current={isActive(link.href) ? "page" : undefined}
                 className={`relative px-4 py-2 text-sm font-medium transition-all duration-300 rounded-full border ${
                   isActive(link.href)
                     ? "bg-accent/5 border-accent/20 shadow-[0_0_8px_var(--glow-accent)] text-ink"
@@ -133,6 +147,7 @@ const Navbar = (): JSX.Element => {
                 key={link.href}
                 href={link.href}
                 onClick={() => setOpen(false)}
+                aria-current={isActive(link.href) ? "page" : undefined}
                 className={`px-4 py-3 rounded-xl text-sm font-medium transition-all duration-300 border ${
                   isActive(link.href)
                     ? "bg-accent/5 border-accent/20 shadow-[0_0_8px_var(--glow-accent)] text-ink"

@@ -1,4 +1,5 @@
 import MobilePagination from "./mobile-buttons";
+import PageJump from "./page-jump";
 import PageNumbers from "./numbers";
 import { PaginationInfo } from "@/interfaces";
 import { paginationHref } from "@/utils/pagination";
@@ -22,6 +23,7 @@ const Pagination = ({ pagination, basePath }: PaginationProps): JSX.Element => {
       <p className="hidden font-mono text-xs uppercase tracking-widest text-ink-muted md:block">
         Halaman {current} dari {total}
       </p>
+      <PageJump current={current} total={total} basePath={basePath} />
       <MobilePagination current={current} total={total} prevHref={prevHref} nextHref={nextHref} />
       <PageNumbers current={current} total={total} prevHref={prevHref} nextHref={nextHref} basePath={basePath} />
     </div>

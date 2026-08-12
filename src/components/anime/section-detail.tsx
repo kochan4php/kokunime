@@ -4,6 +4,7 @@ import InfoSide from "./info-side";
 import NewSeriesSection from "./new-series-section";
 import Synopsis from "./synopsis";
 import Reveal from "@/components/reveal";
+import { ArrowDownIcon } from "@/components/icons";
 import { AnimeDetail } from "@/interfaces";
 import Link from "next/link";
 import { JSX } from "react";
@@ -36,6 +37,19 @@ const SectionDetail = ({ anime, slug }: { anime: AnimeDetail; slug: string }): J
     </div>
     <DownloadSection anime={anime} />
     <NewSeriesSection slug={slug} />
+
+    {/* Mobile-only sticky CTA: the download action is the core task — keep it
+        one tap away instead of buried below the synopsis. */}
+    {anime.download?.length > 0 && (
+      <div className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-bg/90 p-3 backdrop-blur-lg lg:hidden">
+        <a href="#download" className="btn-primary w-full justify-center">
+          Lihat Download
+          <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-black/15">
+            <ArrowDownIcon className="h-3.5 w-3.5" />
+          </span>
+        </a>
+      </div>
+    )}
   </section>
 );
 

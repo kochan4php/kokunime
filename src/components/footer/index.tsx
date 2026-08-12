@@ -19,7 +19,7 @@ const Footer = (): JSX.Element => (
     >
       Koku
     </div>
-    <div className="container relative px-4 pb-8 pt-16 md:px-6">
+    <div className="container relative px-4 pb-24 pt-16 md:px-6 md:pb-8">
       <div className="grid gap-10 md:grid-cols-2">
         <BrandBlock />
         <AboutBlock />
