@@ -42,7 +42,7 @@ export function parseAnimeDetail($: CheerioAPI) {
     score: fieldValue(info.eq(7).text()),
     duration: fieldValue(info.eq(8).text()),
     release_on: fieldValue(info.eq(9).text()),
-    // Join all synopsis paragraphs, dropping kusonime's "Credit"/"Download" boilerplate.
+    // Join all synopsis paragraphs, dropping upstream's "Credit"/"Download" boilerplate.
     synopsis: $(element)
       .find(".lexot > p")
       .map((_, p) => $(p).text().trim())

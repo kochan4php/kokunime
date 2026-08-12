@@ -1,4 +1,4 @@
-import kusonime from "@/config/kusonime";
+import upstream from "@/config/upstream";
 import { AnimePage } from "@/interfaces";
 import { cached, TTL } from "@/services/cache";
 import { load } from "cheerio";
@@ -10,8 +10,8 @@ export async function getAnimePerPage(page: number): Promise<AnimePage> {
     `anime:${page}`,
     TTL.anime,
     async () => {
-      const response = await kusonime.get(`/page/${page}`);
-      // kusonime redirects out-of-range pages (e.g. /page/999) to the homepage — detect and bail.
+      const response = await upstream.get(`/page/${page}`);
+      // upstream redirects out-of-range pages (e.g. /page/999) to the homepage — detect and bail.
       const finalUrl: string = (response.request as { res?: { responseUrl?: string } }).res?.responseUrl ?? "";
       if (page > 1 && !finalUrl.includes(`/page/${page}`)) {
         return { anime: [], pagination: null };

@@ -1,6 +1,6 @@
 import { Anime } from "@/interfaces";
 import { CheerioAPI } from "cheerio";
-import { KUSONIME_URL } from "./constants";
+import { UPSTREAM_URL } from "./constants";
 import { bestImage } from "./parse-image";
 
 export function formatAnimeData($: CheerioAPI): Anime[] {
@@ -27,7 +27,7 @@ export function formatAnimeData($: CheerioAPI): Anime[] {
         .map((_, anchor) => $(anchor).text())
         .get();
       const link = {
-        endpoint: $(el).find(".thumb a").attr("href")?.replace(KUSONIME_URL, ""),
+        endpoint: $(el).find(".thumb a").attr("href")?.replace(UPSTREAM_URL, ""),
         url: $(el).find(".thumb a").attr("href"),
         image: bestImage($(el).find(".thumb a .thumbz img")),
       };

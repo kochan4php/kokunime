@@ -1,4 +1,4 @@
-import kusonime from "@/config/kusonime";
+import upstream from "@/config/upstream";
 import { AnimePage, Season } from "@/interfaces";
 import { cached, TTL } from "@/services/cache";
 import { load } from "cheerio";
@@ -15,8 +15,8 @@ export async function getAnimeBySeasons(season: string, page: number | string): 
     `anime-by-season:${season}:${page}`,
     TTL.bySeason,
     async () => {
-      const response = await kusonime.get(`/seasons/${season}/page/${page}`);
-      // kusonime redirects unknown seasons/pages to the homepage — detect and bail.
+      const response = await upstream.get(`/seasons/${season}/page/${page}`);
+      // upstream redirects unknown seasons/pages to the homepage — detect and bail.
       const finalUrl: string = (response.request as { res?: { responseUrl?: string } }).res?.responseUrl ?? "";
       if (!finalUrl.includes(`/seasons/${season}/`)) {
         return { anime: [], pagination: null };

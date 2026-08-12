@@ -1,4 +1,4 @@
-import kusonime from "@/config/kusonime";
+import upstream from "@/config/upstream";
 import { AnimePage, Genre } from "@/interfaces";
 import { cached, TTL } from "@/services/cache";
 import { load } from "cheerio";
@@ -15,8 +15,8 @@ export async function getAnimeByGenres(genre: string, page: number | string): Pr
     `anime-by-genre:${genre}:${page}`,
     TTL.byGenre,
     async () => {
-      const response = await kusonime.get(`/genres/${genre}/page/${page}`);
-      // kusonime redirects unknown genres/pages to the homepage — detect and bail.
+      const response = await upstream.get(`/genres/${genre}/page/${page}`);
+      // upstream redirects unknown genres/pages to the homepage — detect and bail.
       const finalUrl: string = (response.request as { res?: { responseUrl?: string } }).res?.responseUrl ?? "";
       if (!finalUrl.includes(`/genres/${genre}/`)) {
         return { anime: [], pagination: null };

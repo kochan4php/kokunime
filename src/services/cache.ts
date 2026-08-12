@@ -17,7 +17,7 @@ export const cached = async <T>(key: string, ttlSeconds: number, fn: () => Promi
       try {
         return await fn();
       } catch {
-        // Cache the fallback too: when kusonime is down, the first request pays
+        // Cache the fallback too: when the upstream is down, the first request pays
         // the retry/timeout cost and the rest get the cached empty result
         // instead of each hanging ~30s. ponytail: fallback is cached for the
         // full TTL — a short outage leaves stale empties until revalidate.

@@ -1,4 +1,4 @@
-// kusonime thumbnails ship a 150px `src` plus a `srcset` of larger variants.
+// upstream thumbnails ship a 150px `src` plus a `srcset` of larger variants.
 // Picking the largest gives next/image a sharp source for cards/hero.
 type ImgLike = { attr(name: string): string | undefined };
 

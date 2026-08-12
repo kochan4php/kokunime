@@ -1,6 +1,6 @@
 import { Genre } from "@/interfaces";
 import { CheerioAPI } from "cheerio";
-import { KUSONIME_URL } from "./constants";
+import { UPSTREAM_URL } from "./constants";
 
 export function parseGenres($: CheerioAPI): Genre[] {
   const genres: Genre[] = [];
@@ -9,7 +9,7 @@ export function parseGenres($: CheerioAPI): Genre[] {
     genres.push({
       name: $(el).text(),
       url: $(el).attr("href"),
-      endpoint: $(el)?.attr("href")?.replace(KUSONIME_URL, ""),
+      endpoint: $(el)?.attr("href")?.replace(UPSTREAM_URL, ""),
     });
   });
 

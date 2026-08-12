@@ -1,7 +1,7 @@
-import kusonime from "@/config/kusonime";
+import upstream from "@/config/upstream";
 import { cached } from "@/services/cache";
 import { load } from "cheerio";
-import { KUSONIME_URL } from "./constants";
+import { UPSTREAM_URL } from "./constants";
 
 interface TaxonomyItem {
   name: string;
@@ -14,7 +14,7 @@ const parseTaxonomy = async (path: string, key: string, ttlSeconds: number): Pro
     key,
     ttlSeconds,
     async () => {
-      const response = await kusonime.get(path);
+      const response = await upstream.get(path);
       const $ = load(response.data);
       const items: TaxonomyItem[] = [];
       const element = $(".venser > .venutama");
@@ -24,7 +24,7 @@ const parseTaxonomy = async (path: string, key: string, ttlSeconds: number): Pro
         .each((_, el) => {
           items.push({
             name: $(el).find("a").text(),
-            endpoint: $(el).find("a").attr("href")?.replace(KUSONIME_URL, ""),
+            endpoint: $(el).find("a").attr("href")?.replace(UPSTREAM_URL, ""),
             url: $(el).find("a").attr("href"),
           });
         });

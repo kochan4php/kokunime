@@ -1,8 +1,9 @@
 import { describe, expect, it } from "vitest";
 import { load } from "cheerio";
 import { parseAnimeDetail } from "@/services/scraper/parse-detail";
+import { UPSTREAM_URL } from "@/services/scraper/constants";
 
-// Fixture mirrors real kusonime.com detail markup (verified Aug 2026):
+// Fixture mirrors real upstream detail markup (verified Aug 2026):
 // venser > post-thumb (img with srcset + title) + lexot > info (10 <p> fields) + synopsis <p>s + boilerplate
 const html = `
 <html><body><div class="venser">
@@ -12,8 +13,8 @@ const html = `
   <div class="venutama"><div class="lexot">
     <div class="info">
       <p><b>Japanese</b>: フー</p>
-      <p><b>Genre </b>: <a href="https://kusonime.com/genres/action/">Action</a></p>
-      <p><b>Seasons </b>: <a href="https://kusonime.com/seasons/fall-2024/">Fall 2024</a></p>
+      <p><b>Genre </b>: <a href="${UPSTREAM_URL}genres/action/">Action</a></p>
+      <p><b>Seasons </b>: <a href="${UPSTREAM_URL}seasons/fall-2024/">Fall 2024</a></p>
       <p><b>Producers</b>: Studio Foo</p>
       <p><b>Type</b>: TV</p>
       <p><b>Status</b>: Completed</p>

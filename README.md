@@ -36,7 +36,7 @@ The production image is built with pnpm multi-stage + Next.js standalone output,
 
 ## Architecture
 
-This is a scraper site: server components pull data from [kusonime.com](https://kusonime.com) through the scraper in `src/services/scraper/`, parse it with cheerio, and cache it with `unstable_cache` (15–60 min TTL). The home page is ISR (15 min); anime detail pages are ISR (15 min) too. There are no public API routes — the frontend never calls `/api/*`.
+This is a scraper site: server components pull data from an upstream anime site through the scraper in `src/services/scraper/`, parse it with cheerio, and cache it with `unstable_cache` (15–60 min TTL). The home page is ISR (15 min); anime detail pages are ISR (15 min) too. There are no public API routes — the frontend never calls `/api/*`.
 
 Key perf/SEO choices:
 
