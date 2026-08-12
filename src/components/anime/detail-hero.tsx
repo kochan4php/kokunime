@@ -13,6 +13,7 @@ const DetailHero = ({ anime }: { anime: AnimeDetail }): JSX.Element => (
           <AnimeImage
             fill
             priority
+            fetchPriority="high"
             sizes="(max-width: 768px) 100vw, 320px"
             src={anime.image}
             alt={anime.title ?? ""}

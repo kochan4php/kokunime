@@ -16,6 +16,7 @@ const FeaturedHero = ({ featured }: { featured?: Anime }): JSX.Element => (
               <AnimeImage
                 fill
                 priority
+                fetchPriority="high"
                 sizes="(max-width: 768px) 100vw, 50vw"
                 src={featured.link.image}
                 alt={featured.title}

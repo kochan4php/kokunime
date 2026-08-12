@@ -15,15 +15,19 @@ const AnimeImage = ({
   className = "",
   onLoad,
   onError,
+  priority,
   ...props
 }: AnimeImageProps): JSX.Element => {
-  const [loaded, setLoaded] = useState(false);
+  // LCP images (priority) start visible — no opacity fade, no waiting for
+  // onLoad to fire post-hydration (that added ~1.7s element render delay).
+  const [loaded, setLoaded] = useState(!!priority);
 
   return (
     <div className={`relative h-full w-full overflow-hidden bg-surface-muted ${containerClassName}`}>
       <Image
         src={src}
         alt={alt ?? ""}
+        priority={priority}
         unoptimized={isGif(typeof src === "string" ? src : undefined)}
         onLoad={(e) => {
           setLoaded(true);
