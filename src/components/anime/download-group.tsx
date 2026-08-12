@@ -10,7 +10,7 @@ const DownloadGroup = ({ group }: { group: DownloadOption }): JSX.Element => (
         <span className="chip">{group.link_download.length} kualitas</span>
       </div>
       <div className="mt-6 flex flex-col gap-5">
-        {group.link_download.map((res: any, index: number) => (
+        {group.link_download.map((res: DownloadResolution, index: number) => (
           <div key={index} className="border-t border-border pt-5 first:border-0 first:pt-0">
             <p className="font-mono text-xs uppercase tracking-widest text-ink-muted">
               Resolusi <span className="text-ink">{res.resolusi}</span>

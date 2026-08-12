@@ -28,11 +28,16 @@ const ThemeToggle = (): JSX.Element => {
     const applyTheme = () => {
       document.documentElement.classList.toggle("dark", next);
       localStorage.setItem("theme", next ? "dark" : "light");
+      // Keep browser chrome in sync with the applied theme (hexes mirror the
+      // theme script in layout.tsx).
+      document.querySelector('meta[name="theme-color"]')?.setAttribute("content", next ? "#201613" : "#fdf5eb");
       emit();
     };
 
-    if ((document as any).startViewTransition) {
-      (document as any).startViewTransition(applyTheme);
+    const withViewTransition = (document as Document & { startViewTransition?: (cb: () => void) => unknown })
+      .startViewTransition;
+    if (withViewTransition) {
+      withViewTransition(applyTheme);
     } else {
       applyTheme();
     }

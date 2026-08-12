@@ -4,16 +4,24 @@ import AnimeListing from "@/sections/anime-listing";
 import ListingSkeleton from "@/sections/listing-skeleton";
 import MainLayout from "@/layouts/main-layout";
 import { Metadata } from "next";
+import { notFound } from "next/navigation";
 import { JSX, Suspense } from "react";
 
-export async function generateMetadata({ params }: any): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ genre: string }>;
+  searchParams: Promise<{ page?: string }>;
+}): Promise<Metadata> {
   const { genre } = await params;
+  const page = Number((await searchParams)?.page) || 1;
   const title = toTitle(genre);
 
   return {
     title: `Genre ${title}`,
     description: `Daftar anime dengan genre ${title}.`,
-    alternates: { canonical: `/genres/${genre}` },
+    alternates: { canonical: page > 1 ? `/genres/${genre}?page=${page}` : `/genres/${genre}` },
   };
 }
 
@@ -23,9 +31,21 @@ const GenreContent = async ({ genre, page }: { genre: string; page: number }): P
   return <AnimeListing chip="Genre" title={toTitle(genre)} anime={anime} pagination={pagination} eagerCount={5} />;
 };
 
-const GenrePage = async ({ params, searchParams }: any): Promise<JSX.Element> => {
+const GenrePage = async ({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ genre: string }>;
+  searchParams: Promise<{ page?: string }>;
+}): Promise<JSX.Element> => {
   const { genre } = await params;
   const page = Number((await searchParams)?.page) || 1;
+
+  const { anime = [], pagination } = await loadAnimeByGenres(genre, page);
+
+  if (anime.length === 0 && !pagination) {
+    notFound();
+  }
 
   return (
     <MainLayout>

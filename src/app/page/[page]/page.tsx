@@ -1,22 +1,34 @@
 import HomeContent from "@/sections/home-content";
 import HomeSkeleton from "@/sections/home-skeleton";
 import MainLayout from "@/layouts/main-layout";
+import { loadAnimePage } from "@/lib/loaders";
 import { Metadata } from "next";
-import { JSX, Suspense } from "react";
 import { notFound } from "next/navigation";
+import { JSX, Suspense } from "react";
 
-export async function generateMetadata({ params }: any): Promise<Metadata> {
-  const page = (await params).page;
+export async function generateMetadata({ params }: { params: Promise<{ page: string }> }): Promise<Metadata> {
+  const page = Number((await params).page);
+
+  if (isNaN(page) || page < 2) {
+    notFound();
+  }
+
   return {
-    title: `Download Anime Subtitle Indonesia - Halaman ${page} · Kokunime`,
+    title: `Download Anime Subtitle Indonesia · Halaman ${page}`,
     description: `Kumpulan link download anime batch dan episode, semua dengan subtitle Indonesia. Halaman ${page}.`,
   };
 }
 
-const PaginatedHome = async ({ params }: any): Promise<JSX.Element> => {
+const PaginatedHome = async ({ params }: { params: Promise<{ page: string }> }): Promise<JSX.Element> => {
   const page = Number((await params).page);
 
   if (isNaN(page) || page < 2) {
+    notFound();
+  }
+
+  const { anime = [], pagination } = await loadAnimePage(page);
+
+  if (anime.length === 0 || pagination?.current_page !== page) {
     notFound();
   }
 

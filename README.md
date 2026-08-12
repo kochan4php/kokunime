@@ -34,18 +34,16 @@ The production image is built with pnpm multi-stage + Next.js standalone output,
 | ---------------------- | ------------------------------ | ------------------------------ |
 | `NEXT_PUBLIC_SITE_URL` | canonical, sitemap, Open Graph | `https://kokunime.netlify.app` |
 
-## API
+## Architecture
 
-Every page pulls data from the internal API:
+This is a scraper site: server components pull data from [kusonime.com](https://kusonime.com) through the scraper in `src/services/scraper/`, parse it with cheerio, and cache it with `unstable_cache` (15–60 min TTL). The home page is ISR (15 min); anime detail pages are ISR (15 min) too. There are no public API routes — the frontend never calls `/api/*`.
 
-- `GET /api/anime?page=N` — anime list + pagination
-- `GET /api/anime/[slug]` — anime detail
-- `GET /api/search?q=` — search anime
-- `GET /api/recommendations` — recommendations
-- `GET /api/genres` — genre list
-- `GET /api/genres/[genre]?page=N` — anime by genre
-- `GET /api/seasons` — season list
-- `GET /api/seasons/[season]?page=N` — anime by season
+Key perf/SEO choices:
+
+- `next/image` optimization enabled (remote images resized/compressed server-side)
+- JSON-LD: `WebSite` + `SearchAction` (layout), `TVSeries` + `BreadcrumbList` (detail pages)
+- Detail pages return 404 when the upstream scrape fails, instead of rendering empty junk
+- Search pages are `noindex`
 
 ## Scripts
 

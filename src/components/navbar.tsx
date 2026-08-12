@@ -5,18 +5,47 @@ import ThemeToggle from "./theme-toggle";
 import { siteLinks } from "@/components/site-config";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { JSX, useEffect, useState } from "react";
+import { JSX, useEffect, useRef, useState } from "react";
 
 const Navbar = (): JSX.Element => {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const pathname = usePathname();
+  const toggleRef = useRef<HTMLButtonElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
+  const wasOpen = useRef(false);
+
+  // Focus management for the mobile menu: move focus into the menu when it
+  // opens, restore it to the toggle when it closes (a11y basics).
+  useEffect(() => {
+    if (open) {
+      menuRef.current?.querySelector<HTMLElement>("nav a")?.focus();
+      wasOpen.current = true;
+    } else if (wasOpen.current) {
+      toggleRef.current?.focus();
+      wasOpen.current = false;
+    }
+  }, [open]);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 10);
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  useEffect(() => {
+    if (!open) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(false);
+    };
+    document.addEventListener("keydown", onKeyDown);
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.removeEventListener("keydown", onKeyDown);
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [open]);
 
   const isActive = (href: string) => {
     if (href === "/") return pathname === "/";
@@ -67,6 +96,7 @@ const Navbar = (): JSX.Element => {
           />
           <ThemeToggle />
           <button
+            ref={toggleRef}
             type="button"
             onClick={() => setOpen((value) => !value)}
             aria-label={open ? "Tutup menu" : "Buka menu"}
@@ -84,6 +114,7 @@ const Navbar = (): JSX.Element => {
 
       {/* Mobile Menu */}
       <div
+        ref={menuRef}
         aria-hidden={!open}
         className={`absolute inset-x-0 top-full border-b border-border bg-bg/95 backdrop-blur-xl transition-all duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] lg:hidden ${
           open ? "visible translate-y-0 opacity-100" : "invisible -translate-y-4 opacity-0"

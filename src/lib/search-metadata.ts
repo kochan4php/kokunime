@@ -1,8 +1,18 @@
 import { Metadata } from "next";
 
-export async function buildSearchMetadata(params: any): Promise<Metadata> {
-  const { query } = await params;
-  const term = query.split("+").join(" ");
+// Next leaves percent-encoded path segments raw (esp. %2F); decode safely —
+// a literal "%" with no valid escape must not 500 the page.
+export const decodeQuery = (query: string): string => {
+  try {
+    return decodeURIComponent(query);
+  } catch {
+    return query;
+  }
+};
+
+export async function buildSearchMetadata(params: Promise<{ query: string }>): Promise<Metadata> {
+  const { query: rawQuery } = await params;
+  const term = decodeQuery(rawQuery).split("+").join(" ");
 
   return {
     title: `Cari "${term}"`,

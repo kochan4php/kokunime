@@ -2,18 +2,19 @@ import AnimeGrid from "@/components/anime-grid";
 import EmptyState from "@/components/anime/empty-state";
 import Reveal from "@/components/reveal";
 import { loadSearchAnime } from "@/lib/loaders";
-import { buildSearchMetadata } from "@/lib/search-metadata";
+import { buildSearchMetadata, decodeQuery } from "@/lib/search-metadata";
 import { Anime } from "@/interfaces";
 import MainLayout from "@/layouts/main-layout";
 import { Metadata } from "next";
 import { JSX } from "react";
 
-export async function generateMetadata({ params }: any): Promise<Metadata> {
+export async function generateMetadata({ params }: { params: Promise<{ query: string }> }): Promise<Metadata> {
   return buildSearchMetadata(params);
 }
 
-const SearchAnime = async (props: any): Promise<JSX.Element> => {
-  const { query } = (await props.params) ?? "";
+const SearchAnime = async ({ params }: { params: Promise<{ query: string }> }): Promise<JSX.Element> => {
+  const { query: rawQuery } = await params;
+  const query = decodeQuery(rawQuery);
   const anime: Anime[] = await loadSearchAnime(query);
 
   return (
@@ -32,7 +33,7 @@ const SearchAnime = async (props: any): Promise<JSX.Element> => {
         </Reveal>
         {anime.length > 0 ? (
           <div className="mt-12">
-            <AnimeGrid anime={anime} eagerCount={anime.length} />
+            <AnimeGrid anime={anime} eagerCount={Math.min(anime.length, 6)} />
           </div>
         ) : (
           <Reveal>

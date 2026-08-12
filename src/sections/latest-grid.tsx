@@ -28,7 +28,7 @@ const LatestGrid = ({ anime, pagination, basePath }: LatestGridProps): JSX.Eleme
         </p>
       </div>
     </Reveal>
-    <AnimeGrid anime={anime} eagerCount={anime.length} />
+    <AnimeGrid anime={anime} eagerCount={6} />
     <Pagination pagination={pagination} basePath={basePath} />
   </section>
 );

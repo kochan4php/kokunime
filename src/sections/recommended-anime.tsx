@@ -2,6 +2,7 @@ import AnimeImage from "@/components/anime-image";
 import Reveal from "@/components/reveal";
 import { loadRecommendations } from "@/lib/loaders";
 import { Recommendation } from "@/interfaces";
+import { animeSlug } from "@/utils/endpoint-slug";
 import Link from "next/link";
 import { JSX } from "react";
 
@@ -11,10 +12,15 @@ const RecommendedAnime = async (): Promise<JSX.Element> => {
   return (
     <div className="flex snap-x gap-3 overflow-x-auto pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
       {(recommendations ?? []).map((item: Recommendation, index: number) => {
-        const path = item.endpoint ? `/anime/${item.endpoint.split("/").join(" ").trim()}` : "#";
+        const endpoint = item.endpoint ? animeSlug(item.endpoint) : null;
+        if (!endpoint) return null;
 
         return (
-          <Link key={index} href={path} className="card-shell group block w-36 shrink-0 snap-start sm:w-40">
+          <Link
+            key={index}
+            href={`/anime/${endpoint}`}
+            className="card-shell group block w-36 shrink-0 snap-start sm:w-40"
+          >
             <div className="card-core">
               <div className="relative aspect-[3/4] w-full">
                 <AnimeImage

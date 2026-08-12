@@ -1,30 +1,22 @@
 import { Anime, AnimeDetail, AnimePage, Genre, Recommendation, Season } from "@/interfaces";
 import * as scraper from "@/services/scraper";
 
-const safe = async <T>(fn: () => Promise<T>, fallback: T): Promise<T> => {
-  try {
-    return await fn();
-  } catch {
-    return fallback;
-  }
-};
+// Scrapers are total: they catch upstream errors inside `cached()` and return
+// their own fallbacks, so no safe() wrapper is needed here anymore.
+export const loadAnimePage = (page: number): Promise<AnimePage> => scraper.getAnimePerPage(page);
 
-export const loadAnimePage = (page: number): Promise<AnimePage> =>
-  safe(() => scraper.getAnimePerPage(page), { anime: [], pagination: null });
+export const loadAnimeDetail = (slug: string): Promise<AnimeDetail | null> => scraper.getAnimeDetail(slug);
 
-export const loadAnimeDetail = (slug: string): Promise<AnimeDetail> =>
-  safe(() => scraper.getAnimeDetail(slug), { genre: [], download: [] });
+export const loadGenres = (): Promise<Genre[]> => scraper.getGenres();
 
-export const loadGenres = (): Promise<Genre[]> => safe(() => scraper.getGenres(), []);
-
-export const loadSeasons = (): Promise<Season[]> => safe(() => scraper.getSeasons(), []);
+export const loadSeasons = (): Promise<Season[]> => scraper.getSeasons();
 
 export const loadAnimeByGenres = (genre: string, page: number): Promise<AnimePage> =>
-  safe(() => scraper.getAnimeByGenres(genre, page), { anime: [], pagination: null });
+  scraper.getAnimeByGenres(genre, page);
 
 export const loadAnimeBySeasons = (season: string, page: number): Promise<AnimePage> =>
-  safe(() => scraper.getAnimeBySeasons(season, page), { anime: [], pagination: null });
+  scraper.getAnimeBySeasons(season, page);
 
-export const loadSearchAnime = (query: string): Promise<Anime[]> => safe(() => scraper.searchAnime(query), []);
+export const loadSearchAnime = (query: string): Promise<Anime[]> => scraper.searchAnime(query);
 
-export const loadRecommendations = (): Promise<Recommendation[]> => safe(() => scraper.getRecommendations(), []);
+export const loadRecommendations = (): Promise<Recommendation[]> => scraper.getRecommendations();

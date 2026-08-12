@@ -5,11 +5,12 @@
   --surface-muted: #f3dfcd;
   --border: #e6cbb8;
   --ink: #32201d;
-  --ink-muted: #8f7567;
+  --ink-muted: #7e6454;
   --accent: #ff6a33;
   --accent-strong: #e8551e;
   --accent-2: #ea4f2e;
   --accent-amber: #d98e2b;
+  --accent-ink: #261815;
   --glow-accent: rgba(255, 106, 51, 0.35);
   --glow-2: rgba(234, 79, 46, 0.28);
   --glow-amber: rgba(217, 142, 43, 0.22);

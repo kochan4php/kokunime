@@ -11,6 +11,7 @@
 /yarn-debug.log*
 /yarn-error.log*
 *.tsbuildinfo
+.env*
 /.husky
 /Dockerfile
 /dockerfiles

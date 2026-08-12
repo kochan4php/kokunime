@@ -1,10 +1,12 @@
 import AnimeImage from "@/components/anime-image";
 import { DownloadIcon } from "@/components/icons";
 import Reveal from "@/components/reveal";
+import { Anime } from "@/interfaces";
+import { animeSlug } from "@/utils/endpoint-slug";
 import Link from "next/link";
 import { JSX } from "react";
 
-const FeaturedHero = ({ featured }: any): JSX.Element => (
+const FeaturedHero = ({ featured }: { featured?: Anime }): JSX.Element => (
   <Reveal>
     <div className="card-shell group">
       <div className="card-core">
@@ -29,14 +31,15 @@ const FeaturedHero = ({ featured }: any): JSX.Element => (
             <h1 className="font-display text-3xl font-extrabold leading-[1.1] tracking-tight text-ink md:text-5xl">
               {featured?.title ?? "Katalog anime"}
             </h1>
-            <p className="text-ink-muted">{featured?.release ?? "Daftar lengkapnya ada di bawah."}</p>
-            {featured?.link?.endpoint && (
-              <Link
-                href={`/anime/${featured.link.endpoint.split("/").join(" ").trim()}`}
-                className="btn-primary mt-2 w-max"
-              >
+            <p className="text-ink-muted">
+              {featured?.genres?.length
+                ? featured.genres.join(" · ")
+                : (featured?.release ?? "Daftar lengkapnya ada di bawah.")}
+            </p>
+            {featured?.link?.endpoint && animeSlug(featured.link.endpoint) && (
+              <Link href={`/anime/${animeSlug(featured.link.endpoint)}`} className="btn-primary mt-2 w-max">
                 Download Anime
-                <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-white/20 transition-transform duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:translate-y-0.5">
+                <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-black/15 transition-transform duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:translate-y-0.5">
                   <DownloadIcon className="h-3.5 w-3.5" />
                 </span>
               </Link>

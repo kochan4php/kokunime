@@ -23,7 +23,9 @@
     padding: 0.875rem 1.375rem;
     font-size: 0.875rem;
     font-weight: 700;
-    color: #fff;
+    /* Dark text on the accent gradient: white-on-orange was 2.85:1 (WCAG AA fails);
+       --accent-ink is >= 4.5:1 on both accent stops in both themes. */
+    color: var(--accent-ink);
     background: linear-gradient(135deg, var(--accent), var(--accent-2));
     box-shadow: 0 12px 32px -12px var(--glow-accent);
     transition:

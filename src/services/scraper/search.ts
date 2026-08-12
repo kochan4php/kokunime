@@ -5,9 +5,14 @@ import { load } from "cheerio";
 import { formatAnimeData } from "./parse";
 
 export async function searchAnime(query: string): Promise<Anime[]> {
-  return cached(`search:${query}`, TTL.search, async () => {
-    const response = await kusonime.get(`/?s=${query}&post_type=post`);
-    const $ = load(response.data);
-    return formatAnimeData($);
-  });
+  return cached(
+    `search:${query}`,
+    TTL.search,
+    async () => {
+      const response = await kusonime.get(`/?s=${encodeURIComponent(query)}&post_type=post`);
+      const $ = load(response.data);
+      return formatAnimeData($);
+    },
+    [],
+  );
 }

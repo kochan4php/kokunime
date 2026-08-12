@@ -38,7 +38,7 @@ const PageNumbers = ({ current, total, prevHref, nextHref, basePath }: PageNumbe
           aria-current={page === current ? "page" : undefined}
           className={
             page === current
-              ? "flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-accent to-accent-2 text-sm font-bold text-white shadow-[0_10px_24px_-10px_var(--glow-accent)] transition-transform duration-300 active:scale-95"
+              ? "flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-accent to-accent-2 text-sm font-bold text-(--accent-ink) shadow-[0_10px_24px_-10px_var(--glow-accent)] transition-transform duration-300 active:scale-95"
               : "glass flex h-10 w-10 items-center justify-center rounded-full text-sm font-semibold text-ink transition-all duration-300 hover:text-accent active:scale-95"
           }
         >

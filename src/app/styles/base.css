@@ -24,6 +24,14 @@
     outline-offset: 2px;
   }
 
+  /* Anchor jumps (#download) and back-to-top glide instead of teleporting;
+     respects prefers-reduced-motion. */
+  @media (prefers-reduced-motion: no-preference) {
+    html {
+      scroll-behavior: smooth;
+    }
+  }
+
   a,
   button,
   input,

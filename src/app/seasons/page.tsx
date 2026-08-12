@@ -8,15 +8,24 @@ import Reveal from "@/components/reveal";
 import { Metadata } from "next";
 import { JSX } from "react";
 
-export const metadata: Metadata = {
-  title: "Daftar Musim Anime",
-  description: "Jelajahi anime berdasarkan musim rilis.",
-  alternates: { canonical: "/seasons", languages: { "id-ID": "/seasons" } },
-};
+export async function generateMetadata({
+  searchParams,
+}: {
+  searchParams: Promise<{ page?: string }>;
+}): Promise<Metadata> {
+  const page = Number((await searchParams)?.page) || 1;
+  const canonical = page > 1 ? `/seasons?page=${page}` : "/seasons";
+
+  return {
+    title: "Daftar Musim Anime",
+    description: "Jelajahi anime berdasarkan musim rilis.",
+    alternates: { canonical, languages: { "id-ID": canonical } },
+  };
+}
 
 const YEARS_PER_PAGE = 4;
 
-const SeasonsPage = async ({ searchParams }: any): Promise<JSX.Element> => {
+const SeasonsPage = async ({ searchParams }: { searchParams: Promise<{ page?: string }> }): Promise<JSX.Element> => {
   const seasons = await loadSeasons();
   const groups = groupSeasonsByYear(seasons);
   const years = orderYears(groups);

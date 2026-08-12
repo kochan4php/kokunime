@@ -22,3 +22,7 @@ services:
                 limits:
                     cpus: '0.5'
                     memory: 512M
+        volumes:
+            - next-cache:/app/.next/cache
+volumes:
+    next-cache:

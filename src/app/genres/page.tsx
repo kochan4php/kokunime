@@ -8,15 +8,24 @@ import Reveal from "@/components/reveal";
 import { Metadata } from "next";
 import { JSX } from "react";
 
-export const metadata: Metadata = {
-  title: "Daftar Genre Anime",
-  description: "Jelajahi anime berdasarkan genre.",
-  alternates: { canonical: "/genres", languages: { "id-ID": "/genres" } },
-};
+export async function generateMetadata({
+  searchParams,
+}: {
+  searchParams: Promise<{ page?: string }>;
+}): Promise<Metadata> {
+  const page = Number((await searchParams)?.page) || 1;
+  const canonical = page > 1 ? `/genres?page=${page}` : "/genres";
+
+  return {
+    title: "Daftar Genre Anime",
+    description: "Jelajahi anime berdasarkan genre.",
+    alternates: { canonical, languages: { "id-ID": canonical } },
+  };
+}
 
 const PAGE_SIZE = 24;
 
-const GenresPage = async ({ searchParams }: any): Promise<JSX.Element> => {
+const GenresPage = async ({ searchParams }: { searchParams: Promise<{ page?: string }> }): Promise<JSX.Element> => {
   const genres = (await loadGenres()) ?? [];
   const requestedPage = Number((await searchParams)?.page) || 1;
   const totalPages = Math.max(1, Math.ceil(genres.length / PAGE_SIZE));

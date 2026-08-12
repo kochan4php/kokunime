@@ -19,7 +19,7 @@ const SearchForm = ({ className = "", inputClassName = "pl-10", onSubmit }: Sear
     e.preventDefault();
     const query = inputValue.trim();
     if (!query) return;
-    router.push(`/search/${query.split(" ").join("+")}`);
+    router.push(`/search/${encodeURIComponent(query)}`);
     onSubmit?.();
   };
 
@@ -32,6 +32,7 @@ const SearchForm = ({ className = "", inputClassName = "pl-10", onSubmit }: Sear
         type="search"
         name="search"
         placeholder="Cari anime…"
+        ariaLabel="Cari anime"
         autoComplete="off"
         value={inputValue}
         onChange={(e) => setInputValue(e.target.value)}

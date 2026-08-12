@@ -1,6 +1,7 @@
 import { Anime } from "@/interfaces";
 import { CheerioAPI } from "cheerio";
 import { KUSONIME_URL } from "./constants";
+import { bestImage } from "./parse-image";
 
 export function formatAnimeData($: CheerioAPI): Anime[] {
   const anime: Anime[] = [];
@@ -9,13 +10,26 @@ export function formatAnimeData($: CheerioAPI): Anime[] {
   $(element)
     .find(".venz ul .kover")
     .each((_, el) => {
-      const title = $(el).find(".content > h2 > a").text();
-      const release = $(el).find(".content > p").text().trim().split("Genre")[0].trim().split("Admin")[1].trim();
-      const genres = $(el).find(".content > p").text().trim().split("Genre")[1].replace(/^:\s*/, "").trim().split(", ");
+      const $content = $(el).find(".content");
+      const title = $content.find("h2 > a").text();
+      // Real markup: p1 = "Posted by Admin", p2 = "Released on 3:54 pm", p3 = "Genre <a>…"
+      // Selectors by position so a missing/moved label can't crash the whole list.
+      const release = $content
+        .find("p")
+        .eq(1)
+        .text()
+        .trim()
+        .replace(/^Released on\s*/i, "");
+      const genres = $content
+        .find("p")
+        .eq(2)
+        .find("a")
+        .map((_, anchor) => $(anchor).text())
+        .get();
       const link = {
         endpoint: $(el).find(".thumb a").attr("href")?.replace(KUSONIME_URL, ""),
         url: $(el).find(".thumb a").attr("href"),
-        image: $(el).find(".thumb a .thumbz img").attr("src"),
+        image: bestImage($(el).find(".thumb a .thumbz img")),
       };
 
       anime.push({ title, release, genres, link });

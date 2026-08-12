@@ -27,10 +27,10 @@ const MetaItem = ({ label, value, href }: MetaItemProps): JSX.Element => (
 const DetailMeta = ({ anime }: { anime: AnimeDetail }): JSX.Element => {
   const seasonSlug = endpointSlug(anime.season?.endpoint, "seasons");
   const items = [
-    { label: "Japanese", value: anime.japanese },
-    { label: "Release", value: anime.release_on },
+    { label: "Judul Jepang", value: anime.japanese },
+    { label: "Rilis", value: anime.release_on },
     { label: "Musim", value: anime.season?.name, href: seasonSlug ? `/seasons/${seasonSlug}` : undefined },
-    { label: "Total Episode", value: anime.total_episode },
+    { label: "Jumlah Episode", value: anime.total_episode },
     { label: "Durasi", value: anime.duration },
     { label: "Skor", value: anime.score },
   ];

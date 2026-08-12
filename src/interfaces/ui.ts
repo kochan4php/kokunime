@@ -12,7 +12,8 @@ export interface InputProps {
   placeholder: string;
   autoComplete: string;
   value: string;
-  onChange: (e: any) => void;
+  ariaLabel?: string;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 export interface AnimeCardProps {

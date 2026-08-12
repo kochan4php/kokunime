@@ -11,7 +11,7 @@ const CardAnime = ({ src, alt, title, meta, path, eager = false }: AnimeCardProp
         <div className="relative aspect-[3/4] w-full">
           <AnimeImage
             fill
-            sizes="(max-width: 640px) 50vw, (max-width: 1280px) 25vw, 20vw"
+            sizes="(max-width: 767px) 50vw, (max-width: 1023px) 33vw, (max-width: 1279px) 25vw, 20vw"
             src={src}
             alt={alt || title}
             loading={eager ? "eager" : "lazy"}

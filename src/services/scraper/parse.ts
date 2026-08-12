@@ -5,3 +5,4 @@ export * from "./parse-genres";
 export * from "./parse-season";
 export * from "./parse-pagination";
 export * from "./parse-simple-pagination";
+export * from "./parse-image";

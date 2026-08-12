@@ -4,35 +4,27 @@ import { cached, TTL } from "@/services/cache";
 import { load } from "cheerio";
 import { formatAnimeData } from "./parse";
 import { parseSimplePagination } from "./parse-simple-pagination";
-import { KUSONIME_URL } from "./constants";
+import parseTaxonomy from "./parse-taxonomy";
 
 export async function getSeasons(): Promise<Season[]> {
-  return cached("seasons", TTL.seasons, async () => {
-    const response = await kusonime.get("/seasons-list");
-    const $ = load(response.data);
-    const seasons: Season[] = [];
-    const element = $(".venser > .venutama");
-
-    $(element)
-      .find("ul.genres > li")
-      .each((_, el) => {
-        seasons.push({
-          name: $(el).find("a").text(),
-          endpoint: $(el).find("a").attr("href")?.replace(KUSONIME_URL, ""),
-          url: $(el).find("a").attr("href"),
-        });
-      });
-
-    seasons.splice(0, 1);
-    return seasons;
-  });
+  return parseTaxonomy("/seasons-list", "seasons", TTL.seasons) as Promise<Season[]>;
 }
 
 export async function getAnimeBySeasons(season: string, page: number | string): Promise<AnimePage> {
-  return cached(`anime-by-season:${season}:${page}`, TTL.bySeason, async () => {
-    const response = await kusonime.get(`/seasons/${season}/page/${page}`);
-    const $ = load(response.data);
+  return cached(
+    `anime-by-season:${season}:${page}`,
+    TTL.bySeason,
+    async () => {
+      const response = await kusonime.get(`/seasons/${season}/page/${page}`);
+      // kusonime redirects unknown seasons/pages to the homepage — detect and bail.
+      const finalUrl: string = (response.request as { res?: { responseUrl?: string } }).res?.responseUrl ?? "";
+      if (!finalUrl.includes(`/seasons/${season}/`)) {
+        return { anime: [], pagination: null };
+      }
+      const $ = load(response.data);
 
-    return { anime: formatAnimeData($), pagination: parseSimplePagination($, Number(page)) };
-  });
+      return { anime: formatAnimeData($), pagination: parseSimplePagination($, Number(page)) };
+    },
+    { anime: [], pagination: null },
+  );
 }

@@ -42,7 +42,8 @@
   },
   "lint-staged": {
     "**/*.{js,jsx,ts,tsx}": [
-      "pnpm prettier:fix"
+      "pnpm prettier:fix",
+      "eslint --fix"
     ]
   }
 }

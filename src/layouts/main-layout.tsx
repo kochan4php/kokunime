@@ -7,7 +7,9 @@ const MainLayout = ({ children }: ChildrenProps) => (
   <>
     <ScrollToTop />
     <Navbar />
-    <main className="flex-auto">{children}</main>
+    <main id="konten" tabIndex={-1} className="flex-auto">
+      {children}
+    </main>
     <Footer />
   </>
 );

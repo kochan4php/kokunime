@@ -9,22 +9,11 @@ interface RetryConfig extends InternalAxiosRequestConfig {
 
 const kusonime: AxiosInstance = axios.create({
   baseURL: "https://kusonime.com",
-  withCredentials: true,
+  timeout: 10_000,
+  // Cap a pathological upstream response — the docker deploy runs in 512MB.
+  maxContentLength: 10 * 1024 * 1024,
   headers: {
-    "Content-Type": "application/x-www-form-urlencoded",
-    Accept: "application/json, text/javascript, */*; q=0.01",
-    "X-Requested-With": "XMLHttpRequest",
-    "User-Agent": "*",
-    Referer: "https://kusonime.com/",
-    "Accept-Encoding": "gzip, deflate, br",
-    "Accept-Language": "en-US,en;q=0.9,id;q=0.8",
-    Connection: "keep-alive",
-    Host: "kusonime.com",
-    Origin: "https://kusonime.com",
-    "Sec-Fetch-Dest": "document",
-    "Sec-Fetch-Mode": "navigate",
-    "Sec-Fetch-User": "?1",
-    "Sec-Fetch-Site": "none",
+    "User-Agent": "Kokunime/1.0 (+https://kokunime.netlify.app)",
   },
 });
 

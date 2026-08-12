@@ -4,6 +4,7 @@ import ServiceWorkerRegister from "@/components/sw-register";
 import { JetBrains_Mono, Plus_Jakarta_Sans } from "next/font/google";
 import { JSX } from "react";
 import { Viewport } from "next";
+import { buildWebSiteJsonLd, safeJsonLd } from "@/lib/seo";
 import "./globals.css";
 
 export { metadata } from "@/lib/metadata";
@@ -11,29 +12,36 @@ export { metadata } from "@/lib/metadata";
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  themeColor: "#fdf5eb",
+  // theme-color is set dynamically by the theme script + toggle (must match
+  // the ACTUAL applied theme, not the OS preference).
 };
 
 const plusJakartaSans = Plus_Jakarta_Sans({
   subsets: ["latin"],
   variable: "--font-sans",
-  weight: ["400", "500", "600", "700", "800"],
 });
 
 const jetBrainsMono = JetBrains_Mono({
   subsets: ["latin"],
   variable: "--font-mono",
-  weight: ["400", "500"],
 });
 
-const themeScript = `(function(){try{var t=localStorage.getItem("theme");var d=t?t==="dark":true;document.documentElement.classList.toggle("dark",d);}catch(e){}})();`;
+const themeScript = `(function(){try{var t=localStorage.getItem("theme");var d=t?t==="dark":(window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches);document.documentElement.classList.toggle("dark",d);var m=document.querySelector('meta[name="theme-color"]');if(!m){m=document.createElement("meta");m.name="theme-color";document.head.appendChild(m);}m.content=d?"#201613":"#fdf5eb";}catch(e){}})();`;
 
 const RootLayout = ({ children }: ChildrenProps): JSX.Element => (
   <html lang="id" className={`${plusJakartaSans.variable} ${jetBrainsMono.variable}`} suppressHydrationWarning>
     <head>
       <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(buildWebSiteJsonLd()) }} />
     </head>
     <body suppressHydrationWarning className="min-h-screen">
+      {/* Skip link: lets keyboard users jump past the navbar on every page. */}
+      <a
+        href="#konten"
+        className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[100] focus:rounded-full focus:bg-surface-solid focus:px-5 focus:py-2.5 focus:text-sm focus:font-semibold focus:text-ink focus:shadow-lg"
+      >
+        Langsung ke konten
+      </a>
       <div aria-hidden className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
         <svg
           className="absolute inset-0 h-full w-full"

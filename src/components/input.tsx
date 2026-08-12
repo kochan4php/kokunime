@@ -9,6 +9,7 @@ const Input = ({
   placeholder,
   autoComplete,
   value,
+  ariaLabel,
   onChange,
 }: InputProps): JSX.Element => (
   <input
@@ -16,6 +17,7 @@ const Input = ({
     type={type}
     name={name}
     placeholder={placeholder}
+    aria-label={ariaLabel}
     autoComplete={autoComplete}
     value={value}
     onChange={onChange}

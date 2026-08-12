@@ -1,6 +1,6 @@
 import DownloadGroup from "./download-group";
 import Reveal from "@/components/reveal";
-import { AnimeDetail } from "@/interfaces";
+import { AnimeDetail, DownloadOption } from "@/interfaces";
 import { JSX } from "react";
 
 const DownloadSection = ({ anime }: { anime: AnimeDetail }): JSX.Element => (
@@ -15,7 +15,7 @@ const DownloadSection = ({ anime }: { anime: AnimeDetail }): JSX.Element => (
       </div>
     </Reveal>
     <div className="grid gap-6">
-      {(anime.download ?? []).map((group: any, index: number) => (
+      {(anime.download ?? []).map((group: DownloadOption, index: number) => (
         <Reveal key={index} delay={index * 80}>
           <DownloadGroup group={group} />
         </Reveal>

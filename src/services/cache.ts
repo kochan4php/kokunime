@@ -11,7 +11,21 @@ export const TTL = {
   seasons: 60 * 60,
 };
 
-export const cached = async <T>(key: string, ttlSeconds: number, fn: () => Promise<T>): Promise<T> => {
-  const cachedFn = unstable_cache(async () => await fn(), [key], { revalidate: ttlSeconds });
+export const cached = async <T>(key: string, ttlSeconds: number, fn: () => Promise<T>, fallback: T): Promise<T> => {
+  const cachedFn = unstable_cache(
+    async () => {
+      try {
+        return await fn();
+      } catch {
+        // Cache the fallback too: when kusonime is down, the first request pays
+        // the retry/timeout cost and the rest get the cached empty result
+        // instead of each hanging ~30s. ponytail: fallback is cached for the
+        // full TTL — a short outage leaves stale empties until revalidate.
+        return fallback;
+      }
+    },
+    [key],
+    { revalidate: ttlSeconds },
+  );
   return cachedFn();
 };
