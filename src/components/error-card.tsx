@@ -11,7 +11,10 @@ interface ErrorCardProps {
 }
 
 const ErrorCard = ({ code, label, title, message, children }: ErrorCardProps): JSX.Element => (
-  <section className="flex min-h-screen items-center justify-center px-4">
+  // <main id="konten">: error pages render outside MainLayout, so without
+  // this the skip link (#konten) in layout.tsx points at nothing — keyboard
+  // users pressing it on a 404/error page would go nowhere.
+  <main id="konten" tabIndex={-1} className="flex min-h-screen items-center justify-center px-4">
     <div className="card-shell w-full max-w-lg">
       <div className="card-core flex flex-col items-center gap-4 p-10 text-center">
         <span className="bg-gradient-to-br from-accent via-accent-2 to-accent-amber bg-clip-text font-display text-7xl font-extrabold tracking-tight text-transparent md:text-8xl">
@@ -23,7 +26,7 @@ const ErrorCard = ({ code, label, title, message, children }: ErrorCardProps): J
         {children}
       </div>
     </div>
-  </section>
+  </main>
 );
 
 export default ErrorCard;
