@@ -23,4 +23,5 @@ export interface AnimeCardProps {
   path: string;
   meta?: string;
   eager?: boolean;
+  priority?: boolean;
 }

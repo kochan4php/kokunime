@@ -33,9 +33,9 @@ const RecommendedAnime = async (): Promise<JSX.Element> => {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/0 to-transparent" />
               </div>
               <div className="p-3">
-                <h4 className="line-clamp-2 text-xs font-semibold leading-snug text-ink transition-colors duration-200 group-hover:text-accent">
+                <h3 className="line-clamp-2 text-xs font-semibold leading-snug text-ink transition-colors duration-200 group-hover:text-accent">
                   {item.title}
-                </h4>
+                </h3>
               </div>
             </div>
           </Link>

@@ -4,7 +4,7 @@ import { AnimeCardProps } from "@/interfaces";
 import Link from "next/link";
 import { JSX } from "react";
 
-const CardAnime = ({ src, alt, title, meta, path, eager = false }: AnimeCardProps): JSX.Element => (
+const CardAnime = ({ src, alt, title, meta, path, eager = false, priority = false }: AnimeCardProps): JSX.Element => (
   <Link href={path} className="group block h-full">
     <div className="card-shell group-hover:-translate-y-1 group-hover:shadow-[0_24px_60px_-24px_var(--glow-accent)]">
       <div className="card-core">
@@ -15,6 +15,8 @@ const CardAnime = ({ src, alt, title, meta, path, eager = false }: AnimeCardProp
             src={src}
             alt={alt || title}
             loading={eager ? "eager" : "lazy"}
+            priority={priority}
+            fetchPriority={priority ? "high" : undefined}
             className="transition-transform duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:scale-105"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/0 to-black/10" />
@@ -26,9 +28,9 @@ const CardAnime = ({ src, alt, title, meta, path, eager = false }: AnimeCardProp
           </span>
         </div>
         <div className="p-4">
-          <h3 className="line-clamp-2 text-sm font-semibold leading-snug text-ink transition-colors duration-200 group-hover:text-accent">
+          <h2 className="line-clamp-2 text-sm font-semibold leading-snug text-ink transition-colors duration-200 group-hover:text-accent">
             {title}
-          </h3>
+          </h2>
         </div>
       </div>
     </div>

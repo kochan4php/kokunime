@@ -3,3 +3,12 @@
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
   Permissions-Policy: camera=(), microphone=(), geolocation=(), browsing-topics=()
+  Content-Security-Policy: base-uri 'none'; form-action 'self'; object-src 'none'
+/anime/*
+  Cache-Control: public, max-age=0, must-revalidate
+/genres/*
+  Cache-Control: public, max-age=0, must-revalidate
+/seasons/*
+  Cache-Control: public, max-age=0, must-revalidate
+/search/*
+  Cache-Control: public, max-age=0, must-revalidate

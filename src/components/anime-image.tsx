@@ -16,11 +16,13 @@ const AnimeImage = ({
   onLoad,
   onError,
   priority,
+  loading,
   ...props
 }: AnimeImageProps): JSX.Element => {
-  // LCP images (priority) start visible — no opacity fade, no waiting for
-  // onLoad to fire post-hydration (that added ~1.7s element render delay).
-  const [loaded, setLoaded] = useState(!!priority);
+  // LCP images (priority) and eager above-fold images start visible — no
+  // opacity fade, no waiting for onLoad to fire post-hydration (that added
+  // ~1s element render delay on detail/listing pages).
+  const [loaded, setLoaded] = useState(!!priority || loading === "eager");
 
   return (
     <div className={`relative h-full w-full overflow-hidden bg-surface-muted ${containerClassName}`}>
@@ -28,6 +30,7 @@ const AnimeImage = ({
         src={src}
         alt={alt ?? ""}
         priority={priority}
+        loading={loading}
         unoptimized={isGif(typeof src === "string" ? src : undefined)}
         onLoad={(e) => {
           setLoaded(true);

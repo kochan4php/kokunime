@@ -26,9 +26,10 @@ const SectionDetail = ({ anime, slug }: { anime: AnimeDetail; slug: string }): J
         </li>
       </ol>
     </nav>
-    <Reveal>
-      <DetailHero anime={anime} />
-    </Reveal>
+    {/* No Reveal on the hero: it IS the LCP element (priority image) on detail
+        pages — Reveal's SSR opacity-0 delayed it ~2s (same class as the home
+        hero fix). Below-fold sections keep their reveal animation. */}
+    <DetailHero anime={anime} />
     <div className="mt-8 grid gap-6 lg:grid-cols-[1fr_360px]">
       <Synopsis anime={anime} />
       <Reveal delay={100}>
