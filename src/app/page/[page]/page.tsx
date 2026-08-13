@@ -2,6 +2,7 @@ import HomeContent from "@/sections/home-content";
 import HomeSkeleton from "@/sections/home-skeleton";
 import MainLayout from "@/layouts/main-layout";
 import { loadAnimePage } from "@/lib/loaders";
+import { SITE_URL } from "@/lib/site";
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { JSX, Suspense } from "react";
@@ -17,6 +18,10 @@ export async function generateMetadata({ params }: { params: Promise<{ page: str
     title: `Download Anime Subtitle Indonesia · Halaman ${page}`,
     description: `Kumpulan link download anime batch dan episode, semua dengan subtitle Indonesia. Halaman ${page}.`,
     alternates: { canonical: `/page/${page}` },
+    openGraph: {
+      title: `Download Anime Subtitle Indonesia · Halaman ${page}`,
+      url: `${SITE_URL}/page/${page}`,
+    },
   };
 }
 

@@ -1,4 +1,5 @@
 import { loadGenres } from "@/lib/loaders";
+import { SITE_URL } from "@/lib/site";
 import { buildPaginationInfo } from "@/utils/pagination";
 import { endpointSlug } from "@/utils/endpoint-slug";
 import TaxonomyCard from "@/sections/taxonomy-card";
@@ -19,6 +20,7 @@ export async function generateMetadata({
     title: "Daftar Genre Anime",
     description: "Jelajahi anime berdasarkan genre.",
     alternates: { canonical, languages: { "id-ID": canonical } },
+    openGraph: { title: "Daftar Genre Anime", url: `${SITE_URL}${canonical}` },
   };
 }
 

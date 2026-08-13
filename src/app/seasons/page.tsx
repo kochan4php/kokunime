@@ -1,4 +1,5 @@
 import { loadSeasons } from "@/lib/loaders";
+import { SITE_URL } from "@/lib/site";
 import { buildPaginationInfo } from "@/utils/pagination";
 import { groupSeasonsByYear, orderYears } from "@/utils/seasons";
 import SeasonYearGroup from "@/sections/season-year-group";
@@ -19,6 +20,7 @@ export async function generateMetadata({
     title: "Daftar Musim Anime",
     description: "Jelajahi anime berdasarkan musim rilis.",
     alternates: { canonical, languages: { "id-ID": canonical } },
+    openGraph: { title: "Daftar Musim Anime", url: `${SITE_URL}${canonical}` },
   };
 }
 

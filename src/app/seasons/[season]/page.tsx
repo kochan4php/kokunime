@@ -1,4 +1,5 @@
 import { loadAnimeBySeasons } from "@/lib/loaders";
+import { SITE_URL } from "@/lib/site";
 import { toTitle } from "@/utils/to-title";
 import AnimeListing from "@/sections/anime-listing";
 import ListingSkeleton from "@/sections/listing-skeleton";
@@ -22,6 +23,10 @@ export async function generateMetadata({
     title: `Season ${title}`,
     description: `Daftar anime rilis musim ${title}.`,
     alternates: { canonical: page > 1 ? `/seasons/${season}?page=${page}` : `/seasons/${season}` },
+    openGraph: {
+      title: `Season ${title}`,
+      url: `${SITE_URL}${page > 1 ? `/seasons/${season}?page=${page}` : `/seasons/${season}`}`,
+    },
   };
 }
 

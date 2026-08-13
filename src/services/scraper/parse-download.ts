@@ -23,8 +23,13 @@ export function getDownloadLinks(
           $(el)
             .find("a")
             .each((_, elm) => {
-              const obj = { platform: $(elm).text(), url: $(elm).attr("href") };
-              temp_dl.push(obj);
+              const url = $(elm).attr("href");
+              // Trust boundary: scraped hrefs are rendered verbatim as
+              // <a href> — a compromised/weird upstream could inject
+              // javascript: URLs (stored XSS on click). Only http(s) pass.
+              if (url && /^https?:\/\//i.test(url)) {
+                temp_dl.push({ platform: $(elm).text(), url });
+              }
             });
 
           const obj = { resolusi: $(el).find("strong").text(), link: temp_dl };

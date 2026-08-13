@@ -7,6 +7,20 @@
     color-scheme: dark;
   }
 
+  /* One global kill-switch for ALL motion (menu, cards, hero, reveals,
+     top-loader): per-component fallbacks exist, but this catches anything
+     missed. Decorative animation is never essential. */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+
   body {
     @apply bg-bg text-ink;
     font-family: var(--font-sans);

@@ -1,4 +1,5 @@
 import { loadAnimeByGenres } from "@/lib/loaders";
+import { SITE_URL } from "@/lib/site";
 import { toTitle } from "@/utils/to-title";
 import AnimeListing from "@/sections/anime-listing";
 import ListingSkeleton from "@/sections/listing-skeleton";
@@ -22,6 +23,10 @@ export async function generateMetadata({
     title: `Genre ${title}`,
     description: `Daftar anime dengan genre ${title}.`,
     alternates: { canonical: page > 1 ? `/genres/${genre}?page=${page}` : `/genres/${genre}` },
+    openGraph: {
+      title: `Genre ${title}`,
+      url: `${SITE_URL}${page > 1 ? `/genres/${genre}?page=${page}` : `/genres/${genre}`}`,
+    },
   };
 }
 

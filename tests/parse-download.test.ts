@@ -28,4 +28,16 @@ describe("getDownloadLinks", () => {
     expect(download[0].link_download[0].link).toHaveLength(2);
     expect(download[0].link_download[0].link[0].platform).toBe("Mega");
   });
+
+  it("drops non-http(s) hrefs (javascript: XSS guard)", () => {
+    const evil = load(
+      `<div class="venser"><div class="smokeddl"><div class="smokeurl">
+        <a href="https://example.com/ok.mp4">Aman</a>
+        <a href="javascript:alert(1)">Jahat</a>
+        <a href="/relative/path">Relatif</a>
+      </div></div></div>`,
+    );
+    const download = getDownloadLinks(evil, ".smokeddl", ".smokeurl", ".smokettl");
+    expect(download[0].link_download[0].link).toEqual([{ platform: "Aman", url: "https://example.com/ok.mp4" }]);
+  });
 });
