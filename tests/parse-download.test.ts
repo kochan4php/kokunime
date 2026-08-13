@@ -40,4 +40,19 @@ describe("getDownloadLinks", () => {
     const download = getDownloadLinks(evil, ".smokeddl", ".smokeurl", ".smokettl");
     expect(download[0].link_download[0].link).toEqual([{ platform: "Aman", url: "https://example.com/ok.mp4" }]);
   });
+
+  it("surfaces the redirect link from the group title (PINDAH KE posts)", () => {
+    // kusonime "moved" posts keep only a <strong>PINDAH KE <a>…</a></strong>
+    // in the title — no url blocks. The link must survive, not vanish.
+    const redirect = load(
+      `<div class="venser"><div class="smokeddlrh"><div class="smokettlrh">
+        <strong>PINDAH KE <a href="https://kusonime.com/gabriel-do-batch-sub-indo/">Gabriel DropOut BD Batch</a></strong>
+      </div></div></div>`,
+    );
+    const download = getDownloadLinks(redirect, ".smokeddlrh", ".smokeurlrh", ".smokettlrh");
+    expect(download).toHaveLength(1);
+    expect(download[0].link_download[0].link).toEqual([
+      { platform: "Gabriel DropOut BD Batch", url: "https://kusonime.com/gabriel-do-batch-sub-indo/" },
+    ]);
+  });
 });

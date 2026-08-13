@@ -12,10 +12,12 @@ const DownloadGroup = ({ group }: { group: DownloadOption }): JSX.Element => (
       <div className="mt-6 flex flex-col gap-5">
         {group.link_download.map((res: DownloadResolution, index: number) => (
           <div key={index} className="border-t border-border pt-5 first:border-0 first:pt-0">
-            <p className="font-mono text-xs uppercase tracking-widest text-ink-muted">
-              Resolusi <span className="text-ink">{res.resolusi}</span>
-            </p>
-            <div className="mt-3 grid grid-cols-2 gap-2 md:grid-cols-3 lg:grid-cols-4">
+            {res.resolusi && (
+              <p className="font-mono text-xs uppercase tracking-widest text-ink-muted">
+                Resolusi <span className="text-ink">{res.resolusi}</span>
+              </p>
+            )}
+            <div className={`mt-3 grid grid-cols-2 gap-2 md:grid-cols-3 lg:grid-cols-4 ${res.resolusi ? "" : "mt-0"}`}>
               {res.link.map((platform: DownloadTarget, i: number) => (
                 <DownloadPlatform key={i} name={platform.platform} url={platform.url} />
               ))}

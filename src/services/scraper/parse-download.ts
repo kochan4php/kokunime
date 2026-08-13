@@ -37,6 +37,27 @@ export function getDownloadLinks(
         });
 
       const obj = { title: $(element).find(titleClass).text(), link_download: temp_res };
+
+      // Redirect posts ("PINDAH KE <a>…", kusonime moved the post): the
+      // ONLY actionable link lives in the group TITLE, not in url blocks.
+      // Surface it as a single platform target instead of dropping the
+      // group (which rendered an empty "Pilih Kualitas" section).
+      if (temp_res.length === 0) {
+        const redirectLinks: DownloadTarget[] = [];
+        $(element)
+          .find(titleClass)
+          .find("a[href]")
+          .each((_, a) => {
+            const url = $(a).attr("href");
+            if (url && /^https?:\/\//i.test(url)) {
+              redirectLinks.push({ platform: $(a).text().trim() || "Buka link", url });
+            }
+          });
+        if (redirectLinks.length > 0) {
+          obj.link_download = [{ resolusi: "", link: redirectLinks }];
+        }
+      }
+
       download.push(obj);
     });
 
