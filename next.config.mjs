@@ -22,6 +22,16 @@ const dynamicCacheControl = {
   value: "public, max-age=0, s-maxage=900, stale-while-revalidate=900",
 };
 
+// /genres and /seasons paginate via ?page=N. Netlify's auto Netlify-Vary
+// (query=__nextDataReq|_rsc) does NOT include `page`, so every ?page=N shares
+// one edge-cache key and page 2/3/… all serve page 1's HTML (verified live).
+// Extend the vary with the exact values Netlify already emits + page.
+const pageVary = {
+  key: "Netlify-Vary",
+  value:
+    "query=__nextDataReq|_rsc|page,header=x-nextjs-data|x-next-debug-logging|next-router-prefetch|next-router-segment-prefetch|next-router-state-tree|next-url|rsc|accept-encoding,cookie=__prerender_bypass|__next_preview_data",
+};
+
 const nextConfig = {
   output: "standalone",
   reactStrictMode: true,
@@ -40,6 +50,8 @@ const nextConfig = {
       { source: "/", headers: [dynamicCacheControl] },
       { source: "/page/:path*", headers: [dynamicCacheControl] },
       { source: "/anime/:path*", headers: [dynamicCacheControl] },
+      { source: "/genres", headers: [dynamicCacheControl, pageVary] },
+      { source: "/seasons", headers: [dynamicCacheControl, pageVary] },
       { source: "/genres/:path*", headers: [dynamicCacheControl] },
       { source: "/seasons/:path*", headers: [dynamicCacheControl] },
       { source: "/search/:path*", headers: [dynamicCacheControl] },
