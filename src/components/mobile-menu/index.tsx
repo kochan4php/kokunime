@@ -1,6 +1,6 @@
 "use client";
 
-import MobileMenuPanel from "./mobile-menu-panel";
+import MobileMenuPanel from "./panel";
 import { JSX, useEffect, useRef } from "react";
 
 interface MobileMenuProps {

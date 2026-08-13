@@ -1,5 +1,5 @@
 import GridSkeleton from "@/components/cards/grid-skeleton";
-import RecommendedSkeleton from "@/components/recommended-skeleton";
+import RecommendedSkeleton from "@/components/cards/recommended-skeleton";
 import { JSX } from "react";
 
 const HomeSkeleton = (): JSX.Element => (

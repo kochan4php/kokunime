@@ -1,6 +1,6 @@
 "use client";
 
-import SearchForm from "./search-form";
+import SearchForm from "../search-form";
 import { siteLinks } from "@/components/site-config";
 import Link from "next/link";
 import { JSX } from "react";

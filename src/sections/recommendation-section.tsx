@@ -1,5 +1,5 @@
 import RecommendedAnime from "@/sections/recommended-anime";
-import RecommendedSkeleton from "@/components/recommended-skeleton";
+import RecommendedSkeleton from "@/components/cards/recommended-skeleton";
 import Reveal from "@/components/reveal";
 import { JSX, Suspense } from "react";
 
