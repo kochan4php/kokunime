@@ -1,4 +1,4 @@
-import CardSkeleton from "@/components/card-skeleton";
+import CardSkeleton from "@/components/cards/card-skeleton";
 import { JSX } from "react";
 
 interface GridSkeletonProps {

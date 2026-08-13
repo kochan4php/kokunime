@@ -1,4 +1,4 @@
-import AnimeGrid from "@/components/anime-grid";
+import AnimeGrid from "@/components/cards/anime-grid";
 import EmptyState from "@/components/anime/empty-state";
 import Reveal from "@/components/reveal";
 import { loadSearchAnime } from "@/lib/loaders";

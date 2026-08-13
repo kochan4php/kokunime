@@ -1,4 +1,4 @@
-import AnimeImage from "@/components/anime-image";
+import AnimeImage from "@/components/cards/anime-image";
 import DetailMeta from "./detail-meta";
 import GenreTags from "./genre-tags";
 import blurDataUrl from "@/data/blur-data-url";

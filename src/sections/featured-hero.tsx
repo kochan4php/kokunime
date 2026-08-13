@@ -1,4 +1,4 @@
-import AnimeImage from "@/components/anime-image";
+import AnimeImage from "@/components/cards/anime-image";
 import { DownloadIcon } from "@/components/icons";
 import { Anime } from "@/interfaces";
 import { animeSlug } from "@/utils/endpoint-slug";

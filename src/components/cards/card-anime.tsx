@@ -1,4 +1,4 @@
-import AnimeImage from "@/components/anime-image";
+import AnimeImage from "@/components/cards/anime-image";
 import { ArrowUpRightIcon } from "@/components/icons";
 import { AnimeCardProps } from "@/interfaces";
 import Link from "next/link";

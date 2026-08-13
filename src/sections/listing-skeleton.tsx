@@ -1,4 +1,4 @@
-import GridSkeleton from "@/components/grid-skeleton";
+import GridSkeleton from "@/components/cards/grid-skeleton";
 import { JSX } from "react";
 
 const ListingSkeleton = (): JSX.Element => (

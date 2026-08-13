@@ -1,4 +1,4 @@
-import CardAnime from "@/components/card-anime";
+import CardAnime from "@/components/cards/card-anime";
 import Reveal from "@/components/reveal";
 import { Anime } from "@/interfaces";
 import { animeSlug } from "@/utils/endpoint-slug";

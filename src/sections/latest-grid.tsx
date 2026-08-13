@@ -1,4 +1,4 @@
-import AnimeGrid from "@/components/anime-grid";
+import AnimeGrid from "@/components/cards/anime-grid";
 import Pagination from "@/sections/pagination";
 import Reveal from "@/components/reveal";
 import { Anime, PaginationInfo } from "@/interfaces";

@@ -1,4 +1,4 @@
-import AnimeImage from "@/components/anime-image";
+import AnimeImage from "@/components/cards/anime-image";
 import Reveal from "@/components/reveal";
 import { loadRecommendations } from "@/lib/loaders";
 import { Recommendation } from "@/interfaces";
