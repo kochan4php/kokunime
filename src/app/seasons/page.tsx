@@ -32,8 +32,9 @@ const SeasonsPage = async ({ searchParams }: { searchParams: Promise<{ page?: st
   const years = orderYears(groups);
 
   const requestedPage = Number((await searchParams)?.page) || 1;
+  // clamp both ends: negative page params slice from the array END
   const totalPages = Math.max(1, Math.ceil(years.length / YEARS_PER_PAGE));
-  const current = Math.min(requestedPage, totalPages);
+  const current = Math.min(Math.max(requestedPage, 1), totalPages);
   const pageYears = years.slice((current - 1) * YEARS_PER_PAGE, current * YEARS_PER_PAGE);
 
   return (

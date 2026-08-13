@@ -29,8 +29,10 @@ const PAGE_SIZE = 24;
 const GenresPage = async ({ searchParams }: { searchParams: Promise<{ page?: string }> }): Promise<JSX.Element> => {
   const genres = (await loadGenres()) ?? [];
   const requestedPage = Number((await searchParams)?.page) || 1;
+  // clamp both ends: negative page params slice from the array END
+  // (slice(-48,-24) is the last page) while title/canonical claim page 1
   const totalPages = Math.max(1, Math.ceil(genres.length / PAGE_SIZE));
-  const current = Math.min(requestedPage, totalPages);
+  const current = Math.min(Math.max(requestedPage, 1), totalPages);
   const pageGenres = genres.slice((current - 1) * PAGE_SIZE, current * PAGE_SIZE);
 
   return (
