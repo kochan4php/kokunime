@@ -13,6 +13,7 @@ const Navbar = (): JSX.Element => {
   const pathname = usePathname();
   const toggleRef = useRef<HTMLButtonElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
+  const headerRef = useRef<HTMLElement>(null);
   const wasOpen = useRef(false);
 
   // Focus management for the mobile menu: move focus into the menu when it
@@ -51,11 +52,19 @@ const Navbar = (): JSX.Element => {
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") setOpen(false);
     };
+    // Tap/click anywhere outside the header closes the menu. Without this the
+    // mobile menu stays open after tapping the page behind it (verified bug),
+    // and tapping a content link navigates with the menu still open.
+    const onPointerDown = (e: PointerEvent) => {
+      if (!headerRef.current?.contains(e.target as Node)) setOpen(false);
+    };
     document.addEventListener("keydown", onKeyDown);
+    document.addEventListener("pointerdown", onPointerDown);
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     return () => {
       document.removeEventListener("keydown", onKeyDown);
+      document.removeEventListener("pointerdown", onPointerDown);
       document.body.style.overflow = previousOverflow;
     };
   }, [open]);
@@ -67,6 +76,7 @@ const Navbar = (): JSX.Element => {
 
   return (
     <header
+      ref={headerRef}
       className={`navbar sticky top-0 z-50 transition-all duration-300 ${
         scrolled || open
           ? "bg-bg/85 backdrop-blur-xl border-b border-border shadow-[0_4px_30px_rgba(0,0,0,0.05)]"
