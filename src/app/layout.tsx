@@ -12,6 +12,10 @@ export { metadata } from "@/lib/metadata";
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
+  // Required for env(safe-area-inset-bottom) to be non-zero on iOS: without
+  // viewport-fit=cover Safari reports 0 inset, so the sticky CTA's safe-area
+  // padding (section-detail) silently does nothing on iPhones.
+  viewportFit: "cover",
   // theme-color is set dynamically by the theme script + toggle (must match
   // the ACTUAL applied theme, not the OS preference).
 };
