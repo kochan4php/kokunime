@@ -34,10 +34,13 @@ const ThemeToggle = (): JSX.Element => {
       emit();
     };
 
-    const withViewTransition = (document as Document & { startViewTransition?: (cb: () => void) => unknown })
-      .startViewTransition;
-    if (withViewTransition) {
-      withViewTransition(applyTheme);
+    // Must be called as a MEMBER of document — a detached reference
+    // (`const vt = document.startViewTransition; vt(cb)`) loses `this` and
+    // throws "Illegal invocation", silently breaking the toggle in every
+    // Chromium browser. Verified live via puppeteer click.
+    const doc = document as Document & { startViewTransition?: (cb: () => void) => unknown };
+    if (doc.startViewTransition) {
+      doc.startViewTransition(applyTheme);
     } else {
       applyTheme();
     }
