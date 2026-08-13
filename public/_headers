@@ -4,11 +4,19 @@
   Referrer-Policy: strict-origin-when-cross-origin
   Permissions-Policy: camera=(), microphone=(), geolocation=(), browsing-topics=()
   Content-Security-Policy: base-uri 'none'; form-action 'self'; object-src 'none'
+*/
+/
+  Cache-Control: public, max-age=0, s-maxage=900, stale-while-revalidate=900
+/page/*
+  Cache-Control: public, max-age=0, s-maxage=900, stale-while-revalidate=900
+/anime
 /anime/*
-  Cache-Control: public, max-age=0, must-revalidate
+  Cache-Control: public, max-age=0, s-maxage=900, stale-while-revalidate=900
+/genres
 /genres/*
-  Cache-Control: public, max-age=0, must-revalidate
+  Cache-Control: public, max-age=0, s-maxage=900, stale-while-revalidate=900
+/seasons
 /seasons/*
-  Cache-Control: public, max-age=0, must-revalidate
+  Cache-Control: public, max-age=0, s-maxage=900, stale-while-revalidate=900
 /search/*
-  Cache-Control: public, max-age=0, must-revalidate
+  Cache-Control: public, max-age=0, s-maxage=900, stale-while-revalidate=900
