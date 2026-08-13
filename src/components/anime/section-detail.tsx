@@ -40,9 +40,10 @@ const SectionDetail = ({ anime, slug }: { anime: AnimeDetail; slug: string }): J
     <NewSeriesSection slug={slug} />
 
     {/* Mobile-only sticky CTA: the download action is the core task — keep it
-        one tap away instead of buried below the synopsis. */}
+        one tap away instead of buried below the synopsis. pb uses the iOS
+        safe-area inset so the home indicator doesn't cover the button. */}
     {anime.download?.length > 0 && (
-      <div className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-bg/90 p-3 backdrop-blur-lg lg:hidden">
+      <div className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-bg/90 px-3 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] backdrop-blur-lg lg:hidden">
         <a href="#download" className="btn-primary w-full justify-center">
           Lihat Download
           <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-black/15">

@@ -79,6 +79,15 @@
   background-clip: content-box;
 }
 
+/* iOS Safari zooms the page when focusing an input with font-size < 16px —
+   the search box is text-sm (14px), so tapping it would zoom. Unlayered so
+   it beats the text-sm utility (utilities layer wins over base/components). */
+@media (max-width: 767px) {
+  input[type="search"] {
+    font-size: 16px;
+  }
+}
+
 #nprogress .bar {
   background: linear-gradient(90deg, var(--accent), var(--accent-2)) !important;
 }
