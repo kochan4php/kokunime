@@ -14,8 +14,11 @@ export async function generateMetadata({ params }: { params: Promise<{ query: st
 
 const SearchAnime = async ({ params }: { params: Promise<{ query: string }> }): Promise<JSX.Element> => {
   const { query: rawQuery } = await params;
-  const query = decodeQuery(rawQuery);
-  const anime: Anime[] = await loadSearchAnime(query);
+  // Trim: a whitespace-only query (direct URL like /search/%20%20) makes
+  // WordPress return its RECENT POSTS — "search ''" would show the whole
+  // catalog. Empty → empty state, no fetch.
+  const query = decodeQuery(rawQuery).trim();
+  const anime: Anime[] = query ? await loadSearchAnime(query) : [];
 
   return (
     <MainLayout>
