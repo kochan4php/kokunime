@@ -20,11 +20,19 @@ const emit = (): void => {
   listeners.forEach((listener) => listener());
 };
 
+// Track the applied theme SYNCHRONOUSLY. startViewTransition defers its
+// callback to the next frame, so reading the DOM class during a rapid second
+// click still sees the OLD theme — two quick clicks would toggle once and the
+// second toggle would be silently dropped. This mirror flips instantly.
+let appliedDark: boolean | null = null;
+
 const ThemeToggle = (): JSX.Element => {
   const dark = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 
   const toggle = (): void => {
-    const next = !getSnapshot();
+    if (appliedDark === null) appliedDark = getSnapshot();
+    appliedDark = !appliedDark;
+    const next = appliedDark;
     const applyTheme = () => {
       document.documentElement.classList.toggle("dark", next);
       localStorage.setItem("theme", next ? "dark" : "light");
@@ -38,9 +46,24 @@ const ThemeToggle = (): JSX.Element => {
     // (`const vt = document.startViewTransition; vt(cb)`) loses `this` and
     // throws "Illegal invocation", silently breaking the toggle in every
     // Chromium browser. Verified live via puppeteer click.
-    const doc = document as Document & { startViewTransition?: (cb: () => void) => unknown };
+    const doc = document as Document & {
+      startViewTransition?: (cb: () => void) => { finished?: Promise<unknown>; ready?: Promise<unknown> };
+    };
     if (doc.startViewTransition) {
-      doc.startViewTransition(applyTheme);
+      try {
+        // A rapid second click skips the running transition: its `finished`
+        // promise rejects with AbortError ("Transition was skipped"). Swallow
+        // it and re-apply — applyTheme is idempotent (toggle-with-force), so
+        // calling it again is safe and the theme never silently drops.
+        const vt = doc.startViewTransition(applyTheme);
+        // A skipped transition rejects BOTH `finished` and `ready` with
+        // AbortError — swallow both so rapid re-clicks never surface a
+        // pageerror; re-apply is idempotent anyway.
+        vt.finished?.catch?.(() => applyTheme());
+        vt.ready?.catch?.(() => {});
+      } catch {
+        applyTheme();
+      }
     } else {
       applyTheme();
     }

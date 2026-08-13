@@ -4,6 +4,11 @@ import MainLayout from "@/layouts/main-layout";
 import { Metadata } from "next";
 import { JSX, Suspense } from "react";
 
+// Dynamic: featured/recommended/latest-series data changes constantly on the
+// upstream — a build-time static home would show stale picks until deploy.
+// unstable_cache (cache.ts) still dedupes the upstream fetches (15-30m TTL).
+export const dynamic = "force-dynamic";
+
 export async function generateMetadata(): Promise<Metadata> {
   return {
     title: "Download Anime Subtitle Indonesia · Kokunime",
