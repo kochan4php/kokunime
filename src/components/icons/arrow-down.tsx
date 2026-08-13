@@ -10,6 +10,7 @@ export const ArrowDownIcon = ({ className = "h-4 w-4" }: IconProps): JSX.Element
     strokeWidth="2"
     strokeLinecap="round"
     strokeLinejoin="round"
+    aria-hidden="true"
     className={className}
   >
     <path d="M12 5v14M19 12l-7 7-7-7" />

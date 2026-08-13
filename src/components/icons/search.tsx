@@ -10,6 +10,7 @@ export const SearchIcon = ({ className = "h-4 w-4" }: IconProps): JSX.Element =>
     strokeWidth="1.75"
     strokeLinecap="round"
     strokeLinejoin="round"
+    aria-hidden="true"
     className={className}
   >
     <circle cx="11" cy="11" r="7" />

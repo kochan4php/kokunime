@@ -10,6 +10,7 @@ export const SunIcon = ({ className = "h-[18px] w-[18px]" }: IconProps): JSX.Ele
     strokeWidth="1.75"
     strokeLinecap="round"
     strokeLinejoin="round"
+    aria-hidden="true"
     className={className}
   >
     <circle cx="12" cy="12" r="4" />
@@ -26,6 +27,7 @@ export const MoonIcon = ({ className = "h-[18px] w-[18px]" }: IconProps): JSX.El
     strokeWidth="1.75"
     strokeLinecap="round"
     strokeLinejoin="round"
+    aria-hidden="true"
     className={className}
   >
     <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />

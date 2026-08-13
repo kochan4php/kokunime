@@ -10,6 +10,7 @@ export const ArrowRightIcon = ({ className = "h-4 w-4" }: IconProps): JSX.Elemen
     strokeWidth="2"
     strokeLinecap="round"
     strokeLinejoin="round"
+    aria-hidden="true"
     className={className}
   >
     <path d="M5 12h14M13 6l6 6-6 6" />

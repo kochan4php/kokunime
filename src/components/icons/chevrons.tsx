@@ -10,6 +10,7 @@ export const ChevronLeftIcon = ({ className = "h-4 w-4" }: IconProps): JSX.Eleme
     strokeWidth="2"
     strokeLinecap="round"
     strokeLinejoin="round"
+    aria-hidden="true"
     className={className}
   >
     <path d="m15 18-6-6 6-6" />
@@ -25,6 +26,7 @@ export const ChevronRightIcon = ({ className = "h-4 w-4" }: IconProps): JSX.Elem
     strokeWidth="2"
     strokeLinecap="round"
     strokeLinejoin="round"
+    aria-hidden="true"
     className={className}
   >
     <path d="m9 18 6-6-6-6" />

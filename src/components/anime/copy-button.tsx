@@ -24,6 +24,9 @@ const CopyButton = ({ url }: { url?: string }): JSX.Element => {
       onClick={copy}
       aria-label={copied ? "Link tersalin" : "Salin link download"}
       title="Salin link"
+      // aria-live: announce the "✓ Tersalin" status change to screen
+      // readers (WCAG 4.1.3 — a label swap alone is not reliably announced).
+      aria-live="polite"
       className={`inline-flex shrink-0 items-center justify-center rounded-full border px-3 font-mono text-[11px] font-semibold uppercase tracking-wider transition-all duration-300 active:scale-95 ${
         copied
           ? "border-accent bg-accent/10 text-accent"
