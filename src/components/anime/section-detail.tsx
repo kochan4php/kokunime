@@ -59,7 +59,10 @@ const SectionDetail = ({ anime, slug }: { anime: AnimeDetail; slug: string }): J
           release={anime.release_on}
           className="!h-11 !w-11 shrink-0 rounded-xl border border-border bg-surface text-ink"
         />
-        <ShareButton title={anime.title ?? ""} className="!h-11 !w-11 shrink-0 rounded-xl border border-border bg-surface text-ink" />
+        <ShareButton
+          title={anime.title ?? ""}
+          className="!h-11 !w-11 shrink-0 rounded-xl border border-border bg-surface text-ink"
+        />
         <a href="#download" className="btn-primary flex-1 justify-center">
           <span>Lihat Download</span>
           <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-black/15">

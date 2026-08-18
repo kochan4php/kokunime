@@ -1,11 +1,5 @@
 import { describe, expect, it, beforeEach, vi } from "vitest";
-import {
-  getBookmarks,
-  isBookmarked,
-  toggleBookmark,
-  removeBookmark,
-  clearAllBookmarks,
-} from "@/utils/bookmarks";
+import { getBookmarks, isBookmarked, toggleBookmark, removeBookmark, clearAllBookmarks } from "@/utils/bookmarks";
 
 describe("bookmarks utility", () => {
   let store: Record<string, string> = {};

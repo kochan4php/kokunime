@@ -73,9 +73,7 @@ const DetailHero = ({ anime, slug }: DetailHeroProps): JSX.Element => (
               />
             )}
           </div>
-          {anime.japanese && (
-            <p className="mt-1 font-mono text-xs text-ink-muted/80">{anime.japanese}</p>
-          )}
+          {anime.japanese && <p className="mt-1 font-mono text-xs text-ink-muted/80">{anime.japanese}</p>}
           <div className="mt-3 flex flex-wrap items-center gap-2">
             {anime.status && (
               <span

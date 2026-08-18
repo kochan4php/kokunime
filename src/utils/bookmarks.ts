@@ -43,12 +43,7 @@ export const isBookmarked = (slug: string): boolean => {
   return list.some((item) => item.slug === slug);
 };
 
-export const toggleBookmark = (item: {
-  slug: string;
-  title: string;
-  image?: string;
-  release?: string;
-}): boolean => {
+export const toggleBookmark = (item: { slug: string; title: string; image?: string; release?: string }): boolean => {
   const storage = getStorage();
   if (!storage || !item.slug) return false;
   const list = [...getBookmarks()];
@@ -291,4 +286,3 @@ export const getStorageUsageStats = (): { bytesUsed: number; formattedUsed: stri
 
   return { bytesUsed: bytes, formattedUsed, percentage: parseFloat(percentage.toFixed(1)) };
 };
-

@@ -12,20 +12,22 @@ Terima kasih telah tertarik untuk berkontribusi pada pengembangan **Kokunime**! 
    - **Detail Anime:** Data detail anime (`/anime/[slug]`) di-cache dengan smart TTL (`TTL.detail` = 15 menit) via `unstable_cache`.
 3. **Resiliensi Scraper:**
    - Gunakan parser berbasis label teks (bukan hardcoded index array).
-   - Sanitasi karakter tak kasat mata (*zero-width spaces*, *soft hyphens*, *smart quotes*).
-   - Manfaatkan *Exponential Backoff with Random Jitter* dan *Circuit Breaker* untuk menangani upstream rate-limiting.
+   - Sanitasi karakter tak kasat mata (_zero-width spaces_, _soft hyphens_, _smart quotes_).
+   - Manfaatkan _Exponential Backoff with Random Jitter_ dan _Circuit Breaker_ untuk menangani upstream rate-limiting.
 
 ---
 
 ## 🚀 Setup Lingkungan Pengembangan
 
 1. **Clone repository:**
+
    ```bash
    git clone https://github.com/kochan4php/kokunime.git
    cd kokunime
    ```
 
 2. **Inisialisasi & Verifikasi Otomatis:**
+
    ```bash
    pnpm setup
    ```
@@ -60,14 +62,14 @@ pnpm build
 
 ## 📁 Struktur Direktori Utama
 
-* `src/app/` — Halaman Next.js App Router dan Route Handlers (`/api/*`).
-* `src/components/` — Komponen UI modular (cards, anime detail, audio TTS, navigation).
-* `src/services/scraper/` — Engine scraper Cheerio dan parser ketahanan data.
-* `src/config/upstream.ts` — Modul upstream HTTP fetcher dengan retry & circuit breaker.
-* `src/utils/` — Utilitas bookmark, riwayat tontonan, slug formatter, dan history.
-* `tests/` — Test suite Vitest untuk parser, unit resilience, dan API.
+- `src/app/` — Halaman Next.js App Router dan Route Handlers (`/api/*`).
+- `src/components/` — Komponen UI modular (cards, anime detail, audio TTS, navigation).
+- `src/services/scraper/` — Engine scraper Cheerio dan parser ketahanan data.
+- `src/config/upstream.ts` — Modul upstream HTTP fetcher dengan retry & circuit breaker.
+- `src/utils/` — Utilitas bookmark, riwayat tontonan, slug formatter, dan history.
+- `tests/` — Test suite Vitest untuk parser, unit resilience, dan API.
 
 ---
 
-*Terima kasih telah membantu menjadikan Kokunime semakin cepat, stabil, dan bermanfaat bagi komunitas anime Indonesia!*
+_Terima kasih telah membantu menjadikan Kokunime semakin cepat, stabil, dan bermanfaat bagi komunitas anime Indonesia!_
 /

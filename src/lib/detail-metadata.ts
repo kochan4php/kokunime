@@ -13,7 +13,10 @@ export async function buildDetailMetadata(params: Promise<{ slug: string }>): Pr
   }
 
   const title = anime.title;
-  const genreNames = anime.genre?.map((g) => g.name).slice(0, 3).join(", ");
+  const genreNames = anime.genre
+    ?.map((g) => g.name)
+    .slice(0, 3)
+    .join(", ");
   const contextualDetails = [
     anime.score ? `Skor: ${anime.score}` : "",
     anime.total_episode ? `Total: ${anime.total_episode}` : "",
@@ -25,7 +28,8 @@ export async function buildDetailMetadata(params: Promise<{ slug: string }>): Pr
 
   const description = contextualDetails
     ? `Download batch ${title} Sub Indo (${contextualDetails}). ${truncate(anime.synopsis, 100)}`
-    : truncate(anime.synopsis, 160) || `Download batch anime ${title} Subtitle Indonesia lengkap kualitas 360p, 480p, 720p, 1080p di Kokunime.`;
+    : truncate(anime.synopsis, 160) ||
+      `Download batch anime ${title} Subtitle Indonesia lengkap kualitas 360p, 480p, 720p, 1080p di Kokunime.`;
   const images = anime.image ? [{ url: anime.image, alt: title }] : [];
 
   return {

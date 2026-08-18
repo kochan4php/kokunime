@@ -51,8 +51,7 @@ export function parseEpisodeRange(title?: string | null): {
   const isEnd = /\b(end|tamat|final)\b/i.test(cleaned);
 
   const rangeMatch =
-    cleaned.match(/episode\s*(\d{1,4})\s*[-–—~]\s*(\d{1,4})/i) ||
-    cleaned.match(/\b(\d{1,4})\s*[-–—~]\s*(\d{1,4})\b/);
+    cleaned.match(/episode\s*(\d{1,4})\s*[-–—~]\s*(\d{1,4})/i) || cleaned.match(/\b(\d{1,4})\s*[-–—~]\s*(\d{1,4})\b/);
   if (rangeMatch) {
     const start = parseInt(rangeMatch[1], 10);
     const end = parseInt(rangeMatch[2], 10);
@@ -68,5 +67,3 @@ export function parseEpisodeRange(title?: string | null): {
 
   return { isEnd };
 }
-
-

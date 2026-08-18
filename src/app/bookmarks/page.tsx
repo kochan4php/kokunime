@@ -27,17 +27,9 @@ const BookmarksPage = (): JSX.Element => {
   const [folderFilter, setFolderFilter] = useState<string>("all");
   const [filterQuery, setFilterQuery] = useState("");
 
-  const bookmarks = useSyncExternalStore(
-    subscribeBookmarks,
-    getBookmarks,
-    () => SERVER_BOOKMARKS,
-  );
+  const bookmarks = useSyncExternalStore(subscribeBookmarks, getBookmarks, () => SERVER_BOOKMARKS);
 
-  const history = useSyncExternalStore(
-    subscribeHistory,
-    getHistory,
-    () => SERVER_HISTORY,
-  );
+  const history = useSyncExternalStore(subscribeHistory, getHistory, () => SERVER_HISTORY);
 
   const folders = useMemo(() => {
     const set = new Set<string>();
@@ -56,13 +48,14 @@ const BookmarksPage = (): JSX.Element => {
         })
       : history;
 
-  const items = allItems.filter((item) =>
-    !filterQuery.trim() || item.title.toLowerCase().includes(filterQuery.trim().toLowerCase()),
+  const items = allItems.filter(
+    (item) => !filterQuery.trim() || item.title.toLowerCase().includes(filterQuery.trim().toLowerCase()),
   );
 
   const storageStats = useMemo(() => {
     if (typeof window === "undefined") return { bytesUsed: 0, formattedUsed: "0 B", percentage: 0 };
     return getStorageUsageStats();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [bookmarks, history]);
 
   const handleClear = () => {
@@ -291,7 +284,10 @@ const BookmarksPage = (): JSX.Element => {
                         type="button"
                         onClick={(e) => {
                           e.preventDefault();
-                          const rate = prompt(`Beri rating (1-10) untuk ${item.title}:`, bookmark.rating?.toString() || "");
+                          const rate = prompt(
+                            `Beri rating (1-10) untuk ${item.title}:`,
+                            bookmark.rating?.toString() || "",
+                          );
                           if (rate !== null) {
                             const num = parseInt(rate, 10);
                             if (!isNaN(num) && num >= 1 && num <= 10) {

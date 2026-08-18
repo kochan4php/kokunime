@@ -24,7 +24,9 @@ const AnimeImage = ({
 
   if (hasError || !src) {
     return (
-      <div className={`relative flex h-full w-full items-center justify-center bg-surface-muted p-4 text-center ${containerClassName}`}>
+      <div
+        className={`relative flex h-full w-full items-center justify-center bg-surface-muted p-4 text-center ${containerClassName}`}
+      >
         <div className="flex flex-col items-center text-ink-muted">
           <svg
             xmlns="http://www.w3.org/2000/svg"

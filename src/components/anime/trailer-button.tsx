@@ -43,16 +43,12 @@ const TrailerButton = ({ trailerUrl, title }: TrailerButtonProps): JSX.Element |
           if (e.target === dialogRef.current) closeModal();
         }}
         className={`backdrop:backdrop-blur-md m-auto w-full rounded-2xl border border-border bg-surface-solid p-0 text-ink shadow-2xl transition-all duration-300 ${
-          isTheaterMode
-            ? "max-w-6xl backdrop:bg-black/95"
-            : "max-w-3xl backdrop:bg-black/80"
+          isTheaterMode ? "max-w-6xl backdrop:bg-black/95" : "max-w-3xl backdrop:bg-black/80"
         }`}
       >
         <div className="flex items-center justify-between border-b border-border px-4 py-3">
           <div className="flex items-center gap-3">
-            <h3 className="line-clamp-1 font-display text-sm font-bold text-ink">
-              Trailer: {title}
-            </h3>
+            <h3 className="line-clamp-1 font-display text-sm font-bold text-ink">Trailer: {title}</h3>
             <button
               type="button"
               onClick={() => setIsTheaterMode((prev) => !prev)}

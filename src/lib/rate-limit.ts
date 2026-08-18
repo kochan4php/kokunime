@@ -24,11 +24,7 @@ export interface RateLimitResult {
   reset: number;
 }
 
-export function checkRateLimit(
-  identifier: string,
-  limit = 60,
-  windowMs = 60_000,
-): RateLimitResult {
+export function checkRateLimit(identifier: string, limit = 60, windowMs = 60_000): RateLimitResult {
   const now = Date.now();
   const record = rateLimitStore.get(identifier);
 

@@ -16,11 +16,7 @@ const subscribeOnline = (callback: () => void) => {
 const getOnlineSnapshot = () => (typeof navigator !== "undefined" ? navigator.onLine : true);
 
 const OfflineIndicator = (): JSX.Element | null => {
-  const isOnline = useSyncExternalStore(
-    subscribeOnline,
-    getOnlineSnapshot,
-    () => true,
-  );
+  const isOnline = useSyncExternalStore(subscribeOnline, getOnlineSnapshot, () => true);
 
   if (isOnline) return null;
 

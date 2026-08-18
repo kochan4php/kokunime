@@ -44,12 +44,17 @@ const ComparePage = async ({ searchParams }: ComparePageProps): Promise<JSX.Elem
             Perbandingan Anime Side-by-Side
           </h1>
           <p className="mt-2 max-w-2xl text-sm text-ink-muted leading-relaxed">
-            Bandingkan dua anime secara berdampingan untuk melihat perbedaan skor, studio produksi, total episode, durasi tayang, dan genre.
+            Bandingkan dua anime secara berdampingan untuk melihat perbedaan skor, studio produksi, total episode,
+            durasi tayang, dan genre.
           </p>
         </div>
 
         {/* Input selection form */}
-        <form method="GET" action="/compare" className="mb-10 rounded-2xl border border-border bg-surface-solid p-5 shadow-lg">
+        <form
+          method="GET"
+          action="/compare"
+          className="mb-10 rounded-2xl border border-border bg-surface-solid p-5 shadow-lg"
+        >
           <div className="grid gap-4 sm:grid-cols-2">
             <div>
               <label htmlFor="slug-a" className="block font-mono text-xs text-ink-muted mb-1">
@@ -77,10 +82,7 @@ const ComparePage = async ({ searchParams }: ComparePageProps): Promise<JSX.Elem
             </div>
           </div>
           <div className="mt-4 flex justify-end">
-            <button
-              type="submit"
-              className="btn-primary"
-            >
+            <button type="submit" className="btn-primary">
               <span>⚡ Bandingkan Sekarang</span>
             </button>
           </div>
@@ -111,12 +113,8 @@ const ComparePage = async ({ searchParams }: ComparePageProps): Promise<JSX.Elem
                   <th className="p-4 text-left font-mono text-xs uppercase tracking-wider text-ink-muted w-1/4">
                     Kriteria
                   </th>
-                  <th className="p-4 text-left font-display text-base font-bold text-ink w-[37.5%]">
-                    {animeA.title}
-                  </th>
-                  <th className="p-4 text-left font-display text-base font-bold text-ink w-[37.5%]">
-                    {animeB.title}
-                  </th>
+                  <th className="p-4 text-left font-display text-base font-bold text-ink w-[37.5%]">{animeA.title}</th>
+                  <th className="p-4 text-left font-display text-base font-bold text-ink w-[37.5%]">{animeB.title}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-border/60 text-sm">
@@ -143,16 +141,24 @@ const ComparePage = async ({ searchParams }: ComparePageProps): Promise<JSX.Elem
                 <tr>
                   <td className="p-4 font-mono text-xs text-ink-muted">Skor Rating</td>
                   <td className="p-4 font-mono font-bold">
-                    <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs ${
-                      scoreA >= scoreB && scoreA > 0 ? "bg-amber-400/20 text-amber-400 border border-amber-400/40" : "text-ink"
-                    }`}>
+                    <span
+                      className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs ${
+                        scoreA >= scoreB && scoreA > 0
+                          ? "bg-amber-400/20 text-amber-400 border border-amber-400/40"
+                          : "text-ink"
+                      }`}
+                    >
                       ⭐ {animeA.score || "N/A"} {scoreA > scoreB && "🏆 Lebih Tinggi"}
                     </span>
                   </td>
                   <td className="p-4 font-mono font-bold">
-                    <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs ${
-                      scoreB >= scoreA && scoreB > 0 ? "bg-amber-400/20 text-amber-400 border border-amber-400/40" : "text-ink"
-                    }`}>
+                    <span
+                      className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs ${
+                        scoreB >= scoreA && scoreB > 0
+                          ? "bg-amber-400/20 text-amber-400 border border-amber-400/40"
+                          : "text-ink"
+                      }`}
+                    >
                       ⭐ {animeB.score || "N/A"} {scoreB > scoreA && "🏆 Lebih Tinggi"}
                     </span>
                   </td>
@@ -203,7 +209,10 @@ const ComparePage = async ({ searchParams }: ComparePageProps): Promise<JSX.Elem
                   <td className="p-4">
                     <div className="flex flex-wrap gap-1">
                       {animeA.genre?.map((g) => (
-                        <span key={g.name} className="rounded-md border border-border bg-surface px-2 py-0.5 font-mono text-[10px] text-ink-muted">
+                        <span
+                          key={g.name}
+                          className="rounded-md border border-border bg-surface px-2 py-0.5 font-mono text-[10px] text-ink-muted"
+                        >
                           {g.name}
                         </span>
                       ))}
@@ -212,7 +221,10 @@ const ComparePage = async ({ searchParams }: ComparePageProps): Promise<JSX.Elem
                   <td className="p-4">
                     <div className="flex flex-wrap gap-1">
                       {animeB.genre?.map((g) => (
-                        <span key={g.name} className="rounded-md border border-border bg-surface px-2 py-0.5 font-mono text-[10px] text-ink-muted">
+                        <span
+                          key={g.name}
+                          className="rounded-md border border-border bg-surface px-2 py-0.5 font-mono text-[10px] text-ink-muted"
+                        >
                           {g.name}
                         </span>
                       ))}

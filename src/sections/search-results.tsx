@@ -156,11 +156,7 @@ const SearchResults = ({ anime }: SearchResultsProps): JSX.Element => {
         )}
       </div>
 
-      <AnimeGrid
-        anime={filteredAnime}
-        eagerCount={Math.min(filteredAnime.length, 6)}
-        viewMode={viewMode}
-      />
+      <AnimeGrid anime={filteredAnime} eagerCount={Math.min(filteredAnime.length, 6)} viewMode={viewMode} />
     </div>
   );
 };

@@ -6,11 +6,7 @@ import Link from "next/link";
 import { JSX, useSyncExternalStore } from "react";
 
 const HomeHistoryStrip = (): JSX.Element | null => {
-  const history = useSyncExternalStore(
-    subscribeHistory,
-    getHistory,
-    () => [] as HistoryItem[],
-  );
+  const history = useSyncExternalStore(subscribeHistory, getHistory, () => [] as HistoryItem[]);
 
   if (history.length === 0) return null;
 
@@ -21,9 +17,7 @@ const HomeHistoryStrip = (): JSX.Element | null => {
           <div className="mb-4 flex items-center justify-between">
             <div className="flex items-center gap-2">
               <span className="flex h-2 w-2 rounded-full bg-accent animate-pulse" />
-              <h3 className="font-display text-sm font-bold tracking-tight text-ink md:text-base">
-                Terakhir Dilihat
-              </h3>
+              <h3 className="font-display text-sm font-bold tracking-tight text-ink md:text-base">Terakhir Dilihat</h3>
             </div>
             <button
               type="button"

@@ -41,10 +41,7 @@ export function bestImage($img: ImgLike): string | undefined {
   }
 
   const candidate =
-    $img.attr("data-lazy-src") ||
-    $img.attr("data-src") ||
-    $img.attr("data-original") ||
-    $img.attr("src");
+    $img.attr("data-lazy-src") || $img.attr("data-src") || $img.attr("data-original") || $img.attr("src");
 
   return resolveAssetUrl(candidate);
 }

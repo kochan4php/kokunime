@@ -42,9 +42,7 @@ const DetailToc = (): JSX.Element | null => {
 
   return (
     <div className="fixed right-6 top-24 z-40 hidden xl:flex flex-col gap-1.5 rounded-2xl border border-border bg-surface-solid/90 p-2 shadow-xl backdrop-blur-md">
-      <span className="px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider text-ink-muted">
-        Navigasi
-      </span>
+      <span className="px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider text-ink-muted">Navigasi</span>
       {SECTIONS.map((sec) => (
         <button
           key={sec.id}

@@ -38,7 +38,8 @@ export async function GET(): Promise<NextResponse> {
       "/api/random": {
         get: {
           summary: "Get random anime",
-          description: "Returns 307 temporary redirect to a random anime detail page or JSON payload with ?format=json.",
+          description:
+            "Returns 307 temporary redirect to a random anime detail page or JSON payload with ?format=json.",
           responses: {
             "307": {
               description: "Redirect to anime detail",

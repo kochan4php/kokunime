@@ -8,10 +8,7 @@ const BottomBar = (): JSX.Element => (
     <div className="flex flex-wrap items-center gap-3">
       <p className="font-mono text-xs text-ink-muted">&copy; {new Date().getFullYear()} Kokunime</p>
       <span className="text-ink-muted/40">•</span>
-      <Link
-        href="/api"
-        className="font-mono text-[11px] text-ink-muted hover:text-accent transition-colors"
-      >
+      <Link href="/api" className="font-mono text-[11px] text-ink-muted hover:text-accent transition-colors">
         API Docs
       </Link>
       <span className="text-ink-muted/40">•</span>
@@ -37,21 +34,13 @@ const BottomBar = (): JSX.Element => (
     </div>
     <div className="hidden items-center gap-1.5 font-mono text-[11px] text-ink-muted md:flex">
       <span>Cari:</span>
-      <kbd className="rounded border border-border bg-surface px-1.5 py-0.5 text-[10px] font-semibold text-ink">
-        ⌘K
-      </kbd>
+      <kbd className="rounded border border-border bg-surface px-1.5 py-0.5 text-[10px] font-semibold text-ink">⌘K</kbd>
       <span>/</span>
-      <kbd className="rounded border border-border bg-surface px-1.5 py-0.5 text-[10px] font-semibold text-ink">
-        /
-      </kbd>
+      <kbd className="rounded border border-border bg-surface px-1.5 py-0.5 text-[10px] font-semibold text-ink">/</kbd>
       <span className="ml-2">Download:</span>
-      <kbd className="rounded border border-border bg-surface px-1.5 py-0.5 text-[10px] font-semibold text-ink">
-        D
-      </kbd>
+      <kbd className="rounded border border-border bg-surface px-1.5 py-0.5 text-[10px] font-semibold text-ink">D</kbd>
       <span className="ml-2">Trailer:</span>
-      <kbd className="rounded border border-border bg-surface px-1.5 py-0.5 text-[10px] font-semibold text-ink">
-        T
-      </kbd>
+      <kbd className="rounded border border-border bg-surface px-1.5 py-0.5 text-[10px] font-semibold text-ink">T</kbd>
     </div>
     <BackToTop />
   </div>

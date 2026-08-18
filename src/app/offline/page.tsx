@@ -40,11 +40,7 @@ const OfflinePage = (): JSX.Element => (
           <Link href="/bookmarks" className="btn-primary w-full sm:w-auto">
             Buka Anime Tersimpan
           </Link>
-          <button
-            type="button"
-            onClick={() => window.location.reload()}
-            className="btn-secondary w-full sm:w-auto"
-          >
+          <button type="button" onClick={() => window.location.reload()} className="btn-secondary w-full sm:w-auto">
             Coba Muat Ulang
           </button>
         </div>

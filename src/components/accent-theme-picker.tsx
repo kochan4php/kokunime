@@ -20,6 +20,7 @@ export const AccentThemePicker = (): JSX.Element => {
   useEffect(() => {
     const saved = localStorage.getItem(ACCENT_STORAGE_KEY) as AccentPreset;
     if (saved && PRESETS.some((p) => p.key === saved)) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setCurrent(saved);
       if (saved === "orange") {
         document.documentElement.removeAttribute("data-accent");
@@ -50,7 +51,9 @@ export const AccentThemePicker = (): JSX.Element => {
           title={`Pilih tema warna ${p.label}`}
           aria-label={`Tema warna ${p.label}`}
           className={`h-4 w-4 rounded-full transition-transform cursor-pointer ${
-            current === p.key ? "scale-125 ring-2 ring-ink ring-offset-1 ring-offset-bg" : "opacity-70 hover:opacity-100 hover:scale-110"
+            current === p.key
+              ? "scale-125 ring-2 ring-ink ring-offset-1 ring-offset-bg"
+              : "opacity-70 hover:opacity-100 hover:scale-110"
           }`}
           style={{ backgroundColor: p.color }}
         />

@@ -10,7 +10,10 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     const rateHeaders = getRateLimitHeaders(rate);
 
     if (!rate.success) {
-      return NextResponse.json({ error: "Too many requests. Please slow down." }, { status: 429, headers: rateHeaders });
+      return NextResponse.json(
+        { error: "Too many requests. Please slow down." },
+        { status: 429, headers: rateHeaders },
+      );
     }
 
     const { searchParams } = new URL(request.url);

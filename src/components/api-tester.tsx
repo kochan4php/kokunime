@@ -92,12 +92,10 @@ const ApiTester = ({ endpoint }: ApiTesterProps): JSX.Element => {
         {response !== null && (
           <div className="mt-4 rounded-xl border border-border bg-surface-muted p-4">
             <div className="mb-2 flex items-center justify-between font-mono text-[11px] text-ink-muted">
-              <span>Status: <strong className={status === 200 ? "text-emerald-400" : "text-amber-400"}>{status}</strong></span>
-              <button
-                type="button"
-                onClick={() => setResponse(null)}
-                className="hover:text-ink cursor-pointer"
-              >
+              <span>
+                Status: <strong className={status === 200 ? "text-emerald-400" : "text-amber-400"}>{status}</strong>
+              </span>
+              <button type="button" onClick={() => setResponse(null)} className="hover:text-ink cursor-pointer">
                 ✕ Tutup
               </button>
             </div>

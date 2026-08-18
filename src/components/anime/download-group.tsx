@@ -125,9 +125,7 @@ const DownloadGroup = ({ group, animeTitle }: DownloadGroupProps): JSX.Element =
               <tbody className="divide-y divide-border/60">
                 {group.link_download.map((res, idx) => (
                   <tr key={idx} className="hover:bg-surface-muted/30 transition-colors">
-                    <td className="p-3 font-bold text-ink whitespace-nowrap">
-                      {res.resolusi || "Download"}
-                    </td>
+                    <td className="p-3 font-bold text-ink whitespace-nowrap">{res.resolusi || "Download"}</td>
                     {allPlatforms.map((plat) => {
                       const linkTarget = res.link.find((l) => l.platform.toLowerCase() === plat.toLowerCase());
                       return (
@@ -160,7 +158,9 @@ const DownloadGroup = ({ group, animeTitle }: DownloadGroupProps): JSX.Element =
                   {res.resolusi && renderResolutionBadge(res.resolusi)}
                   <OpenAllLinksButton links={res.link} />
                 </div>
-                <div className={`mt-3 grid grid-cols-2 gap-2 md:grid-cols-3 lg:grid-cols-4 ${res.resolusi ? "" : "mt-0"}`}>
+                <div
+                  className={`mt-3 grid grid-cols-2 gap-2 md:grid-cols-3 lg:grid-cols-4 ${res.resolusi ? "" : "mt-0"}`}
+                >
                   {res.link.map((platform: DownloadTarget, i: number) => (
                     <DownloadPlatform key={i} name={platform.platform} url={platform.url} />
                   ))}
@@ -175,4 +175,3 @@ const DownloadGroup = ({ group, animeTitle }: DownloadGroupProps): JSX.Element =
 };
 
 export default DownloadGroup;
-

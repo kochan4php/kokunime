@@ -60,7 +60,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       for (const genre of genresRes.value) {
         const slug = endpointSlug(genre.endpoint, "genres");
         if (!slug) continue;
-        entries.push({ url: `${SITE_URL}/genres/${slug}`, lastModified: now, changeFrequency: "weekly", priority: 0.4 });
+        entries.push({
+          url: `${SITE_URL}/genres/${slug}`,
+          lastModified: now,
+          changeFrequency: "weekly",
+          priority: 0.4,
+        });
       }
     }
 
@@ -68,7 +73,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       for (const season of seasonsRes.value) {
         const slug = endpointSlug(season.endpoint, "seasons");
         if (!slug) continue;
-        entries.push({ url: `${SITE_URL}/seasons/${slug}`, lastModified: now, changeFrequency: "weekly", priority: 0.4 });
+        entries.push({
+          url: `${SITE_URL}/seasons/${slug}`,
+          lastModified: now,
+          changeFrequency: "weekly",
+          priority: 0.4,
+        });
       }
     }
   } catch {

@@ -118,7 +118,9 @@ const AnimeListing = ({ chip, title, anime, pagination, eagerCount = 0 }: AnimeL
         </div>
       )}
 
-      {pagination && !filterQuery && (hasNumbers ? <Pagination pagination={pagination} /> : <PaginationBar pagination={pagination} />)}
+      {pagination &&
+        !filterQuery &&
+        (hasNumbers ? <Pagination pagination={pagination} /> : <PaginationBar pagination={pagination} />)}
     </section>
   );
 };

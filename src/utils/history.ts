@@ -32,12 +32,7 @@ export const getHistory = (): HistoryItem[] => {
   }
 };
 
-export const recordHistory = (item: {
-  slug: string;
-  title: string;
-  image?: string;
-  release?: string;
-}): void => {
+export const recordHistory = (item: { slug: string; title: string; image?: string; release?: string }): void => {
   const storage = getStorage();
   if (!storage || !item.slug) return;
   const list = getHistory().filter((i) => i.slug !== item.slug);

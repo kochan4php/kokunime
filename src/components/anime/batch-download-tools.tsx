@@ -61,9 +61,7 @@ const BatchDownloadTools = ({ group, animeTitle }: BatchDownloadToolsProps): JSX
   const copyAria2 = async () => {
     const links = getLinks();
     if (links.length === 0) return;
-    const ariaContent = links
-      .map((url) => `${url}\n  dir=downloads\n  max-connection-per-server=4`)
-      .join("\n");
+    const ariaContent = links.map((url) => `${url}\n  dir=downloads\n  max-connection-per-server=4`).join("\n");
     try {
       await navigator.clipboard.writeText(ariaContent);
       setCopiedAria2(true);
@@ -72,10 +70,7 @@ const BatchDownloadTools = ({ group, animeTitle }: BatchDownloadToolsProps): JSX
   };
 
   const copyMarkdown = async () => {
-    const lines: string[] = [
-      `### ${animeTitle ?? "Anime"} - ${group.title}`,
-      "",
-    ];
+    const lines: string[] = [`### ${animeTitle ?? "Anime"} - ${group.title}`, ""];
     group.link_download.forEach((res) => {
       if (res.resolusi) lines.push(`**${res.resolusi}**`);
       const links = res.link.map((target) => `[${target.platform}](${target.url})`).join(" | ");
@@ -333,7 +328,8 @@ const BatchDownloadTools = ({ group, animeTitle }: BatchDownloadToolsProps): JSX
         <div className="w-full mt-3 rounded-2xl border border-border bg-surface-solid/95 p-4 shadow-xl backdrop-blur-md">
           <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border/70 pb-3">
             <span className="font-display text-xs font-bold text-ink">
-              ⏱️ Estimasi Waktu Unduh ({fileSizeMb >= 1000 ? `${(fileSizeMb / 1000).toFixed(1)} GB` : `${fileSizeMb} MB`})
+              ⏱️ Estimasi Waktu Unduh (
+              {fileSizeMb >= 1000 ? `${(fileSizeMb / 1000).toFixed(1)} GB` : `${fileSizeMb} MB`})
             </span>
             <div className="flex items-center gap-1.5">
               <span className="font-mono text-[10px] text-ink-muted">Pilih Ukuran:</span>

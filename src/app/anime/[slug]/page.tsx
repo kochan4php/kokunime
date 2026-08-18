@@ -37,10 +37,7 @@ const Anime = async ({ params }: { params: Promise<{ slug: string }> }): Promise
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: safeJsonLd(buildAnimeJsonLd(anime, slug)) }}
       />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: safeJsonLd(buildFaqJsonLd(anime)) }}
-      />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(buildFaqJsonLd(anime)) }} />
       <SectionDetail anime={anime} slug={slug} />
       <div className="mt-8 border-t border-border pt-12">
         <RecommendationSection />

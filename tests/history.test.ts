@@ -1,10 +1,5 @@
 import { describe, expect, it, beforeEach, vi } from "vitest";
-import {
-  getHistory,
-  recordHistory,
-  removeHistory,
-  clearAllHistory,
-} from "@/utils/history";
+import { getHistory, recordHistory, removeHistory, clearAllHistory } from "@/utils/history";
 
 describe("history utility", () => {
   let store: Record<string, string> = {};

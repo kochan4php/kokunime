@@ -93,7 +93,8 @@ const ApiDocsPage = (): JSX.Element => (
             Kokunime Public REST API
           </h1>
           <p className="mt-2 max-w-2xl text-sm text-ink-muted leading-relaxed">
-            Gunakan API publik Kokunime secara gratis untuk mengintegrasikan data anime ke aplikasi mobile, bot Discord/Telegram, atau workflow automasi Anda.
+            Gunakan API publik Kokunime secara gratis untuk mengintegrasikan data anime ke aplikasi mobile, bot
+            Discord/Telegram, atau workflow automasi Anda.
           </p>
         </div>
         <a

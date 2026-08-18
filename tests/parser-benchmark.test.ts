@@ -13,7 +13,9 @@ describe("parser benchmark & formatting utilities", () => {
   });
 
   it("benchmarks Cheerio HTML list parser latency under high volume", () => {
-    const cardsHtml = Array.from({ length: 50 }, (_, i) => `
+    const cardsHtml = Array.from(
+      { length: 50 },
+      (_, i) => `
       <li class="kover">
         <div class="thumb">
           <a href="https://kusonime.com/anime-${i}/">
@@ -27,7 +29,8 @@ describe("parser benchmark & formatting utilities", () => {
           <p><a href="/genres/action">Action</a>, <a href="/genres/adventure">Adventure</a></p>
         </div>
       </li>
-    `).join("\n");
+    `,
+    ).join("\n");
 
     const fullHtml = `<html><body><div class="venutama"><div class="venz"><ul>${cardsHtml}</ul></div></div></body></html>`;
 

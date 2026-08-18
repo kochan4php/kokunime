@@ -26,7 +26,13 @@ const CardAnime = ({ src, alt, title, meta, path, eager = false, priority = fals
             <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/0 to-black/10" />
             {slug && (
               <span className="absolute left-2.5 top-2.5 z-10 opacity-70 transition-opacity duration-200 hover:opacity-100 md:opacity-0 md:group-hover:opacity-100">
-                <BookmarkButton slug={slug} title={title} image={src} release={meta} className="!h-8 !w-8 bg-black/60 backdrop-blur-sm border-white/15 text-white" />
+                <BookmarkButton
+                  slug={slug}
+                  title={title}
+                  image={src}
+                  release={meta}
+                  className="!h-8 !w-8 bg-black/60 backdrop-blur-sm border-white/15 text-white"
+                />
               </span>
             )}
             <span className="absolute bottom-3 left-3 flex items-center gap-1.5 rounded-full bg-black/60 px-2.5 py-1 font-mono text-[10px] uppercase tracking-wider text-white backdrop-blur-xs">

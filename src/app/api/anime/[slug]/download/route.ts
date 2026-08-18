@@ -25,9 +25,7 @@ export async function GET(
       downloadGroups = downloadGroups
         .map((group) => ({
           ...group,
-          link_download: group.link_download.filter((res) =>
-            res.resolusi.toLowerCase().includes(resolutionFilter),
-          ),
+          link_download: group.link_download.filter((res) => res.resolusi.toLowerCase().includes(resolutionFilter)),
         }))
         .filter((group) => group.link_download.length > 0);
     }

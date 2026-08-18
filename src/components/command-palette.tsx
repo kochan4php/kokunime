@@ -189,9 +189,7 @@ const CommandPalette = (): JSX.Element => {
                           className="flex items-center gap-3 rounded-xl border border-border bg-surface p-2 transition-all hover:border-accent hover:bg-accent/5"
                         >
                           <div className="relative h-12 w-9 shrink-0 overflow-hidden rounded-md bg-surface-muted">
-                            {item.link.image && (
-                              <AnimeImage fill sizes="36px" src={item.link.image} alt={item.title} />
-                            )}
+                            {item.link.image && <AnimeImage fill sizes="36px" src={item.link.image} alt={item.title} />}
                           </div>
                           <div className="min-w-0 flex-1">
                             <h4 className="line-clamp-1 text-xs font-semibold text-ink">{item.title}</h4>
@@ -212,9 +210,7 @@ const CommandPalette = (): JSX.Element => {
 
             {recent.length > 0 && !query && (
               <div>
-                <p className="font-mono text-[10px] uppercase tracking-wider text-ink-muted mb-2">
-                  Pencarian Terakhir
-                </p>
+                <p className="font-mono text-[10px] uppercase tracking-wider text-ink-muted mb-2">Pencarian Terakhir</p>
                 <div className="flex flex-wrap gap-1.5">
                   {recent.map((item) => (
                     <button
@@ -234,9 +230,7 @@ const CommandPalette = (): JSX.Element => {
               <>
                 <div>
                   <div className="flex items-center justify-between mb-2">
-                    <p className="font-mono text-[10px] uppercase tracking-wider text-ink-muted">
-                      Navigasi Cepat
-                    </p>
+                    <p className="font-mono text-[10px] uppercase tracking-wider text-ink-muted">Navigasi Cepat</p>
                     <a
                       href="/api/random"
                       onClick={closePalette}
@@ -261,9 +255,7 @@ const CommandPalette = (): JSX.Element => {
                 </div>
 
                 <div>
-                  <p className="font-mono text-[10px] uppercase tracking-wider text-ink-muted mb-2">
-                    Developer & Feed
-                  </p>
+                  <p className="font-mono text-[10px] uppercase tracking-wider text-ink-muted mb-2">Developer & Feed</p>
                   <div className="grid grid-cols-2 gap-1.5">
                     <Link
                       href="/api"
@@ -299,4 +291,3 @@ const CommandPalette = (): JSX.Element => {
 };
 
 export default CommandPalette;
-
