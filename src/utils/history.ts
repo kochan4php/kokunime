@@ -91,6 +91,11 @@ export const subscribeHistory = (listener: () => void): (() => void) => {
   };
   window.addEventListener(EVENT_NAME, handleEvent);
   window.addEventListener("storage", handleEvent);
+
+  // Notify immediately so React re-renders with real localStorage data
+  // after hydration (the server snapshot was always [], client has real data).
+  handleEvent();
+
   return () => {
     window.removeEventListener(EVENT_NAME, handleEvent);
     window.removeEventListener("storage", handleEvent);
