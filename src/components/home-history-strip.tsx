@@ -5,8 +5,10 @@ import AnimeImage from "@/components/cards/anime-image";
 import Link from "next/link";
 import { JSX, useSyncExternalStore } from "react";
 
+const EMPTY_HISTORY: HistoryItem[] = [];
+
 const HomeHistoryStrip = (): JSX.Element | null => {
-  const history = useSyncExternalStore(subscribeHistory, getHistory, () => [] as HistoryItem[]);
+  const history = useSyncExternalStore(subscribeHistory, getHistory, () => EMPTY_HISTORY);
 
   if (history.length === 0) return null;
 
