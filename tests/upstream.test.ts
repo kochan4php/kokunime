@@ -29,6 +29,30 @@ describe("upstream fetcher", () => {
     expect(res.url).toBe("https://kusonime.com/anime-test");
   });
 
+  it("retries on 403 status and succeeds on second attempt", async () => {
+    const mockHtml = "<html>Success after 403 retry</html>";
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce({
+        ok: false,
+        status: 403,
+        statusText: "Forbidden",
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        url: "https://kusonime.com/anime-test",
+        headers: new Headers(),
+        text: () => Promise.resolve(mockHtml),
+      });
+
+    vi.stubGlobal("fetch", fetchMock);
+
+    const res = await fetchUpstream("/anime-test");
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+    expect(res.data).toBe(mockHtml);
+  });
+
   it("retries on 429 status and succeeds on second attempt", async () => {
     const mockHtml = "<html>Success after retry</html>";
     const fetchMock = vi

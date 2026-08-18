@@ -11,19 +11,24 @@ export interface UpstreamResponse {
   status: number;
 }
 
-const DEFAULT_HEADERS = {
-  "User-Agent":
-    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
-  Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
-  "Accept-Language": "id,en-US;q=0.9,en;q=0.8",
-  "Sec-Ch-Ua": '"Chromium";v="131", "Not_A Brand";v="24"',
-  "Sec-Ch-Ua-Mobile": "?0",
-  "Sec-Ch-Ua-Platform": '"Windows"',
-  "Sec-Fetch-Dest": "document",
-  "Sec-Fetch-Mode": "navigate",
-  "Sec-Fetch-Site": "none",
-  "Sec-Fetch-User": "?1",
-  "Upgrade-Insecure-Requests": "1",
+const USER_AGENTS = [
+  "Mozilla/5.0 (iPhone; CPU iPhone OS 18_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.2 Mobile/15E148 Safari/604.1",
+  "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:133.0) Gecko/20100101 Firefox/133.0",
+  "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.1 Safari/605.1.15",
+  "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+];
+
+const getHeaders = (retryCount = 0): Record<string, string> => {
+  const ua = USER_AGENTS[retryCount % USER_AGENTS.length];
+  return {
+    "User-Agent": ua,
+    Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
+    "Accept-Language": "id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7",
+    Referer: "https://kusonime.com/",
+    Origin: "https://kusonime.com",
+    "Cache-Control": "no-cache",
+    Pragma: "no-cache",
+  };
 };
 
 const FALLBACK_MIRRORS = (process.env.UPSTREAM_MIRRORS || "")
@@ -86,11 +91,11 @@ export async function fetchUpstream(path: string, retryCount = 0, mirrorIndex = 
   try {
     const res = await fetch(targetUrl, {
       signal: AbortSignal.timeout(TIMEOUT_MS),
-      headers: DEFAULT_HEADERS,
+      headers: getHeaders(retryCount),
     });
 
     const status = res.status;
-    const retryable = status === 429 || status >= 500;
+    const retryable = status === 403 || status === 429 || status >= 500;
 
     if (!res.ok) {
       if (retryable && retryCount < MAX_RETRIES) {
