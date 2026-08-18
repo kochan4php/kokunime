@@ -1,8 +1,14 @@
-const CACHE = "kokunime-v4";
+const CACHE = "kokunime-v6";
 const NAV_FRESH_MS = 60 * 60 * 1000; // serve cached navigations only within 1h
+const PRECACHE_URLS = ["/", "/bookmarks", "/offline", "/manifest.webmanifest"];
 
-self.addEventListener("install", () => {
-  self.skipWaiting();
+self.addEventListener("install", (event) => {
+  event.waitUntil(
+    caches
+      .open(CACHE)
+      .then((cache) => cache.addAll(PRECACHE_URLS).catch(() => {}))
+      .then(() => self.skipWaiting()),
+  );
 });
 
 self.addEventListener("activate", (event) => {
@@ -37,7 +43,7 @@ self.addEventListener("fetch", (event) => {
             }
             return response;
           })
-          .catch(() => cached || caches.match("/"));
+          .catch(() => cached || caches.match("/offline") || caches.match("/bookmarks") || caches.match("/"));
         return fetched;
       }),
     );

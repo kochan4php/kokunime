@@ -61,7 +61,7 @@ describe("parseAnimeDetail", () => {
     expect(detail.image).toBe("https://example.com/hero.jpg");
   });
 
-  it("does not crash when info fields are missing", () => {
+  it("does not crash when info fields are missing and accurately extracts present fields", () => {
     const sparse = `<div class="venser"><div class="post-thumb"><img src="https://example.com/hero.jpg" title="Anime Foo" /></div>
       <div class="venutama"><div class="lexot"><div class="info">
         <p><b>Japanese</b>: フー</p>
@@ -69,9 +69,17 @@ describe("parseAnimeDetail", () => {
         <p><b>Score</b></p>
       </div></div></div></div>`;
     const detail = parseAnimeDetail(load(sparse));
-    expect(detail.type).toBe("");
-    expect(detail.score).toBe("");
-    expect(detail.release_on).toBe("");
+    expect(detail.type).toBe("TV");
+    expect(detail.score).toBeFalsy();
+    expect(detail.release_on).toBeFalsy();
     expect(detail.synopsis).toBe("");
+  });
+
+  it("detects audio and subtitle tags from title and body text", () => {
+    const dualAudioHtml = `<div class="venser"><div class="post-thumb"><img src="https://example.com/a.jpg" title="Naruto Shippuden Dual Audio Batch Sub Indo" /></div>
+      <div class="venutama"><div class="lexot"><div class="info"></div></div></div></div>`;
+    const detail = parseAnimeDetail(load(dualAudioHtml));
+    expect(detail.audio).toBe("Dual Audio");
+    expect(detail.subtitle).toBe("Indo Sub");
   });
 });

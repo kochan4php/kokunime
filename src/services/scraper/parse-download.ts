@@ -1,5 +1,29 @@
 import { DownloadResolution, DownloadOption, DownloadTarget } from "@/interfaces";
 import { CheerioAPI } from "cheerio";
+import { cleanText } from "./sanitize";
+
+const normalizeUrl = (raw?: string): string | undefined => {
+  if (!raw) return undefined;
+  const trimmed = raw.trim();
+  if (/^(javascript|data|vbscript|file):/i.test(trimmed)) return undefined;
+  if (/^https?:\/\//i.test(trimmed)) return trimmed;
+  if (trimmed.startsWith("//")) return `https:${trimmed}`;
+  return undefined;
+};
+
+const parseBytes = (raw: string): { bytes?: number; formatted?: string } => {
+  const match = raw.match(/(\d+(?:\.\d+)?)\s*(gb|mb|kb|tb)\b/i);
+  if (!match) return {};
+  const num = parseFloat(match[1]);
+  const unit = match[2].toUpperCase();
+  let multiplier = 1024 * 1024;
+  if (unit === "KB") multiplier = 1024;
+  if (unit === "MB") multiplier = 1024 * 1024;
+  if (unit === "GB") multiplier = 1024 * 1024 * 1024;
+  if (unit === "TB") multiplier = 1024 * 1024 * 1024 * 1024;
+  const bytes = Math.round(num * multiplier);
+  return { bytes, formatted: `${num} ${unit}` };
+};
 
 export function getDownloadLinks(
   $: CheerioAPI,
@@ -12,45 +36,63 @@ export function getDownloadLinks(
 
   $(element)
     .find(wrapperClass)
-    .each((_, element) => {
+    .each((_, el) => {
       const temp_res: DownloadResolution[] = [];
 
-      $(element)
+      $(el)
         .find(urlClass)
-        .each((_, el) => {
+        .each((_, groupEl) => {
           const temp_dl: DownloadTarget[] = [];
 
-          $(el)
+          $(groupEl)
             .find("a")
-            .each((_, elm) => {
-              const url = $(elm).attr("href");
-              // Trust boundary: scraped hrefs are rendered verbatim as
-              // <a href> — a compromised/weird upstream could inject
-              // javascript: URLs (stored XSS on click). Only http(s) pass.
-              if (url && /^https?:\/\//i.test(url)) {
-                temp_dl.push({ platform: $(elm).text(), url });
+            .each((_, aEl) => {
+              const url = normalizeUrl($(aEl).attr("href"));
+              const platform = cleanText($(aEl).text());
+              if (url && platform) {
+                temp_dl.push({ platform, url });
               }
             });
 
-          const obj = { resolusi: $(el).find("strong").text(), link: temp_dl };
-          temp_res.push(obj);
+          const resolusi = cleanText($(groupEl).find("strong").text());
+          const heightMatch = resolusi.match(/\b(360|480|720|1080|1440|2160)p?\b/i);
+          const height = heightMatch ? parseInt(heightMatch[1], 10) : undefined;
+          const codec = /hevc|x265|h\.?265/i.test(resolusi)
+            ? "hevc"
+            : /x264|h\.?264|avc/i.test(resolusi)
+              ? "h264"
+              : /av1/i.test(resolusi)
+                ? "av1"
+                : undefined;
+          const container = /mkv/i.test(resolusi) ? "mkv" : /mp4/i.test(resolusi) ? "mp4" : undefined;
+          const sizeInfo = parseBytes(resolusi);
+
+          if (temp_dl.length > 0 || resolusi) {
+            temp_res.push({
+              resolusi,
+              height,
+              codec,
+              container,
+              size_bytes: sizeInfo.bytes,
+              size_formatted: sizeInfo.formatted,
+              link: temp_dl,
+            });
+          }
         });
 
-      const obj = { title: $(element).find(titleClass).text(), link_download: temp_res };
+      const title = cleanText($(el).find(titleClass).text());
+      const obj: DownloadOption = { title, link_download: temp_res };
 
-      // Redirect posts ("PINDAH KE <a>…", kusonime moved the post): the
-      // ONLY actionable link lives in the group TITLE, not in url blocks.
-      // Surface it as a single platform target instead of dropping the
-      // group (which rendered an empty "Pilih Kualitas" section).
       if (temp_res.length === 0) {
         const redirectLinks: DownloadTarget[] = [];
-        $(element)
+        $(el)
           .find(titleClass)
           .find("a[href]")
           .each((_, a) => {
-            const url = $(a).attr("href");
-            if (url && /^https?:\/\//i.test(url)) {
-              redirectLinks.push({ platform: $(a).text().trim() || "Buka link", url });
+            const url = normalizeUrl($(a).attr("href"));
+            const platform = cleanText($(a).text()) || "Buka link";
+            if (url) {
+              redirectLinks.push({ platform, url });
             }
           });
         if (redirectLinks.length > 0) {

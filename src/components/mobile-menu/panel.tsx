@@ -1,6 +1,7 @@
 "use client";
 
 import SearchForm from "../search-form";
+import PwaInstallButton from "../pwa-install-button";
 import { siteLinks } from "@/components/site-config";
 import Link from "next/link";
 import { JSX } from "react";
@@ -37,6 +38,7 @@ const MobileMenuPanel = ({ onClose, isActive }: MobileMenuPanelProps): JSX.Eleme
         </Link>
       ))}
     </nav>
+    <PwaInstallButton />
   </div>
 );
 

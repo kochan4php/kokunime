@@ -1,5 +1,4 @@
 import { ChildrenProps } from "@/interfaces";
-import NextTopLoader from "nextjs-toploader";
 import ServiceWorkerRegister from "@/components/sw-register";
 import { JetBrains_Mono, Plus_Jakarta_Sans } from "next/font/google";
 import { JSX } from "react";
@@ -12,12 +11,7 @@ export { metadata } from "@/lib/metadata";
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  // Required for env(safe-area-inset-bottom) to be non-zero on iOS: without
-  // viewport-fit=cover Safari reports 0 inset, so the sticky CTA's safe-area
-  // padding (section-detail) silently does nothing on iPhones.
   viewportFit: "cover",
-  // theme-color is set dynamically by the theme script + toggle (must match
-  // the ACTUAL applied theme, not the OS preference).
 };
 
 const plusJakartaSans = Plus_Jakarta_Sans({
@@ -37,6 +31,7 @@ const RootLayout = ({ children }: ChildrenProps): JSX.Element => (
     <head>
       <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(buildWebSiteJsonLd()) }} />
+      <link rel="search" type="application/opensearchdescription+xml" title="Kokunime" href="/opensearch.xml" />
     </head>
     <body suppressHydrationWarning className="min-h-screen">
       {/* Skip link: lets keyboard users jump past the navbar on every page. */}
@@ -71,7 +66,6 @@ const RootLayout = ({ children }: ChildrenProps): JSX.Element => (
           <circle cx="110%" cy="50%" r="30%" fill="url(#blob3)" />
         </svg>
       </div>
-      <NextTopLoader showSpinner={false} color="var(--accent)" />
       <ServiceWorkerRegister />
       {children}
     </body>

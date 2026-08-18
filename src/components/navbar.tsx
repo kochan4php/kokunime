@@ -1,6 +1,6 @@
 "use client";
 
-import SearchForm from "./search-form";
+import CommandPalette from "./command-palette";
 import ThemeToggle from "./theme-toggle";
 import MobileMenu from "./mobile-menu";
 import { siteLinks } from "@/components/site-config";
@@ -17,19 +17,6 @@ const Navbar = (): JSX.Element => {
     const onScroll = () => setScrolled(window.scrollY > 10);
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
-  }, []);
-
-  // "/" focuses the search box (ignore when typing in a field).
-  useEffect(() => {
-    const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key !== "/" || e.metaKey || e.ctrlKey || e.altKey) return;
-      const target = e.target as HTMLElement | null;
-      if (target?.matches?.("input, textarea, select, [contenteditable]")) return;
-      e.preventDefault();
-      document.querySelector<HTMLInputElement>('input[type="search"]')?.focus();
-    };
-    document.addEventListener("keydown", onKeyDown);
-    return () => document.removeEventListener("keydown", onKeyDown);
   }, []);
 
   const isActive = (href: string) => {
@@ -75,11 +62,15 @@ const Navbar = (): JSX.Element => {
           </nav>
         </div>
 
-        <div className="flex items-center gap-3">
-          <SearchForm
-            className="hidden md:block"
-            inputClassName="w-60 pl-10 lg:w-72 bg-surface border border-accent/50 focus:border-accent"
-          />
+        <div className="flex items-center gap-2 md:gap-3">
+          <a
+            href="/api/random"
+            title="Buka anime acak"
+            className="hidden sm:inline-flex items-center gap-1 rounded-full border border-border bg-surface px-3 py-1.5 font-mono text-xs font-semibold text-ink-muted transition-all hover:border-accent hover:text-ink active:scale-95 cursor-pointer"
+          >
+            <span>🎲 Acak</span>
+          </a>
+          <CommandPalette />
           <ThemeToggle />
           <MobileMenu open={open} onOpenChange={setOpen} isActive={isActive} />
         </div>

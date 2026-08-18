@@ -1,7 +1,7 @@
 import HomeContent from "@/sections/home-content";
 import HomeSkeleton from "@/sections/home-skeleton";
 import MainLayout from "@/layouts/main-layout";
-import { loadAnimePage } from "@/lib/loaders";
+import { getAnimePerPage } from "@/services/scraper";
 import { SITE_URL } from "@/lib/site";
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
@@ -32,7 +32,7 @@ const PaginatedHome = async ({ params }: { params: Promise<{ page: string }> }):
     notFound();
   }
 
-  const { anime = [], pagination } = await loadAnimePage(page);
+  const { anime = [], pagination } = await getAnimePerPage(page);
 
   if (anime.length === 0 || pagination?.current_page !== page) {
     notFound();

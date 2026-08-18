@@ -55,4 +55,33 @@ describe("getDownloadLinks", () => {
       { platform: "Gabriel DropOut BD Batch", url: "https://kusonime.com/gabriel-do-batch-sub-indo/" },
     ]);
   });
+
+  it("extracts structured quality attributes and size in bytes", () => {
+    const rich = load(
+      `<div class="venser"><div class="smokeddl">
+        <div class="smokettl">Batch Download</div>
+        <div class="smokeurl">
+          <strong>1080p x265 MKV (1.5 GB)</strong>
+          <a href="https://example.com/dl">GDrive</a>
+        </div>
+        <div class="smokeurl">
+          <strong>720p MP4 (350 MB)</strong>
+          <a href="https://example.com/dl2">Mega</a>
+        </div>
+      </div></div>`,
+    );
+    const download = getDownloadLinks(rich, ".smokeddl", ".smokeurl", ".smokettl");
+    const [res1080, res720] = download[0].link_download;
+
+    expect(res1080.height).toBe(1080);
+    expect(res1080.codec).toBe("hevc");
+    expect(res1080.container).toBe("mkv");
+    expect(res1080.size_bytes).toBe(1610612736); // 1.5 * 1024^3
+    expect(res1080.size_formatted).toBe("1.5 GB");
+
+    expect(res720.height).toBe(720);
+    expect(res720.container).toBe("mp4");
+    expect(res720.size_bytes).toBe(367001600); // 350 * 1024^2
+    expect(res720.size_formatted).toBe("350 MB");
+  });
 });

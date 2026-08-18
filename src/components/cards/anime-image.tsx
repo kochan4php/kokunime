@@ -19,10 +19,33 @@ const AnimeImage = ({
   loading,
   ...props
 }: AnimeImageProps): JSX.Element => {
-  // LCP images (priority) and eager above-fold images start visible — no
-  // opacity fade, no waiting for onLoad to fire post-hydration (that added
-  // ~1s element render delay on detail/listing pages).
   const [loaded, setLoaded] = useState(!!priority || loading === "eager");
+  const [hasError, setHasError] = useState(false);
+
+  if (hasError || !src) {
+    return (
+      <div className={`relative flex h-full w-full items-center justify-center bg-surface-muted p-4 text-center ${containerClassName}`}>
+        <div className="flex flex-col items-center text-ink-muted">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className="h-8 w-8 opacity-40"
+            aria-hidden="true"
+          >
+            <rect width="18" height="18" x="3" y="3" rx="2" ry="2" />
+            <circle cx="9" cy="9" r="2" />
+            <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" />
+          </svg>
+          <span className="mt-2 line-clamp-1 font-mono text-[10px] opacity-60">Kokunime</span>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={`relative h-full w-full overflow-hidden bg-surface-muted ${containerClassName}`}>
@@ -37,6 +60,7 @@ const AnimeImage = ({
           onLoad?.(e);
         }}
         onError={(e) => {
+          setHasError(true);
           setLoaded(true);
           onError?.(e);
         }}

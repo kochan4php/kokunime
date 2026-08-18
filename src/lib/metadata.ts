@@ -27,7 +27,11 @@ export const metadata: Metadata = {
     images: [DEFAULT_OG_IMAGE],
   },
   robots: { index: true, follow: true },
-  alternates: { canonical: "/", languages: { "id-ID": "/" } },
+  alternates: {
+    canonical: "/",
+    languages: { "id-ID": "/", "x-default": "/" },
+    types: { "application/rss+xml": "/feed.xml" },
+  },
   icons: {
     icon: [{ url: "/icon.svg", type: "image/svg+xml" }],
     apple: "/apple-touch-icon.png",

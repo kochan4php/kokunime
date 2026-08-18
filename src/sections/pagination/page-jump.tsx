@@ -14,12 +14,16 @@ const PageJump = ({ current, total, basePath }: { current: number; total: number
     e.preventDefault();
     const page = Number(value);
     if (!page || page < 1 || page > total) return;
-    router.push(basePath ? `${basePath}/${page}` : `?page=${page}`);
+    if (basePath === "/page" && page === 1) {
+      router.push("/");
+    } else {
+      router.push(basePath ? `${basePath}/${page}` : `?page=${page}`);
+    }
   };
 
   return (
-    <form onSubmit={submit} className="hidden items-center gap-2 md:flex">
-      <span className="font-mono text-xs uppercase tracking-widest text-ink-muted">Lompat</span>
+    <form onSubmit={submit} className="flex items-center gap-2">
+      <span className="font-mono text-xs uppercase tracking-widest text-ink-muted">Hal.</span>
       <input
         type="number"
         min={1}
@@ -28,8 +32,15 @@ const PageJump = ({ current, total, basePath }: { current: number; total: number
         value={value}
         onChange={(e) => setValue(e.target.value)}
         aria-label={`Lompat ke halaman (1-${total})`}
-        className="h-9 w-16 rounded-full border border-border bg-surface px-2 text-center font-mono text-xs text-ink outline-none transition-colors focus:border-accent"
+        className="h-8 w-14 rounded-full border border-border bg-surface px-2 text-center font-mono text-xs text-ink outline-none transition-all focus:border-accent hover:border-accent/60"
       />
+      <button
+        type="submit"
+        aria-label="Lompat ke halaman"
+        className="h-8 rounded-full border border-border bg-surface px-2.5 font-mono text-xs text-ink-muted transition-all hover:border-accent hover:text-ink active:scale-95"
+      >
+        Go
+      </button>
     </form>
   );
 };

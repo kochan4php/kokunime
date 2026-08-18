@@ -1,12 +1,11 @@
-import { loadAnimeByGenres } from "@/lib/loaders";
+import { getAnimeByGenres } from "@/services/scraper";
 import { SITE_URL } from "@/lib/site";
 import { toTitle } from "@/utils/to-title";
 import AnimeListing from "@/sections/anime-listing";
-import ListingSkeleton from "@/sections/listing-skeleton";
 import MainLayout from "@/layouts/main-layout";
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { JSX, Suspense } from "react";
+import { JSX } from "react";
 
 export async function generateMetadata({
   params,
@@ -30,12 +29,6 @@ export async function generateMetadata({
   };
 }
 
-const GenreContent = async ({ genre, page }: { genre: string; page: number }): Promise<JSX.Element> => {
-  const { anime = [], pagination } = await loadAnimeByGenres(genre, page);
-
-  return <AnimeListing chip="Genre" title={toTitle(genre)} anime={anime} pagination={pagination} eagerCount={5} />;
-};
-
 const GenrePage = async ({
   params,
   searchParams,
@@ -46,7 +39,7 @@ const GenrePage = async ({
   const { genre } = await params;
   const page = Number((await searchParams)?.page) || 1;
 
-  const { anime = [], pagination } = await loadAnimeByGenres(genre, page);
+  const { anime = [], pagination } = await getAnimeByGenres(genre, page);
 
   if (anime.length === 0 && !pagination) {
     notFound();
@@ -54,9 +47,7 @@ const GenrePage = async ({
 
   return (
     <MainLayout>
-      <Suspense fallback={<ListingSkeleton />}>
-        <GenreContent genre={genre} page={page} />
-      </Suspense>
+      <AnimeListing chip="Genre" title={toTitle(genre)} anime={anime} pagination={pagination} eagerCount={5} />
     </MainLayout>
   );
 };

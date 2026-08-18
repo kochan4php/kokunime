@@ -1,12 +1,11 @@
-import { loadAnimeBySeasons } from "@/lib/loaders";
+import { getAnimeBySeasons } from "@/services/scraper";
 import { SITE_URL } from "@/lib/site";
 import { toTitle } from "@/utils/to-title";
 import AnimeListing from "@/sections/anime-listing";
-import ListingSkeleton from "@/sections/listing-skeleton";
 import MainLayout from "@/layouts/main-layout";
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { JSX, Suspense } from "react";
+import { JSX } from "react";
 
 export async function generateMetadata({
   params,
@@ -30,12 +29,6 @@ export async function generateMetadata({
   };
 }
 
-const SeasonContent = async ({ season, page }: { season: string; page: number }): Promise<JSX.Element> => {
-  const { anime = [], pagination } = await loadAnimeBySeasons(season, page);
-
-  return <AnimeListing chip="Season" title={toTitle(season)} anime={anime} pagination={pagination} eagerCount={5} />;
-};
-
 const SeasonPage = async ({
   params,
   searchParams,
@@ -46,7 +39,7 @@ const SeasonPage = async ({
   const { season } = await params;
   const page = Number((await searchParams)?.page) || 1;
 
-  const { anime = [], pagination } = await loadAnimeBySeasons(season, page);
+  const { anime = [], pagination } = await getAnimeBySeasons(season, page);
 
   if (anime.length === 0 && !pagination) {
     notFound();
@@ -54,9 +47,7 @@ const SeasonPage = async ({
 
   return (
     <MainLayout>
-      <Suspense fallback={<ListingSkeleton />}>
-        <SeasonContent season={season} page={page} />
-      </Suspense>
+      <AnimeListing chip="Season" title={toTitle(season)} anime={anime} pagination={pagination} eagerCount={5} />
     </MainLayout>
   );
 };

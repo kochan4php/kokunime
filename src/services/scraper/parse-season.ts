@@ -1,12 +1,28 @@
 import { CheerioAPI } from "cheerio";
 import { UPSTREAM_URL } from "./constants";
+import { cleanText } from "./sanitize";
 
 export function parseSeason($: CheerioAPI) {
-  const element = $(".venser .lexot .info > p:nth-of-type(3) > a");
+  let seasonData: { name?: string; url?: string; endpoint?: string } | undefined;
 
-  return {
-    name: element.text(),
-    url: element.attr("href"),
-    endpoint: element.attr("href")?.replace(UPSTREAM_URL, ""),
-  };
+  $(".venser .lexot .info > p").each((_, p) => {
+    const text = $(p).text();
+    const colon = text.indexOf(":");
+    const label = colon >= 0 ? text.slice(0, colon) : text;
+
+    if (/season|musim/i.test(label)) {
+      const $a = $(p).find("a");
+      const name = cleanText($a.text());
+      const href = $a.attr("href");
+      if (name && href) {
+        seasonData = {
+          name,
+          url: href,
+          endpoint: href.replace(UPSTREAM_URL, ""),
+        };
+      }
+    }
+  });
+
+  return seasonData;
 }

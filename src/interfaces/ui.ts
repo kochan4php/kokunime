@@ -14,6 +14,7 @@ export interface InputProps {
   value: string;
   ariaLabel?: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
 }
 
 export interface AnimeCardProps {

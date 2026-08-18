@@ -1,13 +1,12 @@
 import AnimeImage from "@/components/cards/anime-image";
-import Reveal from "@/components/reveal";
-import { loadAnimePage } from "@/lib/loaders";
+import { getAnimePerPage } from "@/services/scraper";
 import { Anime } from "@/interfaces";
 import { animeSlug } from "@/utils/endpoint-slug";
 import Link from "next/link";
 import { JSX } from "react";
 
 const NewSeriesAnime = async ({ slug }: { slug: string }): Promise<JSX.Element> => {
-  const getNewSeriesAnime = await loadAnimePage(1);
+  const getNewSeriesAnime = await getAnimePerPage(1);
   // Exact slug match — `includes()` would filter out every series sharing a
   // substring (e.g. current slug "one-piece" hides all one-piece posts).
   const newSeriesAnime = getNewSeriesAnime.anime?.filter((data: Anime) => {

@@ -29,8 +29,14 @@ export interface AnimeDetail {
   duration?: string;
   release_on?: string;
   synopsis?: string;
+  rating?: string;
+  synonyms?: string;
+  aliases?: string[];
+  subtitle?: string;
+  audio?: string;
   genre: Genre[];
   season?: { name?: string; url?: string; endpoint?: string };
+  trailer?: string;
   download: DownloadOption[];
 }
 

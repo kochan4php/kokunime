@@ -33,6 +33,44 @@
   --glow-amber: rgba(240, 180, 95, 0.2);
 }
 
+:root[data-contrast="oled"], .dark[data-contrast="oled"] {
+  --bg: #000000;
+  --surface: rgba(10, 10, 10, 0.85);
+  --surface-solid: #050505;
+  --surface-muted: #151515;
+  --border: #333333;
+  --ink: #ffffff;
+  --ink-muted: #d4d4d4;
+}
+
+:root[data-accent="emerald"], .dark[data-accent="emerald"] {
+  --accent: #10b981;
+  --accent-strong: #059669;
+  --accent-2: #047857;
+  --glow-accent: rgba(16, 185, 129, 0.35);
+}
+
+:root[data-accent="violet"], .dark[data-accent="violet"] {
+  --accent: #8b5cf6;
+  --accent-strong: #7c3aed;
+  --accent-2: #6d28d9;
+  --glow-accent: rgba(139, 92, 246, 0.35);
+}
+
+:root[data-accent="cyan"], .dark[data-accent="cyan"] {
+  --accent: #06b6d4;
+  --accent-strong: #0891b2;
+  --accent-2: #0e7490;
+  --glow-accent: rgba(6, 182, 212, 0.35);
+}
+
+:root[data-accent="rose"], .dark[data-accent="rose"] {
+  --accent: #f43f5e;
+  --accent-strong: #e11d48;
+  --accent-2: #be123c;
+  --glow-accent: rgba(244, 63, 94, 0.35);
+}
+
 @theme inline {
   --color-bg: var(--bg);
   --color-surface: var(--surface);

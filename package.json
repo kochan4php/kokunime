@@ -4,7 +4,9 @@
   "private": true,
   "author": "Deo Subarno",
   "packageManager": "pnpm@11.18.0",
+  "type": "module",
   "scripts": {
+    "setup": "npm test && npm run build",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
@@ -12,16 +14,14 @@
     "test": "vitest run",
     "prettier:check": "prettier . --check",
     "prettier:fix": "prettier . --write",
-    "docker:up": "pnpm docker:down && docker compose up -d",
+    "docker:up": "npm run docker:down && docker compose up -d",
     "docker:down": "docker compose down",
     "prepare": "husky"
   },
   "dependencies": {
-    "axios": "^1.19.0",
     "cheerio": "^1.2.0",
     "husky": "^9.1.7",
     "next": "^16.3.0",
-    "nextjs-toploader": "^3.9.17",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
     "sharp": "^0.35.3"

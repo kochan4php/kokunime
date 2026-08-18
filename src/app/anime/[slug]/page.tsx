@@ -1,6 +1,7 @@
 import SectionDetail from "@/components/anime/section-detail";
-import { loadAnimeDetail } from "@/lib/loaders";
-import { buildAnimeJsonLd, buildBreadcrumbJsonLd, safeJsonLd } from "@/lib/seo";
+import RecommendationSection from "@/sections/recommendation-section";
+import { getAnimeDetail } from "@/services/scraper";
+import { buildAnimeJsonLd, buildBreadcrumbJsonLd, buildFaqJsonLd, safeJsonLd } from "@/lib/seo";
 import { buildDetailMetadata } from "@/lib/detail-metadata";
 import MainLayout from "@/layouts/main-layout";
 import { AnimeDetail } from "@/interfaces";
@@ -20,7 +21,7 @@ export const dynamic = "force-dynamic";
 
 const Anime = async ({ params }: { params: Promise<{ slug: string }> }): Promise<JSX.Element> => {
   const { slug } = await params;
-  const anime: AnimeDetail | null = await loadAnimeDetail(slug);
+  const anime: AnimeDetail | null = await getAnimeDetail(slug);
 
   if (!anime?.title) {
     notFound();
@@ -36,7 +37,14 @@ const Anime = async ({ params }: { params: Promise<{ slug: string }> }): Promise
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: safeJsonLd(buildAnimeJsonLd(anime, slug)) }}
       />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(buildFaqJsonLd(anime)) }}
+      />
       <SectionDetail anime={anime} slug={slug} />
+      <div className="mt-8 border-t border-border pt-12">
+        <RecommendationSection />
+      </div>
     </MainLayout>
   );
 };

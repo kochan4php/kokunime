@@ -1,7 +1,7 @@
 "use client";
 
 import { MoonIcon, SunIcon } from "@/components/icons";
-import { JSX, useSyncExternalStore } from "react";
+import { JSX, useEffect, useSyncExternalStore } from "react";
 
 const listeners = new Set<() => void>();
 
@@ -28,6 +28,20 @@ let appliedDark: boolean | null = null;
 
 const ThemeToggle = (): JSX.Element => {
   const dark = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
+
+  useEffect(() => {
+    const onStorage = (e: StorageEvent) => {
+      if (e.key === "theme" && e.newValue) {
+        const isDark = e.newValue === "dark";
+        document.documentElement.classList.toggle("dark", isDark);
+        document.querySelector('meta[name="theme-color"]')?.setAttribute("content", isDark ? "#201613" : "#fdf5eb");
+        appliedDark = isDark;
+        emit();
+      }
+    };
+    window.addEventListener("storage", onStorage);
+    return () => window.removeEventListener("storage", onStorage);
+  }, []);
 
   const toggle = (): void => {
     if (appliedDark === null) appliedDark = getSnapshot();

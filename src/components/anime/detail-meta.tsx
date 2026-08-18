@@ -28,12 +28,15 @@ const DetailMeta = ({ anime }: { anime: AnimeDetail }): JSX.Element => {
   const seasonSlug = endpointSlug(anime.season?.endpoint, "seasons");
   const items = [
     { label: "Judul Jepang", value: anime.japanese },
+    { label: "Sinonim / English", value: anime.synonyms },
+    { label: "Studio / Produser", value: anime.producer },
+    { label: "Rating Umur", value: anime.rating },
     { label: "Rilis", value: anime.release_on },
     { label: "Musim", value: anime.season?.name, href: seasonSlug ? `/seasons/${seasonSlug}` : undefined },
     { label: "Jumlah Episode", value: anime.total_episode },
     { label: "Durasi", value: anime.duration },
     { label: "Skor", value: anime.score },
-  ];
+  ].filter((item) => item.value);
 
   return (
     <dl className="mt-8 grid grid-cols-1 gap-3 sm:grid-cols-2">

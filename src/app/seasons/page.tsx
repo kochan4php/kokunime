@@ -1,4 +1,4 @@
-import { loadSeasons } from "@/lib/loaders";
+import { getSeasons } from "@/services/scraper";
 import { SITE_URL } from "@/lib/site";
 import { buildPaginationInfo } from "@/utils/pagination";
 import { groupSeasonsByYear, orderYears } from "@/utils/seasons";
@@ -27,7 +27,7 @@ export async function generateMetadata({
 const YEARS_PER_PAGE = 4;
 
 const SeasonsPage = async ({ searchParams }: { searchParams: Promise<{ page?: string }> }): Promise<JSX.Element> => {
-  const seasons = await loadSeasons();
+  const seasons = await getSeasons();
   const groups = groupSeasonsByYear(seasons);
   const years = orderYears(groups);
 

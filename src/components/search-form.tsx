@@ -36,6 +36,15 @@ const SearchForm = ({ className = "", inputClassName = "pl-10", onSubmit }: Sear
         autoComplete="off"
         value={inputValue}
         onChange={(e) => setInputValue(e.target.value)}
+        onKeyDown={(e) => {
+          if (e.key === "Escape") {
+            if (inputValue) {
+              setInputValue("");
+            } else {
+              (e.target as HTMLInputElement).blur();
+            }
+          }
+        }}
         className={inputClassName}
       />
     </form>

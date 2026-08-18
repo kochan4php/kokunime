@@ -1,4 +1,4 @@
-import { loadGenres } from "@/lib/loaders";
+import { getGenres } from "@/services/scraper";
 import { SITE_URL } from "@/lib/site";
 import { buildPaginationInfo } from "@/utils/pagination";
 import { endpointSlug } from "@/utils/endpoint-slug";
@@ -27,7 +27,7 @@ export async function generateMetadata({
 const PAGE_SIZE = 24;
 
 const GenresPage = async ({ searchParams }: { searchParams: Promise<{ page?: string }> }): Promise<JSX.Element> => {
-  const genres = (await loadGenres()) ?? [];
+  const genres = (await getGenres()) ?? [];
   const requestedPage = Number((await searchParams)?.page) || 1;
   // clamp both ends: negative page params slice from the array END
   // (slice(-48,-24) is the last page) while title/canonical claim page 1

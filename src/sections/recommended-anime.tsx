@@ -1,13 +1,12 @@
 import AnimeImage from "@/components/cards/anime-image";
-import Reveal from "@/components/reveal";
-import { loadRecommendations } from "@/lib/loaders";
+import { getRecommendations } from "@/services/scraper";
 import { Recommendation } from "@/interfaces";
 import { animeSlug } from "@/utils/endpoint-slug";
 import Link from "next/link";
 import { JSX } from "react";
 
 const RecommendedAnime = async (): Promise<JSX.Element> => {
-  const recommendations = await loadRecommendations();
+  const recommendations = await getRecommendations();
 
   return (
     <div className="flex snap-x gap-3 overflow-x-auto pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">

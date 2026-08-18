@@ -5,6 +5,11 @@ export interface DownloadOption {
 
 export interface DownloadResolution {
   resolusi: string;
+  height?: number;
+  codec?: string;
+  container?: string;
+  size_bytes?: number;
+  size_formatted?: string;
   link: DownloadTarget[];
 }
 

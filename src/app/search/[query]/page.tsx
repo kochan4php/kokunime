@@ -1,7 +1,6 @@
-import AnimeGrid from "@/components/cards/anime-grid";
-import EmptyState from "@/components/anime/empty-state";
-import Reveal from "@/components/reveal";
-import { loadSearchAnime } from "@/lib/loaders";
+import SearchResults from "@/sections/search-results";
+import { searchAnime } from "@/services/scraper";
+import { sanitizeQuery } from "@/services/scraper/sanitize";
 import { buildSearchMetadata, decodeQuery } from "@/lib/search-metadata";
 import { Anime } from "@/interfaces";
 import MainLayout from "@/layouts/main-layout";
@@ -14,16 +13,13 @@ export async function generateMetadata({ params }: { params: Promise<{ query: st
 
 const SearchAnime = async ({ params }: { params: Promise<{ query: string }> }): Promise<JSX.Element> => {
   const { query: rawQuery } = await params;
-  // Trim: a whitespace-only query (direct URL like /search/%20%20) makes
-  // WordPress return its RECENT POSTS — "search ''" would show the whole
-  // catalog. Empty → empty state, no fetch.
-  const query = decodeQuery(rawQuery).trim();
-  const anime: Anime[] = query ? await loadSearchAnime(query) : [];
+  const decoded = decodeQuery(rawQuery);
+  const query = sanitizeQuery(decoded, 80);
+  const anime: Anime[] = query ? await searchAnime(query) : [];
 
   return (
     <MainLayout>
       <section className="container px-4 pt-6 pb-8 md:pt-10 md:pb-16">
-        {/* No Reveal on the h1 — it is the LCP element here (no hero image). */}
         <span className="chip">
           <span className="h-1.5 w-1.5 rounded-full bg-accent" />
           Hasil pencarian
@@ -33,15 +29,7 @@ const SearchAnime = async ({ params }: { params: Promise<{ query: string }> }): 
             “{query.split("+").join(" ")}”
           </span>
         </h1>
-        {anime.length > 0 ? (
-          <div className="mt-12">
-            <AnimeGrid anime={anime} eagerCount={Math.min(anime.length, 6)} />
-          </div>
-        ) : (
-          <Reveal>
-            <EmptyState />
-          </Reveal>
-        )}
+        <SearchResults anime={anime} />
       </section>
     </MainLayout>
   );

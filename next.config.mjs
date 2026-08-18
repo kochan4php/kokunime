@@ -32,6 +32,11 @@ const pageVary = {
     "query=__nextDataReq|_rsc|page,header=x-nextjs-data|x-next-debug-logging|next-router-prefetch|next-router-segment-prefetch|next-router-state-tree|next-url|rsc|accept-encoding,cookie=__prerender_bypass|__next_preview_data",
 };
 
+const immutableCacheControl = {
+  key: "Cache-Control",
+  value: "public, max-age=31536000, immutable",
+};
+
 const nextConfig = {
   output: "standalone",
   reactStrictMode: true,
@@ -44,6 +49,8 @@ const nextConfig = {
   async headers() {
     return [
       { source: "/:path*", headers: securityHeaders },
+      { source: "/icon.svg", headers: [immutableCacheControl] },
+      { source: "/manifest.webmanifest", headers: [immutableCacheControl] },
       // s-maxage=900: hold at the CDN edge (matches the 15m ISR revalidate);
       // max-age=0 keeps browsers revalidating (SW covers repeat visits) and
       // lets Chrome use the back/forward cache.
@@ -58,11 +65,31 @@ const nextConfig = {
     ];
   },
   images: {
+    formats: ["image/avif", "image/webp"],
     remotePatterns: [
       {
         protocol: "https",
         hostname: "kusonime.com",
-        port: "",
+      },
+      {
+        protocol: "https",
+        hostname: "**.kusonime.com",
+      },
+      {
+        protocol: "https",
+        hostname: "**.wp.com",
+      },
+      {
+        protocol: "https",
+        hostname: "**.googleusercontent.com",
+      },
+      {
+        protocol: "https",
+        hostname: "secure.gravatar.com",
+      },
+      {
+        protocol: "https",
+        hostname: "cdn.myanimelist.net",
       },
     ],
   },
