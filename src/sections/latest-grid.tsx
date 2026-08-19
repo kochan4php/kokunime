@@ -15,6 +15,7 @@ interface LatestGridProps {
 
 const LatestGrid = ({ anime, pagination, basePath }: LatestGridProps): JSX.Element => {
   const [query, setQuery] = useState("");
+  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
 
   const filteredAnime = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -27,18 +28,50 @@ const LatestGrid = ({ anime, pagination, basePath }: LatestGridProps): JSX.Eleme
       <Reveal>
         <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
           <div className="min-w-0">
-            <span className="chip">
-              <span className="h-1.5 w-1.5 rounded-full bg-accent" />
-              Katalog
-            </span>
+            <div className="flex items-center gap-2">
+              <span className="chip">
+                <span className="h-1.5 w-1.5 rounded-full bg-accent" />
+                Katalog
+              </span>
+              <span className="rounded-full bg-surface-muted px-2.5 py-0.5 font-mono text-[10px] font-bold text-ink-muted">
+                {filteredAnime.length} Anime
+              </span>
+            </div>
             <h2 className="mt-3 font-display text-2xl font-extrabold tracking-tight text-ink md:text-3xl">
               Update Terbaru
             </h2>
           </div>
 
           <div className="flex flex-wrap items-center gap-3">
-            <div className="relative w-full md:w-60">
-              <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-ink-muted">
+            {/* View Mode Toggle */}
+            <div className="flex items-center gap-1 rounded-xl border border-border bg-surface p-0.5">
+              <button
+                type="button"
+                onClick={() => setViewMode("grid")}
+                aria-label="Tampilan Grid"
+                title="Tampilan Grid"
+                className={`flex h-7 w-7 items-center justify-center rounded-lg text-xs transition-all cursor-pointer ${
+                  viewMode === "grid" ? "bg-accent text-(--accent-ink) shadow-xs font-bold" : "text-ink-muted hover:text-ink"
+                }`}
+              >
+                ⊞
+              </button>
+              <button
+                type="button"
+                onClick={() => setViewMode("list")}
+                aria-label="Tampilan List"
+                title="Tampilan List"
+                className={`flex h-7 w-7 items-center justify-center rounded-lg text-xs transition-all cursor-pointer ${
+                  viewMode === "list" ? "bg-accent text-(--accent-ink) shadow-xs font-bold" : "text-ink-muted hover:text-ink"
+                }`}
+              >
+                ☰
+              </button>
+            </div>
+
+            {/* Search Filter */}
+            <div className="relative w-full sm:w-56">
+              <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-ink-muted text-xs">
                 <SearchIcon />
               </span>
               <input
@@ -47,19 +80,19 @@ const LatestGrid = ({ anime, pagination, basePath }: LatestGridProps): JSX.Eleme
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="Filter di halaman ini..."
                 aria-label="Filter anime di halaman ini"
-                className="h-9 w-full rounded-full border border-border bg-surface pl-9 pr-3 text-xs text-ink outline-none transition-all placeholder:text-ink-muted focus:border-accent hover:border-accent/60"
+                className="h-9 w-full rounded-2xl border border-border bg-surface pl-9 pr-8 text-xs text-ink outline-none transition-all placeholder:text-ink-muted focus:border-accent hover:border-accent/60"
               />
               {query && (
                 <button
                   type="button"
                   onClick={() => setQuery("")}
-                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-xs text-ink-muted hover:text-ink"
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-xs text-ink-muted hover:text-ink cursor-pointer"
                 >
                   ✕
                 </button>
               )}
             </div>
-            <p className="hidden font-mono text-xs uppercase tracking-widest text-ink-muted lg:block">
+            <p className="hidden font-mono text-xs uppercase tracking-widest text-ink-muted xl:block">
               Hal {pagination?.current_page ?? 1} / {pagination?.total_page ?? 1}
             </p>
           </div>
@@ -67,7 +100,7 @@ const LatestGrid = ({ anime, pagination, basePath }: LatestGridProps): JSX.Eleme
       </Reveal>
 
       {filteredAnime.length > 0 ? (
-        <AnimeGrid anime={filteredAnime} eagerCount={6} />
+        <AnimeGrid anime={filteredAnime} eagerCount={6} viewMode={viewMode} />
       ) : (
         <div className="card-shell my-8">
           <div className="card-core p-8 text-center">

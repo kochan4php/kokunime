@@ -51,11 +51,16 @@ describe("genres and seasons scraper", () => {
       </div>
     `;
 
-    vi.spyOn(upstream, "get").mockResolvedValueOnce({
-      data: mockHtml,
-      url: "https://kusonime.com/genres/action/",
-      status: 200,
-    } as any);
+    vi.spyOn(upstream, "get").mockImplementation(async (url: string) => {
+      if (url.includes("/genres/action/page/")) {
+        return { data: "<html></html>", url, status: 200 } as any;
+      }
+      return {
+        data: mockHtml,
+        url: "https://kusonime.com/genres/action/",
+        status: 200,
+      } as any;
+    });
 
     const result = await getAnimeByGenres("action", 1);
     expect(result.anime).toHaveLength(1);
@@ -63,7 +68,7 @@ describe("genres and seasons scraper", () => {
   });
 
   it("handles redirected / invalid genre gracefully", async () => {
-    vi.spyOn(upstream, "get").mockResolvedValueOnce({
+    vi.spyOn(upstream, "get").mockResolvedValue({
       data: "<html>Homepage</html>",
       url: "https://kusonime.com/",
       status: 200,

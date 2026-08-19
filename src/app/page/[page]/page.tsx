@@ -7,6 +7,8 @@ import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { JSX, Suspense } from "react";
 
+export const dynamic = "force-dynamic";
+
 export async function generateMetadata({ params }: { params: Promise<{ page: string }> }): Promise<Metadata> {
   const page = Number((await params).page);
 

@@ -15,9 +15,29 @@ export const getPages = (current: number, total: number): PageItem[] => {
 };
 
 export const paginationHref = (endpoint: string | null, basePath?: string): string | null => {
-  const page = endpoint?.split("/")[1];
-  if (!page) return null;
-  return basePath ? `${basePath}/${page}` : `?page=${page}`;
+  if (!endpoint) return null;
+  const match = endpoint.match(/(?:page[=/]|\/|^)(\d+)(?:[/?#]|$)/i);
+  const pageNum = match ? Number(match[1]) : Number(endpoint.replace(/\D/g, ""));
+  if (!pageNum || isNaN(pageNum)) return null;
+
+  if (basePath === "/page" && pageNum === 1) {
+    return "/";
+  }
+  if (basePath) {
+    if (pageNum === 1 && (basePath === "/page" || basePath === "")) return "/";
+    return `${basePath}/${pageNum}`;
+  }
+  return `?page=${pageNum}`;
+};
+
+export const buildPageHref = (page: number, basePath?: string): string => {
+  if (basePath === "/page") {
+    return page === 1 ? "/" : `/page/${page}`;
+  }
+  if (basePath) {
+    return `${basePath}/${page}`;
+  }
+  return `?page=${page}`;
 };
 
 export const buildPaginationInfo = (current: number, total: number): PaginationInfo => ({

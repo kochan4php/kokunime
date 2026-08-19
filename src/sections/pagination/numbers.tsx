@@ -1,5 +1,5 @@
 import { ChevronLeftIcon, ChevronRightIcon } from "@/components/icons";
-import { getPages } from "@/utils/pagination";
+import { buildPageHref, getPages } from "@/utils/pagination";
 import Link from "next/link";
 import { JSX } from "react";
 
@@ -27,13 +27,13 @@ const PageNumbers = ({ current, total, prevHref, nextHref, basePath }: PageNumbe
     )}
     {getPages(current, total).map((page, index) =>
       page === "…" ? (
-        <span key={index} aria-hidden className="flex h-10 items-center px-1 font-mono text-sm text-ink-muted">
+        <span key={`ellipsis-${index}`} aria-hidden className="flex h-10 items-center px-1 font-mono text-sm text-ink-muted">
           …
         </span>
       ) : (
         <Link
-          key={index}
-          href={basePath ? `${basePath}/${page}` : `?page=${page}`}
+          key={`page-${page}`}
+          href={buildPageHref(page, basePath)}
           aria-label={`Halaman ${page}`}
           aria-current={page === current ? "page" : undefined}
           className={

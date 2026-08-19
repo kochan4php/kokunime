@@ -1,5 +1,6 @@
 "use client";
 
+import { buildPageHref } from "@/utils/pagination";
 import { useRouter } from "next/navigation";
 import { FormEvent, JSX, useState } from "react";
 
@@ -14,11 +15,7 @@ const PageJump = ({ current, total, basePath }: { current: number; total: number
     e.preventDefault();
     const page = Number(value);
     if (!page || page < 1 || page > total) return;
-    if (basePath === "/page" && page === 1) {
-      router.push("/");
-    } else {
-      router.push(basePath ? `${basePath}/${page}` : `?page=${page}`);
-    }
+    router.push(buildPageHref(page, basePath));
   };
 
   return (

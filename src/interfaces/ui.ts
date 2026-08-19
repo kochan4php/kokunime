@@ -23,6 +23,7 @@ export interface AnimeCardProps {
   title: string;
   path: string;
   meta?: string;
+  genres?: string[];
   eager?: boolean;
   priority?: boolean;
 }

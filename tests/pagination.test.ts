@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildPaginationInfo, getPages, paginationHref } from "@/utils/pagination";
+import { buildPageHref, buildPaginationInfo, getPages, paginationHref } from "@/utils/pagination";
 
 describe("getPages", () => {
   it("returns every page when the total is small", () => {
@@ -16,8 +16,30 @@ describe("paginationHref", () => {
     expect(paginationHref("page/3")).toBe("?page=3");
   });
 
+  it("handles complex genre/season endpoints correctly without duplicating params", () => {
+    expect(paginationHref("genres/action?page=2")).toBe("?page=2");
+    expect(paginationHref("genres/action?page=1")).toBe("?page=1");
+  });
+
+  it("routes page 1 back to root on /page basePath", () => {
+    expect(paginationHref("page/1", "/page")).toBe("/");
+    expect(paginationHref("page/2", "/page")).toBe("/page/2");
+  });
+
   it("returns null for a null endpoint", () => {
     expect(paginationHref(null)).toBeNull();
+  });
+});
+
+describe("buildPageHref", () => {
+  it("generates root for page 1 on /page basePath", () => {
+    expect(buildPageHref(1, "/page")).toBe("/");
+    expect(buildPageHref(2, "/page")).toBe("/page/2");
+  });
+
+  it("generates query string when basePath is omitted", () => {
+    expect(buildPageHref(1)).toBe("?page=1");
+    expect(buildPageHref(3)).toBe("?page=3");
   });
 });
 

@@ -23,6 +23,7 @@ const SERVER_HISTORY: HistoryItem[] = [];
 
 const BookmarksPage = (): JSX.Element => {
   const [activeTab, setActiveTab] = useState<"bookmarks" | "history">("bookmarks");
+  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [statusFilter, setStatusFilter] = useState<"all" | BookmarkStatus>("all");
   const [folderFilter, setFolderFilter] = useState<string>("all");
   const [filterQuery, setFilterQuery] = useState("");
@@ -234,6 +235,32 @@ const BookmarksPage = (): JSX.Element => {
             )}
           </div>
           <div className="flex flex-wrap items-center gap-2">
+            {/* View Mode Toggle */}
+            <div className="flex items-center gap-1 rounded-xl border border-border bg-surface p-0.5">
+              <button
+                type="button"
+                onClick={() => setViewMode("grid")}
+                aria-label="Tampilan Grid"
+                title="Tampilan Grid"
+                className={`flex h-7 w-7 items-center justify-center rounded-lg text-xs transition-all cursor-pointer ${
+                  viewMode === "grid" ? "bg-accent text-(--accent-ink) shadow-xs font-bold" : "text-ink-muted hover:text-ink"
+                }`}
+              >
+                ⊞
+              </button>
+              <button
+                type="button"
+                onClick={() => setViewMode("list")}
+                aria-label="Tampilan List"
+                title="Tampilan List"
+                className={`flex h-7 w-7 items-center justify-center rounded-lg text-xs transition-all cursor-pointer ${
+                  viewMode === "list" ? "bg-accent text-(--accent-ink) shadow-xs font-bold" : "text-ink-muted hover:text-ink"
+                }`}
+              >
+                ☰
+              </button>
+            </div>
+
             {allItems.length > 3 && (
               <input
                 type="text"
@@ -298,89 +325,141 @@ const BookmarksPage = (): JSX.Element => {
         </div>
 
         {items.length > 0 ? (
-          <div className="mt-10 grid grid-cols-2 gap-2 min-[540px]:grid-cols-3 min-[540px]:gap-3 lg:grid-cols-4 lg:gap-4 xl:grid-cols-5">
-            {items.map((item, index) => {
-              const bookmark = activeTab === "bookmarks" ? (item as BookmarkItem) : null;
-              return (
-                <div key={item.slug} className="group relative flex flex-col">
-                  <CardAnime
-                    path={`/anime/${item.slug}`}
-                    src={item.image as string}
-                    title={item.title}
-                    meta={
-                      activeTab === "bookmarks"
-                        ? `${bookmark?.rating ? `⭐ ${bookmark.rating}/10 • ` : ""}${
-                            bookmark?.folder ? `📁 ${bookmark.folder} • ` : ""
-                          }${
-                            bookmark?.status === "watching"
-                              ? "📺 Sedang Nonton"
-                              : bookmark?.status === "completed"
-                                ? "✓ Selesai"
-                                : "📌 Tersimpan"
-                          }`
-                        : item.release || "Dilihat"
-                    }
-                    eager={index < 5}
-                    priority={index === 0}
-                  />
-                  {activeTab === "bookmarks" && bookmark && (
-                    <div className="mt-1.5 flex flex-wrap items-center justify-between gap-1 px-1 text-[11px] text-ink-muted">
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          const rate = prompt(
-                            `Beri rating (1-10) untuk ${item.title}:`,
-                            bookmark.rating?.toString() || "",
-                          );
-                          if (rate !== null) {
-                            const num = parseInt(rate, 10);
-                            if (!isNaN(num) && num >= 1 && num <= 10) {
-                              updateBookmarkUserMeta(item.slug, { rating: num });
-                            } else if (rate === "") {
-                              updateBookmarkUserMeta(item.slug, { rating: undefined });
-                            }
-                          }
-                        }}
-                        className="hover:text-accent font-mono transition-colors cursor-pointer"
-                        title="Beri rating personal (1-10)"
+          viewMode === "list" ? (
+            <div className="mt-8 flex flex-col gap-2">
+              {items.map((item) => {
+                const bookmark = activeTab === "bookmarks" ? (item as BookmarkItem) : null;
+                return (
+                  <div
+                    key={item.slug}
+                    className="group relative flex items-center justify-between gap-2.5 sm:gap-3.5 rounded-xl sm:rounded-2xl border border-border bg-surface-solid/90 p-2 sm:p-2.5 transition-all duration-200 hover:border-accent/60 hover:bg-surface hover:shadow-sm"
+                  >
+                    <Link href={`/anime/${item.slug}`} className="flex items-center gap-2.5 sm:gap-3 flex-1 min-w-0">
+                      <div className="relative h-13 w-10 sm:h-16 sm:w-12 shrink-0 overflow-hidden rounded-lg sm:rounded-xl bg-surface-muted border border-border/80 shadow-xs">
+                        {item.image && (
+                          <img
+                            src={item.image}
+                            alt={item.title}
+                            className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                          />
+                        )}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <h3 className="line-clamp-1 font-display text-xs sm:text-[13px] font-bold text-ink transition-colors group-hover:text-accent">
+                          {item.title}
+                        </h3>
+                        <div className="mt-0.5 flex flex-wrap items-center gap-1.5 font-mono text-[9px] sm:text-[10px] text-ink-muted">
+                          {activeTab === "bookmarks" ? (
+                            <>
+                              {bookmark?.status === "watching" && <span className="text-emerald-500 font-bold">📺 Nonton</span>}
+                              {bookmark?.status === "plan" && <span className="text-amber-500 font-bold">📌 Rencana</span>}
+                              {bookmark?.status === "completed" && <span className="text-accent font-bold">✓ Selesai</span>}
+                              {bookmark?.rating && <span>• ⭐ {bookmark.rating}/10</span>}
+                              {bookmark?.folder && <span>• 📁 {bookmark.folder}</span>}
+                            </>
+                          ) : (
+                            <span>{item.release || "Dilihat"}</span>
+                          )}
+                        </div>
+                      </div>
+                    </Link>
+                    <div className="flex items-center gap-2 shrink-0">
+                      <Link
+                        href={`/anime/${item.slug}`}
+                        className="rounded-lg bg-accent/10 px-2.5 py-1 font-mono text-[11px] font-semibold text-accent group-hover:bg-accent group-hover:text-(--accent-ink) transition-colors"
                       >
-                        {bookmark.rating ? `⭐ ${bookmark.rating}/10` : "☆ Nilai"}
-                      </button>
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          const fName = prompt(`Nama folder/kategori untuk ${item.title}:`, bookmark.folder || "");
-                          if (fName !== null) {
-                            updateBookmarkUserMeta(item.slug, { folder: fName.trim() || undefined });
-                          }
-                        }}
-                        className="hover:text-accent font-mono transition-colors cursor-pointer truncate max-w-[80px]"
-                        title={bookmark.folder ? `Folder: ${bookmark.folder}` : "Atur folder"}
-                      >
-                        {bookmark.folder ? `📁 ${bookmark.folder}` : "+ Folder"}
-                      </button>
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          const note = prompt(`Catatan pribadi untuk ${item.title}:`, bookmark.notes || "");
-                          if (note !== null) {
-                            updateBookmarkUserMeta(item.slug, { notes: note.trim() });
-                          }
-                        }}
-                        className="hover:text-accent font-mono transition-colors cursor-pointer truncate max-w-[70px]"
-                        title={bookmark.notes ? `Catatan: ${bookmark.notes}` : "Tambah catatan pribadi"}
-                      >
-                        {bookmark.notes ? `📝 ${bookmark.notes}` : "+ Note"}
-                      </button>
+                        Buka →
+                      </Link>
                     </div>
-                  )}
-                </div>
-              );
-            })}
-          </div>
+                  </div>
+                );
+              })}
+            </div>
+          ) : (
+            <div className="mt-8 grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-2.5 md:grid-cols-5 md:gap-3 lg:grid-cols-5 lg:gap-3.5 xl:grid-cols-6 2xl:grid-cols-6">
+              {items.map((item, index) => {
+                const bookmark = activeTab === "bookmarks" ? (item as BookmarkItem) : null;
+                return (
+                  <div key={item.slug} className="group relative flex flex-col">
+                    <CardAnime
+                      path={`/anime/${item.slug}`}
+                      src={item.image as string}
+                      title={item.title}
+                      meta={
+                        activeTab === "bookmarks"
+                          ? `${bookmark?.rating ? `⭐ ${bookmark.rating}/10 • ` : ""}${
+                              bookmark?.folder ? `📁 ${bookmark.folder} • ` : ""
+                            }${
+                              bookmark?.status === "watching"
+                                ? "📺 Sedang Nonton"
+                                : bookmark?.status === "completed"
+                                  ? "✓ Selesai"
+                                  : "📌 Tersimpan"
+                            }`
+                          : item.release || "Dilihat"
+                      }
+                      eager={index < 5}
+                      priority={index === 0}
+                    />
+                    {activeTab === "bookmarks" && bookmark && (
+                      <div className="mt-1.5 flex flex-wrap items-center justify-between gap-1 px-1 text-[11px] text-ink-muted">
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            const rate = prompt(
+                              `Beri rating (1-10) untuk ${item.title}:`,
+                              bookmark.rating?.toString() || "",
+                            );
+                            if (rate !== null) {
+                              const num = parseInt(rate, 10);
+                              if (!isNaN(num) && num >= 1 && num <= 10) {
+                                updateBookmarkUserMeta(item.slug, { rating: num });
+                              } else if (rate === "") {
+                                updateBookmarkUserMeta(item.slug, { rating: undefined });
+                              }
+                            }
+                          }}
+                          className="hover:text-accent font-mono transition-colors cursor-pointer"
+                          title="Beri rating personal (1-10)"
+                        >
+                          {bookmark.rating ? `⭐ ${bookmark.rating}/10` : "☆ Nilai"}
+                        </button>
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            const fName = prompt(`Nama folder/kategori untuk ${item.title}:`, bookmark.folder || "");
+                            if (fName !== null) {
+                              updateBookmarkUserMeta(item.slug, { folder: fName.trim() || undefined });
+                            }
+                          }}
+                          className="hover:text-accent font-mono transition-colors cursor-pointer truncate max-w-[80px]"
+                          title={bookmark.folder ? `Folder: ${bookmark.folder}` : "Atur folder"}
+                        >
+                          {bookmark.folder ? `📁 ${bookmark.folder}` : "+ Folder"}
+                        </button>
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            const note = prompt(`Catatan pribadi untuk ${item.title}:`, bookmark.notes || "");
+                            if (note !== null) {
+                              updateBookmarkUserMeta(item.slug, { notes: note.trim() });
+                            }
+                          }}
+                          className="hover:text-accent font-mono transition-colors cursor-pointer truncate max-w-[70px]"
+                          title={bookmark.notes ? `Catatan: ${bookmark.notes}` : "Tambah catatan pribadi"}
+                        >
+                          {bookmark.notes ? `📝 ${bookmark.notes}` : "+ Note"}
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          )
         ) : (
           <div className="card-shell mt-10">
             <div className="card-core flex flex-col items-center justify-center p-12 text-center md:p-20">

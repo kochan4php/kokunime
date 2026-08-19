@@ -9,6 +9,8 @@ import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { JSX } from "react";
 
+export const dynamic = "force-dynamic";
+
 export async function generateMetadata({
   params,
   searchParams,
