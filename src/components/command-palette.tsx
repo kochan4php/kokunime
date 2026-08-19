@@ -51,6 +51,14 @@ const CommandPalette = (): JSX.Element => {
     dialogRef.current?.close();
   };
 
+  const clearHistory = () => {
+    if (typeof window === "undefined") return;
+    try {
+      localStorage.removeItem(RECENT_KEY);
+      setRecent([]);
+    } catch {}
+  };
+
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (
@@ -109,30 +117,47 @@ const CommandPalette = (): JSX.Element => {
 
   return (
     <>
+      {/* Mobile Search Icon Button */}
+      <button
+        type="button"
+        onClick={openPalette}
+        aria-label="Cari anime"
+        title="Cari anime"
+        className="flex h-9 w-9 items-center justify-center rounded-full border border-border bg-surface text-ink-muted transition-all duration-200 hover:border-accent hover:text-ink md:hidden active:scale-95 cursor-pointer"
+      >
+        <SearchIcon />
+      </button>
+
+      {/* Desktop Search Button */}
       <button
         type="button"
         onClick={openPalette}
         aria-label="Buka pencarian cepat"
         title="Pencarian cepat (Ctrl+K atau /)"
-        className="hidden md:flex items-center gap-2 rounded-full border border-accent/40 bg-surface px-3.5 py-2 text-sm text-ink-muted transition-all duration-200 hover:border-accent hover:text-ink hover:bg-surface-muted active:scale-95"
+        className="hidden md:flex items-center gap-2 rounded-full border border-accent/40 bg-surface px-3.5 py-1.5 lg:py-2 text-sm text-ink-muted transition-all duration-200 hover:border-accent hover:text-ink hover:bg-surface-muted active:scale-95 cursor-pointer"
       >
         <SearchIcon />
-        <span className="w-28 text-left text-xs lg:w-40 truncate">Cari anime...</span>
+        <span className="w-24 text-left text-xs lg:w-36 truncate">Cari anime...</span>
         <kbd className="rounded border border-border bg-surface-solid px-1.5 py-0.5 font-mono text-[10px] text-ink-muted">
           ⌘K
         </kbd>
       </button>
 
+      {/* Modal Dialog */}
       <dialog
         ref={dialogRef}
         onClick={(e) => {
           if (e.target === dialogRef.current) closePalette();
         }}
-        className="fixed inset-0 m-auto w-[94vw] sm:w-[90vw] max-w-lg max-h-[85vh] rounded-2xl border border-border bg-bg p-0 text-ink shadow-2xl backdrop:bg-black/60 backdrop:backdrop-blur-sm"
+        className="fixed inset-x-0 top-4 sm:top-[10%] mx-auto w-[94vw] sm:w-[90vw] max-w-xl max-h-[85vh] rounded-3xl border border-border bg-bg/95 backdrop-blur-2xl p-0 text-ink shadow-2xl overflow-hidden backdrop:bg-black/60 backdrop:backdrop-blur-sm"
       >
-        <div className="flex flex-col">
-          <form onSubmit={handleFormSubmit} className="relative flex items-center border-b border-border px-4 py-3.5">
-            <span className="text-accent mr-3">
+        <div className="flex flex-col max-h-[85vh]">
+          {/* Search Bar Header */}
+          <form
+            onSubmit={handleFormSubmit}
+            className="relative flex items-center border-b border-border px-3.5 sm:px-4 py-3 bg-surface-solid/50"
+          >
+            <span className="text-accent mr-2.5 sm:mr-3 shrink-0">
               <SearchIcon />
             </span>
             <input
@@ -146,11 +171,11 @@ const CommandPalette = (): JSX.Element => {
                   setIsLoading(false);
                 }
               }}
-              placeholder="Ketik judul anime, lalu Enter..."
-              className="flex-1 bg-transparent text-sm text-ink outline-none placeholder:text-ink-muted"
+              placeholder="Ketik judul anime, lalu tekan Enter..."
+              className="flex-1 bg-transparent text-base sm:text-sm text-ink outline-none placeholder:text-ink-muted min-w-0"
             />
             {isLoading && (
-              <span className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-accent border-t-transparent" />
+              <span className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-accent border-t-transparent shrink-0" />
             )}
             {query && (
               <button
@@ -159,15 +184,26 @@ const CommandPalette = (): JSX.Element => {
                   setQuery("");
                   setLiveResults([]);
                   setIsLoading(false);
+                  inputRef.current?.focus();
                 }}
-                className="rounded-full p-1 text-ink-muted hover:text-ink"
+                className="rounded-full p-1 text-ink-muted hover:text-ink hover:bg-surface-muted transition-colors mr-1 cursor-pointer"
+                title="Hapus pencarian"
               >
                 ✕
               </button>
             )}
+            <button
+              type="button"
+              onClick={closePalette}
+              className="rounded-lg border border-border bg-surface px-2 py-1 font-mono text-[10px] text-ink-muted hover:text-ink hover:border-accent transition-all cursor-pointer"
+              title="Tutup pencarian"
+            >
+              Esc
+            </button>
           </form>
 
-          <div className="max-h-80 overflow-y-auto p-4 space-y-4">
+          {/* Search Body Content */}
+          <div className="overflow-y-auto p-3.5 sm:p-4 space-y-4 [scrollbar-width:thin]">
             {/* Live Autocomplete Results */}
             {query.trim().length >= 2 && (
               <div>
@@ -176,7 +212,7 @@ const CommandPalette = (): JSX.Element => {
                 </p>
                 {liveResults.length > 0 ? (
                   <div className="space-y-1.5">
-                    {liveResults.slice(0, 5).map((item) => {
+                    {liveResults.slice(0, 6).map((item) => {
                       const slug = animeSlug(item.link.endpoint);
                       return (
                         <Link
@@ -186,38 +222,53 @@ const CommandPalette = (): JSX.Element => {
                             saveRecentSearch(item.title);
                             closePalette();
                           }}
-                          className="flex items-center gap-3 rounded-xl border border-border bg-surface p-2 transition-all hover:border-accent hover:bg-accent/5"
+                          className="flex items-center gap-3 rounded-2xl border border-border bg-surface p-2.5 transition-all hover:border-accent hover:bg-accent/5 active:scale-[0.99]"
                         >
-                          <div className="relative h-12 w-9 shrink-0 overflow-hidden rounded-md bg-surface-muted">
+                          <div className="relative h-12 w-9 shrink-0 overflow-hidden rounded-lg bg-surface-muted">
                             {item.link.image && <AnimeImage fill sizes="36px" src={item.link.image} alt={item.title} />}
                           </div>
                           <div className="min-w-0 flex-1">
-                            <h4 className="line-clamp-1 text-xs font-semibold text-ink">{item.title}</h4>
-                            <p className="line-clamp-1 font-mono text-[10px] text-ink-muted">{item.release}</p>
+                            <h4 className="line-clamp-1 text-xs sm:text-sm font-semibold text-ink">{item.title}</h4>
+                            <p className="line-clamp-1 font-mono text-[10px] sm:text-xs text-ink-muted mt-0.5">{item.release || "Subtitle Indonesia"}</p>
                           </div>
-                          <span className="font-mono text-xs text-ink-muted">→</span>
+                          <span className="font-mono text-xs text-accent font-bold shrink-0">Buka →</span>
                         </Link>
                       );
                     })}
                   </div>
                 ) : !isLoading ? (
-                  <p className="py-2 text-center text-xs text-ink-muted">
-                    Tidak ditemukan hasil langsung. Tekan Enter untuk pencarian penuh.
-                  </p>
+                  <div className="py-4 text-center">
+                    <p className="text-xs sm:text-sm text-ink-muted">
+                      Tidak ditemukan hasil instan untuk &ldquo;<span className="text-ink font-semibold">{query}</span>&rdquo;.
+                    </p>
+                    <p className="font-mono text-[11px] text-accent mt-1">
+                      Tekan Enter untuk mencari di seluruh database ↵
+                    </p>
+                  </div>
                 ) : null}
               </div>
             )}
 
+            {/* Recent Searches */}
             {recent.length > 0 && !query && (
               <div>
-                <p className="font-mono text-[10px] uppercase tracking-wider text-ink-muted mb-2">Pencarian Terakhir</p>
+                <div className="flex items-center justify-between mb-2">
+                  <p className="font-mono text-[10px] uppercase tracking-wider text-ink-muted">Pencarian Terakhir</p>
+                  <button
+                    type="button"
+                    onClick={clearHistory}
+                    className="font-mono text-[10px] text-ink-muted hover:text-rose-400 transition-colors cursor-pointer"
+                  >
+                    Hapus Riwayat
+                  </button>
+                </div>
                 <div className="flex flex-wrap gap-1.5">
                   {recent.map((item) => (
                     <button
                       key={item}
                       type="button"
                       onClick={() => handleSearch(item)}
-                      className="rounded-full border border-border bg-surface px-3 py-1 text-xs text-ink transition-all hover:border-accent hover:text-accent"
+                      className="rounded-full border border-border bg-surface px-3 py-1 text-xs text-ink transition-all hover:border-accent hover:text-accent active:scale-95 cursor-pointer"
                     >
                       {item}
                     </button>
@@ -226,6 +277,7 @@ const CommandPalette = (): JSX.Element => {
               </div>
             )}
 
+            {/* Quick Links & Developer */}
             {!query && (
               <>
                 <div>
@@ -256,7 +308,7 @@ const CommandPalette = (): JSX.Element => {
 
                 <div>
                   <p className="font-mono text-[10px] uppercase tracking-wider text-ink-muted mb-2">Developer & Feed</p>
-                  <div className="grid grid-cols-2 gap-1.5">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
                     <Link
                       href="/api"
                       onClick={closePalette}
@@ -280,8 +332,9 @@ const CommandPalette = (): JSX.Element => {
             )}
           </div>
 
+          {/* Footer Controls */}
           <div className="flex items-center justify-between border-t border-border bg-surface-solid px-4 py-2 text-[11px] text-ink-muted font-mono">
-            <span>Enter untuk cari</span>
+            <span>↵ Enter untuk cari penuh</span>
             <span>Esc untuk tutup</span>
           </div>
         </div>
