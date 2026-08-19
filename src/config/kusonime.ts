@@ -1,4 +1,4 @@
-﻿const MAX_RETRIES = 2;
+const MAX_RETRIES = 2;
 const RETRY_BASE_MS = 500;
 
 export interface KusonimeResponse {
@@ -14,7 +14,7 @@ export async function fetchKusonime(path: string, retryCount = 0): Promise<Kuson
     const res = await fetch(url, {
       signal: AbortSignal.timeout(10_000),
       headers: {
-        "User-Agent": "Kokunime/1.0 (+https://kokunime.netlify.app)",
+        "User-Agent": "*",
         Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
       },
     });
