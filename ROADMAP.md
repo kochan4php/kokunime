@@ -8,11 +8,11 @@
 
 | No | Pilar Arsitektur | Total Item | Status Selesai | Status Terjadwal |
 | :---: | :--- | :---: | :---: | :---: |
-| 1 | **Scraping Engine & Upstream Resilience** | 25 | 17 Selesai | 8 Terjadwal |
+| 1 | **Scraping Engine & Upstream Resilience** | 25 | 18 Selesai | 7 Terjadwal |
 | 2 | **Public REST API, OpenAPI & Feeds** | 20 | 16 Selesai | 4 Terjadwal |
-| 3 | **Frontend UI/UX, Animasi & Komponen** | 25 | 21 Selesai | 4 Terjadwal |
-| 4 | **Offline Intelligence, PWA & Local Storage** | 18 | 14 Selesai | 4 Terjadwal |
-| 5 | **Download Managers & Media Utilities** | 18 | 15 Selesai | 3 Terjadwal |
+| 3 | **Frontend UI/UX, Animasi & Komponen** | 25 | 23 Selesai | 2 Terjadwal |
+| 4 | **Offline Intelligence, PWA & Local Storage** | 18 | 15 Selesai | 3 Terjadwal |
+| 5 | **Download Managers & Media Utilities** | 18 | 16 Selesai | 2 Terjadwal |
 | 6 | **Streaming, Video Player & Previews** | 16 | 6 Selesai | 10 Terjadwal |
 | 7 | **Performance, Caching & Core Web Vitals** | 18 | 9 Selesai | 9 Terjadwal |
 | 8 | **SEO, OpenGraph, Metadata & Rich Snippets** | 16 | 11 Selesai | 5 Terjadwal |
@@ -21,7 +21,7 @@
 | 11 | **Internationalization (i18n) & Theming** | 14 | 10 Selesai | 4 Terjadwal |
 | 12 | **Testing, QA & Scraper Monitoring** | 16 | 6 Selesai | 10 Terjadwal |
 | 13 | **DevOps, CI/CD & Containerization** | 12 | 8 Selesai | 4 Terjadwal |
-| **Total** | **Master Backlog** | **230 Item** | **154 Selesai** | **76 Terjadwal** |
+| **Total** | **Master Backlog** | **230 Item** | **167 Selesai** | **63 Terjadwal** |
 
 ---
 
@@ -42,7 +42,7 @@
 - [ ] **013.** Cloud Mirror Health Auto-Prober untuk mendeteksi link mati / Google Drive limit exceeded
 - [ ] **014.** Dukungan header HTTP `ETag` dan `If-None-Match` (304 Not Modified) pada scraper
 - [x] **015.** Structured Quality Extractor (`{ height: 720, codec: 'hevc', container: 'mkv' }`)
-- [ ] **016.** Ekstraksi profil Studio & Produser untuk tautan katalog anime per studio
+- [x] **016.** Ekstraksi profil Studio & Produser untuk tautan katalog anime per studio
 - [x] **017.** Episode Range Parser untuk judul batch (*"Episode 01 - 12 (End)"* $\rightarrow$ `{ start: 1, end: 12, isEnd: true }`)
 - [x] **018.** Pemisah otomatis tabel Batch utuh (1 file zip) dengan tabel download satuan per episode
 - [x] **019.** Deteksi otomatis tag audio dan subtitle (*"Dual Audio"*, *"Multi-Sub"*, *"Indo Sub"*)
@@ -97,8 +97,8 @@
 - [x] **058.** Carousel *"Terakhir Dilihat"* di homepage menggunakan `useSyncExternalStore`
 - [x] **059.** Header Breadcrumb visual yang sinkron dengan JSON-LD schema
 - [x] **060.** Toggle tampilan katalog antara Grid Poster Visual vs Tabel List Ringkas
-- [ ] **061.** Tooltip Quick Preview saat kursor mouse melayang di atas kartu anime
-- [ ] **062.** Hero Banner Carousel dinamis untuk anime rating tertinggi musim ini
+- [x] **061.** Tooltip Quick Preview saat kursor mouse melayang di atas kartu anime
+- [x] **062.** Hero Banner Carousel dinamis untuk anime rating tertinggi musim ini
 - [x] **063.** Matriks tabel unduhan multi-kolom (*Resolusi $\times$ Cloud Provider*)
 - [x] **064.** Halaman perbandingan anime *side-by-side* di rute `/compare`
 - [ ] **065.** Visualisasi garis waktu urutan menonton (*Watch Order Timeline*) untuk franchise panjang
@@ -128,7 +128,7 @@
 - [x] **084.** Indikator meteran penggunaan kuota penyimpanan LocalStorage / IndexedDB
 - [x] **085.** Impor daftar tontonan langsung dari file ekspor XML/JSON MyAnimeList / AniList
 - [x] **086.** Ekspor daftar tontonan ke format yang kompatibel dengan MyAnimeList
-- [ ] **087.** Banner ajakan instalasi PWA non-intrusif dengan penjelasan fitur offline
+- [x] **087.** Banner ajakan instalasi PWA non-intrusif dengan penjelasan fitur offline
 - [x] **088.** Indeks pencarian instan lokal (Minisearch) untuk mencari anime tersimpan saat offline total
 
 ---
@@ -145,7 +145,7 @@
 - [x] **096.** Kalkulator estimasi durasi download interaktif (10 Mbps, 50 Mbps, 100 Mbps, 1 Gbps)
 - [x] **097.** Salin tautan unduhan terfilter khusus satu provider tertentu (GDrive, Mega, Mediafire, Acefile)
 - [x] **098.** Salin tautan unduhan terfilter khusus satu resolusi tertentu (1080p, 720p, 480p)
-- [ ] **099.** Integrasi tombol *Click'n'Load* dan ekspor file `.dlc` untuk JDownloader 2
+- [x] **099.** Integrasi tombol *Click'n'Load* dan ekspor file `.dlc` untuk JDownloader 2
 - [x] **100.** Label jenis format video dan subtitle (*Softsub MKV* vs *Hardsub MP4*)
 - [x] **101.** Badge format kompresi video (*H.264 / AVC* vs *H.265 / HEVC 10-bit*)
 - [x] **102.** Deteksi dan parser otomatis *Magnet Link / Torrent Hash* jika tersedia di rilisan batch

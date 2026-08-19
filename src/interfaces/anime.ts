@@ -22,6 +22,7 @@ export interface AnimeDetail {
   japanese?: string;
   image?: string;
   producer?: string;
+  studio?: string;
   type?: string;
   status?: string;
   total_episode?: string;

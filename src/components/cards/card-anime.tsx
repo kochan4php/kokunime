@@ -44,6 +44,14 @@ const CardAnime = ({ src, alt, title, meta, path, eager = false, priority = fals
               )}
               <span className="truncate max-w-[140px]">{meta}</span>
             </span>
+            <div className="absolute inset-x-0 bottom-0 p-3 pt-6 bg-gradient-to-t from-black/90 via-black/60 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100 flex items-end justify-between">
+              <span className="font-display text-[11px] font-bold text-accent">
+                Lihat Anime →
+              </span>
+              <span className="rounded-md bg-white/20 px-1.5 py-0.5 font-mono text-[9px] font-bold text-white uppercase backdrop-blur-xs">
+                Quick View
+              </span>
+            </div>
             <span className="absolute right-3 top-3 flex h-8 w-8 -translate-x-1 items-center justify-center rounded-full bg-black/40 text-white opacity-0 transition-all duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:translate-x-0 group-hover:opacity-100">
               <ArrowUpRightIcon />
             </span>

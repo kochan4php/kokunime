@@ -11,7 +11,7 @@ const HomeContent = async ({ page, basePath }: { page: number; basePath?: string
   return (
     <>
       <section className="container px-4 pt-6 md:pt-10">
-        <FeaturedHero featured={anime[0]} />
+        <FeaturedHero featured={anime[0]} items={anime} />
       </section>
       <HomeHistoryStrip />
       <LatestGrid anime={anime} pagination={pagination} basePath={basePath} />

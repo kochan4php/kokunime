@@ -195,8 +195,28 @@ const BatchDownloadTools = ({ group, animeTitle }: BatchDownloadToolsProps): JSX
     } catch {}
   };
 
-  const linkCount = getLinks().length;
-  if (linkCount === 0) return <></>;
+  const exportDlc = () => {
+    const links = getLinks();
+    if (links.length === 0) return;
+    // Standard JDownloader DLC text container
+    const dlcHeader = `<dlc>\n  <header>\n    <generator>\n      <app>Kokunime</app>\n      <version>1.0</version>\n      <url>https://kokunime.netlify.app</url>\n    </generator>\n  </header>\n  <content>\n    <package name="${animeTitle ?? "Kokunime Batch"}">\n`;
+    const dlcFooter = `    </package>\n  </content>\n</dlc>`;
+    const dlcLinks = links.map((url) => `      <file>\n        <url>${url}</url>\n      </file>`).join("\n");
+    const dlcContent = `${dlcHeader}${dlcLinks}\n${dlcFooter}`;
+    const blob = new Blob([dlcContent], { type: "application/xml;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    const safeTitle = (animeTitle || group.title || "jdownloader-links")
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-|-$/g, "");
+    a.href = url;
+    a.download = `${safeTitle}.dlc`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
 
   return (
     <div className="flex flex-wrap items-center gap-2">
@@ -289,11 +309,27 @@ const BatchDownloadTools = ({ group, animeTitle }: BatchDownloadToolsProps): JSX
       </button>
       <button
         type="button"
+        onClick={exportTxt}
+        title="Unduh daftar tautan sebagai file teks (.txt)"
+        className="inline-flex items-center gap-1 rounded-full border border-border bg-surface px-3 py-1 font-mono text-[11px] font-semibold tracking-wider text-ink-muted transition-all duration-200 hover:border-accent hover:text-ink active:scale-95 cursor-pointer"
+      >
+        <span>📄 .txt</span>
+      </button>
+      <button
+        type="button"
         onClick={exportIdmEf2}
         title="Export file .ef2 untuk Internet Download Manager (IDM)"
         className="inline-flex items-center gap-1 rounded-full border border-border bg-surface px-3 py-1 font-mono text-[11px] font-semibold tracking-wider text-ink-muted transition-all duration-200 hover:border-accent hover:text-ink active:scale-95 cursor-pointer"
       >
         <span>IDM (.ef2)</span>
+      </button>
+      <button
+        type="button"
+        onClick={exportDlc}
+        title="Export file .dlc untuk JDownloader 2"
+        className="inline-flex items-center gap-1 rounded-full border border-border bg-surface px-3 py-1 font-mono text-[11px] font-semibold tracking-wider text-ink-muted transition-all duration-200 hover:border-accent hover:text-ink active:scale-95 cursor-pointer"
+      >
+        <span>JDownloader (.dlc)</span>
       </button>
       <button
         type="button"

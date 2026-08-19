@@ -29,7 +29,8 @@ const DetailMeta = ({ anime }: { anime: AnimeDetail }): JSX.Element => {
   const items = [
     { label: "Judul Jepang", value: anime.japanese },
     { label: "Sinonim / English", value: anime.synonyms },
-    { label: "Studio / Produser", value: anime.producer },
+    { label: "Studio", value: anime.studio },
+    { label: "Produser", value: anime.producer },
     { label: "Rating Umur", value: anime.rating },
     { label: "Rilis", value: anime.release_on },
     { label: "Musim", value: anime.season?.name, href: seasonSlug ? `/seasons/${seasonSlug}` : undefined },

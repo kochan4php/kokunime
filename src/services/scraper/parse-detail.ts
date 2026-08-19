@@ -42,8 +42,11 @@ export function parseAnimeDetail($: CheerioAPI) {
         if (!meta.japanese || (!HAS_CJK.test(meta.japanese) && HAS_CJK.test(value))) {
           meta.japanese = value;
         }
-      } else if (/produser|producer|studio/i.test(label)) meta.producer = value;
-      else if (/tipe|type/i.test(label)) meta.type = value;
+      } else if (/studio/i.test(label)) {
+        meta.studio = value;
+      } else if (/produser|producer/i.test(label)) {
+        meta.producer = value;
+      } else if (/tipe|type/i.test(label)) meta.type = value;
       else if (/status/i.test(label)) meta.status = value;
       else if (/episode/i.test(label)) meta.total_episode = value;
       else if (/skor|score/i.test(label)) meta.score = value;
@@ -89,6 +92,7 @@ export function parseAnimeDetail($: CheerioAPI) {
     japanese: meta.japanese,
     image: bestImage($(element).find(".post-thumb img")),
     producer: meta.producer,
+    studio: meta.studio,
     type: meta.type,
     status: meta.status,
     total_episode: meta.total_episode,
