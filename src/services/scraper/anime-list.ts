@@ -1,5 +1,5 @@
 import upstream from "@/config/upstream";
-import { AnimePage } from "@/interfaces";
+import { AnimePage, PaginationInfo } from "@/interfaces";
 import { load } from "cheerio";
 import { formatAnimeData } from "./parse";
 import { parsePagination } from "./parse-pagination";
@@ -44,7 +44,7 @@ export async function getAnimePerPage(page: number): Promise<AnimePage> {
     1;
   const total_page = Math.max(1, Math.ceil(upstreamTotal / 3));
 
-  const pagination = {
+  const pagination: PaginationInfo = {
     first_page_endpoint: "page/1",
     next_page_endpoint: page < total_page ? `page/${page + 1}` : null,
     current_page: page,

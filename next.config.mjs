@@ -32,6 +32,15 @@ const nextConfig = {
       { source: "/:path*", headers: securityHeaders },
       { source: "/icon.svg", headers: [immutableCacheControl] },
       { source: "/manifest.webmanifest", headers: [immutableCacheControl] },
+      {
+        source: "/api/:path*",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=60, s-maxage=300, stale-while-revalidate=86400",
+          },
+        ],
+      },
     ];
   },
   images: {

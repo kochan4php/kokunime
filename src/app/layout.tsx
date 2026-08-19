@@ -1,7 +1,8 @@
 import { ChildrenProps } from "@/interfaces";
 import ServiceWorkerRegister from "@/components/sw-register";
+import RouteProgressBar from "@/components/route-progress-bar";
 import { JetBrains_Mono, Plus_Jakarta_Sans } from "next/font/google";
-import { JSX } from "react";
+import { JSX, Suspense } from "react";
 import { Viewport } from "next";
 import { buildWebSiteJsonLd, safeJsonLd } from "@/lib/seo";
 import "./globals.css";
@@ -26,7 +27,7 @@ const jetBrainsMono = JetBrains_Mono({
   variable: "--font-mono",
 });
 
-const themeScript = `(function(){try{var s={};try{s=JSON.parse(localStorage.getItem("kokunime_user_settings"))||{};}catch(e){}var t=s.theme||localStorage.getItem("theme");var d=t==="dark"||t==="oled"||(!t&&window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches);document.documentElement.classList.toggle("dark",d);var c=s.theme==="oled"?"oled":localStorage.getItem("kokunime_contrast");if(c==="oled")document.documentElement.setAttribute("data-contrast","oled");var a=s.accent||localStorage.getItem("kokunime_accent");if(a&&a!=="orange")document.documentElement.setAttribute("data-accent",a);var f=s.font||localStorage.getItem("kokunime_font");if(f&&f!=="mono")document.documentElement.setAttribute("data-font",f);var fs=s.fontSize;if(fs&&fs!=="normal")document.documentElement.setAttribute("data-font-size",fs);var rm=s.reduceMotion;if(rm)document.documentElement.setAttribute("data-reduce-motion","true");if(s.glassEffects===false)document.documentElement.setAttribute("data-glass","false");if(s.readingMode&&s.readingMode!=="none")document.documentElement.setAttribute("data-reading-mode",s.readingMode);var n=s.nightShift||localStorage.getItem("kokunime_night_shift")==="true";if(n)document.documentElement.setAttribute("data-night-shift","true");var m=document.querySelector('meta[name="theme-color"]');if(!m){m=document.createElement("meta");m.name="theme-color";document.head.appendChild(m);}m.content=c==="oled"?"#000000":d?"#201613":"#fdf5eb";}catch(e){}})();`;
+const themeScript = `(function(){try{var s={};try{s=JSON.parse(localStorage.getItem("kokunime_user_settings"))||{};}catch(e){}var t=s.theme||localStorage.getItem("theme");var d=t==="dark"||t==="oled"||(!t&&window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches);document.documentElement.classList.toggle("dark",d);var c=s.theme==="oled"?"oled":localStorage.getItem("kokunime_contrast");if(c==="oled")document.documentElement.setAttribute("data-contrast","oled");var a=s.accent||localStorage.getItem("kokunime_accent");if(a&&a!=="orange")document.documentElement.setAttribute("data-accent",a);var f=s.font||localStorage.getItem("kokunime_font");if(f&&f!=="mono")document.documentElement.setAttribute("data-font",f);var fs=s.fontSize;if(fs&&fs!=="normal")document.documentElement.setAttribute("data-font-size",fs);var rm=s.reduceMotion!==undefined?s.reduceMotion:true;if(rm)document.documentElement.setAttribute("data-reduce-motion","true");if(s.glassEffects===false)document.documentElement.setAttribute("data-glass","false");if(s.readingMode&&s.readingMode!=="none")document.documentElement.setAttribute("data-reading-mode",s.readingMode);var n=s.nightShift||localStorage.getItem("kokunime_night_shift")==="true";if(n)document.documentElement.setAttribute("data-night-shift","true");var m=document.querySelector('meta[name="theme-color"]');if(!m){m=document.createElement("meta");m.name="theme-color";document.head.appendChild(m);}m.content=c==="oled"?"#000000":d?"#201613":"#fdf5eb";}catch(e){}})();`;
 
 const criticalCss = `body{background-color:var(--color-bg,#0a0a0c);color:var(--color-ink,#fdf5eb);}`;
 
@@ -35,6 +36,16 @@ const RootLayout = ({ children }: ChildrenProps): JSX.Element => (
     <head>
       <style dangerouslySetInnerHTML={{ __html: criticalCss }} />
       <link rel="search" type="application/opensearchdescription+xml" title="Kokunime" href="/opensearch.xml" />
+      <link rel="preconnect" href="https://kusonime.com" />
+      <link rel="dns-prefetch" href="https://kusonime.com" />
+      <link rel="preconnect" href="https://i0.wp.com" crossOrigin="anonymous" />
+      <link rel="dns-prefetch" href="https://i0.wp.com" />
+      <link rel="preconnect" href="https://i1.wp.com" crossOrigin="anonymous" />
+      <link rel="dns-prefetch" href="https://i1.wp.com" />
+      <link rel="preconnect" href="https://i2.wp.com" crossOrigin="anonymous" />
+      <link rel="dns-prefetch" href="https://i2.wp.com" />
+      <link rel="preconnect" href="https://i3.wp.com" crossOrigin="anonymous" />
+      <link rel="dns-prefetch" href="https://i3.wp.com" />
     </head>
     <body suppressHydrationWarning className="min-h-screen">
       <script
@@ -79,6 +90,9 @@ const RootLayout = ({ children }: ChildrenProps): JSX.Element => (
         </svg>
       </div>
       <ServiceWorkerRegister />
+      <Suspense fallback={null}>
+        <RouteProgressBar />
+      </Suspense>
       {children}
     </body>
   </html>

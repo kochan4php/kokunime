@@ -20,7 +20,7 @@ const CardAnime = ({
   const isCompleted = /complete|tamat/i.test(meta || "");
 
   return (
-    <Link href={path} className="group block h-full select-none">
+    <Link href={path} className="group block h-full select-none active:scale-[0.98] transition-transform duration-100">
       <div className="card-shell h-full transition-all duration-300 group-hover:-translate-y-1 group-hover:shadow-md group-hover:border-accent/40 rounded-xl sm:rounded-2xl">
         <div className="card-core flex flex-col h-full overflow-hidden rounded-xl sm:rounded-2xl">
           {/* Poster Image Container */}

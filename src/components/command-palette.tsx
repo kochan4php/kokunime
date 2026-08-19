@@ -30,6 +30,8 @@ const saveRecentSearch = (query: string) => {
   } catch {}
 };
 
+const clientSearchCache = new Map<string, Anime[]>();
+
 const CommandPalette = (): JSX.Element => {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -93,10 +95,17 @@ const CommandPalette = (): JSX.Element => {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
 
-  // Debounced search for live results
+  // Debounced search for live results with instant in-memory client cache
   useEffect(() => {
-    if (query.trim().length < 2) {
+    const trimmed = query.trim().toLowerCase();
+    if (trimmed.length < 2) {
       setLiveResults([]);
+      setIsLoading(false);
+      return;
+    }
+
+    if (clientSearchCache.has(trimmed)) {
+      setLiveResults(clientSearchCache.get(trimmed) || []);
       setIsLoading(false);
       return;
     }
@@ -104,16 +113,18 @@ const CommandPalette = (): JSX.Element => {
     const timer = setTimeout(async () => {
       setIsLoading(true);
       try {
-        const res = await fetch(`/api/search?q=${encodeURIComponent(query.trim())}`);
+        const res = await fetch(`/api/search?q=${encodeURIComponent(trimmed)}`);
         if (!res.ok) throw new Error("Search failed");
         const data = await res.json();
-        setLiveResults(data.results || []);
+        const results = (data.results || []) as Anime[];
+        clientSearchCache.set(trimmed, results);
+        setLiveResults(results);
       } catch {
         setLiveResults([]);
       } finally {
         setIsLoading(false);
       }
-    }, 280);
+    }, 180);
 
     return () => clearTimeout(timer);
   }, [query]);

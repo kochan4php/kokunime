@@ -34,7 +34,7 @@ export const DEFAULT_SETTINGS: AppSettings = {
   font: "mono",
   fontSize: "normal",
   nightShift: false,
-  reduceMotion: false,
+  reduceMotion: true,
   glassEffects: true,
   readingMode: "none",
   defaultView: "grid",

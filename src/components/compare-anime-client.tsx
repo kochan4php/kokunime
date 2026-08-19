@@ -238,53 +238,83 @@ const CompareAnimeClient = ({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // Search A debounce
+const compareSearchCache = new Map<string, Anime[]>();
+
+  // Search A debounce with instant in-memory client cache
   useEffect(() => {
-    if (!searchA.trim() || searchA.length < 2 || searchA === selectedTitleA.current) {
+    const trimmed = searchA.trim().toLowerCase();
+    if (!trimmed || trimmed.length < 2 || searchA === selectedTitleA.current) {
       setResultsA([]);
       setShowDropdownA(false);
       return;
     }
+
+    if (compareSearchCache.has(trimmed)) {
+      const cachedList = compareSearchCache.get(trimmed) || [];
+      if (searchA !== selectedTitleA.current) {
+        setResultsA(cachedList);
+        setShowDropdownA(cachedList.length > 0);
+      }
+      setIsSearchingA(false);
+      return;
+    }
+
     const timer = setTimeout(async () => {
       setIsSearchingA(true);
       try {
-        const res = await fetch(`/api/search?q=${encodeURIComponent(searchA)}`);
+        const res = await fetch(`/api/search?q=${encodeURIComponent(trimmed)}`);
         const data = await res.json();
+        const results = (data.results || []) as Anime[];
+        compareSearchCache.set(trimmed, results);
         if (searchA !== selectedTitleA.current) {
-          setResultsA(data.results || []);
-          setShowDropdownA((data.results || []).length > 0);
+          setResultsA(results);
+          setShowDropdownA(results.length > 0);
         }
       } catch {
         setResultsA([]);
       } finally {
         setIsSearchingA(false);
       }
-    }, 280);
+    }, 180);
     return () => clearTimeout(timer);
   }, [searchA]);
 
-  // Search B debounce
+  // Search B debounce with instant in-memory client cache
   useEffect(() => {
-    if (!searchB.trim() || searchB.length < 2 || searchB === selectedTitleB.current) {
+    const trimmed = searchB.trim().toLowerCase();
+    if (!trimmed || trimmed.length < 2 || searchB === selectedTitleB.current) {
       setResultsB([]);
       setShowDropdownB(false);
       return;
     }
+
+    if (compareSearchCache.has(trimmed)) {
+      const cachedList = compareSearchCache.get(trimmed) || [];
+      if (searchB !== selectedTitleB.current) {
+        setResultsB(cachedList);
+        setShowDropdownB(cachedList.length > 0);
+      }
+      setIsSearchingB(false);
+      return;
+    }
+
     const timer = setTimeout(async () => {
       setIsSearchingB(true);
       try {
-        const res = await fetch(`/api/search?q=${encodeURIComponent(searchB)}`);
+        const res = await fetch(`/api/search?q=${encodeURIComponent(trimmed)}`);
         const data = await res.json();
+        const results = (data.results || []) as Anime[];
+        compareSearchCache.set(trimmed, results);
         if (searchB !== selectedTitleB.current) {
-          setResultsB(data.results || []);
-          setShowDropdownB((data.results || []).length > 0);
+          setResultsB(results);
+          setShowDropdownB(results.length > 0);
         }
       } catch {
         setResultsB([]);
       } finally {
         setIsSearchingB(false);
       }
-    }, 280);
+    }, 180);
     return () => clearTimeout(timer);
   }, [searchB]);
 
