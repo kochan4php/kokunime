@@ -1,4 +1,4 @@
-import upstream from "@/config/upstream";
+import kusonime from "@/config/kusonime";
 import { Recommendation } from "@/interfaces";
 import { load } from "cheerio";
 import { UPSTREAM_URL } from "./constants";
@@ -9,7 +9,7 @@ export async function getRecommendations(): Promise<Recommendation[]> {
   try {
     // The recommendation widget ("Rekomendasi Maz'e") is empty on the
     // homepage — page 2+ carries it.
-    const response = await upstream.get("/page/2/");
+    const response = await kusonime.get("/page/2/");
     const $ = load(stripHtmlNoise(response.data));
     const recommendedAnime: Recommendation[] = [];
     const element = $(".rekomf");

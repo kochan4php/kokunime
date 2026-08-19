@@ -1,4 +1,4 @@
-import upstream from "@/config/upstream";
+import kusonime from "@/config/kusonime";
 import { AnimePage, Genre } from "@/interfaces";
 import { load } from "cheerio";
 import { formatAnimeData } from "./parse";
@@ -15,7 +15,7 @@ export async function getAnimeByGenres(genre: string, page: number | string): Pr
     const cleanGenre = decodeURIComponent(genre).trim().toLowerCase();
     const pageNum = Math.max(1, Number(page) || 1);
     const path = pageNum > 1 ? `/genres/${cleanGenre}/page/${pageNum}` : `/genres/${cleanGenre}`;
-    const response = await upstream.get(path);
+    const response = await kusonime.get(path);
 
     // upstream redirects unknown genres/pages to the homepage — detect and bail.
     const finalUrl = (response.url ?? "").toLowerCase();

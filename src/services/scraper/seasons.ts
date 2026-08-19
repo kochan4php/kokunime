@@ -1,4 +1,4 @@
-import upstream from "@/config/upstream";
+import kusonime from "@/config/kusonime";
 import { AnimePage, Season } from "@/interfaces";
 import { load } from "cheerio";
 import { formatAnimeData } from "./parse";
@@ -15,7 +15,7 @@ export async function getAnimeBySeasons(season: string, page: number | string): 
     const cleanSeason = decodeURIComponent(season).trim().toLowerCase();
     const pageNum = Math.max(1, Number(page) || 1);
     const path = pageNum > 1 ? `/seasons/${cleanSeason}/page/${pageNum}` : `/seasons/${cleanSeason}`;
-    const response = await upstream.get(path);
+    const response = await kusonime.get(path);
 
     // upstream redirects unknown seasons/pages to the homepage — detect and bail.
     const finalUrl = (response.url ?? "").toLowerCase();

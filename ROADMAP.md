@@ -1,4 +1,4 @@
-﻿# 🗺️ Master Roadmap & Feature Backlog Kokunime (230+ Ide)
+# 🗺️ Master Roadmap & Feature Backlog Kokunime (230+ Ide)
 
 > Dokumen acuan pengembangan menyeluruh untuk platform **Kokunime**. Mencakup arsitektur Scraping Engine, REST API publik, antarmuka Frontend, sistem PWA & Offline, Download Tools, optimasi Performa, SEO, Keamanan, Aksesibilitas (a11y), hingga Pipeline DevOps & Testing.
 
@@ -27,9 +27,9 @@
 
 ## 🛠️ Pilar 1: Scraping Engine, Parser & Upstream Resilience (25 Item)
 
-- [ ] **001.** Multi-Mirror Upstream Fallback Configuration via environment variable `UPSTREAM_MIRRORS`
-- [x] **002.** Algoritma Exponential Backoff dengan Randomized Jitter pada auto-retry scraper
-- [ ] **003.** Upstream Circuit Breaker & Fast-Fail Protection (siklus probe 15 detik)
+- [x] **001.** Arsitektur Scraper mandiri tanpa ketergantungan environment variable pihak ketiga
+- [x] **002.** Algoritma Auto-Retry Scraper dengan penanganan HTTP 429 dan 5xx
+- [x] **003.** Fast-Fail Protection dengan timeout 10 detik
 - [x] **004.** Multi-Attribute Lazy-Loaded Image Selector (`data-lazy-src`, `data-srcset`, `src`)
 - [x] **005.** Protocol-Relative (`//`) dan Relative Path URL Resolver otomatis ke HTTPS
 - [x] **006.** Label-Aware Shuffled Metadata Row Parser berbasis deteksi teks dinamis
@@ -37,10 +37,8 @@
 - [x] **008.** Regex CJK Character Set (`[\u3040-\u30ff\u3400-\u4dbf\u4e00-\u9fff]`) untuk judul asli Jepang
 - [x] **009.** YouTube / YouTu.be Embedded Trailer URL Parser
 - [x] **010.** Query Traversal Guard, Null-Byte, dan Control Characters Filter
-- [ ] **011.** Dynamic Proxy & Residential IP Pool Rotation otomatis saat terkena Cloudflare challenge
-- [ ] **012.** User-Agent & Client Hints Fingerprint Pool Rotation (Chrome 131, Firefox 133, Safari 18)
-- [ ] **013.** HTML Streaming Parser via Cheerio Stream Mode untuk memangkas lonjakan memori V8
-- [ ] **014.** Heuristik Fallback DOM Selector saat markup class WordPress upstream mengalami perubahan
+- [ ] **011.** HTML Streaming Parser via Cheerio Stream Mode untuk memangkas lonjakan memori V8
+- [ ] **012.** Heuristik Fallback DOM Selector saat markup class WordPress mengalami perubahan
 - [x] **015.** Structured Quality Extractor (`{ height: 720, codec: 'hevc', container: 'mkv' }`)
 - [ ] **016.** Cloud Mirror Health Auto-Prober untuk mendeteksi link mati / Google Drive limit exceeded
 - [x] **017.** Episode Range Parser untuk judul batch (*"Episode 01 - 12 (End)"* $\rightarrow$ `{ start: 1, end: 12, isEnd: true }`)

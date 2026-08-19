@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 import { getGenres, getAnimeByGenres } from "@/services/scraper/genres";
 import { getSeasons, getAnimeBySeasons } from "@/services/scraper/seasons";
-import upstream from "@/config/upstream";
+import kusonime from "@/config/kusonime";
 
 describe("genres and seasons scraper", () => {
   it("parses genres taxonomy list correctly", async () => {
@@ -15,7 +15,7 @@ describe("genres and seasons scraper", () => {
       </div></div>
     `;
 
-    vi.spyOn(upstream, "get").mockResolvedValueOnce({
+    vi.spyOn(kusonime, "get").mockResolvedValueOnce({
       data: mockHtml,
       url: "https://kusonime.com/genres/",
       status: 200,
@@ -51,7 +51,7 @@ describe("genres and seasons scraper", () => {
       </div>
     `;
 
-    vi.spyOn(upstream, "get").mockResolvedValueOnce({
+    vi.spyOn(kusonime, "get").mockResolvedValueOnce({
       data: mockHtml,
       url: "https://kusonime.com/genres/action/",
       status: 200,
@@ -63,7 +63,7 @@ describe("genres and seasons scraper", () => {
   });
 
   it("handles redirected / invalid genre gracefully", async () => {
-    vi.spyOn(upstream, "get").mockResolvedValueOnce({
+    vi.spyOn(kusonime, "get").mockResolvedValueOnce({
       data: "<html>Homepage</html>",
       url: "https://kusonime.com/",
       status: 200,
