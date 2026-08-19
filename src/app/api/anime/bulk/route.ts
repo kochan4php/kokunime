@@ -1,12 +1,24 @@
 import { getAnimeDetail } from "@/services/scraper";
+import { checkRateLimit, getRateLimitHeaders } from "@/lib/rate-limit";
 import { NextRequest, NextResponse } from "next/server";
 
 const BLOCKED_USER_AGENTS = /scrapy|sqlmap|masscan|nikto|zgrab|acunetix|petalbot|censys/i;
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
+  const ip = request.headers.get("x-forwarded-for") || "bulk-client";
+  const rate = checkRateLimit(ip, 30, 60_000);
+  const rateHeaders = getRateLimitHeaders(rate);
+
+  if (!rate.success) {
+    return NextResponse.json(
+      { error: "Too many bulk requests. Please slow down." },
+      { status: 429, headers: rateHeaders },
+    );
+  }
+
   const ua = request.headers.get("user-agent") || "";
   if (BLOCKED_USER_AGENTS.test(ua)) {
-    return NextResponse.json({ error: "Access Denied: Malicious Crawler Blocked" }, { status: 403 });
+    return NextResponse.json({ error: "Access Denied: Malicious Crawler Blocked" }, { status: 403, headers: rateHeaders });
   }
 
   try {
@@ -16,7 +28,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     if (!Array.isArray(slugs)) {
       return NextResponse.json(
         { error: "Invalid request payload. Expected { slugs: string[] } or string[]" },
-        { status: 400 },
+        { status: 400, headers: rateHeaders },
       );
     }
 

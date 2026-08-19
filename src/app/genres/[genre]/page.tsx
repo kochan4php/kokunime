@@ -1,8 +1,10 @@
 import { getAnimeByGenres } from "@/services/scraper";
 import { SITE_URL } from "@/lib/site";
 import { toTitle } from "@/utils/to-title";
+import { buildSubpageBreadcrumbJsonLd, safeJsonLd } from "@/lib/seo";
 import AnimeListing from "@/sections/anime-listing";
 import MainLayout from "@/layouts/main-layout";
+import Script from "next/script";
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { JSX } from "react";
@@ -45,9 +47,23 @@ const GenrePage = async ({
     notFound();
   }
 
+  const title = toTitle(genre);
+
   return (
     <MainLayout>
-      <AnimeListing chip="Genre" title={toTitle(genre)} anime={anime} pagination={pagination} eagerCount={5} />
+      <Script
+        id="genre-breadcrumb-jsonld"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: safeJsonLd(
+            buildSubpageBreadcrumbJsonLd([
+              { name: "Genre", url: "/genres" },
+              { name: title, url: `/genres/${genre}` },
+            ]),
+          ),
+        }}
+      />
+      <AnimeListing chip="Genre" title={title} anime={anime} pagination={pagination} eagerCount={5} />
     </MainLayout>
   );
 };

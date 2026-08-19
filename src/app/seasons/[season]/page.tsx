@@ -1,8 +1,10 @@
 import { getAnimeBySeasons } from "@/services/scraper";
 import { SITE_URL } from "@/lib/site";
 import { toTitle } from "@/utils/to-title";
+import { buildSubpageBreadcrumbJsonLd, safeJsonLd } from "@/lib/seo";
 import AnimeListing from "@/sections/anime-listing";
 import MainLayout from "@/layouts/main-layout";
+import Script from "next/script";
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { JSX } from "react";
@@ -45,9 +47,23 @@ const SeasonPage = async ({
     notFound();
   }
 
+  const title = toTitle(season);
+
   return (
     <MainLayout>
-      <AnimeListing chip="Season" title={toTitle(season)} anime={anime} pagination={pagination} eagerCount={5} />
+      <Script
+        id="season-breadcrumb-jsonld"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: safeJsonLd(
+            buildSubpageBreadcrumbJsonLd([
+              { name: "Musim", url: "/seasons" },
+              { name: title, url: `/seasons/${season}` },
+            ]),
+          ),
+        }}
+      />
+      <AnimeListing chip="Season" title={title} anime={anime} pagination={pagination} eagerCount={5} />
     </MainLayout>
   );
 };

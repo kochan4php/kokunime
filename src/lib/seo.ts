@@ -65,6 +65,11 @@ export const buildAnimeJsonLd = (anime: AnimeDetail, slug: string): Record<strin
     });
   }
   jsonLd.potentialAction = actions;
+  jsonLd.publisher = {
+    "@type": "Organization",
+    name: SITE_NAME,
+    url: SITE_URL,
+  };
 
   return jsonLd;
 };
@@ -75,6 +80,20 @@ export const buildBreadcrumbJsonLd = (title: string, slug: string): Record<strin
   itemListElement: [
     { "@type": "ListItem", position: 1, name: "Beranda", item: SITE_URL },
     { "@type": "ListItem", position: 2, name: title, item: `${SITE_URL}/anime/${slug}` },
+  ],
+});
+
+export const buildSubpageBreadcrumbJsonLd = (items: { name: string; url: string }[]): Record<string, unknown> => ({
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  itemListElement: [
+    { "@type": "ListItem", position: 1, name: "Beranda", item: SITE_URL },
+    ...items.map((item, idx) => ({
+      "@type": "ListItem",
+      position: idx + 2,
+      name: item.name,
+      item: item.url.startsWith("http") ? item.url : `${SITE_URL}${item.url.startsWith("/") ? "" : "/"}${item.url}`,
+    })),
   ],
 });
 

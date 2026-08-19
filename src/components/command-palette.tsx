@@ -218,7 +218,7 @@ const CommandPalette = (): JSX.Element => {
           <div className="overflow-y-auto p-3.5 sm:p-4 space-y-4 [scrollbar-width:thin]">
             {/* Live Autocomplete Results */}
             {query.trim().length >= 2 && (
-              <div>
+              <div role="region" aria-live="polite" aria-label="Hasil pencarian instan">
                 <p className="font-mono text-[10px] uppercase tracking-wider text-ink-muted mb-2">
                   Hasil Instan ({liveResults.length})
                 </p>

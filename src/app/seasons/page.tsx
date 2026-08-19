@@ -1,57 +1,59 @@
 import { getSeasons } from "@/services/scraper";
 import { SITE_URL } from "@/lib/site";
-import { buildPaginationInfo } from "@/utils/pagination";
 import { groupSeasonsByYear, orderYears } from "@/utils/seasons";
-import SeasonYearGroup from "@/sections/season-year-group";
-import Pagination from "@/sections/pagination";
+import { buildSubpageBreadcrumbJsonLd, safeJsonLd } from "@/lib/seo";
+import SeasonsExplorer from "@/components/seasons-explorer";
 import MainLayout from "@/layouts/main-layout";
+import Script from "next/script";
 import { Metadata } from "next";
 import { JSX } from "react";
 
-export async function generateMetadata({
-  searchParams,
-}: {
-  searchParams: Promise<{ page?: string }>;
-}): Promise<Metadata> {
-  const page = Number((await searchParams)?.page) || 1;
-  const canonical = page > 1 ? `/seasons?page=${page}` : "/seasons";
+export async function generateMetadata(): Promise<Metadata> {
+  const canonical = "/seasons";
 
   return {
-    title: "Daftar Musim Anime",
-    description: "Jelajahi anime berdasarkan musim rilis.",
+    title: "Jadwal & Daftar Musim Anime Lengkap",
+    description: "Jelajahi anime berdasarkan kalender 4 musim rilis (Winter, Spring, Summer, Fall) dari tahun ke tahun di Kokunime.",
     alternates: { canonical, languages: { "id-ID": canonical } },
-    openGraph: { title: "Daftar Musim Anime", url: `${SITE_URL}${canonical}` },
+    openGraph: {
+      title: "Jadwal & Daftar Musim Anime Lengkap · Kokunime",
+      description: "Jelajahi anime berdasarkan musim rilis dari tahun ke tahun.",
+      url: `${SITE_URL}${canonical}`,
+    },
   };
 }
 
-const YEARS_PER_PAGE = 4;
-
-const SeasonsPage = async ({ searchParams }: { searchParams: Promise<{ page?: string }> }): Promise<JSX.Element> => {
+const SeasonsPage = async (): Promise<JSX.Element> => {
   const seasons = await getSeasons();
   const groups = groupSeasonsByYear(seasons);
   const years = orderYears(groups);
 
-  const requestedPage = Number((await searchParams)?.page) || 1;
-  // clamp both ends: negative page params slice from the array END
-  const totalPages = Math.max(1, Math.ceil(years.length / YEARS_PER_PAGE));
-  const current = Math.min(Math.max(requestedPage, 1), totalPages);
-  const pageYears = years.slice((current - 1) * YEARS_PER_PAGE, current * YEARS_PER_PAGE);
-
   return (
     <MainLayout>
-      <section className="container px-4 pt-6 pb-8 md:pt-10 md:pb-16">
-        {/* No Reveal on the h1 — it is the LCP element here. */}
-        <span className="chip">
-          <span className="h-1.5 w-1.5 rounded-full bg-accent" />
-          Season
-        </span>
-        <h1 className="mt-3 font-display text-2xl font-extrabold tracking-tight text-ink md:text-4xl">Daftar Musim</h1>
-        <div className="mt-10 space-y-12">
-          {pageYears.map((year) => (
-            <SeasonYearGroup key={year} year={year} seasons={groups[year]} />
-          ))}
+      <Script
+        id="seasons-breadcrumb-jsonld"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: safeJsonLd(
+            buildSubpageBreadcrumbJsonLd([{ name: "Daftar Musim", url: "/seasons" }]),
+          ),
+        }}
+      />
+      <section className="container px-4 pt-6 pb-12 md:pt-10 md:pb-20">
+        <div className="mb-8">
+          <span className="chip">
+            <span className="h-1.5 w-1.5 rounded-full bg-accent" />
+            Kalender & Arsip
+          </span>
+          <h1 className="mt-3 font-display text-2xl font-extrabold tracking-tight text-ink md:text-4xl">
+            Jadwal & Musim Rilis Anime
+          </h1>
+          <p className="mt-2 text-sm text-ink-muted max-w-2xl">
+            Cari anime berdasarkan musim penayangan dari tahun 2000-an hingga musim terbaru saat ini: Musim Dingin (*Winter*), Musim Semi (*Spring*), Musim Panas (*Summer*), dan Musim Gugur (*Fall*).
+          </p>
         </div>
-        <Pagination pagination={buildPaginationInfo(current, totalPages)} />
+
+        <SeasonsExplorer groups={groups} years={years} />
       </section>
     </MainLayout>
   );

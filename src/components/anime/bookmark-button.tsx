@@ -73,6 +73,7 @@ const BookmarkButton = ({
       <button
         type="button"
         onClick={handleClick}
+        aria-pressed={active}
         aria-label={active ? `Hapus ${title} dari tersimpan` : `Simpan ${title}`}
         title={active ? "Hapus dari tersimpan" : "Simpan anime"}
         className={`inline-flex items-center justify-center gap-2 rounded-full border transition-all duration-200 active:scale-95 cursor-pointer ${
