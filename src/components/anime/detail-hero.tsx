@@ -16,11 +16,11 @@ interface DetailHeroProps {
 }
 
 const DetailHero = ({ anime, slug }: DetailHeroProps): JSX.Element => (
-  <div className="relative">
+  <div className="relative overflow-hidden sm:overflow-visible">
     {anime.image && (
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute -inset-4 sm:-inset-8 -z-10 rounded-[2.5rem] opacity-25 dark:opacity-20 blur-3xl transition-opacity duration-1000"
+        className="pointer-events-none absolute inset-0 sm:-inset-8 -z-10 rounded-[2.5rem] opacity-25 dark:opacity-20 blur-3xl transition-opacity duration-1000"
         style={{
           backgroundImage: `url(${anime.image})`,
           backgroundSize: "cover",
@@ -57,11 +57,11 @@ const DetailHero = ({ anime, slug }: DetailHeroProps): JSX.Element => (
             </span>
           )}
         </div>
-        <div className="p-4 sm:p-6 md:p-10 flex flex-col justify-between min-w-0">
+        <div className="p-4 sm:p-6 md:p-8 flex flex-col justify-between min-w-0">
           <div>
-            <div className="flex flex-wrap items-center justify-between gap-3">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-3">
               <GenreTags anime={anime} />
-              <div className="flex flex-wrap items-center gap-2">
+              <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 shrink-0">
                 <TrailerButton trailerUrl={anime.trailer} title={anime.title ?? ""} />
                 {slug && (
                   <BookmarkButton
@@ -75,8 +75,8 @@ const DetailHero = ({ anime, slug }: DetailHeroProps): JSX.Element => (
                 <ShareButton title={anime.title ?? ""} />
               </div>
             </div>
-            <div className="mt-4 flex flex-wrap items-center gap-2.5">
-              <h1 className="font-display text-2xl sm:text-3xl md:text-4xl font-extrabold leading-[1.15] tracking-tight text-ink break-words">
+            <div className="mt-3 flex flex-col sm:flex-row sm:items-baseline gap-2 min-w-0">
+              <h1 className="font-display text-lg sm:text-xl md:text-2xl lg:text-3xl font-extrabold leading-tight tracking-tight text-ink break-words min-w-0 line-clamp-2 md:line-clamp-3 hover:line-clamp-none transition-all">
                 {anime.title}
               </h1>
               {anime.title && (
@@ -84,7 +84,7 @@ const DetailHero = ({ anime, slug }: DetailHeroProps): JSX.Element => (
                   text={anime.title}
                   label="Salin Judul"
                   copiedLabel="✓ Judul Tersalin"
-                  className="!text-[10px] !py-0.5 !px-2.5"
+                  className="!text-[10px] !py-0.5 !px-2.5 shrink-0 self-start"
                 />
               )}
             </div>

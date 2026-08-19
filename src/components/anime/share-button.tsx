@@ -5,9 +5,16 @@ import { JSX, useState } from "react";
 interface ShareButtonProps {
   title: string;
   className?: string;
+  showLabel?: boolean;
+  dropdownPlacement?: "top" | "bottom";
 }
 
-const ShareButton = ({ title, className = "" }: ShareButtonProps): JSX.Element => {
+const ShareButton = ({
+  title,
+  className = "",
+  showLabel = true,
+  dropdownPlacement = "bottom",
+}: ShareButtonProps): JSX.Element => {
   const [copied, setCopied] = useState(false);
   const [showOptions, setShowOptions] = useState(false);
 
@@ -75,11 +82,15 @@ const ShareButton = ({ title, className = "" }: ShareButtonProps): JSX.Element =
           <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
           <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
         </svg>
-        <span>{copied ? "✓ Link Disalin!" : "Bagikan"}</span>
+        {showLabel && <span>{copied ? "✓ Link Disalin!" : "Bagikan"}</span>}
       </button>
 
       {showOptions && (
-        <div className="absolute right-0 top-full mt-2 z-50 flex items-center gap-1.5 rounded-2xl border border-border bg-surface-solid/95 p-1.5 shadow-2xl backdrop-blur-md">
+        <div
+          className={`absolute z-50 flex items-center gap-1.5 rounded-2xl border border-border bg-surface-solid/95 p-1.5 shadow-2xl backdrop-blur-md ${
+            dropdownPlacement === "top" ? "bottom-full mb-2 left-0" : "top-full mt-2 right-0"
+          }`}
+        >
           <a
             href={links.wa}
             target="_blank"

@@ -93,13 +93,15 @@ const DownloadGroup = ({ group, animeTitle }: DownloadGroupProps): JSX.Element =
   }, [group]);
 
   return (
-    <div className="card-shell">
-      <div className="card-core p-4 sm:p-6 md:p-8">
+    <div className="card-shell min-w-0 max-w-full overflow-hidden">
+      <div className="card-core p-3.5 sm:p-6 md:p-8 min-w-0 max-w-full overflow-hidden">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <div className="flex items-center gap-3">
-            <h3 className="font-display text-lg font-bold tracking-tight text-ink">{group.title}</h3>
+          <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+            <h3 className="font-display text-base sm:text-lg font-bold tracking-tight text-ink min-w-0 truncate">
+              {group.title}
+            </h3>
             {allPlatforms.length > 2 && (
-              <div className="flex items-center gap-1 rounded-full border border-border bg-surface p-0.5 font-mono text-[10px]">
+              <div className="flex items-center gap-1 rounded-full border border-border bg-surface p-0.5 font-mono text-[10px] shrink-0">
                 <button
                   type="button"
                   onClick={() => setLayout("cards")}
@@ -128,45 +130,54 @@ const DownloadGroup = ({ group, animeTitle }: DownloadGroupProps): JSX.Element =
         </div>
 
         {layout === "matrix" && allPlatforms.length > 0 ? (
-          <div className="mt-6 overflow-x-auto rounded-2xl border border-border bg-surface">
-            <table className="w-full text-left text-xs border-collapse font-mono">
-              <thead>
-                <tr className="border-b border-border bg-surface-muted/60">
-                  <th className="p-3 font-bold text-ink">Resolusi</th>
-                  {allPlatforms.map((plat) => (
-                    <th key={plat} className="p-3 font-semibold text-ink-muted">
-                      {plat}
+          <div className="mt-5 flex flex-col gap-2 min-w-0 max-w-full">
+            <div className="w-full max-w-full overflow-x-auto rounded-2xl border border-border bg-surface shadow-sm [scrollbar-width:thin] [-webkit-overflow-scrolling:touch]">
+              <table className="w-full min-w-max text-left text-xs border-collapse font-mono table-auto">
+                <thead>
+                  <tr className="border-b border-border bg-surface-muted/60">
+                    <th className="p-3 font-bold text-ink whitespace-nowrap sticky left-0 z-10 bg-surface-muted min-w-[100px] sm:min-w-[125px] border-r border-border shadow-[2px_0_6px_rgba(0,0,0,0.06)]">
+                      Resolusi
                     </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-border/60">
-                {group.link_download.map((res, idx) => (
-                  <tr key={idx} className="hover:bg-surface-muted/30 transition-colors">
-                    <td className="p-3 font-bold text-ink whitespace-nowrap">{res.resolusi || "Download"}</td>
-                    {allPlatforms.map((plat) => {
-                      const linkTarget = res.link.find((l) => l.platform.toLowerCase() === plat.toLowerCase());
-                      return (
-                        <td key={plat} className="p-2.5 whitespace-nowrap">
-                          {linkTarget?.url ? (
-                            <a
-                              href={linkTarget.url}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="inline-flex items-center gap-1 rounded-lg border border-border bg-surface-solid px-2.5 py-1 text-[11px] font-semibold text-accent hover:border-accent hover:bg-accent/10 transition-all active:scale-95"
-                            >
-                              <span>Unduh ↗</span>
-                            </a>
-                          ) : (
-                            <span className="text-ink-muted/40 font-mono">—</span>
-                          )}
-                        </td>
-                      );
-                    })}
+                    {allPlatforms.map((plat) => (
+                      <th key={plat} className="p-3 font-semibold text-ink-muted whitespace-nowrap text-center min-w-[90px] sm:min-w-[105px]">
+                        {plat}
+                      </th>
+                    ))}
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody className="divide-y divide-border/60">
+                  {group.link_download.map((res, idx) => (
+                    <tr key={idx} className="hover:bg-surface-muted/30 transition-colors">
+                      <td className="p-3 font-bold text-ink whitespace-nowrap sticky left-0 z-10 bg-surface-solid border-r border-border shadow-[2px_0_6px_rgba(0,0,0,0.06)]">
+                        {res.resolusi || "Download"}
+                      </td>
+                      {allPlatforms.map((plat) => {
+                        const linkTarget = res.link.find((l) => l.platform.toLowerCase() === plat.toLowerCase());
+                        return (
+                          <td key={plat} className="p-2.5 whitespace-nowrap text-center min-w-[90px] sm:min-w-[105px]">
+                            {linkTarget?.url ? (
+                              <a
+                                href={linkTarget.url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center justify-center gap-1 rounded-lg border border-border bg-surface-solid px-2.5 py-1 text-[11px] font-semibold text-accent hover:border-accent hover:bg-accent/10 transition-all active:scale-95"
+                              >
+                                <span>Unduh ↗</span>
+                              </a>
+                            ) : (
+                              <span className="text-ink-muted/40 font-mono">—</span>
+                            )}
+                          </td>
+                        );
+                      })}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <p className="text-center font-mono text-[10px] text-ink-muted sm:hidden">
+              ← Geser tabel ke kanan untuk server lainnya →
+            </p>
           </div>
         ) : (
           <div className="mt-6 flex flex-col gap-5">
@@ -177,7 +188,7 @@ const DownloadGroup = ({ group, animeTitle }: DownloadGroupProps): JSX.Element =
                   <OpenAllLinksButton links={res.link} />
                 </div>
                 <div
-                  className={`mt-3 grid grid-cols-1 min-[420px]:grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4 ${
+                  className={`mt-3 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 ${
                     res.resolusi ? "" : "mt-0"
                   }`}
                 >

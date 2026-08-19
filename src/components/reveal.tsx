@@ -32,7 +32,11 @@ const Reveal = ({ children, className = "", delay = 0 }: RevealProps): JSX.Eleme
   }, []);
 
   return (
-    <div ref={ref} className={`reveal ${className}`} style={delay > 0 ? { transitionDelay: `${delay}ms` } : undefined}>
+    <div
+      ref={ref}
+      className={`reveal min-w-0 max-w-full ${className}`}
+      style={delay > 0 ? { transitionDelay: `${delay}ms` } : undefined}
+    >
       {children}
     </div>
   );

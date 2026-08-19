@@ -251,7 +251,7 @@ const BatchDownloadTools = ({ group, animeTitle }: BatchDownloadToolsProps): JSX
             type="button"
             onClick={() => copyQuality(q)}
             title={`Salin semua link resolusi ${q}`}
-            className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-1 font-mono text-[10px] font-semibold transition-all cursor-pointer ${
+            className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 sm:px-2.5 sm:py-1 font-mono text-[10px] font-semibold transition-all cursor-pointer ${
               copiedRes === q
                 ? "border-accent bg-accent/15 text-accent"
                 : "border-border bg-surface text-ink-muted hover:border-accent hover:text-ink"
@@ -262,32 +262,10 @@ const BatchDownloadTools = ({ group, animeTitle }: BatchDownloadToolsProps): JSX
         );
       })}
 
-      {["GDrive", "Mega", "Mediafire", "Acefile"].map((p) => {
-        const hasP = group.link_download.some((r) =>
-          r.link.some((t) => t.platform.toLowerCase().includes(p.toLowerCase())),
-        );
-        if (!hasP) return null;
-        return (
-          <button
-            key={p}
-            type="button"
-            onClick={() => copyPlatform(p)}
-            title={`Salin semua link khusus provider ${p}`}
-            className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-1 font-mono text-[10px] font-semibold transition-all cursor-pointer ${
-              copiedPlatform === p
-                ? "border-accent bg-accent/15 text-accent"
-                : "border-border bg-surface text-ink-muted hover:border-accent hover:text-ink"
-            }`}
-          >
-            <span>{copiedPlatform === p ? `✓ ${p}` : `📦 ${p}`}</span>
-          </button>
-        );
-      })}
-
       <button
         type="button"
         onClick={() => setShowMoreTools((prev) => !prev)}
-        title="Buka opsi ekspor lanjutan (IDM, DLC, aria2c, cURL, Markdown, Estimasi)"
+        title="Buka opsi ekspor lanjutan (Provider, IDM, DLC, aria2c, cURL, Markdown, Estimasi)"
         className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-1 font-mono text-[10px] font-semibold transition-all cursor-pointer ${
           showMoreTools
             ? "border-accent bg-accent/15 text-accent font-bold"
@@ -299,6 +277,27 @@ const BatchDownloadTools = ({ group, animeTitle }: BatchDownloadToolsProps): JSX
 
       {showMoreTools && (
         <div className="w-full mt-2 flex flex-wrap items-center gap-1.5 rounded-2xl border border-border/80 bg-surface-muted/40 p-2.5 animate-in fade-in duration-200">
+          {["GDrive", "Mega", "Mediafire", "Acefile"].map((p) => {
+            const hasP = group.link_download.some((r) =>
+              r.link.some((t) => t.platform.toLowerCase().includes(p.toLowerCase())),
+            );
+            if (!hasP) return null;
+            return (
+              <button
+                key={p}
+                type="button"
+                onClick={() => copyPlatform(p)}
+                title={`Salin semua link khusus provider ${p}`}
+                className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-1 font-mono text-[10px] font-semibold transition-all cursor-pointer ${
+                  copiedPlatform === p
+                    ? "border-accent bg-accent/15 text-accent"
+                    : "border-border bg-surface text-ink-muted hover:border-accent hover:text-ink"
+                }`}
+              >
+                <span>{copiedPlatform === p ? `✓ ${p}` : `📦 ${p}`}</span>
+              </button>
+            );
+          })}
           <button
             type="button"
             onClick={copyAria2}

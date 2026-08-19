@@ -11,10 +11,13 @@
     "build": "next build",
     "analyze": "ANALYZE=true next build",
     "start": "next start",
-    "lint": "eslint .",
+    "lint": "biome lint .",
+    "lint:fix": "biome lint --write .",
+    "format": "biome format --write .",
+    "format:check": "biome format .",
+    "prettier:check": "biome format .",
+    "prettier:fix": "biome format --write .",
     "test": "vitest run",
-    "prettier:check": "prettier . --check",
-    "prettier:fix": "prettier . --write",
     "docker:up": "npm run docker:down && docker compose up -d",
     "docker:down": "docker compose down",
     "changelog": "node scripts/release-changelog.mjs",
@@ -34,23 +37,20 @@
     "sharp": "^0.35.3"
   },
   "devDependencies": {
+    "@biomejs/biome": "^1.9.4",
     "@tailwindcss/postcss": "^4.3.3",
     "@types/node": "^26.2.0",
     "@types/react": "^19.2.18",
     "@types/react-dom": "^19.2.4",
-    "eslint": "^9.39.5",
-    "eslint-config-next": "^16.3.0",
     "lint-staged": "^17.3.0",
     "postcss": "^8.5.26",
-    "prettier": "^3.9.6",
     "tailwindcss": "^4.3.3",
     "typescript": "^6.0.3",
     "vitest": "^4.1.10"
   },
   "lint-staged": {
-    "**/*.{js,jsx,ts,tsx}": [
-      "pnpm prettier:fix",
-      "eslint --fix"
+    "**/*.{js,jsx,ts,tsx,json,css}": [
+      "biome check --write --no-errors-on-unmatched"
     ]
   }
 }

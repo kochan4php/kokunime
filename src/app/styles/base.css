@@ -1,6 +1,8 @@
 @layer base {
   html {
     color-scheme: light;
+    max-width: 100%;
+    overflow-x: clip;
   }
 
   .dark {
@@ -25,6 +27,8 @@
     @apply bg-bg text-ink;
     font-family: var(--font-sans);
     line-height: 1.6;
+    max-width: 100%;
+    overflow-x: clip;
     -webkit-font-smoothing: antialiased;
   }
 

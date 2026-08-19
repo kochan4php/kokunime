@@ -5,7 +5,7 @@ import { JSX } from "react";
 
 const BottomBar = (): JSX.Element => (
   <div className="mt-14 flex flex-col items-center justify-between gap-4 border-t border-border pt-6 md:flex-row">
-    <div className="flex flex-wrap items-center gap-3">
+    <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 sm:gap-3 text-center sm:text-left">
       <p className="font-mono text-xs text-ink-muted">&copy; {new Date().getFullYear()} Kokunime</p>
       <span className="text-ink-muted/40">•</span>
       <Link href="/api" className="font-mono text-[11px] text-ink-muted hover:text-accent transition-colors">

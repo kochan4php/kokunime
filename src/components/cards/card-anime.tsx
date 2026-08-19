@@ -54,8 +54,8 @@ const CardAnime = ({ src, alt, title, meta, path, eager = false, priority = fals
               <ArrowUpRightIcon />
             </span>
           </div>
-          <div className="p-3 sm:p-4">
-            <h2 className="line-clamp-2 text-xs sm:text-sm font-semibold leading-snug text-ink transition-colors duration-200 group-hover:text-accent">
+          <div className="p-3 sm:p-4 min-w-0">
+            <h2 className="line-clamp-2 text-xs sm:text-sm font-semibold leading-snug text-ink transition-colors duration-200 group-hover:text-accent break-words">
               {title}
             </h2>
           </div>

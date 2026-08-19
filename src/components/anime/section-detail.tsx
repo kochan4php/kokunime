@@ -58,21 +58,32 @@ const SectionDetail = ({ anime, slug }: { anime: AnimeDetail; slug: string }): J
         one tap away instead of buried below the synopsis. pb uses the iOS
         safe-area inset so the home indicator doesn't cover the button. */}
     {anime.download?.length > 0 && (
-      <div className="fixed inset-x-0 bottom-0 z-40 flex items-center gap-2 border-t border-border bg-bg/90 px-3 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] backdrop-blur-lg lg:hidden">
-        <BookmarkButton
-          slug={slug}
-          title={anime.title ?? ""}
-          image={anime.image}
-          release={anime.release_on}
-          className="!h-11 !w-11 shrink-0 rounded-xl border border-border bg-surface text-ink"
-        />
-        <ShareButton
-          title={anime.title ?? ""}
-          className="!h-11 !w-11 shrink-0 rounded-xl border border-border bg-surface text-ink"
-        />
-        <a href="#download" className="btn-primary flex-1 justify-center">
-          <span>Lihat Download</span>
-          <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-black/15">
+      <div className="fixed inset-x-0 bottom-0 z-40 flex w-full max-w-full items-center gap-2 border-t border-border bg-bg/95 px-3 pt-2.5 pb-[max(0.75rem,env(safe-area-inset-bottom))] backdrop-blur-lg lg:hidden box-border">
+        <div className="shrink-0">
+          <BookmarkButton
+            slug={slug}
+            title={anime.title ?? ""}
+            image={anime.image}
+            release={anime.release_on}
+            showLabel={false}
+            dropdownPlacement="top"
+            className="!h-11 !w-11 rounded-xl border border-border bg-surface text-ink"
+          />
+        </div>
+        <div className="shrink-0">
+          <ShareButton
+            title={anime.title ?? ""}
+            showLabel={false}
+            dropdownPlacement="top"
+            className="!h-11 !w-11 rounded-xl border border-border bg-surface text-ink"
+          />
+        </div>
+        <a
+          href="#download"
+          className="btn-primary min-w-0 flex-1 justify-center !h-11 !px-3 sm:!px-6 !text-xs sm:!text-sm"
+        >
+          <span className="truncate">Lihat Download</span>
+          <span className="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-black/15">
             <ArrowDownIcon className="h-3 w-3" />
           </span>
         </a>

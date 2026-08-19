@@ -17,6 +17,7 @@ interface BookmarkButtonProps {
   release?: string;
   className?: string;
   showLabel?: boolean;
+  dropdownPlacement?: "top" | "bottom";
 }
 
 const BookmarkButton = ({
@@ -26,6 +27,7 @@ const BookmarkButton = ({
   release,
   className = "",
   showLabel = false,
+  dropdownPlacement = "bottom",
 }: BookmarkButtonProps): JSX.Element => {
   const [showStatusPicker, setShowStatusPicker] = useState(false);
 
@@ -107,7 +109,11 @@ const BookmarkButton = ({
       )}
 
       {showStatusPicker && active && (
-        <div className="absolute left-0 top-full mt-2 z-50 flex flex-col gap-1 rounded-2xl border border-border bg-surface-solid/95 p-2 shadow-2xl backdrop-blur-md min-w-40">
+        <div
+          className={`absolute left-0 z-50 flex flex-col gap-1 rounded-2xl border border-border bg-surface-solid/95 p-2 shadow-2xl backdrop-blur-md min-w-40 ${
+            dropdownPlacement === "top" ? "bottom-full mb-2" : "top-full mt-2"
+          }`}
+        >
           <span className="px-2 py-1 font-mono text-[10px] uppercase tracking-wider text-ink-muted">Status Nonton</span>
           <button
             type="button"

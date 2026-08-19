@@ -9,20 +9,25 @@ interface MetaItemProps {
   href?: string;
 }
 
-const MetaItem = ({ label, value, href }: MetaItemProps): JSX.Element => (
-  <div className="rounded-2xl border border-border bg-surface px-4 py-3 min-w-0">
-    <dt className="font-mono text-[10px] uppercase tracking-widest text-ink-muted">{label}</dt>
-    <dd className="mt-1 text-sm font-semibold text-ink break-words">
-      {href ? (
-        <Link href={href} className="transition-colors duration-200 hover:text-accent">
-          {value || "—"}
-        </Link>
-      ) : (
-        value || "—"
-      )}
-    </dd>
-  </div>
-);
+const MetaItem = ({ label, value, href }: MetaItemProps): JSX.Element => {
+  return (
+    <div className="rounded-xl border border-border bg-surface px-3 py-2 sm:px-4 sm:py-2.5 min-w-0 overflow-hidden">
+      <dt className="font-mono text-[9px] sm:text-[10px] uppercase tracking-wider text-ink-muted truncate">{label}</dt>
+      <dd
+        className="mt-0.5 text-xs sm:text-sm font-semibold text-ink truncate hover:whitespace-normal transition-all cursor-help"
+        title={value}
+      >
+        {href ? (
+          <Link href={href} className="transition-colors duration-200 hover:text-accent truncate block">
+            {value || "—"}
+          </Link>
+        ) : (
+          value || "—"
+        )}
+      </dd>
+    </div>
+  );
+};
 
 const DetailMeta = ({ anime }: { anime: AnimeDetail }): JSX.Element => {
   const seasonSlug = endpointSlug(anime.season?.endpoint, "seasons");
@@ -40,7 +45,7 @@ const DetailMeta = ({ anime }: { anime: AnimeDetail }): JSX.Element => {
   ].filter((item) => item.value);
 
   return (
-    <dl className="mt-8 grid grid-cols-1 gap-3 sm:grid-cols-2">
+    <dl className="mt-5 grid grid-cols-2 gap-2 sm:grid-cols-2 md:grid-cols-3">
       {items.map((item, index) => (
         <MetaItem key={index} label={item.label} value={item.value} href={item.href} />
       ))}

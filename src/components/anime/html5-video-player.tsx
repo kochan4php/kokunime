@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { JSX, useRef, useState } from "react";
 
@@ -10,21 +10,7 @@ interface Html5VideoPlayerProps {
 
 export const Html5VideoPlayer = ({ src, poster, title }: Html5VideoPlayerProps): JSX.Element => {
   const videoRef = useRef<HTMLVideoElement>(null);
-  const [isPlaying, setIsPlaying] = useState(false);
   const [playbackSpeed, setPlaybackSpeed] = useState(1);
-
-  const togglePlay = () => {
-    if (!videoRef.current) return;
-    if (videoRef.current.paused) {
-      videoRef.current
-        .play()
-        .then(() => setIsPlaying(true))
-        .catch(() => {});
-    } else {
-      videoRef.current.pause();
-      setIsPlaying(false);
-    }
-  };
 
   const changeSpeed = (speed: number) => {
     if (!videoRef.current) return;
@@ -41,8 +27,6 @@ export const Html5VideoPlayer = ({ src, poster, title }: Html5VideoPlayerProps):
         controls
         playsInline
         className="w-full aspect-video object-contain"
-        onPlay={() => setIsPlaying(true)}
-        onPause={() => setIsPlaying(false)}
       />
       <div className="flex items-center justify-between border-t border-border bg-surface px-4 py-2 text-xs font-mono text-ink-muted">
         <span className="font-semibold text-ink truncate max-w-[200px]">{title}</span>

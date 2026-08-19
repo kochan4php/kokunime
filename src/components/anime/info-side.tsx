@@ -16,7 +16,12 @@ const InfoSide = ({ anime }: { anime: AnimeDetail }): JSX.Element => (
           ].map((item, index) => (
             <li key={index} className="flex items-start justify-between gap-3 min-w-0">
               <span className="text-ink-muted shrink-0">{item.label}</span>
-              <span className="text-right font-semibold text-ink break-words min-w-0">{item.value || "—"}</span>
+              <span
+                className="text-right font-semibold text-ink truncate max-w-[65%] hover:whitespace-normal transition-all cursor-help"
+                title={item.value}
+              >
+                {item.value || "—"}
+              </span>
             </li>
           ))}
         </ul>

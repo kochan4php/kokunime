@@ -1,4 +1,4 @@
-﻿import { execSync } from "child_process";
+import { execSync } from "child_process";
 import fs from "fs";
 
 function generateChangelog() {
@@ -16,7 +16,7 @@ function generateChangelog() {
     };
 
     for (const line of lines) {
-      const [msg, hash, author, date] = line.split("|");
+      const [msg, hash] = line.split("|");
       const cleanMsg = msg.trim();
 
       if (/^feat/i.test(cleanMsg)) {

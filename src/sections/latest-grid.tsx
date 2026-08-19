@@ -36,7 +36,7 @@ const LatestGrid = ({ anime, pagination, basePath }: LatestGridProps): JSX.Eleme
             </h2>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-3">
             <div className="relative w-full md:w-60">
               <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-ink-muted">
                 <SearchIcon />

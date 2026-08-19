@@ -68,6 +68,7 @@ const AnimeGrid = ({ anime, eagerCount = 0, viewMode = "grid" }: AnimeGridProps)
         const eager = index < eagerCount;
         const card = (
           <CardAnime
+            key={endpoint}
             path={`/anime/${endpoint}`}
             src={item?.link?.image as string}
             title={item?.title}
@@ -84,9 +85,9 @@ const AnimeGrid = ({ anime, eagerCount = 0, viewMode = "grid" }: AnimeGridProps)
         // first card IS the LCP element, and Reveal's SSR opacity-0 delayed it
         // ~1s. Below-fold cards keep the scroll-reveal animation.
         return eager ? (
-          <Fragment key={index}>{card}</Fragment>
+          <Fragment key={endpoint}>{card}</Fragment>
         ) : (
-          <Reveal key={index} className="h-full" delay={(index % 5) * 80}>
+          <Reveal key={endpoint} className="h-full" delay={(index % 5) * 80}>
             {card}
           </Reveal>
         );

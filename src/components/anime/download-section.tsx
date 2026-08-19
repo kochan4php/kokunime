@@ -49,7 +49,7 @@ const DownloadSection = ({ anime }: { anime: AnimeDetail }): JSX.Element => {
   return (
     <div id="download" className="mt-16 scroll-mt-28">
       <Reveal>
-        <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
+        <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
             <span className="chip">
               <span className="h-1.5 w-1.5 rounded-full bg-accent" />
@@ -59,9 +59,9 @@ const DownloadSection = ({ anime }: { anime: AnimeDetail }): JSX.Element => {
             <DownloadGuideModal />
           </div>
 
-          <div className="flex flex-wrap items-center gap-3">
+          <div className="flex flex-wrap items-center gap-2.5 sm:gap-3">
             {showTypeFilter && (
-              <div className="flex flex-wrap items-center gap-1">
+              <div className="flex items-center gap-1">
                 <button
                   type="button"
                   onClick={() => setTypeFilter("all")}
@@ -99,12 +99,12 @@ const DownloadSection = ({ anime }: { anime: AnimeDetail }): JSX.Element => {
             )}
 
             {availableResolutions.length > 1 && (
-              <div className="flex flex-wrap items-center gap-1.5">
-                <span className="font-mono text-[11px] uppercase tracking-wider text-ink-muted">Resolusi:</span>
+              <div className="flex items-center gap-1.5 overflow-x-auto [scrollbar-width:none] max-w-full">
+                <span className="font-mono text-[11px] uppercase tracking-wider text-ink-muted shrink-0">Resolusi:</span>
                 <button
                   type="button"
                   onClick={() => setSelectedRes("all")}
-                  className={`rounded-full px-3 py-1 font-mono text-xs transition-all ${
+                  className={`rounded-full px-3 py-1 font-mono text-xs transition-all shrink-0 ${
                     selectedRes === "all"
                       ? "border border-accent/40 bg-accent/15 font-bold text-accent"
                       : "border border-border bg-surface text-ink-muted hover:text-ink"
@@ -117,7 +117,7 @@ const DownloadSection = ({ anime }: { anime: AnimeDetail }): JSX.Element => {
                     key={res}
                     type="button"
                     onClick={() => setSelectedRes(res)}
-                    className={`rounded-full px-3 py-1 font-mono text-xs transition-all ${
+                    className={`rounded-full px-3 py-1 font-mono text-xs transition-all shrink-0 ${
                       selectedRes === res
                         ? "border border-accent/40 bg-accent/15 font-bold text-accent"
                         : "border border-border bg-surface text-ink-muted hover:text-ink"
@@ -131,9 +131,13 @@ const DownloadSection = ({ anime }: { anime: AnimeDetail }): JSX.Element => {
           </div>
         </div>
       </Reveal>
-      <div className="grid gap-6">
+      <div className="grid gap-6 min-w-0 max-w-full overflow-hidden">
         {filteredDownloads.map((group: DownloadOption, index: number) => (
-          <Reveal key={`${group.title}-${selectedRes}-${typeFilter}-${index}`} delay={index * 80}>
+          <Reveal
+            key={`${group.title}-${selectedRes}-${typeFilter}-${index}`}
+            delay={index * 80}
+            className="min-w-0 max-w-full overflow-hidden"
+          >
             <DownloadGroup group={group} animeTitle={anime.title} />
           </Reveal>
         ))}
