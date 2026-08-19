@@ -1,4 +1,4 @@
-import kusonime from "@/config/kusonime";
+import upstream from "@/config/upstream";
 import { AnimePage } from "@/interfaces";
 import { load } from "cheerio";
 import { formatAnimeData } from "./parse";
@@ -7,7 +7,7 @@ import { stripHtmlNoise } from "./sanitize";
 
 export async function getAnimePerPage(page: number): Promise<AnimePage> {
   try {
-    const response = await kusonime.get(`/page/${page}`);
+    const response = await upstream.get(`/page/${page}`);
     // upstream redirects out-of-range pages (e.g. /page/999) to the homepage — detect and bail.
     const finalUrl: string =
       (response.request as { res?: { responseUrl?: string }; responseURL?: string })?.res?.responseUrl ??

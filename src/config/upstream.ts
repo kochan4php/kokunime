@@ -1,4 +1,5 @@
-import axios, { AxiosError, AxiosInstance, InternalAxiosRequestConfig } from "axios";
+﻿import axios, { AxiosError, AxiosInstance, InternalAxiosRequestConfig } from "axios";
+import { UPSTREAM_URL } from "@/services/scraper/constants";
 
 const MAX_RETRIES = 2;
 const RETRY_BASE_MS = 500;
@@ -7,8 +8,8 @@ interface RetryConfig extends InternalAxiosRequestConfig {
   retryCount?: number;
 }
 
-const kusonime: AxiosInstance = axios.create({
-  baseURL: "https://kusonime.com",
+const upstream: AxiosInstance = axios.create({
+  baseURL: UPSTREAM_URL,
   timeout: 10_000,
   maxContentLength: 10 * 1024 * 1024,
   headers: {
@@ -29,7 +30,7 @@ const kusonime: AxiosInstance = axios.create({
   },
 });
 
-kusonime.interceptors.response.use(
+upstream.interceptors.response.use(
   (response) => response,
   async (error: AxiosError) => {
     const config = error.config as RetryConfig | undefined;
@@ -43,8 +44,8 @@ kusonime.interceptors.response.use(
     config.retryCount = (config.retryCount ?? 0) + 1;
     const delay = RETRY_BASE_MS * 2 ** config.retryCount;
     await new Promise((resolve) => setTimeout(resolve, delay));
-    return kusonime.request(config);
+    return upstream.request(config);
   },
 );
 
-export default kusonime;
+export default upstream;

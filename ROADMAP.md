@@ -8,7 +8,7 @@
 
 | No | Pilar Arsitektur | Total Item | Status Selesai | Status Terjadwal |
 | :---: | :--- | :---: | :---: | :---: |
-| 1 | **Scraping Engine & Data Resilience** | 25 | 17 Selesai | 8 Terjadwal |
+| 1 | **Scraping Engine & Upstream Resilience** | 25 | 17 Selesai | 8 Terjadwal |
 | 2 | **Public REST API, OpenAPI & Feeds** | 20 | 16 Selesai | 4 Terjadwal |
 | 3 | **Frontend UI/UX, Animasi & Komponen** | 25 | 21 Selesai | 4 Terjadwal |
 | 4 | **Offline Intelligence, PWA & Local Storage** | 18 | 14 Selesai | 4 Terjadwal |
@@ -25,11 +25,11 @@
 
 ---
 
-## 🛠️ Pilar 1: Scraping Engine, Parser & Data Resilience (25 Item)
+## 🛠️ Pilar 1: Scraping Engine, Parser & Upstream Resilience (25 Item)
 
-- [x] **001.** Arsitektur Scraper mandiri tanpa ketergantungan environment variable pihak ketiga
-- [x] **002.** Algoritma Auto-Retry Scraper dengan penanganan HTTP 429 dan 5xx
-- [x] **003.** Fast-Fail Protection dengan timeout 10 detik
+- [x] **001.** Arsitektur HTTP Client Axios untuk Upstream Scraper dengan header peramban lengkap
+- [x] **002.** Algoritma Auto-Retry Interceptor Axios dengan penanganan status HTTP 429 dan 5xx
+- [x] **003.** Fast-Fail Timeout Protection (10 detik) dan batasan muatan payload 10 MB
 - [x] **004.** Multi-Attribute Lazy-Loaded Image Selector (`data-lazy-src`, `data-srcset`, `src`)
 - [x] **005.** Protocol-Relative (`//`) dan Relative Path URL Resolver otomatis ke HTTPS
 - [x] **006.** Label-Aware Shuffled Metadata Row Parser berbasis deteksi teks dinamis
@@ -38,7 +38,7 @@
 - [x] **009.** YouTube / YouTu.be Embedded Trailer URL Parser
 - [x] **010.** Query Traversal Guard, Null-Byte, dan Control Characters Filter
 - [ ] **011.** HTML Streaming Parser via Cheerio Stream Mode untuk memangkas lonjakan memori V8
-- [ ] **012.** Heuristik Fallback DOM Selector saat markup class WordPress mengalami perubahan
+- [ ] **012.** Heuristik Fallback DOM Selector saat markup class WordPress upstream mengalami perubahan
 - [ ] **013.** Cloud Mirror Health Auto-Prober untuk mendeteksi link mati / Google Drive limit exceeded
 - [ ] **014.** Dukungan header HTTP `ETag` dan `If-None-Match` (304 Not Modified) pada scraper
 - [x] **015.** Structured Quality Extractor (`{ height: 720, codec: 'hevc', container: 'mkv' }`)
@@ -76,7 +76,7 @@
 - [x] **042.** `POST /api/anime/bulk` — Endpoint batch resolver untuk mengambil 20 anime dalam 1 request
 - [x] **043.** Format respons JSON Feed v1.1 di endpoint `/feed.json`
 - [x] **044.** Parameter format output kustom (`?format=csv` dan `?format=xml`)
-- [ ] **045.** Mock Sandbox Mode di Developer Hub saat server data sedang offline
+- [ ] **045.** Mock Sandbox Mode di Developer Hub saat server upstream sedang offline
 
 ---
 
@@ -187,7 +187,7 @@
 - [x] **128.** Partisi Edge Cache Netlify-Vary berdasarkan parameter query halaman
 - [x] **129.** Arsitektur token Vanilla CSS zero-runtime tanpa overhead kompilasi JavaScript
 - [ ] **130.** Prefetching rute client-side saat kursor mouse mendekati link (prediksi niat 200ms)
-- [x] **131.** Request Coalescing (*Singleflight Pattern*) untuk menggabungkan request konkuren
+- [x] **131.** Upstream Request Coalescing (*Singleflight Pattern*) untuk menggabungkan request konkuren
 - [ ] **132.** Virtualized Windowing Scroll untuk katalog dengan ratusan anime agar FPS stabil di 60fps
 - [ ] **133.** Critical CSS Inlining pada viewport atas untuk mencapai First Contentful Paint < 0.4s
 - [ ] **134.** Font Subsetting untuk memangkas ukuran file Google Fonts menjadi < 15 KB
@@ -229,9 +229,9 @@
 - [x] **160.** Header proteksi `Permissions-Policy: camera=(), microphone=(), geolocation=()`
 - [x] **161.** Header proteksi HSTS `Strict-Transport-Security` dengan max-age 2 tahun
 - [x] **162.** Filter pembersih Null-Byte, Path Traversal (`../`), dan karakter kontrol pada pencarian
-- [x] **163.** Pembatasan batas atas ukuran muatan respon (*Maximum 10 MB Ceiling*)
+- [x] **163.** Pembatasan batas atas ukuran muatan respon upstream (*Maximum 10 MB Ceiling*)
 - [x] **164.** Sanitasi karakter input terhadap potensi mutasi XSS
-- [x] **165.** Proteksi SSRF (*Server-Side Request Forgery*) dengan validasi whitelist domain
+- [x] **165.** Proteksi SSRF (*Server-Side Request Forgery*) dengan validasi whitelist domain upstream
 - [x] **166.** Penyamaran otomatis pesan error internal (*Stack Trace Masking*) di lingkungan produksi
 - [ ] **167.** Tautan jebakan bot tak kasat mata (*Honeypot Traps*) untuk memblokir crawler liar
 - [ ] **168.** Validasi header `Origin` dan `Sec-Fetch-Site` pada seluruh endpoint mutasi
@@ -284,12 +284,12 @@
 
 ## 🧪 Pilar 12: Testing, QA & Scraper Monitoring (16 Item)
 
-- [x] **203.** Unit test suite Vitest dengan 67 test case di 18 file pengujian
+- [x] **203.** Unit test suite Vitest dengan 66 test case di 18 file pengujian
 - [x] **204.** File mock HTML fixture untuk pengujian unit offline tanpa ketergantungan jaringan
 - [x] **205.** Suite pengujian ketahanan parser scraper (*Lazy Image, CJK Title, Entities, URL Resolver*)
 - [x] **206.** Konfigurasi linting ESLint ketat (0 error, 0 warning)
 - [x] **207.** Pengujian otomatis format ekspor backup bookmark JSON
-- [ ] **208.** GitHub Actions Daily Scheduled CI untuk memvalidasi kesehatan scraper
+- [ ] **208.** GitHub Actions Daily Scheduled CI untuk memvalidasi kesehatan scraper upstream
 - [ ] **209.** Suite End-to-End Visual Regression Testing menggunakan Playwright
 - [ ] **210.** Audit skor Lighthouse CI otomatis (Target: Performance 100, Accessibility 100, SEO 100)
 - [x] **211.** Benchmark suite untuk mengukur latensi pemrosesan parser Cheerio dalam milidetik

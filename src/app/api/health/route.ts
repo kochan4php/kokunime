@@ -1,4 +1,4 @@
-import kusonime from "@/config/kusonime";
+import upstream from "@/config/upstream";
 import { UPSTREAM_URL } from "@/services/scraper/constants";
 import { NextResponse } from "next/server";
 
@@ -16,7 +16,7 @@ export async function GET(): Promise<NextResponse> {
     : undefined;
 
   try {
-    const res = await kusonime.get("/");
+    const res = await upstream.get("/");
     const latency = Math.round(performance.now() - start);
 
     return NextResponse.json({
