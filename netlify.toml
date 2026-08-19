@@ -1,4 +1,4 @@
-﻿[build]
+[build]
   command = "npx pnpm setup"
   publish = ".next"
 
