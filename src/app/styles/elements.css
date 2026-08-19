@@ -27,7 +27,7 @@
        --accent-ink is >= 4.5:1 on both accent stops in both themes. */
     color: var(--accent-ink);
     background: linear-gradient(135deg, var(--accent), var(--accent-2));
-    box-shadow: 0 12px 32px -12px var(--glow-accent);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
     transition:
       transform 300ms cubic-bezier(0.32, 0.72, 0, 1),
       filter 300ms cubic-bezier(0.32, 0.72, 0, 1);

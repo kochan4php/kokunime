@@ -21,7 +21,7 @@ const CardAnime = ({
 
   return (
     <Link href={path} className="group block h-full select-none">
-      <div className="card-shell h-full transition-all duration-300 group-hover:-translate-y-1.5 group-hover:shadow-[0_16px_32px_-12px_var(--glow-accent)] group-hover:border-accent/40 rounded-xl sm:rounded-2xl">
+      <div className="card-shell h-full transition-all duration-300 group-hover:-translate-y-1 group-hover:shadow-md group-hover:border-accent/40 rounded-xl sm:rounded-2xl">
         <div className="card-core flex flex-col h-full overflow-hidden rounded-xl sm:rounded-2xl">
           {/* Poster Image Container */}
           <div className="relative aspect-[3/4] w-full overflow-hidden bg-surface-muted">

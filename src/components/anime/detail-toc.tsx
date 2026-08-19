@@ -50,7 +50,7 @@ const DetailToc = (): JSX.Element | null => {
           onClick={() => scrollTo(sec.id)}
           className={`flex items-center justify-between rounded-xl px-3 py-1.5 font-mono text-xs transition-all cursor-pointer ${
             activeId === sec.id
-              ? "bg-accent/15 font-bold text-accent border border-accent/30 shadow-[0_0_8px_var(--glow-accent)]"
+              ? "bg-accent/15 font-bold text-accent border border-accent/30"
               : "text-ink-muted hover:bg-surface hover:text-ink"
           }`}
         >

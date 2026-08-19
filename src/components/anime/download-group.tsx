@@ -3,6 +3,8 @@
 import { DownloadOption, DownloadResolution, DownloadTarget } from "@/interfaces";
 import DownloadPlatform from "./download-platform";
 import BatchDownloadTools from "./batch-download-tools";
+import { useSettings } from "@/utils/settings";
+import { useTranslation } from "@/utils/i18n";
 import { JSX, useMemo, useState } from "react";
 
 interface DownloadGroupProps {
@@ -80,7 +82,10 @@ const OpenAllLinksButton = ({ links }: { links: DownloadTarget[] }): JSX.Element
 };
 
 const DownloadGroup = ({ group, animeTitle }: DownloadGroupProps): JSX.Element => {
-  const [layout, setLayout] = useState<"cards" | "matrix">("cards");
+  const settings = useSettings();
+  const { t } = useTranslation();
+  const [userOverride, setUserOverride] = useState<"cards" | "matrix" | null>(null);
+  const layout = userOverride ?? (settings.downloadLayout || "cards");
 
   const allPlatforms = useMemo(() => {
     const set = new Set<string>();
@@ -104,21 +109,21 @@ const DownloadGroup = ({ group, animeTitle }: DownloadGroupProps): JSX.Element =
               <div className="flex items-center gap-1 rounded-full border border-border bg-surface p-0.5 font-mono text-[10px] shrink-0">
                 <button
                   type="button"
-                  onClick={() => setLayout("cards")}
+                  onClick={() => setUserOverride("cards")}
                   className={`rounded-full px-2 py-0.5 transition-colors cursor-pointer ${
                     layout === "cards" ? "bg-accent text-(--accent-ink) font-bold" : "text-ink-muted hover:text-ink"
                   }`}
                 >
-                  🗂️ Kartu
+                  {t("settings.layout_cards")}
                 </button>
                 <button
                   type="button"
-                  onClick={() => setLayout("matrix")}
+                  onClick={() => setUserOverride("matrix")}
                   className={`rounded-full px-2 py-0.5 transition-colors cursor-pointer ${
                     layout === "matrix" ? "bg-accent text-(--accent-ink) font-bold" : "text-ink-muted hover:text-ink"
                   }`}
                 >
-                  📊 Matriks
+                  {t("settings.layout_matrix")}
                 </button>
               </div>
             )}

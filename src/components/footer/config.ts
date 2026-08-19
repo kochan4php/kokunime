@@ -6,6 +6,7 @@ export const footerNavLinks = [
   { label: "Daftar Musim", href: "/seasons" },
   { label: "Koleksi Bookmark", href: "/bookmarks" },
   { label: "Komparasi Anime", href: "/compare" },
+  { label: "Pengaturan & Tema ⚙️", href: "/settings" },
   { label: "Anime Acak 🎲", href: "/api/random" },
 ];
 

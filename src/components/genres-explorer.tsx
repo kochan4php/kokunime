@@ -211,7 +211,7 @@ const getGenreMeta = (slug: string, name: string): GenreMeta => {
   return {
     icon: "🏷️",
     desc: `Koleksi anime bertema ${name} subtitle Indonesia`,
-    gradient: "from-accent/15 via-accent-2/10 to-transparent border-border hover:border-accent/60 hover:shadow-[0_8px_30px_var(--glow-accent)]",
+    gradient: "from-accent/15 via-accent-2/10 to-transparent border-border hover:border-accent/60 hover:shadow-md",
   };
 };
 
@@ -235,7 +235,7 @@ export const GenresExplorer = ({ genres }: GenresExplorerProps): JSX.Element => 
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Cari genre (misal: Isekai, Romance, Action)..."
             aria-label="Cari genre anime"
-            className="h-12 w-full rounded-2xl border border-border bg-surface-solid pl-11 pr-10 text-sm text-ink outline-none transition-all placeholder:text-ink-muted focus:border-accent focus:bg-surface focus:shadow-[0_0_20px_var(--glow-accent)]"
+            className="h-12 w-full rounded-2xl border border-border bg-surface-solid pl-11 pr-10 text-sm text-ink outline-none transition-all placeholder:text-ink-muted focus:border-accent focus:bg-surface focus:ring-2 focus:ring-accent/20"
           />
           <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-ink-muted text-base">
             🔍

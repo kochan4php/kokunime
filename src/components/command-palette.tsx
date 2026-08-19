@@ -4,6 +4,7 @@ import { SearchIcon } from "@/components/icons";
 import { Anime } from "@/interfaces";
 import { animeSlug } from "@/utils/endpoint-slug";
 import AnimeImage from "@/components/cards/anime-image";
+import { useTranslation } from "@/utils/i18n";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { JSX, useEffect, useRef, useState } from "react";
@@ -38,6 +39,7 @@ const CommandPalette = (): JSX.Element => {
   const [isLoading, setIsLoading] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
   const router = useRouter();
+  const { t, language } = useTranslation();
 
   const openPalette = () => {
     setIsClosing(false);
@@ -54,62 +56,70 @@ const CommandPalette = (): JSX.Element => {
     setTimeout(() => {
       dialogRef.current?.close();
       setIsClosing(false);
+      setQuery("");
     }, 180);
   };
 
   const clearHistory = () => {
-    if (typeof window === "undefined") return;
     try {
       localStorage.removeItem(RECENT_KEY);
       setRecent([]);
     } catch {}
   };
 
+  // Keyboard shortcut: Ctrl+K or / to open
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (
-        (e.key === "k" && (e.metaKey || e.ctrlKey)) ||
-        (e.key === "/" && !["INPUT", "TEXTAREA", "SELECT"].includes((e.target as HTMLElement)?.tagName))
-      ) {
+      const target = e.target as HTMLElement;
+      const isInput =
+        target.tagName === "INPUT" ||
+        target.tagName === "TEXTAREA" ||
+        target.isContentEditable;
+
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") {
         e.preventDefault();
         if (dialogRef.current?.open) {
           closePalette();
         } else {
           openPalette();
         }
+      } else if (e.key === "/" && !isInput && !dialogRef.current?.open) {
+        e.preventDefault();
+        openPalette();
       }
     };
+
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
 
-  // Debounced live search autocomplete
+  // Debounced search for live results
   useEffect(() => {
-    const trimmed = query.trim();
-    if (trimmed.length < 2) {
+    if (query.trim().length < 2) {
+      setLiveResults([]);
+      setIsLoading(false);
       return;
     }
 
     const timer = setTimeout(async () => {
       setIsLoading(true);
       try {
-        const res = await fetch(`/api/search?q=${encodeURIComponent(trimmed)}`);
-        if (res.ok) {
-          const data = await res.json();
-          setLiveResults(data.results || []);
-        }
+        const res = await fetch(`/api/search?q=${encodeURIComponent(query.trim())}`);
+        if (!res.ok) throw new Error("Search failed");
+        const data = await res.json();
+        setLiveResults(data.results || []);
       } catch {
         setLiveResults([]);
       } finally {
         setIsLoading(false);
       }
-    }, 200);
+    }, 280);
 
     return () => clearTimeout(timer);
   }, [query]);
 
-  const handleSearch = (searchTerm: string) => {
-    const trimmed = searchTerm.trim();
+  const handleSearch = (searchQuery: string) => {
+    const trimmed = searchQuery.trim();
     if (!trimmed) return;
     saveRecentSearch(trimmed);
     closePalette();
@@ -127,8 +137,8 @@ const CommandPalette = (): JSX.Element => {
       <button
         type="button"
         onClick={openPalette}
-        aria-label="Cari anime"
-        title="Cari anime (Ctrl+K atau /)"
+        aria-label={t("common.search")}
+        title={`${t("common.search")} (Ctrl+K atau /)`}
         className="flex h-10 w-10 items-center justify-center rounded-full border border-border bg-surface text-ink-muted transition-all duration-200 hover:border-accent hover:text-ink lg:hidden active:scale-95 cursor-pointer shrink-0"
       >
         <SearchIcon />
@@ -138,12 +148,12 @@ const CommandPalette = (): JSX.Element => {
       <button
         type="button"
         onClick={openPalette}
-        aria-label="Buka pencarian cepat"
-        title="Pencarian cepat (Ctrl+K atau /)"
+        aria-label={t("common.search")}
+        title={`${t("common.search")} (Ctrl+K atau /)`}
         className="hidden lg:flex items-center gap-2 rounded-full border border-accent/40 bg-surface px-3.5 py-2 text-sm text-ink-muted transition-all duration-200 hover:border-accent hover:text-ink hover:bg-surface-muted active:scale-95 cursor-pointer"
       >
         <SearchIcon />
-        <span className="w-28 text-left text-xs xl:w-36 truncate">Cari anime...</span>
+        <span className="w-28 text-left text-xs xl:w-36 truncate">{t("nav.search_placeholder")}</span>
         <kbd className="rounded border border-border bg-surface-solid px-1.5 py-0.5 font-mono text-[10px] text-ink-muted">
           ⌘K
         </kbd>
@@ -183,7 +193,7 @@ const CommandPalette = (): JSX.Element => {
                   setIsLoading(false);
                 }
               }}
-              placeholder="Ketik judul anime, lalu tekan Enter..."
+              placeholder={language === "en" ? "Type anime title and press Enter..." : "Ketik judul anime, lalu tekan Enter..."}
               className="flex-1 bg-transparent text-base sm:text-sm text-ink outline-none placeholder:text-ink-muted min-w-0"
             />
             {isLoading && (
@@ -199,7 +209,7 @@ const CommandPalette = (): JSX.Element => {
                   inputRef.current?.focus();
                 }}
                 className="rounded-full p-1 text-ink-muted hover:text-ink hover:bg-surface-muted transition-colors mr-1 cursor-pointer"
-                title="Hapus pencarian"
+                title={t("common.clear")}
               >
                 ✕
               </button>
@@ -208,7 +218,7 @@ const CommandPalette = (): JSX.Element => {
               type="button"
               onClick={closePalette}
               className="rounded-lg border border-border bg-surface px-2 py-1 font-mono text-[10px] text-ink-muted hover:text-ink hover:border-accent transition-all cursor-pointer"
-              title="Tutup pencarian"
+              title={t("common.close")}
             >
               Esc
             </button>
@@ -218,9 +228,9 @@ const CommandPalette = (): JSX.Element => {
           <div className="overflow-y-auto p-3.5 sm:p-4 space-y-4 [scrollbar-width:thin]">
             {/* Live Autocomplete Results */}
             {query.trim().length >= 2 && (
-              <div role="region" aria-live="polite" aria-label="Hasil pencarian instan">
+              <div role="region" aria-live="polite" aria-label={t("common.search")}>
                 <p className="font-mono text-[10px] uppercase tracking-wider text-ink-muted mb-2">
-                  Hasil Instan ({liveResults.length})
+                  {language === "en" ? `Instant Results (${liveResults.length})` : `Hasil Instan (${liveResults.length})`}
                 </p>
                 {liveResults.length > 0 ? (
                   <div className="space-y-1.5">
@@ -243,7 +253,7 @@ const CommandPalette = (): JSX.Element => {
                             <h4 className="line-clamp-1 text-xs sm:text-sm font-semibold text-ink">{item.title}</h4>
                             <p className="line-clamp-1 font-mono text-[10px] sm:text-xs text-ink-muted mt-0.5">{item.release || "Subtitle Indonesia"}</p>
                           </div>
-                          <span className="font-mono text-xs text-accent font-bold shrink-0">Buka →</span>
+                          <span className="font-mono text-xs text-accent font-bold shrink-0">{t("common.detail")} →</span>
                         </Link>
                       );
                     })}
@@ -251,10 +261,14 @@ const CommandPalette = (): JSX.Element => {
                 ) : !isLoading ? (
                   <div className="py-4 text-center">
                     <p className="text-xs sm:text-sm text-ink-muted">
-                      Tidak ditemukan hasil instan untuk &ldquo;<span className="text-ink font-semibold">{query}</span>&rdquo;.
+                      {language === "en" ? (
+                        <>No instant results for &ldquo;<span className="text-ink font-semibold">{query}</span>&rdquo;.</>
+                      ) : (
+                        <>Tidak ditemukan hasil instan untuk &ldquo;<span className="text-ink font-semibold">{query}</span>&rdquo;.</>
+                      )}
                     </p>
                     <p className="font-mono text-[11px] text-accent mt-1">
-                      Tekan Enter untuk mencari di seluruh database ↵
+                      {language === "en" ? "Press Enter to search entire database ↵" : "Tekan Enter untuk mencari di seluruh database ↵"}
                     </p>
                   </div>
                 ) : null}
@@ -265,13 +279,15 @@ const CommandPalette = (): JSX.Element => {
             {recent.length > 0 && !query && (
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <p className="font-mono text-[10px] uppercase tracking-wider text-ink-muted">Pencarian Terakhir</p>
+                  <p className="font-mono text-[10px] uppercase tracking-wider text-ink-muted">
+                    {language === "en" ? "Recent Searches" : "Pencarian Terakhir"}
+                  </p>
                   <button
                     type="button"
                     onClick={clearHistory}
                     className="font-mono text-[10px] text-ink-muted hover:text-rose-400 transition-colors cursor-pointer"
                   >
-                    Hapus Riwayat
+                    {language === "en" ? "Clear History" : "Hapus Riwayat"}
                   </button>
                 </div>
                 <div className="flex flex-wrap gap-1.5">
@@ -293,22 +309,32 @@ const CommandPalette = (): JSX.Element => {
             {!query && (
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <p className="font-mono text-[10px] uppercase tracking-wider text-ink-muted">Akses Cepat</p>
+                  <p className="font-mono text-[10px] uppercase tracking-wider text-ink-muted">
+                    {language === "en" ? "Quick Links" : "Akses Cepat"}
+                  </p>
                   <a
                     href="/api/random"
                     onClick={closePalette}
                     className="inline-flex items-center gap-1 font-mono text-[11px] font-semibold text-accent hover:underline"
                   >
-                    <span>🎲 Anime Acak</span>
+                    <span>🎲 {t("nav.random_anime")}</span>
                   </a>
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-1.5">
                   <Link
-                    href="/api"
+                    href="/settings"
                     onClick={closePalette}
                     className="flex items-center justify-between rounded-xl border border-accent/40 bg-accent/10 px-3 py-2 text-xs font-mono text-accent transition-all hover:bg-accent hover:text-(--accent-ink)"
                   >
-                    <span>⚡ REST API Docs</span>
+                    <span>⚙️ {t("nav.settings")}</span>
+                    <span className="text-[10px]">🎨</span>
+                  </Link>
+                  <Link
+                    href="/api"
+                    onClick={closePalette}
+                    className="flex items-center justify-between rounded-xl border border-border bg-surface px-3 py-2 text-xs font-mono text-ink-muted transition-all hover:border-accent hover:text-accent"
+                  >
+                    <span>⚡ {t("nav.api")} Docs</span>
                     <span className="text-[10px]">📖</span>
                   </Link>
                   <a
@@ -327,8 +353,8 @@ const CommandPalette = (): JSX.Element => {
 
           {/* Footer Controls */}
           <div className="flex items-center justify-between border-t border-border bg-surface-solid px-4 py-2 text-[11px] text-ink-muted font-mono">
-            <span>↵ Enter untuk cari penuh</span>
-            <span>Esc untuk tutup</span>
+            <span>{language === "en" ? "↵ Enter to search all" : "↵ Enter untuk cari penuh"}</span>
+            <span>Esc</span>
           </div>
         </div>
       </dialog>

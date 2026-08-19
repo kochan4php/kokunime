@@ -1,18 +1,26 @@
 "use client";
 
 import CommandPalette from "./command-palette";
-import ThemeToggle from "./theme-toggle";
 import MobileMenu from "./mobile-menu";
 import { siteLinks } from "@/components/site-config";
+import { useTranslation, TranslationKey } from "@/utils/i18n";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { JSX, useEffect, useState } from "react";
 
-import { I18nToggle } from "./i18n-toggle";
+const NAV_KEY_MAP: Record<string, TranslationKey> = {
+  "/": "nav.home",
+  "/genres": "nav.genres",
+  "/seasons": "nav.seasons",
+  "/bookmarks": "nav.bookmarks",
+  "/compare": "nav.compare",
+  "/settings": "nav.settings",
+};
 
 const Navbar = (): JSX.Element => {
   const [scrolled, setScrolled] = useState(false);
   const pathname = usePathname();
+  const { t } = useTranslation();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 10);
@@ -46,42 +54,41 @@ const Navbar = (): JSX.Element => {
           </Link>
 
           <nav aria-label="Utama" className="hidden lg:flex items-center gap-1.5">
-            {siteLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                aria-current={isActive(link.href) ? "page" : undefined}
-                className={`relative flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-mono font-semibold transition-all duration-200 rounded-full border ${
-                  isActive(link.href)
-                    ? "bg-accent/10 border-accent/30 text-accent shadow-[0_0_12px_var(--glow-accent)]"
-                    : "border-transparent text-ink-muted hover:border-border hover:bg-surface hover:text-ink"
-                }`}
-              >
-                <span>{link.icon}</span>
-                <span>{link.label}</span>
-                {link.badge && (
-                  <span className="rounded-full bg-accent/20 px-1.5 py-0.2 font-mono text-[9px] font-bold text-accent">
-                    {link.badge}
-                  </span>
-                )}
-              </Link>
-            ))}
+            {siteLinks.map((link) => {
+              const label = NAV_KEY_MAP[link.href] ? t(NAV_KEY_MAP[link.href]) : link.label;
+              return (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  aria-current={isActive(link.href) ? "page" : undefined}
+                  className={`relative flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-mono font-semibold transition-all duration-200 rounded-full border ${
+                    isActive(link.href)
+                      ? "bg-accent/10 border-accent/30 text-accent font-bold"
+                      : "border-transparent text-ink-muted hover:border-border hover:bg-surface hover:text-ink"
+                  }`}
+                >
+                  <span>{link.icon}</span>
+                  <span>{label}</span>
+                  {link.badge && (
+                    <span className="rounded-full bg-accent/20 px-1.5 py-0.2 font-mono text-[9px] font-bold text-accent">
+                      {link.badge}
+                    </span>
+                  )}
+                </Link>
+              );
+            })}
           </nav>
         </div>
 
         <div className="flex items-center gap-2 sm:gap-2.5">
           <a
             href="/api/random"
-            title="Buka anime acak"
+            title={t("nav.random_anime")}
             className="hidden lg:inline-flex items-center gap-1.5 rounded-full border border-border bg-surface px-3 py-1.5 font-mono text-xs font-semibold text-ink-muted transition-all hover:border-accent hover:text-ink active:scale-95 cursor-pointer"
           >
-            <span>🎲 Acak</span>
+            <span>🎲 {t("nav.random")}</span>
           </a>
           <CommandPalette />
-          <div className="hidden lg:block">
-            <I18nToggle />
-          </div>
-          <ThemeToggle />
           <MobileMenu isActive={isActive} />
         </div>
       </div>

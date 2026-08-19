@@ -1,8 +1,7 @@
 "use client";
 
 import { siteLinks } from "@/components/site-config";
-import { AccentThemePicker } from "@/components/accent-theme-picker";
-import { I18nToggle } from "@/components/i18n-toggle";
+import { useTranslation, TranslationKey } from "@/utils/i18n";
 import PwaInstallButton from "@/components/pwa-install-button";
 import Link from "next/link";
 import { JSX, useEffect, useRef, useState } from "react";
@@ -11,9 +10,19 @@ interface MobileMenuProps {
   isActive: (href: string) => boolean;
 }
 
+const NAV_KEY_MAP: Record<string, TranslationKey> = {
+  "/": "nav.home",
+  "/genres": "nav.genres",
+  "/seasons": "nav.seasons",
+  "/bookmarks": "nav.bookmarks",
+  "/compare": "nav.compare",
+  "/settings": "nav.settings",
+};
+
 const MobileMenu = ({ isActive }: MobileMenuProps): JSX.Element => {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const [isClosing, setIsClosing] = useState(false);
+  const { t } = useTranslation();
 
   const openMenu = () => {
     setIsClosing(false);
@@ -45,8 +54,8 @@ const MobileMenu = ({ isActive }: MobileMenuProps): JSX.Element => {
       <button
         type="button"
         onClick={openMenu}
-        aria-label="Buka menu navigasi"
-        title="Menu Navigasi"
+        aria-label={t("nav.open_menu")}
+        title={t("nav.open_menu")}
         className="flex h-10 w-10 items-center justify-center rounded-full border border-accent/50 bg-surface text-accent transition-all duration-200 hover:border-accent hover:bg-accent/10 active:scale-95 lg:hidden cursor-pointer shrink-0"
       >
         <span aria-hidden className="menu-icon">
@@ -56,7 +65,7 @@ const MobileMenu = ({ isActive }: MobileMenuProps): JSX.Element => {
         </span>
       </button>
 
-      {/* Modal Dialog (Same style & animation as CommandPalette) */}
+      {/* Modal Dialog */}
       <dialog
         ref={dialogRef}
         onCancel={(e) => {
@@ -66,39 +75,39 @@ const MobileMenu = ({ isActive }: MobileMenuProps): JSX.Element => {
         onClick={(e) => {
           if (e.target === dialogRef.current) closeMenu();
         }}
-        className={`fixed inset-x-0 top-4 sm:top-[8%] mx-auto w-[94vw] sm:w-[90vw] max-w-xl max-h-[85vh] rounded-3xl border border-border bg-surface-solid/98 backdrop-blur-2xl p-0 text-ink shadow-2xl overflow-hidden backdrop:bg-black/60 backdrop:backdrop-blur-sm ${
+        className={`fixed inset-x-0 top-4 sm:top-[8%] mx-auto w-[92vw] sm:w-[88vw] max-w-lg max-h-[85vh] rounded-3xl border border-border bg-surface-solid/98 backdrop-blur-2xl p-0 text-ink shadow-2xl overflow-hidden backdrop:bg-black/60 backdrop:backdrop-blur-sm ${
           isClosing ? "is-closing" : ""
         }`}
       >
         <div className="flex flex-col max-h-[85vh]">
           {/* Header */}
-          <div className="flex items-center justify-between border-b border-border px-4 py-3 bg-surface-solid/80">
+          <div className="flex items-center justify-between border-b border-border bg-surface-solid/80 px-4 py-3 sm:px-5 shrink-0">
             <div className="flex items-center gap-2">
-              <span className="bg-gradient-to-r from-accent via-accent-2 to-accent-amber bg-clip-text text-transparent font-display text-base font-bold">
+              <span className="chip">
+                <span className="h-1.5 w-1.5 rounded-full bg-accent animate-pulse" />
                 Kokunime
               </span>
-              <span className="rounded-full border border-border bg-surface px-2 py-0.5 font-mono text-[10px] text-ink-muted">
-                Navigasi
-              </span>
+              <span className="font-display text-sm font-bold text-ink">{t("nav.open_menu")}</span>
             </div>
             <button
               type="button"
               onClick={closeMenu}
-              className="rounded-lg border border-border bg-surface px-2.5 py-1 font-mono text-xs text-ink-muted hover:text-ink hover:border-accent transition-all cursor-pointer"
-              title="Tutup menu"
+              aria-label={t("nav.close_menu")}
+              className="flex h-8 w-8 items-center justify-center rounded-full border border-border bg-surface text-ink-muted transition-colors hover:border-accent hover:text-ink active:scale-90 cursor-pointer"
             >
               ✕
             </button>
           </div>
 
           {/* Scrollable Body */}
-          <div className="overflow-y-auto p-3.5 sm:p-4 space-y-4 [scrollbar-width:thin]">
+          <div className="overflow-y-auto p-3.5 sm:p-4 space-y-4 [scrollbar-width:thin] flex-1 min-h-0">
             {/* Primary Navigation Cards */}
             <div>
-              <p className="font-mono text-[10px] uppercase tracking-wider text-ink-muted mb-2">Navigasi Utama</p>
+              <p className="font-mono text-[10px] uppercase tracking-wider text-ink-muted mb-2">{t("nav.open_menu")}</p>
               <nav aria-label="Menu Dialog" className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 {siteLinks.map((link) => {
                   const active = isActive(link.href);
+                  const label = NAV_KEY_MAP[link.href] ? t(NAV_KEY_MAP[link.href]) : link.label;
                   return (
                     <Link
                       key={link.href}
@@ -107,13 +116,13 @@ const MobileMenu = ({ isActive }: MobileMenuProps): JSX.Element => {
                       aria-current={active ? "page" : undefined}
                       className={`flex items-center justify-between px-3.5 py-2.5 rounded-2xl text-xs sm:text-sm font-medium transition-all duration-200 border ${
                         active
-                          ? "bg-accent/15 border-accent/40 text-accent font-bold shadow-[0_0_14px_var(--glow-accent)]"
+                          ? "bg-accent/15 border-accent/40 text-accent font-bold"
                           : "border-border/70 bg-surface/70 text-ink-muted hover:border-accent/60 hover:bg-surface hover:text-ink"
                       }`}
                     >
                       <div className="flex items-center gap-2.5 min-w-0">
                         <span className="text-base shrink-0">{link.icon}</span>
-                        <span className="text-ink font-semibold truncate">{link.label}</span>
+                        <span className="text-ink font-semibold truncate">{label}</span>
                       </div>
                       {link.badge ? (
                         <span className="rounded-full bg-accent/20 px-2 py-0.5 font-mono text-[10px] font-bold text-accent shrink-0">
@@ -134,23 +143,11 @@ const MobileMenu = ({ isActive }: MobileMenuProps): JSX.Element => {
                 >
                   <div className="flex items-center gap-2.5">
                     <span className="text-base">🎲</span>
-                    <span className="text-ink font-semibold">Anime Acak</span>
+                    <span className="text-ink font-semibold">{t("nav.random_anime")}</span>
                   </div>
-                  <span className="font-mono text-xs text-accent font-bold">Buka Acak ↵</span>
+                  <span className="font-mono text-xs text-accent font-bold">↵</span>
                 </a>
               </nav>
-            </div>
-
-            {/* Customization & Preferences */}
-            <div className="rounded-2xl border border-border bg-surface/40 p-3.5 space-y-3">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                <span className="font-mono text-xs text-ink-muted shrink-0">Warna Aksen & Mode:</span>
-                <AccentThemePicker />
-              </div>
-              <div className="flex items-center justify-between pt-2.5 border-t border-border/60">
-                <span className="font-mono text-xs text-ink-muted">Bahasa Subtitle:</span>
-                <I18nToggle />
-              </div>
             </div>
 
             {/* App Install Banner */}
@@ -160,7 +157,7 @@ const MobileMenu = ({ isActive }: MobileMenuProps): JSX.Element => {
           {/* Footer Controls */}
           <div className="flex items-center justify-between border-t border-border bg-surface-solid px-4 py-2 text-[11px] text-ink-muted font-mono">
             <span>Kokunime Navigation</span>
-            <span>Esc untuk tutup</span>
+            <span>Esc</span>
           </div>
         </div>
       </dialog>

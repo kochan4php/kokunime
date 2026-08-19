@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { Season } from "@/interfaces";
 import { endpointSlug } from "@/utils/endpoint-slug";
@@ -119,7 +119,7 @@ export const SeasonsExplorer = ({ groups, years }: SeasonsExplorerProps): JSX.El
               }}
               className={`rounded-full px-3.5 py-1.5 font-mono text-xs font-semibold transition-all shrink-0 cursor-pointer ${
                 selectedYear === "all"
-                  ? "bg-accent text-(--accent-ink) font-bold shadow-[0_0_12px_var(--glow-accent)]"
+                  ? "bg-accent text-(--accent-ink) font-bold"
                   : "border border-border bg-surface text-ink-muted hover:border-accent hover:text-ink"
               }`}
             >
@@ -135,7 +135,7 @@ export const SeasonsExplorer = ({ groups, years }: SeasonsExplorerProps): JSX.El
                 }}
                 className={`rounded-full px-3.5 py-1.5 font-mono text-xs font-semibold transition-all shrink-0 cursor-pointer ${
                   selectedYear === yr
-                    ? "bg-accent text-(--accent-ink) font-bold shadow-[0_0_12px_var(--glow-accent)]"
+                    ? "bg-accent text-(--accent-ink) font-bold"
                     : "border border-border bg-surface text-ink-muted hover:border-accent hover:text-ink"
                 }`}
               >

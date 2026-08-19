@@ -20,15 +20,24 @@ const Reveal = ({ children, className = "", delay = 0 }: RevealProps): JSX.Eleme
     }
     const observer = new IntersectionObserver(
       (entries) => {
-        if (entries[0].isIntersecting) {
+        if (entries[0]?.isIntersecting) {
           el.classList.add("is-visible");
           observer.disconnect();
         }
       },
-      { threshold: 0.1 },
+      { threshold: 0.01, rootMargin: "60px" },
     );
     observer.observe(el);
-    return () => observer.disconnect();
+
+    // Safety fallback: ensure visibility is triggered even if intersection observer delays on soft navigation
+    const timer = setTimeout(() => {
+      el.classList.add("is-visible");
+    }, 350);
+
+    return () => {
+      observer.disconnect();
+      clearTimeout(timer);
+    };
   }, []);
 
   return (

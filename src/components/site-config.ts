@@ -12,4 +12,5 @@ export const siteLinks: SiteLink[] = [
   { label: "Musim", href: "/seasons", icon: "📅", description: "Jadwal & arsip musim" },
   { label: "Bookmark", href: "/bookmarks", icon: "🔖", description: "Koleksi tersimpan" },
   { label: "Bandingkan", href: "/compare", icon: "⚖️", description: "Komparasi spek anime" },
+  { label: "Pengaturan", href: "/settings", icon: "⚙️", description: "Tema, mode & preferensi" },
 ];

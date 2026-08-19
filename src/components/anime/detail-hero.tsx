@@ -47,7 +47,7 @@ const DetailHero = ({ anime, slug }: DetailHeroProps): JSX.Element => (
             <span
               className={`absolute bottom-4 left-4 flex items-center gap-1 rounded-full px-3 py-1 font-mono text-xs font-bold backdrop-blur-sm ${
                 parseFloat(anime.score) >= 8.0
-                  ? "bg-amber-400 text-black shadow-[0_0_12px_rgba(251,191,36,0.5)]"
+                  ? "bg-amber-400 text-black font-bold"
                   : parseFloat(anime.score) >= 7.0
                     ? "bg-emerald-500 text-white"
                     : "bg-black/70 text-white"

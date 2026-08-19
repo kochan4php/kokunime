@@ -1,14 +1,10 @@
 import BackToTop from "./back-to-top";
-import { AccentThemePicker } from "@/components/accent-theme-picker";
-import Link from "next/link";
 import { JSX } from "react";
 
 const BottomBar = (): JSX.Element => (
   <div className="mt-10 sm:mt-12 flex flex-col items-center justify-between gap-4 border-t border-border pt-6 md:flex-row">
     <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 sm:gap-3 text-center sm:text-left font-mono text-xs text-ink-muted">
       <span>&copy; {new Date().getFullYear()} Kokunime. Hak cipta dilindungi.</span>
-      <span className="text-ink-muted/40 hidden sm:inline">•</span>
-      <AccentThemePicker />
     </div>
     <div className="hidden items-center gap-1.5 font-mono text-[11px] text-ink-muted lg:flex">
       <span>Shortcut:</span>

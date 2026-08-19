@@ -1,11 +1,10 @@
 import CardAnime from "@/components/cards/card-anime";
 import AnimeImage from "@/components/cards/anime-image";
 import BookmarkButton from "@/components/anime/bookmark-button";
-import Reveal from "@/components/reveal";
 import { Anime } from "@/interfaces";
 import { animeSlug } from "@/utils/endpoint-slug";
 import Link from "next/link";
-import { Fragment, JSX } from "react";
+import { JSX } from "react";
 
 interface AnimeGridProps {
   anime: Anime[];
@@ -97,9 +96,9 @@ const AnimeGrid = ({ anime, eagerCount = 0, viewMode = "grid" }: AnimeGridProps)
         if (!endpoint) return null;
 
         const eager = index < eagerCount;
-        const card = (
+        return (
           <CardAnime
-            key={endpoint}
+            key={endpoint || index}
             path={`/anime/${endpoint}`}
             src={item?.link?.image as string}
             title={item?.title}
@@ -108,14 +107,6 @@ const AnimeGrid = ({ anime, eagerCount = 0, viewMode = "grid" }: AnimeGridProps)
             eager={eager}
             priority={index < 2}
           />
-        );
-
-        return eager ? (
-          <Fragment key={endpoint}>{card}</Fragment>
-        ) : (
-          <Reveal key={endpoint} className="h-full" delay={(index % 6) * 50}>
-            {card}
-          </Reveal>
         );
       })}
     </div>

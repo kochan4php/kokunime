@@ -9,11 +9,7 @@ const Footer = (): JSX.Element => (
   <footer className="relative overflow-hidden border-t border-border bg-bg/50 backdrop-blur-xs">
     <div
       aria-hidden
-      className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-accent to-transparent opacity-60"
-    />
-    <div
-      aria-hidden
-      className="pointer-events-none absolute -top-28 left-1/2 h-56 w-[36rem] -translate-x-1/2 rounded-[100%] bg-[radial-gradient(ellipse_at_center,var(--glow-accent)_0%,transparent_70%)] opacity-70"
+      className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-border to-transparent opacity-60"
     />
     <div
       aria-hidden

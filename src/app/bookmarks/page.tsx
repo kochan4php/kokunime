@@ -130,7 +130,7 @@ const BookmarksPage = (): JSX.Element => {
                 }}
                 className={`rounded-full px-4 py-1.5 font-display text-sm font-bold tracking-tight transition-all duration-200 ${
                   activeTab === "bookmarks"
-                    ? "bg-accent text-(--accent-ink) shadow-[0_0_12px_var(--glow-accent)]"
+                    ? "bg-accent text-(--accent-ink)"
                     : "border border-border bg-surface text-ink-muted hover:border-accent hover:text-ink"
                 }`}
               >
@@ -144,7 +144,7 @@ const BookmarksPage = (): JSX.Element => {
                 }}
                 className={`rounded-full px-4 py-1.5 font-display text-sm font-bold tracking-tight transition-all duration-200 ${
                   activeTab === "history"
-                    ? "bg-accent text-(--accent-ink) shadow-[0_0_12px_var(--glow-accent)]"
+                    ? "bg-accent text-(--accent-ink)"
                     : "border border-border bg-surface text-ink-muted hover:border-accent hover:text-ink"
                 }`}
               >

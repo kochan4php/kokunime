@@ -3,7 +3,6 @@ import { SITE_URL } from "@/lib/site";
 import { buildSubpageBreadcrumbJsonLd, safeJsonLd } from "@/lib/seo";
 import GenresExplorer from "@/components/genres-explorer";
 import MainLayout from "@/layouts/main-layout";
-import Script from "next/script";
 import { Metadata } from "next";
 import { JSX } from "react";
 
@@ -27,7 +26,7 @@ const GenresPage = async (): Promise<JSX.Element> => {
 
   return (
     <MainLayout>
-      <Script
+      <script
         id="genres-breadcrumb-jsonld"
         type="application/ld+json"
         dangerouslySetInnerHTML={{
@@ -35,6 +34,7 @@ const GenresPage = async (): Promise<JSX.Element> => {
             buildSubpageBreadcrumbJsonLd([{ name: "Daftar Genre", url: "/genres" }]),
           ),
         }}
+        suppressHydrationWarning
       />
       <section className="container px-4 pt-6 pb-12 md:pt-10 md:pb-20">
         <div className="mb-8">

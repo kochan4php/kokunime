@@ -40,6 +40,39 @@
     font-family: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif !important;
   }
 
+  html[data-font-size="compact"] {
+    font-size: 14.5px;
+  }
+
+  html[data-font-size="large"] {
+    font-size: 17.5px;
+  }
+
+  html[data-reduce-motion="true"] *,
+  html[data-reduce-motion="true"] *::before,
+  html[data-reduce-motion="true"] *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  html[data-glass="false"] .glass,
+  html[data-glass="false"] .backdrop-blur-md,
+  html[data-glass="false"] .backdrop-blur-xl,
+  html[data-glass="false"] .backdrop-blur-2xl {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+
+  html[data-reading-mode="sepia"] {
+    filter: sepia(0.2) contrast(0.96);
+  }
+
+  html[data-reading-mode="high-contrast"] {
+    filter: contrast(1.15);
+  }
+
   html[data-night-shift="true"]::before {
     content: "";
     position: fixed;
