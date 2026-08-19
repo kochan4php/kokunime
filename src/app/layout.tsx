@@ -3,6 +3,7 @@ import ServiceWorkerRegister from "@/components/sw-register";
 import { JetBrains_Mono, Plus_Jakarta_Sans } from "next/font/google";
 import { JSX } from "react";
 import { Viewport } from "next";
+import Script from "next/script";
 import { buildWebSiteJsonLd, safeJsonLd } from "@/lib/seo";
 import "./globals.css";
 
@@ -26,7 +27,7 @@ const jetBrainsMono = JetBrains_Mono({
   variable: "--font-mono",
 });
 
-const themeScript = `(function(){try{var t=localStorage.getItem("theme");var d=t?t==="dark":(window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches);document.documentElement.classList.toggle("dark",d);var c=localStorage.getItem("kokunime_contrast");if(c==="oled")document.documentElement.setAttribute("data-contrast","oled");var a=localStorage.getItem("kokunime_accent");if(a&&a!=="orange")document.documentElement.setAttribute("data-accent",a);var f=localStorage.getItem("kokunime_font");if(f&&f!=="sans")document.documentElement.setAttribute("data-font",f);var n=localStorage.getItem("kokunime_night_shift");if(n==="true")document.documentElement.setAttribute("data-night-shift","true");var m=document.querySelector('meta[name="theme-color"]');if(!m){m=document.createElement("meta");m.name="theme-color";document.head.appendChild(m);}m.content=c==="oled"?"#000000":d?"#201613":"#fdf5eb";}catch(e){}})();`;
+const themeScript = `(function(){try{var t=localStorage.getItem("theme");var d=t?t==="dark":(window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches);document.documentElement.classList.toggle("dark",d);var c=localStorage.getItem("kokunime_contrast");if(c==="oled")document.documentElement.setAttribute("data-contrast","oled");var a=localStorage.getItem("kokunime_accent");if(a&&a!=="orange")document.documentElement.setAttribute("data-accent",a);var f=localStorage.getItem("kokunime_font");if(f&&f!=="mono")document.documentElement.setAttribute("data-font",f);var n=localStorage.getItem("kokunime_night_shift");if(n==="true")document.documentElement.setAttribute("data-night-shift","true");var m=document.querySelector('meta[name="theme-color"]');if(!m){m=document.createElement("meta");m.name="theme-color";document.head.appendChild(m);}m.content=c==="oled"?"#000000":d?"#201613":"#fdf5eb";}catch(e){}})();`;
 
 const criticalCss = `body{background-color:var(--color-bg,#0a0a0c);color:var(--color-ink,#fdf5eb);contain:paint;}`;
 
@@ -34,8 +35,17 @@ const RootLayout = ({ children }: ChildrenProps): JSX.Element => (
   <html lang="id" className={`${plusJakartaSans.variable} ${jetBrainsMono.variable}`} suppressHydrationWarning>
     <head>
       <style dangerouslySetInnerHTML={{ __html: criticalCss }} />
-      <script dangerouslySetInnerHTML={{ __html: themeScript }} />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(buildWebSiteJsonLd()) }} />
+      <Script
+        id="theme-script"
+        strategy="beforeInteractive"
+        dangerouslySetInnerHTML={{ __html: themeScript }}
+      />
+      <Script
+        id="website-jsonld"
+        type="application/ld+json"
+        strategy="beforeInteractive"
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(buildWebSiteJsonLd()) }}
+      />
       <link rel="search" type="application/opensearchdescription+xml" title="Kokunime" href="/opensearch.xml" />
     </head>
     <body suppressHydrationWarning className="min-h-screen">

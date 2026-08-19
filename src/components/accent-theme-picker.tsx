@@ -41,12 +41,12 @@ export const AccentThemePicker = (): JSX.Element => {
   });
 
   const [font, setFont] = useState<FontPreset>(() => {
-    if (typeof window === "undefined") return "sans";
+    if (typeof window === "undefined") return "mono";
     try {
       const saved = localStorage.getItem(FONT_STORAGE_KEY) as FontPreset;
-      return saved && ["sans", "mono", "serif"].includes(saved) ? saved : "sans";
+      return saved && ["sans", "mono", "serif"].includes(saved) ? saved : "mono";
     } catch {
-      return "sans";
+      return "mono";
     }
   });
 
@@ -66,7 +66,7 @@ export const AccentThemePicker = (): JSX.Element => {
     if (isOled) {
       document.documentElement.setAttribute("data-contrast", "oled");
     }
-    if (font && font !== "sans") {
+    if (font && font !== "mono") {
       document.documentElement.setAttribute("data-font", font);
     }
     if (nightShift) {
@@ -87,7 +87,7 @@ export const AccentThemePicker = (): JSX.Element => {
 
   const selectFont = (f: FontPreset) => {
     setFont(f);
-    if (f === "sans") {
+    if (f === "mono") {
       document.documentElement.removeAttribute("data-font");
       localStorage.removeItem(FONT_STORAGE_KEY);
     } else {

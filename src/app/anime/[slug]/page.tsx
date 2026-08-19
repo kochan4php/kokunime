@@ -5,6 +5,7 @@ import { buildAnimeJsonLd, buildBreadcrumbJsonLd, buildFaqJsonLd, safeJsonLd } f
 import { buildDetailMetadata } from "@/lib/detail-metadata";
 import MainLayout from "@/layouts/main-layout";
 import { AnimeDetail } from "@/interfaces";
+import Script from "next/script";
 import { Metadata } from "next";
 import { notFound, permanentRedirect } from "next/navigation";
 import { JSX } from "react";
@@ -36,15 +37,21 @@ const Anime = async ({ params }: { params: Promise<{ slug: string }> }): Promise
 
   return (
     <MainLayout>
-      <script
+      <Script
+        id="breadcrumb-jsonld"
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: safeJsonLd(buildBreadcrumbJsonLd(anime.title ?? "Anime", slug)) }}
       />
-      <script
+      <Script
+        id="anime-jsonld"
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: safeJsonLd(buildAnimeJsonLd(anime, slug)) }}
       />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(buildFaqJsonLd(anime)) }} />
+      <Script
+        id="faq-jsonld"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(buildFaqJsonLd(anime)) }}
+      />
       <SectionDetail anime={anime} slug={slug} />
       <div className="mt-8 border-t border-border pt-12">
         <RecommendationSection />

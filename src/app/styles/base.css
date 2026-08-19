@@ -25,15 +25,15 @@
 
   body {
     @apply bg-bg text-ink;
-    font-family: var(--font-sans);
+    font-family: var(--font-mono, monospace);
     line-height: 1.6;
     max-width: 100%;
     overflow-x: clip;
     -webkit-font-smoothing: antialiased;
   }
 
-  html[data-font="mono"] body {
-    font-family: var(--font-mono, monospace) !important;
+  html[data-font="sans"] body {
+    font-family: var(--font-sans, sans-serif) !important;
   }
 
   html[data-font="serif"] body {
@@ -112,4 +112,57 @@
   input[type="search"] {
     font-size: 16px;
   }
+}
+
+/* Native dialog opening and closing animation */
+dialog {
+  opacity: 0;
+  transform: scale(0.96) translateY(-8px);
+  transition: opacity 180ms cubic-bezier(0.16, 1, 0.3, 1),
+              transform 180ms cubic-bezier(0.16, 1, 0.3, 1),
+              overlay 180ms allow-discrete,
+              display 180ms allow-discrete;
+}
+
+dialog[open] {
+  opacity: 1;
+  transform: scale(1) translateY(0);
+}
+
+@starting-style {
+  dialog[open] {
+    opacity: 0;
+    transform: scale(0.96) translateY(-8px);
+  }
+}
+
+dialog::backdrop {
+  opacity: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  transition: opacity 180ms ease-out,
+              overlay 180ms allow-discrete,
+              display 180ms allow-discrete;
+}
+
+dialog[open]::backdrop {
+  opacity: 1;
+}
+
+@starting-style {
+  dialog[open]::backdrop {
+    opacity: 0;
+  }
+}
+
+/* Explicit closing state for smooth dismissal */
+dialog.is-closing {
+  opacity: 0 !important;
+  transform: scale(0.96) translateY(-8px) !important;
+  transition: opacity 180ms ease-in, transform 180ms ease-in !important;
+}
+
+dialog.is-closing::backdrop {
+  opacity: 0 !important;
+  transition: opacity 180ms ease-in !important;
 }
