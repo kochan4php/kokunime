@@ -8,20 +8,20 @@
 
 | No | Pilar Arsitektur | Total Item | Status Selesai | Status Terjadwal |
 | :---: | :--- | :---: | :---: | :---: |
-| 1 | **Scraping Engine & Upstream Resilience** | 25 | 13 Selesai | 12 Terjadwal |
-| 2 | **Public REST API, OpenAPI & Feeds** | 20 | 15 Selesai | 5 Terjadwal |
-| 3 | **Frontend UI/UX, Animasi & Komponen** | 25 | 20 Selesai | 5 Terjadwal |
-| 4 | **Offline Intelligence, PWA & Local Storage** | 18 | 12 Selesai | 6 Terjadwal |
-| 5 | **Download Managers & Media Utilities** | 18 | 12 Selesai | 6 Terjadwal |
+| 1 | **Scraping Engine & Upstream Resilience** | 25 | 15 Selesai | 10 Terjadwal |
+| 2 | **Public REST API, OpenAPI & Feeds** | 20 | 16 Selesai | 4 Terjadwal |
+| 3 | **Frontend UI/UX, Animasi & Komponen** | 25 | 21 Selesai | 4 Terjadwal |
+| 4 | **Offline Intelligence, PWA & Local Storage** | 18 | 13 Selesai | 5 Terjadwal |
+| 5 | **Download Managers & Media Utilities** | 18 | 15 Selesai | 3 Terjadwal |
 | 6 | **Streaming, Video Player & Previews** | 16 | 5 Selesai | 11 Terjadwal |
 | 7 | **Performance, Caching & Core Web Vitals** | 18 | 8 Selesai | 10 Terjadwal |
 | 8 | **SEO, OpenGraph, Metadata & Rich Snippets** | 16 | 10 Selesai | 6 Terjadwal |
 | 9 | **Security, Sanitization & Edge Protection** | 16 | 10 Selesai | 6 Terjadwal |
-| 10 | **Accessibility (a11y) & Keyboard Navigation** | 16 | 13 Selesai | 3 Terjadwal |
-| 11 | **Internationalization (i18n) & Theming** | 14 | 7 Selesai | 7 Terjadwal |
+| 10 | **Accessibility (a11y) & Keyboard Navigation** | 16 | 16 Selesai | 0 Terjadwal |
+| 11 | **Internationalization (i18n) & Theming** | 14 | 8 Selesai | 6 Terjadwal |
 | 12 | **Testing, QA & Scraper Monitoring** | 16 | 6 Selesai | 10 Terjadwal |
 | 13 | **DevOps, CI/CD & Containerization** | 12 | 7 Selesai | 5 Terjadwal |
-| **Total** | **Master Backlog** | **230 Item** | **130 Selesai** | **100 Terjadwal** |
+| **Total** | **Master Backlog** | **230 Item** | **142 Selesai** | **88 Terjadwal** |
 
 ---
 
@@ -44,9 +44,9 @@
 - [x] **015.** Structured Quality Extractor (`{ height: 720, codec: 'hevc', container: 'mkv' }`)
 - [ ] **016.** Cloud Mirror Health Auto-Prober untuk mendeteksi link mati / Google Drive limit exceeded
 - [x] **017.** Episode Range Parser untuk judul batch (*"Episode 01 - 12 (End)"* $\rightarrow$ `{ start: 1, end: 12, isEnd: true }`)
-- [ ] **018.** Pemisah otomatis tabel Batch utuh (1 file zip) dengan tabel download satuan per episode
+- [x] **018.** Pemisah otomatis tabel Batch utuh (1 file zip) dengan tabel download satuan per episode
 - [x] **019.** Deteksi otomatis tag audio dan subtitle (*"Dual Audio"*, *"Multi-Sub"*, *"Indo Sub"*)
-- [ ] **020.** HTML Minifier Stripper sebelum dimuat ke Cheerio (hapus script, style, comments)
+- [x] **020.** HTML Minifier Stripper sebelum dimuat ke Cheerio (hapus script, style, comments)
 - [x] **021.** Ekstraktor ukuran file riil (*FileSize*) ke dalam format integer bytes
 - [ ] **022.** Dukungan header HTTP `ETag` dan `If-None-Match` (304 Not Modified) pada scraper
 - [x] **023.** Ekstraksi array judul alternatif / alias (*English Title, Romaji, Synonyms*)
@@ -73,7 +73,7 @@
 - [ ] **039.** API Key Authentication Opsional untuk batas request lebih tinggi
 - [ ] **040.** `GET /api/graphql` — Endpoint GraphQL untuk sub-query field yang spesifik
 - [ ] **041.** Webhook Dispatcher otomatis ke Discord / Telegram saat anime batch baru terbit
-- [ ] **042.** `POST /api/anime/bulk` — Endpoint batch resolver untuk mengambil 20 anime dalam 1 request
+- [x] **042.** `POST /api/anime/bulk` — Endpoint batch resolver untuk mengambil 20 anime dalam 1 request
 - [x] **043.** Format respons JSON Feed v1.1 di endpoint `/feed.json`
 - [x] **044.** Parameter format output kustom (`?format=csv` dan `?format=xml`)
 - [ ] **045.** Mock Sandbox Mode di Developer Hub saat server upstream sedang offline
@@ -103,7 +103,7 @@
 - [x] **064.** Halaman perbandingan anime *side-by-side* di rute `/compare`
 - [ ] **065.** Visualisasi garis waktu urutan menonton (*Watch Order Timeline*) untuk franchise panjang
 - [ ] **066.** Efek cahaya latar belakang dinamis (*Dominant Color Backdrop Glow*) berbasis gambar poster
-- [ ] **067.** Filter kombinasi multi-genre dengan logika `AND` / `OR`
+- [x] **067.** Filter kombinasi multi-genre dengan logika `AND` / `OR`
 - [x] **068.** Indikator status anime *Ongoing* dengan titik hijau berkedip (*Pulsing Dot*)
 - [x] **069.** Pengatur ukuran font teks sinopsis (*A- / A+*) untuk kenyamanan membaca
 - [x] **070.** Mode fokus membaca (*Reading Focus Mode*) yang menyembunyikan sidebar dan navigasi
@@ -126,7 +126,7 @@
 - [ ] **082.** PWA Background Sync untuk memperbarui status rilis anime yang disimpan
 - [ ] **083.** Caching halaman detail secara offline via Service Worker untuk 20 anime terakhir
 - [x] **084.** Indikator meteran penggunaan kuota penyimpanan LocalStorage / IndexedDB
-- [ ] **085.** Impor daftar tontonan langsung dari file ekspor XML/JSON MyAnimeList / AniList
+- [x] **085.** Impor daftar tontonan langsung dari file ekspor XML/JSON MyAnimeList / AniList
 - [x] **086.** Ekspor daftar tontonan ke format yang kompatibel dengan MyAnimeList
 - [ ] **087.** Banner ajakan instalasi PWA non-intrusif dengan penjelasan fitur offline
 - [ ] **088.** Indeks pencarian instan lokal (Minisearch) untuk mencari anime tersimpan saat offline total
@@ -146,9 +146,9 @@
 - [x] **097.** Salin tautan unduhan terfilter khusus satu provider tertentu (GDrive, Mega, Mediafire, Acefile)
 - [x] **098.** Salin tautan unduhan terfilter khusus satu resolusi tertentu (1080p, 720p, 480p)
 - [ ] **099.** Integrasi tombol *Click'n'Load* dan ekspor file `.dlc` untuk JDownloader 2
-- [ ] **100.** Label jenis format video dan subtitle (*Softsub MKV* vs *Hardsub MP4*)
-- [ ] **101.** Badge format kompresi video (*H.264 / AVC* vs *H.265 / HEVC 10-bit*)
-- [ ] **102.** Deteksi dan parser otomatis *Magnet Link / Torrent Hash* jika tersedia di rilisan batch
+- [x] **100.** Label jenis format video dan subtitle (*Softsub MKV* vs *Hardsub MP4*)
+- [x] **101.** Badge format kompresi video (*H.264 / AVC* vs *H.265 / HEVC 10-bit*)
+- [x] **102.** Deteksi dan parser otomatis *Magnet Link / Torrent Hash* jika tersedia di rilisan batch
 - [ ] **103.** Simulator alur panduan langkah unduh bagi pengguna pemula
 - [x] **104.** Area teks instan (*Quick-Select Textarea*) yang siap disalin dengan `Ctrl + A`
 - [ ] **105.** Deteksi otomatis link cloud mirror yang memerlukan login akun
@@ -256,9 +256,9 @@
 - [x] **182.** Pengatur kecepatan audio TTS pembaca sinopsis (0.75x, 1x, 1.25x, 1.5x)
 - [x] **183.** Mode tema kontras tinggi (*OLED High-Contrast Black*) untuk pengguna dengan gangguan penglihatan
 - [x] **184.** Cincin fokus keyboard kontras tinggi (*Focus-Visible Ring*) pada seluruh elemen interaktif
-- [ ] **185.** Kepatuhan aturan mode hemat gerak sistem operasi (`prefers-reduced-motion: reduce`)
-- [ ] **186.** Standar rasio kontras warna teks minimum 7:1 sesuai panduan WCAG AAA
-- [ ] **187.** Area sentuh minimum tombol pada perangkat mobile sebesar 48x48 piksel
+- [x] **185.** Kepatuhan aturan mode hemat gerak sistem operasi (`prefers-reduced-motion: reduce`)
+- [x] **186.** Standar rasio kontras warna teks minimum 7:1 sesuai panduan WCAG AAA
+- [x] **187.** Area sentuh minimum tombol pada perangkat mobile sebesar 48x48 piksel
 - [x] **188.** Label teks alternatif deskriptif pada seluruh elemen grafis dan ikon SVG
 
 ---
@@ -270,7 +270,7 @@
 - [x] **191.** Pencegahan kedipan tema (*Theme Flashing FOUC*) menggunakan inline script head
 - [ ] **192.** Pengalih bahasa antarmuka (Bahasa Indonesia & English)
 - [x] **193.** Pilihan tema aksen warna kustom (Emerald, Violet, Sunset Amber, Rose, Cyberpunk Cyan)
-- [ ] **194.** Format penanggalan rilis anime terlokalisasi (misal *"18 Agustus 2026"*)
+- [x] **194.** Format penanggalan rilis anime terlokalisasi (misal *"18 Agustus 2026"*)
 - [x] **195.** Konversi penulisan angka desimal skor dan separator ribuan sesuai lokal Indonesia
 - [x] **196.** Terjemahan otomatis istilah genre ke bahasa Indonesia (misal: *Sci-Fi* $\rightarrow$ *Fiksi Ilmiah*)
 - [ ] **197.** Pengaturan opsi tema AMOLED Black murni untuk layar smartphone hemat baterai
@@ -284,7 +284,7 @@
 
 ## 🧪 Pilar 12: Testing, QA & Scraper Monitoring (16 Item)
 
-- [x] **203.** Unit test suite Vitest dengan 55 test case di 15 file pengujian
+- [x] **203.** Unit test suite Vitest dengan 60 test case di 17 file pengujian
 - [x] **204.** File mock HTML fixture untuk pengujian unit offline tanpa ketergantungan jaringan
 - [x] **205.** Suite pengujian ketahanan parser scraper (*Lazy Image, CJK Title, Entities, URL Resolver*)
 - [x] **206.** Konfigurasi linting ESLint ketat (0 error, 0 warning)

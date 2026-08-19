@@ -10,16 +10,24 @@ interface DownloadGroupProps {
   animeTitle?: string;
 }
 
-const renderResolutionBadge = (resolusi: string): JSX.Element => {
-  const isMkv = /mkv/i.test(resolusi);
-  const isMp4 = /mp4/i.test(resolusi);
-  const isBatch = /batch/i.test(resolusi);
+const renderResolutionBadge = (res: DownloadResolution): JSX.Element => {
+  const isMkv = res.container === "mkv" || /mkv/i.test(res.resolusi);
+  const isMp4 = res.container === "mp4" || /mp4/i.test(res.resolusi);
+  const isHevc = res.codec === "hevc" || /hevc|x265/i.test(res.resolusi);
+  const isSoftsub = res.subtitle_type === "softsub" || /softsub/i.test(res.resolusi);
+  const isHardsub = res.subtitle_type === "hardsub" || /hardsub/i.test(res.resolusi);
+  const isBatch = /batch/i.test(res.resolusi);
 
   return (
     <div className="flex flex-wrap items-center gap-1.5">
       <span className="inline-flex items-center gap-1.5 rounded-md bg-surface-muted px-2.5 py-1 font-mono text-xs font-bold tracking-wider text-ink border border-border">
-        {resolusi}
+        {res.resolusi}
       </span>
+      {isHevc && (
+        <span className="rounded bg-emerald-500/10 px-1.5 py-0.5 font-mono text-[10px] font-semibold text-emerald-400 border border-emerald-500/20">
+          HEVC 10-bit
+        </span>
+      )}
       {isMkv && (
         <span className="rounded bg-purple-500/10 px-1.5 py-0.5 font-mono text-[10px] font-semibold text-purple-400 border border-purple-500/20">
           MKV
@@ -28,6 +36,16 @@ const renderResolutionBadge = (resolusi: string): JSX.Element => {
       {isMp4 && (
         <span className="rounded bg-cyan-500/10 px-1.5 py-0.5 font-mono text-[10px] font-semibold text-cyan-400 border border-cyan-500/20">
           MP4
+        </span>
+      )}
+      {isSoftsub && (
+        <span className="rounded bg-indigo-500/10 px-1.5 py-0.5 font-mono text-[10px] font-semibold text-indigo-400 border border-indigo-500/20">
+          Softsub
+        </span>
+      )}
+      {isHardsub && (
+        <span className="rounded bg-amber-500/10 px-1.5 py-0.5 font-mono text-[10px] font-semibold text-amber-400 border border-amber-500/20">
+          Hardsub
         </span>
       )}
       {isBatch && (
@@ -155,7 +173,7 @@ const DownloadGroup = ({ group, animeTitle }: DownloadGroupProps): JSX.Element =
             {group.link_download.map((res: DownloadResolution, index: number) => (
               <div key={index} className="border-t border-border pt-5 first:border-0 first:pt-0">
                 <div className="flex flex-wrap items-center justify-between gap-2">
-                  {res.resolusi && renderResolutionBadge(res.resolusi)}
+                  {res.resolusi && renderResolutionBadge(res)}
                   <OpenAllLinksButton links={res.link} />
                 </div>
                 <div

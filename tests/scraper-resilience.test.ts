@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { cleanText, sanitizeQuery, parseEpisodeRange } from "@/services/scraper/sanitize";
+import { cleanText, sanitizeQuery, parseEpisodeRange, stripHtmlNoise } from "@/services/scraper/sanitize";
 import { getGenreIndonesian } from "@/utils/genre-dictionary";
 import { bestImage, resolveAssetUrl } from "@/services/scraper/parse-image";
 import { parseAnimeDetail } from "@/services/scraper/parse-detail";
@@ -132,5 +132,21 @@ describe("scraper sanitization and resilience", () => {
     expect(parseEpisodeRange("Attack on Titan The Final Season")).toEqual({
       isEnd: true,
     });
+  });
+
+  it("strips scripts, styles, and HTML comments before Cheerio DOM loading", () => {
+    const dirtyHtml = `
+      <div>
+        <script type="text/javascript">console.log("analytics tracking");</script>
+        <!-- WordPress Comment Block -->
+        <style>.sidebar { display: none; }</style>
+        <h1>Naruto Shippuden</h1>
+      </div>
+    `;
+    const cleaned = stripHtmlNoise(dirtyHtml);
+    expect(cleaned).not.toContain("<script");
+    expect(cleaned).not.toContain("<style");
+    expect(cleaned).not.toContain("<!--");
+    expect(cleaned).toContain("<h1>Naruto Shippuden</h1>");
   });
 });

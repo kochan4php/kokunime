@@ -2,6 +2,7 @@ import upstream from "@/config/upstream";
 import { cached } from "@/services/cache";
 import { load } from "cheerio";
 import { UPSTREAM_URL } from "./constants";
+import { stripHtmlNoise } from "./sanitize";
 
 interface TaxonomyItem {
   name: string;
@@ -12,7 +13,7 @@ interface TaxonomyItem {
 const parseTaxonomy = async (path: string): Promise<TaxonomyItem[]> => {
   try {
     const response = await upstream.get(path);
-    const $ = load(response.data);
+    const $ = load(stripHtmlNoise(response.data));
     const items: TaxonomyItem[] = [];
     const element = $(".venser > .venutama");
 

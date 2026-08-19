@@ -6,6 +6,7 @@ const normalizeUrl = (raw?: string): string | undefined => {
   if (!raw) return undefined;
   const trimmed = raw.trim();
   if (/^(javascript|data|vbscript|file):/i.test(trimmed)) return undefined;
+  if (/^magnet:\?/i.test(trimmed)) return trimmed;
   if (/^https?:\/\//i.test(trimmed)) return trimmed;
   if (trimmed.startsWith("//")) return `https:${trimmed}`;
   return undefined;
@@ -50,7 +51,9 @@ export function getDownloadLinks(
               const url = normalizeUrl($(aEl).attr("href"));
               const platform = cleanText($(aEl).text());
               if (url && platform) {
-                temp_dl.push({ platform, url });
+                const is_torrent =
+                  /^magnet:\?/i.test(url) || /\.torrent\b/i.test(url) || /torrent|magnet/i.test(platform);
+                temp_dl.push({ platform, url, is_torrent });
               }
             });
 
@@ -64,7 +67,20 @@ export function getDownloadLinks(
               : /av1/i.test(resolusi)
                 ? "av1"
                 : undefined;
+          const codec_label =
+            codec === "hevc"
+              ? "H.265 / HEVC"
+              : codec === "h264"
+                ? "H.264 / AVC"
+                : codec === "av1"
+                  ? "AV1"
+                  : undefined;
           const container = /mkv/i.test(resolusi) ? "mkv" : /mp4/i.test(resolusi) ? "mp4" : undefined;
+          const subtitle_type = /softsub/i.test(resolusi)
+            ? "softsub"
+            : /hardsub/i.test(resolusi)
+              ? "hardsub"
+              : undefined;
           const sizeInfo = parseBytes(resolusi);
 
           if (temp_dl.length > 0 || resolusi) {
@@ -72,7 +88,9 @@ export function getDownloadLinks(
               resolusi,
               height,
               codec,
+              codec_label,
               container,
+              subtitle_type,
               size_bytes: sizeInfo.bytes,
               size_formatted: sizeInfo.formatted,
               link: temp_dl,
@@ -81,7 +99,11 @@ export function getDownloadLinks(
         });
 
       const title = cleanText($(el).find(titleClass).text());
-      const obj: DownloadOption = { title, link_download: temp_res };
+      const is_batch =
+        /\b(batch|paket|lengkap|all episode|bd|bluray)\b/i.test(title) ||
+        /episode\s*\d+\s*[-–—~]\s*\d+/i.test(title) ||
+        !/episode\s*\d+\b/i.test(title);
+      const obj: DownloadOption = { title, is_batch, link_download: temp_res };
 
       if (temp_res.length === 0) {
         const redirectLinks: DownloadTarget[] = [];
@@ -92,7 +114,9 @@ export function getDownloadLinks(
             const url = normalizeUrl($(a).attr("href"));
             const platform = cleanText($(a).text()) || "Buka link";
             if (url) {
-              redirectLinks.push({ platform, url });
+              const is_torrent =
+                /^magnet:\?/i.test(url) || /\.torrent\b/i.test(url) || /torrent|magnet/i.test(platform);
+              redirectLinks.push({ platform, url, is_torrent });
             }
           });
         if (redirectLinks.length > 0) {

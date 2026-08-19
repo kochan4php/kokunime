@@ -3,6 +3,7 @@ import { AnimePage } from "@/interfaces";
 import { load } from "cheerio";
 import { formatAnimeData } from "./parse";
 import { parsePagination } from "./parse-pagination";
+import { stripHtmlNoise } from "./sanitize";
 
 export async function getAnimePerPage(page: number): Promise<AnimePage> {
   try {
@@ -12,7 +13,7 @@ export async function getAnimePerPage(page: number): Promise<AnimePage> {
     if (page > 1 && !finalUrl.includes(`/page/${page}`)) {
       return { anime: [], pagination: null };
     }
-    const $ = load(response.data);
+    const $ = load(stripHtmlNoise(response.data));
     const anime = formatAnimeData($);
     const pagination = parsePagination($) ?? {
       first_page_endpoint: "page/1",

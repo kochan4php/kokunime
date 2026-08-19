@@ -221,13 +221,117 @@ ${entries}
   URL.revokeObjectURL(url);
 };
 
+export function slugifyTitle(title: string): string {
+  const base = title
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+  return base ? `${base}-batch-sub-indo` : `anime-${Date.now()}`;
+}
+
+export function parseMalXml(xmlText: string): BookmarkItem[] {
+  const items: BookmarkItem[] = [];
+  const animeBlocks = xmlText.match(/<anime>[\s\S]*?<\/anime>/gi) || [];
+
+  for (const block of animeBlocks) {
+    const titleMatch =
+      block.match(/<series_title><!\[CDATA\[(.*?)\]\]><\/series_title>/i) ||
+      block.match(/<series_title>(.*?)<\/series_title>/i);
+    const statusMatch = block.match(/<my_status>(.*?)<\/my_status>/i);
+    const scoreMatch = block.match(/<my_score>(.*?)<\/my_score>/i);
+
+    const title = titleMatch ? titleMatch[1].trim() : "";
+    if (!title) continue;
+
+    let status: BookmarkStatus = "plan";
+    const statusStr = (statusMatch ? statusMatch[1].trim() : "").toLowerCase();
+    if (statusStr === "watching" || statusStr === "1") status = "watching";
+    else if (statusStr === "completed" || statusStr === "2") status = "completed";
+    else if (statusStr === "plan to watch" || statusStr === "6") status = "plan";
+
+    const rawScore = parseInt(scoreMatch ? scoreMatch[1].trim() : "0", 10);
+    const rating = rawScore >= 1 && rawScore <= 10 ? rawScore : undefined;
+
+    items.push({
+      slug: slugifyTitle(title),
+      title,
+      status,
+      rating,
+      addedAt: Date.now(),
+    });
+  }
+
+  return items;
+}
+
+export function parseAniListJson(jsonText: string): BookmarkItem[] {
+  try {
+    const data = JSON.parse(jsonText);
+    const entries = Array.isArray(data)
+      ? data
+      : (data?.data?.MediaListCollection?.lists?.flatMap((l: { entries?: unknown[] }) => l.entries) ?? []);
+    const items: BookmarkItem[] = [];
+
+    for (const entry of entries) {
+      const title =
+        entry?.media?.title?.english ||
+        entry?.media?.title?.userPreferred ||
+        entry?.media?.title?.romaji ||
+        entry?.title;
+      if (!title) continue;
+
+      let status: BookmarkStatus = "plan";
+      const s = String(entry.status || "").toUpperCase();
+      if (s === "CURRENT") status = "watching";
+      else if (s === "COMPLETED") status = "completed";
+      else if (s === "PLANNING") status = "plan";
+
+      const score =
+        typeof entry.score === "number" && entry.score > 0
+          ? entry.score > 10
+            ? Math.round(entry.score / 10)
+            : Math.round(entry.score)
+          : undefined;
+
+      items.push({
+        slug: slugifyTitle(title),
+        title,
+        status,
+        rating: score,
+        image: entry?.media?.coverImage?.large || entry?.media?.coverImage?.medium,
+        addedAt: Date.now(),
+      });
+    }
+
+    return items;
+  } catch {
+    return [];
+  }
+}
+
 export const importBookmarksJson = async (file: File): Promise<number> => {
   const storage = getStorage();
   if (!storage) return 0;
   try {
     const text = await file.text();
-    const imported = JSON.parse(text) as BookmarkItem[];
-    if (!Array.isArray(imported)) return 0;
+    let imported: BookmarkItem[] = [];
+
+    if (file.name.endsWith(".xml") || text.trim().startsWith("<") || text.includes("<myanimelist>")) {
+      imported = parseMalXml(text);
+    } else {
+      try {
+        const parsed = JSON.parse(text);
+        if (Array.isArray(parsed) && parsed.length > 0 && parsed[0].slug && parsed[0].title) {
+          imported = parsed as BookmarkItem[];
+        } else {
+          imported = parseAniListJson(text);
+        }
+      } catch {
+        imported = [];
+      }
+    }
+
+    if (!Array.isArray(imported) || imported.length === 0) return 0;
 
     const current = getBookmarks();
     const map = new Map<string, BookmarkItem>();
@@ -239,12 +343,17 @@ export const importBookmarksJson = async (file: File): Promise<number> => {
         if (!map.has(item.slug)) {
           addedCount++;
         }
+        const existing = map.get(item.slug);
         map.set(item.slug, {
           slug: item.slug,
           title: item.title,
-          image: item.image,
-          release: item.release,
-          addedAt: item.addedAt || Date.now(),
+          image: item.image || existing?.image,
+          release: item.release || existing?.release,
+          status: item.status || existing?.status,
+          rating: item.rating ?? existing?.rating,
+          notes: item.notes || existing?.notes,
+          folder: item.folder || existing?.folder,
+          addedAt: item.addedAt || existing?.addedAt || Date.now(),
         });
       }
     });

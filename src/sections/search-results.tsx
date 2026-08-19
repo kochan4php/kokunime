@@ -14,7 +14,8 @@ type SortOrder = "default" | "asc" | "desc";
 
 const SearchResults = ({ anime }: SearchResultsProps): JSX.Element => {
   const [sortBy, setSortBy] = useState<SortOrder>("default");
-  const [selectedGenre, setSelectedGenre] = useState<string>("all");
+  const [selectedGenres, setSelectedGenres] = useState<string[]>([]);
+  const [genreLogic, setGenreLogic] = useState<"AND" | "OR">("OR");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
 
   const allGenres = useMemo(() => {
@@ -27,19 +28,33 @@ const SearchResults = ({ anime }: SearchResultsProps): JSX.Element => {
     return Array.from(set).sort();
   }, [anime]);
 
+  const toggleGenre = (genre: string) => {
+    if (genre === "all") {
+      setSelectedGenres([]);
+      return;
+    }
+    setSelectedGenres((prev) =>
+      prev.includes(genre) ? prev.filter((g) => g !== genre) : [...prev, genre],
+    );
+  };
+
   const filteredAnime = useMemo(() => {
     let result = anime;
-    if (selectedGenre !== "all") {
-      result = result.filter((item) =>
-        item.genres?.some((g) => g.trim().toLowerCase() === selectedGenre.toLowerCase()),
-      );
+    if (selectedGenres.length > 0) {
+      result = result.filter((item) => {
+        const itemGenres = (item.genres || []).map((g) => g.toLowerCase());
+        if (genreLogic === "AND") {
+          return selectedGenres.every((g) => itemGenres.includes(g.toLowerCase()));
+        }
+        return selectedGenres.some((g) => itemGenres.includes(g.toLowerCase()));
+      });
     }
     if (sortBy === "default") return result;
     return [...result].sort((a, b) => {
       const cmp = a.title.localeCompare(b.title, "id", { sensitivity: "base" });
       return sortBy === "asc" ? cmp : -cmp;
     });
-  }, [anime, selectedGenre, sortBy]);
+  }, [anime, selectedGenres, genreLogic, sortBy]);
 
   if (anime.length === 0) {
     return (
@@ -55,7 +70,7 @@ const SearchResults = ({ anime }: SearchResultsProps): JSX.Element => {
         <div className="flex flex-wrap items-center justify-between gap-3">
           <span className="font-mono text-xs text-ink-muted">
             Ditemukan <strong className="text-ink">{filteredAnime.length}</strong> anime
-            {selectedGenre !== "all" && ` (filter: ${selectedGenre})`}
+            {selectedGenres.length > 0 && ` (filter: ${selectedGenres.join(genreLogic === "AND" ? " + " : " / ")})`}
           </span>
 
           <div className="flex flex-wrap items-center gap-3">
@@ -125,33 +140,69 @@ const SearchResults = ({ anime }: SearchResultsProps): JSX.Element => {
         </div>
 
         {allGenres.length > 1 && (
-          <div className="flex flex-wrap items-center gap-1.5">
-            <span className="font-mono text-[11px] uppercase tracking-wider text-ink-muted">Genre:</span>
-            <button
-              type="button"
-              onClick={() => setSelectedGenre("all")}
-              className={`rounded-full px-2.5 py-0.5 font-mono text-xs transition-all ${
-                selectedGenre === "all"
-                  ? "bg-accent/15 font-semibold text-accent border border-accent/40"
-                  : "bg-surface text-ink-muted hover:text-ink border border-border"
-              }`}
-            >
-              Semua ({anime.length})
-            </button>
-            {allGenres.map((genre) => (
-              <button
-                key={genre}
-                type="button"
-                onClick={() => setSelectedGenre(genre)}
-                className={`rounded-full px-2.5 py-0.5 font-mono text-xs transition-all ${
-                  selectedGenre === genre
-                    ? "bg-accent/15 font-semibold text-accent border border-accent/40"
-                    : "bg-surface text-ink-muted hover:text-ink border border-border"
-                }`}
-              >
-                {genre}
-              </button>
-            ))}
+          <div className="flex flex-col gap-2">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <div className="flex flex-wrap items-center gap-1.5">
+                <span className="font-mono text-[11px] uppercase tracking-wider text-ink-muted">Genre:</span>
+                <button
+                  type="button"
+                  onClick={() => toggleGenre("all")}
+                  className={`rounded-full px-2.5 py-0.5 font-mono text-xs transition-all cursor-pointer ${
+                    selectedGenres.length === 0
+                      ? "bg-accent/15 font-semibold text-accent border border-accent/40"
+                      : "bg-surface text-ink-muted hover:text-ink border border-border"
+                  }`}
+                >
+                  Semua ({anime.length})
+                </button>
+              </div>
+
+              {selectedGenres.length > 1 && (
+                <div className="flex items-center gap-1">
+                  <span className="font-mono text-[10px] text-ink-muted">Logika:</span>
+                  <div className="flex items-center rounded-full border border-border bg-surface p-0.5">
+                    <button
+                      type="button"
+                      onClick={() => setGenreLogic("OR")}
+                      className={`rounded-full px-2 py-0.5 font-mono text-[10px] font-bold cursor-pointer transition-all ${
+                        genreLogic === "OR" ? "bg-accent text-(--accent-ink)" : "text-ink-muted hover:text-ink"
+                      }`}
+                    >
+                      OR (Salah Satu)
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setGenreLogic("AND")}
+                      className={`rounded-full px-2 py-0.5 font-mono text-[10px] font-bold cursor-pointer transition-all ${
+                        genreLogic === "AND" ? "bg-accent text-(--accent-ink)" : "text-ink-muted hover:text-ink"
+                      }`}
+                    >
+                      AND (Semua)
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <div className="flex flex-wrap items-center gap-1.5">
+              {allGenres.map((genre) => {
+                const isSelected = selectedGenres.includes(genre);
+                return (
+                  <button
+                    key={genre}
+                    type="button"
+                    onClick={() => toggleGenre(genre)}
+                    className={`rounded-full px-2.5 py-0.5 font-mono text-xs transition-all cursor-pointer ${
+                      isSelected
+                        ? "bg-accent/15 font-semibold text-accent border border-accent/40"
+                        : "bg-surface text-ink-muted hover:text-ink border border-border"
+                    }`}
+                  >
+                    {isSelected ? `✓ ${genre}` : genre}
+                  </button>
+                );
+              })}
+            </div>
           </div>
         )}
       </div>

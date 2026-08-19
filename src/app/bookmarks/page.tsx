@@ -232,11 +232,11 @@ const BookmarksPage = (): JSX.Element => {
                   Export MAL .xml
                 </button>
                 <label
-                  title="Import backup bookmark dari file JSON"
+                  title="Import backup bookmark dari file JSON, AniList JSON, atau MyAnimeList XML"
                   className="cursor-pointer rounded-full border border-border bg-surface px-3 py-1.5 font-mono text-xs font-semibold text-ink-muted transition-all hover:border-accent hover:text-ink active:scale-95"
                 >
-                  Import .json
-                  <input type="file" accept=".json" onChange={handleImport} className="hidden" />
+                  Import JSON / MAL XML
+                  <input type="file" accept=".json,.xml" onChange={handleImport} className="hidden" />
                 </label>
               </>
             )}

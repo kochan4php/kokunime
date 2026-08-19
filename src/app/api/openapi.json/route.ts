@@ -152,6 +152,34 @@ export async function GET(): Promise<NextResponse> {
           },
         },
       },
+      "/api/anime/bulk": {
+        post: {
+          summary: "Resolve multiple anime details in bulk",
+          description: "Accepts an array of anime slugs (up to 20) and returns detailed metadata for each in a single request.",
+          requestBody: {
+            required: true,
+            content: {
+              "application/json": {
+                schema: {
+                  type: "object",
+                  properties: {
+                    slugs: {
+                      type: "array",
+                      items: { type: "string" },
+                      example: ["naruto-batch", "bleach-batch"],
+                    },
+                  },
+                },
+              },
+            },
+          },
+          responses: {
+            "200": {
+              description: "Array of anime detail results",
+            },
+          },
+        },
+      },
       "/api/anime/{slug}/download": {
         get: {
           summary: "Get direct download links",

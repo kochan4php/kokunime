@@ -8,6 +8,11 @@ import { JSX, useMemo, useState } from "react";
 const DownloadSection = ({ anime }: { anime: AnimeDetail }): JSX.Element => {
   const downloads = useMemo(() => anime.download ?? [], [anime.download]);
   const [selectedRes, setSelectedRes] = useState<string>("all");
+  const [typeFilter, setTypeFilter] = useState<"all" | "batch" | "episode">("all");
+
+  const hasBatch = useMemo(() => downloads.some((g) => g.is_batch), [downloads]);
+  const hasEpisode = useMemo(() => downloads.some((g) => g.is_batch === false), [downloads]);
+  const showTypeFilter = hasBatch && hasEpisode;
 
   const availableResolutions = useMemo(() => {
     const set = new Set<string>();
@@ -20,14 +25,21 @@ const DownloadSection = ({ anime }: { anime: AnimeDetail }): JSX.Element => {
   }, [downloads]);
 
   const filteredDownloads = useMemo(() => {
-    if (selectedRes === "all") return downloads;
-    return downloads
+    let list = downloads;
+    if (typeFilter === "batch") {
+      list = list.filter((g) => g.is_batch);
+    } else if (typeFilter === "episode") {
+      list = list.filter((g) => g.is_batch === false);
+    }
+
+    if (selectedRes === "all") return list;
+    return list
       .map((g) => ({
         ...g,
         link_download: g.link_download.filter((r) => r.resolusi?.trim() === selectedRes),
       }))
       .filter((g) => g.link_download.length > 0);
-  }, [downloads, selectedRes]);
+  }, [downloads, selectedRes, typeFilter]);
 
   // Never render an empty "Pilih Kualitas" section (e.g. an upstream parse
   // that produced no groups) — a header with nothing under it looks broken.
@@ -45,41 +57,81 @@ const DownloadSection = ({ anime }: { anime: AnimeDetail }): JSX.Element => {
             <h2 className="font-display text-2xl font-extrabold tracking-tight text-ink">Pilih Kualitas</h2>
           </div>
 
-          {availableResolutions.length > 1 && (
-            <div className="flex flex-wrap items-center gap-1.5">
-              <span className="font-mono text-[11px] uppercase tracking-wider text-ink-muted">Resolusi:</span>
-              <button
-                type="button"
-                onClick={() => setSelectedRes("all")}
-                className={`rounded-full px-3 py-1 font-mono text-xs transition-all ${
-                  selectedRes === "all"
-                    ? "border border-accent/40 bg-accent/15 font-bold text-accent"
-                    : "border border-border bg-surface text-ink-muted hover:text-ink"
-                }`}
-              >
-                Semua
-              </button>
-              {availableResolutions.map((res) => (
+          <div className="flex flex-wrap items-center gap-3">
+            {showTypeFilter && (
+              <div className="flex flex-wrap items-center gap-1">
                 <button
-                  key={res}
                   type="button"
-                  onClick={() => setSelectedRes(res)}
-                  className={`rounded-full px-3 py-1 font-mono text-xs transition-all ${
-                    selectedRes === res
+                  onClick={() => setTypeFilter("all")}
+                  className={`rounded-full px-2.5 py-0.5 font-mono text-xs transition-all ${
+                    typeFilter === "all"
                       ? "border border-accent/40 bg-accent/15 font-bold text-accent"
                       : "border border-border bg-surface text-ink-muted hover:text-ink"
                   }`}
                 >
-                  {res}
+                  Semua
                 </button>
-              ))}
-            </div>
-          )}
+                <button
+                  type="button"
+                  onClick={() => setTypeFilter("batch")}
+                  className={`rounded-full px-2.5 py-0.5 font-mono text-xs transition-all ${
+                    typeFilter === "batch"
+                      ? "border border-accent/40 bg-accent/15 font-bold text-accent"
+                      : "border border-border bg-surface text-ink-muted hover:text-ink"
+                  }`}
+                >
+                  📦 Batch
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setTypeFilter("episode")}
+                  className={`rounded-full px-2.5 py-0.5 font-mono text-xs transition-all ${
+                    typeFilter === "episode"
+                      ? "border border-accent/40 bg-accent/15 font-bold text-accent"
+                      : "border border-border bg-surface text-ink-muted hover:text-ink"
+                  }`}
+                >
+                  🎬 Satuan
+                </button>
+              </div>
+            )}
+
+            {availableResolutions.length > 1 && (
+              <div className="flex flex-wrap items-center gap-1.5">
+                <span className="font-mono text-[11px] uppercase tracking-wider text-ink-muted">Resolusi:</span>
+                <button
+                  type="button"
+                  onClick={() => setSelectedRes("all")}
+                  className={`rounded-full px-3 py-1 font-mono text-xs transition-all ${
+                    selectedRes === "all"
+                      ? "border border-accent/40 bg-accent/15 font-bold text-accent"
+                      : "border border-border bg-surface text-ink-muted hover:text-ink"
+                  }`}
+                >
+                  Semua
+                </button>
+                {availableResolutions.map((res) => (
+                  <button
+                    key={res}
+                    type="button"
+                    onClick={() => setSelectedRes(res)}
+                    className={`rounded-full px-3 py-1 font-mono text-xs transition-all ${
+                      selectedRes === res
+                        ? "border border-accent/40 bg-accent/15 font-bold text-accent"
+                        : "border border-border bg-surface text-ink-muted hover:text-ink"
+                    }`}
+                  >
+                    {res}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
       </Reveal>
       <div className="grid gap-6">
         {filteredDownloads.map((group: DownloadOption, index: number) => (
-          <Reveal key={`${group.title}-${selectedRes}-${index}`} delay={index * 80}>
+          <Reveal key={`${group.title}-${selectedRes}-${typeFilter}-${index}`} delay={index * 80}>
             <DownloadGroup group={group} animeTitle={anime.title} />
           </Reveal>
         ))}

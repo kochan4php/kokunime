@@ -3,13 +3,14 @@ import { Recommendation } from "@/interfaces";
 import { load } from "cheerio";
 import { UPSTREAM_URL } from "./constants";
 import { bestImage } from "./parse-image";
+import { stripHtmlNoise } from "./sanitize";
 
 export async function getRecommendations(): Promise<Recommendation[]> {
   try {
     // The recommendation widget ("Rekomendasi Maz'e") is empty on the
     // homepage — page 2+ carries it.
     const response = await upstream.get("/page/2/");
-    const $ = load(response.data);
+    const $ = load(stripHtmlNoise(response.data));
     const recommendedAnime: Recommendation[] = [];
     const element = $(".rekomf");
 

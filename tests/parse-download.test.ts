@@ -38,7 +38,9 @@ describe("getDownloadLinks", () => {
       </div></div></div>`,
     );
     const download = getDownloadLinks(evil, ".smokeddl", ".smokeurl", ".smokettl");
-    expect(download[0].link_download[0].link).toEqual([{ platform: "Aman", url: "https://example.com/ok.mp4" }]);
+    expect(download[0].link_download[0].link).toEqual([
+      { platform: "Aman", url: "https://example.com/ok.mp4", is_torrent: false },
+    ]);
   });
 
   it("surfaces the redirect link from the group title (PINDAH KE posts)", () => {
@@ -52,7 +54,11 @@ describe("getDownloadLinks", () => {
     const download = getDownloadLinks(redirect, ".smokeddlrh", ".smokeurlrh", ".smokettlrh");
     expect(download).toHaveLength(1);
     expect(download[0].link_download[0].link).toEqual([
-      { platform: "Gabriel DropOut BD Batch", url: "https://kusonime.com/gabriel-do-batch-sub-indo/" },
+      {
+        platform: "Gabriel DropOut BD Batch",
+        url: "https://kusonime.com/gabriel-do-batch-sub-indo/",
+        is_torrent: false,
+      },
     ]);
   });
 
