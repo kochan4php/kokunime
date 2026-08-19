@@ -1,4 +1,4 @@
-# 🗺️ Master Roadmap & Feature Backlog Kokunime (230+ Ide)
+﻿# 🗺️ Master Roadmap & Feature Backlog Kokunime (230+ Ide)
 
 > Dokumen acuan pengembangan menyeluruh untuk platform **Kokunime**. Mencakup arsitektur Scraping Engine, REST API publik, antarmuka Frontend, sistem PWA & Offline, Download Tools, optimasi Performa, SEO, Keamanan, Aksesibilitas (a11y), hingga Pipeline DevOps & Testing.
 
@@ -8,7 +8,7 @@
 
 | No | Pilar Arsitektur | Total Item | Status Selesai | Status Terjadwal |
 | :---: | :--- | :---: | :---: | :---: |
-| 1 | **Scraping Engine & Upstream Resilience** | 25 | 16 Selesai | 9 Terjadwal |
+| 1 | **Scraping Engine & Data Resilience** | 25 | 17 Selesai | 8 Terjadwal |
 | 2 | **Public REST API, OpenAPI & Feeds** | 20 | 16 Selesai | 4 Terjadwal |
 | 3 | **Frontend UI/UX, Animasi & Komponen** | 25 | 21 Selesai | 4 Terjadwal |
 | 4 | **Offline Intelligence, PWA & Local Storage** | 18 | 14 Selesai | 4 Terjadwal |
@@ -21,11 +21,11 @@
 | 11 | **Internationalization (i18n) & Theming** | 14 | 10 Selesai | 4 Terjadwal |
 | 12 | **Testing, QA & Scraper Monitoring** | 16 | 6 Selesai | 10 Terjadwal |
 | 13 | **DevOps, CI/CD & Containerization** | 12 | 8 Selesai | 4 Terjadwal |
-| **Total** | **Master Backlog** | **230 Item** | **153 Selesai** | **77 Terjadwal** |
+| **Total** | **Master Backlog** | **230 Item** | **154 Selesai** | **76 Terjadwal** |
 
 ---
 
-## 🛠️ Pilar 1: Scraping Engine, Parser & Upstream Resilience (25 Item)
+## 🛠️ Pilar 1: Scraping Engine, Parser & Data Resilience (25 Item)
 
 - [x] **001.** Arsitektur Scraper mandiri tanpa ketergantungan environment variable pihak ketiga
 - [x] **002.** Algoritma Auto-Retry Scraper dengan penanganan HTTP 429 dan 5xx
@@ -39,16 +39,18 @@
 - [x] **010.** Query Traversal Guard, Null-Byte, dan Control Characters Filter
 - [ ] **011.** HTML Streaming Parser via Cheerio Stream Mode untuk memangkas lonjakan memori V8
 - [ ] **012.** Heuristik Fallback DOM Selector saat markup class WordPress mengalami perubahan
+- [ ] **013.** Cloud Mirror Health Auto-Prober untuk mendeteksi link mati / Google Drive limit exceeded
+- [ ] **014.** Dukungan header HTTP `ETag` dan `If-None-Match` (304 Not Modified) pada scraper
 - [x] **015.** Structured Quality Extractor (`{ height: 720, codec: 'hevc', container: 'mkv' }`)
-- [ ] **016.** Cloud Mirror Health Auto-Prober untuk mendeteksi link mati / Google Drive limit exceeded
+- [ ] **016.** Ekstraksi profil Studio & Produser untuk tautan katalog anime per studio
 - [x] **017.** Episode Range Parser untuk judul batch (*"Episode 01 - 12 (End)"* $\rightarrow$ `{ start: 1, end: 12, isEnd: true }`)
 - [x] **018.** Pemisah otomatis tabel Batch utuh (1 file zip) dengan tabel download satuan per episode
 - [x] **019.** Deteksi otomatis tag audio dan subtitle (*"Dual Audio"*, *"Multi-Sub"*, *"Indo Sub"*)
 - [x] **020.** HTML Minifier Stripper sebelum dimuat ke Cheerio (hapus script, style, comments)
 - [x] **021.** Ekstraktor ukuran file riil (*FileSize*) ke dalam format integer bytes
-- [ ] **022.** Dukungan header HTTP `ETag` dan `If-None-Match` (304 Not Modified) pada scraper
+- [x] **022.** Deteksi format resolusi adaptif (1080p, 720p, 480p, 360p)
 - [x] **023.** Ekstraksi array judul alternatif / alias (*English Title, Romaji, Synonyms*)
-- [ ] **024.** Ekstraksi profil Studio & Produser untuk tautan katalog anime per studio
+- [ ] **024.** Deteksi dan normalisasi format penulisan season rilis
 - [x] **025.** Content Warning & Age Rating Detector (`PG-13`, `R-17+`, `R+ Mild Nudity`)
 
 ---
@@ -74,7 +76,7 @@
 - [x] **042.** `POST /api/anime/bulk` — Endpoint batch resolver untuk mengambil 20 anime dalam 1 request
 - [x] **043.** Format respons JSON Feed v1.1 di endpoint `/feed.json`
 - [x] **044.** Parameter format output kustom (`?format=csv` dan `?format=xml`)
-- [ ] **045.** Mock Sandbox Mode di Developer Hub saat server upstream sedang offline
+- [ ] **045.** Mock Sandbox Mode di Developer Hub saat server data sedang offline
 
 ---
 
@@ -185,7 +187,7 @@
 - [x] **128.** Partisi Edge Cache Netlify-Vary berdasarkan parameter query halaman
 - [x] **129.** Arsitektur token Vanilla CSS zero-runtime tanpa overhead kompilasi JavaScript
 - [ ] **130.** Prefetching rute client-side saat kursor mouse mendekati link (prediksi niat 200ms)
-- [x] **131.** Upstream Request Coalescing (*Singleflight Pattern*) untuk menggabungkan request konkuren
+- [x] **131.** Request Coalescing (*Singleflight Pattern*) untuk menggabungkan request konkuren
 - [ ] **132.** Virtualized Windowing Scroll untuk katalog dengan ratusan anime agar FPS stabil di 60fps
 - [ ] **133.** Critical CSS Inlining pada viewport atas untuk mencapai First Contentful Paint < 0.4s
 - [ ] **134.** Font Subsetting untuk memangkas ukuran file Google Fonts menjadi < 15 KB
@@ -227,9 +229,9 @@
 - [x] **160.** Header proteksi `Permissions-Policy: camera=(), microphone=(), geolocation=()`
 - [x] **161.** Header proteksi HSTS `Strict-Transport-Security` dengan max-age 2 tahun
 - [x] **162.** Filter pembersih Null-Byte, Path Traversal (`../`), dan karakter kontrol pada pencarian
-- [x] **163.** Pembatasan batas atas ukuran muatan respon upstream (*Maximum 10 MB Ceiling*)
+- [x] **163.** Pembatasan batas atas ukuran muatan respon (*Maximum 10 MB Ceiling*)
 - [x] **164.** Sanitasi karakter input terhadap potensi mutasi XSS
-- [x] **165.** Proteksi SSRF (*Server-Side Request Forgery*) dengan validasi whitelist domain upstream
+- [x] **165.** Proteksi SSRF (*Server-Side Request Forgery*) dengan validasi whitelist domain
 - [x] **166.** Penyamaran otomatis pesan error internal (*Stack Trace Masking*) di lingkungan produksi
 - [ ] **167.** Tautan jebakan bot tak kasat mata (*Honeypot Traps*) untuk memblokir crawler liar
 - [ ] **168.** Validasi header `Origin` dan `Sec-Fetch-Site` pada seluruh endpoint mutasi
@@ -287,7 +289,7 @@
 - [x] **205.** Suite pengujian ketahanan parser scraper (*Lazy Image, CJK Title, Entities, URL Resolver*)
 - [x] **206.** Konfigurasi linting ESLint ketat (0 error, 0 warning)
 - [x] **207.** Pengujian otomatis format ekspor backup bookmark JSON
-- [ ] **208.** GitHub Actions Daily Scheduled CI untuk memvalidasi kesehatan scraper upstream
+- [ ] **208.** GitHub Actions Daily Scheduled CI untuk memvalidasi kesehatan scraper
 - [ ] **209.** Suite End-to-End Visual Regression Testing menggunakan Playwright
 - [ ] **210.** Audit skor Lighthouse CI otomatis (Target: Performance 100, Accessibility 100, SEO 100)
 - [x] **211.** Benchmark suite untuk mengukur latensi pemrosesan parser Cheerio dalam milidetik
