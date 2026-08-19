@@ -155,7 +155,8 @@ export async function GET(): Promise<NextResponse> {
       "/api/anime/bulk": {
         post: {
           summary: "Resolve multiple anime details in bulk",
-          description: "Accepts an array of anime slugs (up to 20) and returns detailed metadata for each in a single request.",
+          description:
+            "Accepts an array of anime slugs (up to 20) and returns detailed metadata for each in a single request.",
           requestBody: {
             required: true,
             content: {

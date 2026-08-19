@@ -28,6 +28,24 @@
     -webkit-font-smoothing: antialiased;
   }
 
+  html[data-font="mono"] body {
+    font-family: var(--font-mono, monospace) !important;
+  }
+
+  html[data-font="serif"] body {
+    font-family: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif !important;
+  }
+
+  html[data-night-shift="true"]::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    background-color: rgba(255, 140, 0, 0.08);
+    mix-blend-mode: multiply;
+    z-index: 9999;
+  }
+
   ::selection {
     background: var(--accent);
     color: #fff;

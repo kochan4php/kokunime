@@ -1,6 +1,7 @@
 "use client";
 
 import DownloadGroup from "./download-group";
+import { DownloadGuideModal } from "./download-guide-modal";
 import Reveal from "@/components/reveal";
 import { AnimeDetail, DownloadOption } from "@/interfaces";
 import { JSX, useMemo, useState } from "react";
@@ -55,6 +56,7 @@ const DownloadSection = ({ anime }: { anime: AnimeDetail }): JSX.Element => {
               Download
             </span>
             <h2 className="font-display text-2xl font-extrabold tracking-tight text-ink">Pilih Kualitas</h2>
+            <DownloadGuideModal />
           </div>
 
           <div className="flex flex-wrap items-center gap-3">

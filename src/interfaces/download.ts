@@ -21,4 +21,3 @@ export interface DownloadTarget {
   url: string | undefined;
   is_torrent?: boolean;
 }
-

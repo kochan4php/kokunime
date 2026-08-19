@@ -79,4 +79,3 @@ export function stripHtmlNoise(html?: string | null): string {
     .replace(/<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi, "")
     .replace(/<!--[\s\S]*?-->/g, "");
 }
-

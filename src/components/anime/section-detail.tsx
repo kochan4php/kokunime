@@ -14,6 +14,10 @@ import { JSX } from "react";
 import BookmarkButton from "./bookmark-button";
 import ShareButton from "./share-button";
 
+import { WatchOrderTimeline } from "./watch-order-timeline";
+import { ThemeSongsPlayer } from "./theme-songs-player";
+import { EpisodeGallery } from "./episode-gallery";
+
 const SectionDetail = ({ anime, slug }: { anime: AnimeDetail; slug: string }): JSX.Element => (
   <section className="container px-4 pb-8 pt-12 md:pb-12 md:pt-16">
     <DetailToc />
@@ -44,6 +48,9 @@ const SectionDetail = ({ anime, slug }: { anime: AnimeDetail; slug: string }): J
         </div>
       </Reveal>
     </div>
+    <WatchOrderTimeline anime={anime} />
+    <ThemeSongsPlayer animeTitle={anime.title ?? ""} />
+    {anime.image && <EpisodeGallery title={anime.title ?? ""} posterImage={anime.image} />}
     <DownloadSection anime={anime} />
     <NewSeriesSection slug={slug} />
 

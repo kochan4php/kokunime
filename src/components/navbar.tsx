@@ -8,6 +8,8 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { JSX, useEffect, useState } from "react";
 
+import { I18nToggle } from "./i18n-toggle";
+
 const Navbar = (): JSX.Element => {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -70,6 +72,7 @@ const Navbar = (): JSX.Element => {
           >
             <span>🎲 Acak</span>
           </a>
+          <I18nToggle />
           <CommandPalette />
           <ThemeToggle />
           <MobileMenu open={open} onOpenChange={setOpen} isActive={isActive} />

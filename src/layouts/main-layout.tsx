@@ -7,8 +7,11 @@ import KeyboardNavigation from "@/components/keyboard-navigation";
 import OfflineIndicator from "@/components/offline-indicator";
 import { PwaInstallBanner } from "@/components/pwa-install-banner";
 
+import { HoneypotTrap } from "@/components/honeypot-trap";
+
 const MainLayout = ({ children }: ChildrenProps) => (
   <>
+    <HoneypotTrap />
     <a
       href="#konten"
       className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-50 focus:rounded-xl focus:bg-accent focus:px-4 focus:py-2 focus:font-display focus:text-sm focus:font-bold focus:text-(--accent-ink) focus:shadow-2xl focus:outline-none"

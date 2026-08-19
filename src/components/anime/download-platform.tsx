@@ -18,8 +18,13 @@ const getPlatformStyle = (name: string): string => {
   return "border-border bg-surface font-semibold text-ink hover:border-accent hover:bg-accent/10 hover:text-accent";
 };
 
+const requiresLogin = (name: string): boolean => {
+  return /acefile|krakenfiles|hxfile/i.test(name);
+};
+
 const DownloadPlatform = ({ name, url }: { name: string; url?: string }): JSX.Element => {
   const styleClass = getPlatformStyle(name);
+  const needLogin = requiresLogin(name);
 
   return (
     <div className="flex min-w-0 items-stretch gap-2">
@@ -27,9 +32,18 @@ const DownloadPlatform = ({ name, url }: { name: string; url?: string }): JSX.El
         href={url}
         target="_blank"
         rel="noopener noreferrer"
+        title={needLogin ? `${name} (Mungkin membutuhkan login akun)` : name}
         className={`group flex min-w-0 flex-1 items-center justify-center gap-2 rounded-full border px-3 py-2 text-sm transition-all duration-300 ${styleClass}`}
       >
         <span className="truncate">{name}</span>
+        {needLogin && (
+          <span
+            title="Penyedia ini mungkin memerlukan login akun"
+            className="rounded-full bg-amber-500/20 px-1.5 py-0.2 font-mono text-[9px] font-bold text-amber-500 uppercase"
+          >
+            🔑 Login
+          </span>
+        )}
         <span className="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-surface-muted text-ink-muted transition-all duration-300 group-hover:bg-accent group-hover:text-(--accent-ink)">
           <DownloadIcon className="h-3 w-3" />
         </span>

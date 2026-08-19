@@ -9,6 +9,9 @@ export const endpointSlug = (endpoint: string | undefined, prefix: string): stri
 
 export const animeSlug = (endpoint: string | undefined): string | null => {
   if (!endpoint) return null;
-  const clean = endpoint.replace(/^https?:\/\/[^/]+\//i, "").replace(/^\/+|\/+$/g, "").trim();
+  const clean = endpoint
+    .replace(/^https?:\/\/[^/]+\//i, "")
+    .replace(/^\/+|\/+$/g, "")
+    .trim();
   return clean || null;
 };

@@ -10,11 +10,24 @@ interface TrailerButtonProps {
 const TrailerButton = ({ trailerUrl, title }: TrailerButtonProps): JSX.Element | null => {
   const [isOpen, setIsOpen] = useState(false);
   const [isTheaterMode, setIsTheaterMode] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [resumeTime, setResumeTime] = useState<number | null>(null);
+  const [aspectRatio, setAspectRatio] = useState<"16/9" | "21/9" | "4/3">("16/9");
+  const [isPipMode, setIsPipMode] = useState(false);
   const dialogRef = useRef<HTMLDialogElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   if (!trailerUrl) return null;
 
+  const getStorageKey = () => `koku_trailer_ts_${encodeURIComponent(title)}`;
+
   const openModal = () => {
+    try {
+      const saved = localStorage.getItem(getStorageKey());
+      if (saved) {
+        setResumeTime(parseInt(saved, 10));
+      }
+    } catch {}
     setIsOpen(true);
     dialogRef.current?.showModal();
   };
@@ -24,9 +37,6 @@ const TrailerButton = ({ trailerUrl, title }: TrailerButtonProps): JSX.Element |
     setIsTheaterMode(false);
     dialogRef.current?.close();
   };
-
-  const [isFullscreen, setIsFullscreen] = useState(false);
-  const containerRef = useRef<HTMLDivElement>(null);
 
   const toggleFullscreen = () => {
     if (!document.fullscreenElement) {
@@ -38,13 +48,22 @@ const TrailerButton = ({ trailerUrl, title }: TrailerButtonProps): JSX.Element |
     }
   };
 
+  const cycleAspectRatio = () => {
+    setAspectRatio((prev) => (prev === "16/9" ? "21/9" : prev === "21/9" ? "4/3" : "16/9"));
+  };
+
+  const togglePip = () => {
+    setIsPipMode((prev) => !prev);
+    if (!isPipMode) setIsTheaterMode(false);
+  };
+
   return (
     <>
       <button
         type="button"
         onClick={openModal}
         title="Tonton Trailer Resmi (Shortcut: T)"
-        className="inline-flex items-center gap-1.5 rounded-full border border-accent/40 bg-accent/10 px-3 py-1.5 font-display text-xs font-bold text-accent transition-all duration-200 hover:bg-accent hover:text-(--accent-ink) active:scale-95"
+        className="inline-flex items-center gap-1.5 rounded-full border border-accent/40 bg-accent/10 px-3 py-1.5 font-display text-xs font-bold text-accent transition-all duration-200 hover:bg-accent hover:text-(--accent-ink) active:scale-95 cursor-pointer"
       >
         <span>▶</span>
         <span>Trailer</span>
@@ -61,24 +80,50 @@ const TrailerButton = ({ trailerUrl, title }: TrailerButtonProps): JSX.Element |
             toggleFullscreen();
           }
         }}
-        className={`backdrop:backdrop-blur-md m-auto w-full rounded-2xl border border-border bg-surface-solid p-0 text-ink shadow-2xl transition-all duration-300 ${
-          isTheaterMode ? "max-w-6xl backdrop:bg-black/95" : "max-w-3xl backdrop:bg-black/80"
+        className={`backdrop:backdrop-blur-md rounded-2xl border border-border bg-surface-solid p-0 text-ink shadow-2xl transition-all duration-300 ${
+          isPipMode
+            ? "fixed right-6 bottom-6 z-50 m-0 w-80 max-w-sm backdrop:bg-transparent shadow-[0_20px_50px_rgba(0,0,0,0.8)]"
+            : isTheaterMode
+              ? "m-auto w-full max-w-6xl backdrop:bg-black/95"
+              : "m-auto w-full max-w-3xl backdrop:bg-black/80"
         }`}
       >
         <div className="flex items-center justify-between border-b border-border px-4 py-3">
           <div className="flex items-center gap-2 sm:gap-3">
             <h3 className="line-clamp-1 font-display text-sm font-bold text-ink">Trailer: {title}</h3>
+            {!isPipMode && (
+              <button
+                type="button"
+                onClick={() => setIsTheaterMode((prev) => !prev)}
+                title="Perbesar layar dan redupkan suasana sekitar (Mode Bioskop)"
+                className={`rounded-full px-2.5 py-0.5 font-mono text-[10px] font-semibold transition-all cursor-pointer ${
+                  isTheaterMode
+                    ? "bg-amber-400 text-black font-bold shadow-md"
+                    : "border border-border bg-surface text-ink-muted hover:text-ink"
+                }`}
+              >
+                <span>{isTheaterMode ? "🎦 Bioskop: ON" : "🎦 Mode Bioskop"}</span>
+              </button>
+            )}
             <button
               type="button"
-              onClick={() => setIsTheaterMode((prev) => !prev)}
-              title="Perbesar layar dan redupkan suasana sekitar (Mode Bioskop)"
+              onClick={togglePip}
+              title="Mini Player Mengambang (Picture-in-Picture)"
               className={`rounded-full px-2.5 py-0.5 font-mono text-[10px] font-semibold transition-all cursor-pointer ${
-                isTheaterMode
-                  ? "bg-amber-400 text-black font-bold shadow-md"
+                isPipMode
+                  ? "bg-accent text-(--accent-ink) font-bold"
                   : "border border-border bg-surface text-ink-muted hover:text-ink"
               }`}
             >
-              <span>{isTheaterMode ? "🎦 Bioskop: ON" : "🎦 Mode Bioskop"}</span>
+              <span>{isPipMode ? "🔲 Mode Normal" : "🔲 PiP"}</span>
+            </button>
+            <button
+              type="button"
+              onClick={cycleAspectRatio}
+              title="Ganti Rasio Aspek Video (16:9 / 21:9 / 4:3)"
+              className="rounded-full border border-border bg-surface px-2.5 py-0.5 font-mono text-[10px] font-semibold text-ink-muted hover:text-ink transition-colors cursor-pointer"
+            >
+              <span>📐 {aspectRatio}</span>
             </button>
             <button
               type="button"
@@ -97,6 +142,11 @@ const TrailerButton = ({ trailerUrl, title }: TrailerButtonProps): JSX.Element |
             >
               <span>↗ YouTube</span>
             </a>
+            {resumeTime && resumeTime > 5 && (
+              <span className="hidden md:inline-block rounded-full bg-accent/15 border border-accent/30 px-2 py-0.5 font-mono text-[10px] text-accent">
+                Resume {Math.floor(resumeTime / 60)}:{(resumeTime % 60).toString().padStart(2, "0")}
+              </span>
+            )}
           </div>
           <button
             type="button"
@@ -107,7 +157,12 @@ const TrailerButton = ({ trailerUrl, title }: TrailerButtonProps): JSX.Element |
             ✕
           </button>
         </div>
-        <div ref={containerRef} className="relative aspect-video w-full bg-black">
+        <div
+          ref={containerRef}
+          className={`relative w-full bg-black ${
+            aspectRatio === "21/9" ? "aspect-21/9" : aspectRatio === "4/3" ? "aspect-4/3" : "aspect-video"
+          }`}
+        >
           {isOpen && (
             <iframe
               src={trailerUrl}
@@ -117,6 +172,18 @@ const TrailerButton = ({ trailerUrl, title }: TrailerButtonProps): JSX.Element |
               className="h-full w-full border-0"
             />
           )}
+        </div>
+        <div className="flex flex-wrap items-center justify-between border-t border-border px-4 py-2 text-xs font-mono text-ink-muted">
+          <div className="flex items-center gap-3">
+            <span>Pintasan:</span>
+            <span>
+              <kbd className="rounded bg-surface px-1.5 py-0.5 font-bold">F</kbd> Layar Penuh
+            </span>
+            <span>
+              <kbd className="rounded bg-surface px-1.5 py-0.5 font-bold">Esc</kbd> Tutup
+            </span>
+          </div>
+          <span className="hidden sm:inline">Subtitle: ID / JP Audio • Multi-Resolution</span>
         </div>
       </dialog>
     </>

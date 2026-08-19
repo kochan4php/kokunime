@@ -33,9 +33,7 @@ const SearchResults = ({ anime }: SearchResultsProps): JSX.Element => {
       setSelectedGenres([]);
       return;
     }
-    setSelectedGenres((prev) =>
-      prev.includes(genre) ? prev.filter((g) => g !== genre) : [...prev, genre],
-    );
+    setSelectedGenres((prev) => (prev.includes(genre) ? prev.filter((g) => g !== genre) : [...prev, genre]));
   };
 
   const filteredAnime = useMemo(() => {

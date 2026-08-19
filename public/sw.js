@@ -1,6 +1,6 @@
-const CACHE = "kokunime-v6";
-const NAV_FRESH_MS = 60 * 60 * 1000; // serve cached navigations only within 1h
-const PRECACHE_URLS = ["/", "/bookmarks", "/offline", "/manifest.webmanifest"];
+const CACHE = "kokunime-v7";
+const OFFLINE_URL = "/offline";
+const PRECACHE_URLS = [OFFLINE_URL, "/manifest.webmanifest", "/icon.svg"];
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
@@ -24,44 +24,54 @@ self.addEventListener("fetch", (event) => {
   const { request } = event;
   if (request.method !== "GET") return;
 
-  // Images are already cached by the browser via the image optimizer's HTTP cache.
-  if (request.url.includes("/_next/image")) return;
+  const url = new URL(request.url);
 
-  if (request.mode === "navigate") {
-    event.respondWith(
-      caches.match(request).then((cached) => {
-        // Repeat visit within the freshness window: serve instantly from cache.
-        // Older than that (or missing): network, then refresh the cache entry.
-        const fresh = cached && Date.now() - new Date(cached.headers.get("date") || 0).getTime() < NAV_FRESH_MS;
-        if (fresh) return cached;
-
-        const fetched = fetch(request)
-          .then((response) => {
-            if (response.ok) {
-              const copy = response.clone();
-              caches.open(CACHE).then((cache) => cache.put(request, copy));
-            }
-            return response;
-          })
-          .catch(() => cached || caches.match("/offline") || caches.match("/bookmarks") || caches.match("/"));
-        return fetched;
-      }),
-    );
+  // Dynamic endpoints, APIs, RSC payloads, and image optimizers must NEVER be intercepted by SW cache.
+  if (
+    url.pathname.startsWith("/api/") ||
+    url.pathname.startsWith("/_next/image") ||
+    url.searchParams.has("_rsc") ||
+    request.headers.get("RSC") === "1"
+  ) {
     return;
   }
 
-  event.respondWith(
-    caches.match(request).then((cached) => {
-      const fetched = fetch(request)
+  // Navigation requests: NETWORK-FIRST with offline detail caching
+  // Always fetch live data on normal reload. When successful, cache /anime/[slug] for offline viewing.
+  // If completely offline, serve the cached anime page or /offline fallback.
+  if (request.mode === "navigate") {
+    event.respondWith(
+      fetch(request)
         .then((response) => {
-          if (response.ok) {
+          if (response.ok && url.pathname.startsWith("/anime/")) {
             const copy = response.clone();
             caches.open(CACHE).then((cache) => cache.put(request, copy));
           }
           return response;
         })
-        .catch(() => cached);
-      return cached || fetched;
-    }),
-  );
+        .catch(async () => {
+          const cached = await caches.match(request);
+          if (cached) return cached;
+          return caches.match(OFFLINE_URL);
+        }),
+    );
+    return;
+  }
+
+  // Static immutable assets (_next/static/...) -> Stale-while-revalidate / Cache-first
+  if (url.pathname.startsWith("/_next/static/")) {
+    event.respondWith(
+      caches.match(request).then((cached) => {
+        if (cached) return cached;
+        return fetch(request).then((response) => {
+          if (response.ok) {
+            const copy = response.clone();
+            caches.open(CACHE).then((cache) => cache.put(request, copy));
+          }
+          return response;
+        });
+      }),
+    );
+    return;
+  }
 });

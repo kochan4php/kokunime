@@ -16,7 +16,7 @@ import {
 } from "@/utils/bookmarks";
 import { HistoryItem, clearAllHistory, getHistory, subscribeHistory } from "@/utils/history";
 import Link from "next/link";
-import { JSX, useMemo, useState, useSyncExternalStore } from "react";
+import { JSX, useEffect, useMemo, useState, useSyncExternalStore } from "react";
 
 const SERVER_BOOKMARKS: BookmarkItem[] = [];
 const SERVER_HISTORY: HistoryItem[] = [];
@@ -26,6 +26,38 @@ const BookmarksPage = (): JSX.Element => {
   const [statusFilter, setStatusFilter] = useState<"all" | BookmarkStatus>("all");
   const [folderFilter, setFolderFilter] = useState<string>("all");
   const [filterQuery, setFilterQuery] = useState("");
+  const [shareCopied, setShareCopied] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const hash = window.location.hash;
+    if (hash.startsWith("#sync=")) {
+      try {
+        const raw = decodeURIComponent(atob(hash.replace("#sync=", "")));
+        const items = JSON.parse(raw);
+        if (Array.isArray(items) && items.length > 0) {
+          const current = getBookmarks();
+          const merged = [...items, ...current.filter((c) => !items.some((i) => i.slug === c.slug))];
+          localStorage.setItem("kokunime_bookmarks", JSON.stringify(merged));
+          window.location.hash = "";
+          alert(`Berhasil mensinkronkan ${items.length} anime dari cloud link!`);
+          window.location.reload();
+        }
+      } catch {}
+    }
+  }, []);
+
+  const copySyncLink = () => {
+    try {
+      const saved = localStorage.getItem("kokunime_bookmarks") || "[]";
+      const b64 = btoa(encodeURIComponent(saved));
+      const url = `${window.location.origin}/bookmarks#sync=${b64}`;
+      navigator.clipboard.writeText(url).then(() => {
+        setShareCopied(true);
+        setTimeout(() => setShareCopied(false), 2000);
+      });
+    } catch {}
+  };
 
   const bookmarks = useSyncExternalStore(subscribeBookmarks, getBookmarks, () => SERVER_BOOKMARKS);
 
@@ -52,14 +84,15 @@ const BookmarksPage = (): JSX.Element => {
     const q = filterQuery.trim().toLowerCase();
     if (!q) return true;
     const searchTerms = q.split(/\s+/).filter(Boolean);
-    const searchableText = `${item.title} ${(item as { notes?: string }).notes || ""} ${(item as { folder?: string }).folder || ""} ${item.slug}`.toLowerCase();
+    const searchableText =
+      `${item.title} ${(item as { notes?: string }).notes || ""} ${(item as { folder?: string }).folder || ""} ${item.slug}`.toLowerCase();
     return searchTerms.every((term) => searchableText.includes(term));
   });
 
   const storageStats = useMemo(() => {
     if (typeof window === "undefined") return { bytesUsed: 0, formattedUsed: "0 B", percentage: 0 };
     return getStorageUsageStats();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [bookmarks, history]);
 
   const handleClear = () => {
@@ -219,6 +252,14 @@ const BookmarksPage = (): JSX.Element => {
                 >
                   <span>💾 {storageStats.formattedUsed}</span>
                 </span>
+                <button
+                  type="button"
+                  onClick={copySyncLink}
+                  title="Salin tautan sinkronisasi cloud untuk memindahkan bookmark ke perangkat lain"
+                  className="rounded-full border border-border bg-surface px-3 py-1.5 font-mono text-xs font-semibold text-ink-muted transition-all hover:border-accent hover:text-ink active:scale-95 cursor-pointer"
+                >
+                  {shareCopied ? "✓ Link Disalin" : "☁️ Sync Cloud"}
+                </button>
                 <button
                   type="button"
                   onClick={exportBookmarksJson}

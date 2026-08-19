@@ -6,7 +6,7 @@ import { buildDetailMetadata } from "@/lib/detail-metadata";
 import MainLayout from "@/layouts/main-layout";
 import { AnimeDetail } from "@/interfaces";
 import { Metadata } from "next";
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 import { JSX } from "react";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
@@ -21,6 +21,13 @@ export const dynamic = "force-dynamic";
 
 const Anime = async ({ params }: { params: Promise<{ slug: string }> }): Promise<JSX.Element> => {
   const { slug } = await params;
+  const decoded = decodeURIComponent(slug).trim();
+  const normalized = decoded.toLowerCase();
+
+  if (slug !== normalized && /^[a-z0-9-]+$/i.test(decoded)) {
+    permanentRedirect(`/anime/${normalized}`);
+  }
+
   const anime: AnimeDetail | null = await getAnimeDetail(slug);
 
   if (!anime?.title) {

@@ -17,6 +17,11 @@
     "prettier:fix": "prettier . --write",
     "docker:up": "npm run docker:down && docker compose up -d",
     "docker:down": "docker compose down",
+    "changelog": "node scripts/release-changelog.mjs",
+    "backup:cache": "node scripts/backup-cache.mjs",
+    "loadtest": "node scripts/load-test.mjs",
+    "lighthouse": "lhci autorun",
+    "e2e": "node scripts/e2e-smoke.mjs",
     "prepare": "husky"
   },
   "dependencies": {

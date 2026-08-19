@@ -76,6 +76,7 @@ export async function GET(request: NextRequest): Promise<Response> {
     <description>${escapeXml(feedDesc)}</description>
     <language>id-ID</language>
     <atom:link href="${siteUrl}${feedPath}" rel="self" type="application/rss+xml"/>
+    <atom:link rel="hub" href="https://pubsubhubbub.appspot.com/"/>
 ${rssItems}
   </channel>
 </rss>`.trim();

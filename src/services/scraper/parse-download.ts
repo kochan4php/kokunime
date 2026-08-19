@@ -68,13 +68,7 @@ export function getDownloadLinks(
                 ? "av1"
                 : undefined;
           const codec_label =
-            codec === "hevc"
-              ? "H.265 / HEVC"
-              : codec === "h264"
-                ? "H.264 / AVC"
-                : codec === "av1"
-                  ? "AV1"
-                  : undefined;
+            codec === "hevc" ? "H.265 / HEVC" : codec === "h264" ? "H.264 / AVC" : codec === "av1" ? "AV1" : undefined;
           const container = /mkv/i.test(resolusi) ? "mkv" : /mp4/i.test(resolusi) ? "mp4" : undefined;
           const subtitle_type = /softsub/i.test(resolusi)
             ? "softsub"

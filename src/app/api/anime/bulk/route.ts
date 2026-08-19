@@ -1,7 +1,14 @@
-﻿import { getAnimeDetail } from "@/services/scraper";
+import { getAnimeDetail } from "@/services/scraper";
 import { NextRequest, NextResponse } from "next/server";
 
+const BLOCKED_USER_AGENTS = /scrapy|sqlmap|masscan|nikto|zgrab|acunetix|petalbot|censys/i;
+
 export async function POST(request: NextRequest): Promise<NextResponse> {
+  const ua = request.headers.get("user-agent") || "";
+  if (BLOCKED_USER_AGENTS.test(ua)) {
+    return NextResponse.json({ error: "Access Denied: Malicious Crawler Blocked" }, { status: 403 });
+  }
+
   try {
     const body = await request.json().catch(() => null);
     const slugs: unknown = body?.slugs ?? body;

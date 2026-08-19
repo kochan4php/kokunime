@@ -9,6 +9,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: SITE_URL, lastModified: now, changeFrequency: "daily", priority: 1 },
     { url: `${SITE_URL}/genres`, lastModified: now, changeFrequency: "weekly", priority: 0.6 },
     { url: `${SITE_URL}/seasons`, lastModified: now, changeFrequency: "weekly", priority: 0.6 },
+    { url: `${SITE_URL}/bookmarks`, lastModified: now, changeFrequency: "weekly", priority: 0.5 },
+    { url: `${SITE_URL}/compare`, lastModified: now, changeFrequency: "monthly", priority: 0.4 },
+    { url: `${SITE_URL}/api`, lastModified: now, changeFrequency: "monthly", priority: 0.4 },
+    ...["isekai", "action", "romance", "shounen", "fantasy", "comedy", "movie"].map((keyword) => ({
+      url: `${SITE_URL}/search/${keyword}`,
+      lastModified: now,
+      changeFrequency: "weekly" as const,
+      priority: 0.5,
+    })),
   ];
 
   try {
