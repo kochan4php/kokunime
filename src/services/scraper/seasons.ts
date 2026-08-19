@@ -12,15 +12,19 @@ export async function getSeasons(): Promise<Season[]> {
 
 export async function getAnimeBySeasons(season: string, page: number | string): Promise<AnimePage> {
   try {
-    const response = await upstream.get(`/seasons/${season}/page/${page}`);
+    const cleanSeason = decodeURIComponent(season).trim().toLowerCase();
+    const pageNum = Math.max(1, Number(page) || 1);
+    const path = pageNum > 1 ? `/seasons/${cleanSeason}/page/${pageNum}` : `/seasons/${cleanSeason}`;
+    const response = await upstream.get(path);
+
     // upstream redirects unknown seasons/pages to the homepage — detect and bail.
-    const finalUrl: string = response.url ?? "";
-    if (!finalUrl.includes(`/seasons/${season}/`)) {
+    const finalUrl = (response.url ?? "").toLowerCase();
+    if (!finalUrl.includes(`/seasons/${cleanSeason}`) && !finalUrl.includes(`season=${cleanSeason}`)) {
       return { anime: [], pagination: null };
     }
     const $ = load(stripHtmlNoise(response.data));
 
-    return { anime: formatAnimeData($), pagination: parseSimplePagination($, Number(page)) };
+    return { anime: formatAnimeData($), pagination: parseSimplePagination($, pageNum) };
   } catch {
     return { anime: [], pagination: null };
   }

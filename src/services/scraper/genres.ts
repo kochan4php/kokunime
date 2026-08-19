@@ -12,15 +12,19 @@ export async function getGenres(): Promise<Genre[]> {
 
 export async function getAnimeByGenres(genre: string, page: number | string): Promise<AnimePage> {
   try {
-    const response = await upstream.get(`/genres/${genre}/page/${page}`);
+    const cleanGenre = decodeURIComponent(genre).trim().toLowerCase();
+    const pageNum = Math.max(1, Number(page) || 1);
+    const path = pageNum > 1 ? `/genres/${cleanGenre}/page/${pageNum}` : `/genres/${cleanGenre}`;
+    const response = await upstream.get(path);
+
     // upstream redirects unknown genres/pages to the homepage — detect and bail.
-    const finalUrl: string = response.url ?? "";
-    if (!finalUrl.includes(`/genres/${genre}/`)) {
+    const finalUrl = (response.url ?? "").toLowerCase();
+    if (!finalUrl.includes(`/genres/${cleanGenre}`) && !finalUrl.includes(`genre=${cleanGenre}`)) {
       return { anime: [], pagination: null };
     }
     const $ = load(stripHtmlNoise(response.data));
 
-    return { anime: formatAnimeData($), pagination: parseSimplePagination($, Number(page)) };
+    return { anime: formatAnimeData($), pagination: parseSimplePagination($, pageNum) };
   } catch {
     return { anime: [], pagination: null };
   }

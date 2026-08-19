@@ -15,22 +15,25 @@ const parseTaxonomy = async (path: string): Promise<TaxonomyItem[]> => {
     const response = await upstream.get(path);
     const $ = load(stripHtmlNoise(response.data));
     const items: TaxonomyItem[] = [];
-    const element = $(".venser > .venutama");
+    const listElements = $("ul.genres > li, .venser ul.genres > li, .venutama ul.genres > li");
 
-    $(element)
-      .find("ul.genres > li")
-      .each((_, el) => {
-        const $a = $(el).find("a");
-        const name = $a.text().trim();
-        const href = $a.attr("href");
-        if (name && href && !/^(genres?|seasons?|musim)(\s+list)?$/i.test(name)) {
-          items.push({
-            name,
-            endpoint: href.replace(UPSTREAM_URL, ""),
-            url: href,
-          });
-        }
-      });
+    listElements.each((_, el) => {
+      const $a = $(el).find("a");
+      const name = $a.text().trim();
+      const href = $a.attr("href") || "";
+      if (name && href && !/^(genres?|seasons?|musim)(\s+list)?$/i.test(name)) {
+        const cleanEndpoint = href
+          .replace(UPSTREAM_URL, "")
+          .replace(/^https?:\/\/[^/]+\//i, "")
+          .replace(/^\/+/, "");
+
+        items.push({
+          name,
+          endpoint: cleanEndpoint,
+          url: href,
+        });
+      }
+    });
 
     return items;
   } catch {
