@@ -9,7 +9,11 @@ export async function getAnimePerPage(page: number): Promise<AnimePage> {
   try {
     const response = await kusonime.get(`/page/${page}`);
     // upstream redirects out-of-range pages (e.g. /page/999) to the homepage — detect and bail.
-    const finalUrl: string = response.url ?? "";
+    const finalUrl: string =
+      (response.request as { res?: { responseUrl?: string }; responseURL?: string })?.res?.responseUrl ??
+      (response.request as { responseURL?: string })?.responseURL ??
+      response.config?.url ??
+      "";
     if (page > 1 && !finalUrl.includes(`/page/${page}`)) {
       return { anime: [], pagination: null };
     }

@@ -18,7 +18,12 @@ export async function getAnimeByGenres(genre: string, page: number | string): Pr
     const response = await kusonime.get(path);
 
     // upstream redirects unknown genres/pages to the homepage — detect and bail.
-    const finalUrl = (response.url ?? "").toLowerCase();
+    const rawFinalUrl =
+      (response.request as { res?: { responseUrl?: string }; responseURL?: string })?.res?.responseUrl ??
+      (response.request as { responseURL?: string })?.responseURL ??
+      response.config?.url ??
+      path;
+    const finalUrl = rawFinalUrl.toLowerCase();
     if (!finalUrl.includes(`/genres/${cleanGenre}`) && !finalUrl.includes(`genre=${cleanGenre}`)) {
       return { anime: [], pagination: null };
     }

@@ -18,7 +18,12 @@ export async function getAnimeBySeasons(season: string, page: number | string): 
     const response = await kusonime.get(path);
 
     // upstream redirects unknown seasons/pages to the homepage — detect and bail.
-    const finalUrl = (response.url ?? "").toLowerCase();
+    const rawFinalUrl =
+      (response.request as { res?: { responseUrl?: string }; responseURL?: string })?.res?.responseUrl ??
+      (response.request as { responseURL?: string })?.responseURL ??
+      response.config?.url ??
+      path;
+    const finalUrl = rawFinalUrl.toLowerCase();
     if (!finalUrl.includes(`/seasons/${cleanSeason}`) && !finalUrl.includes(`season=${cleanSeason}`)) {
       return { anime: [], pagination: null };
     }
