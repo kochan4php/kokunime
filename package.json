@@ -9,6 +9,7 @@
     "setup": "npm test && npm run build",
     "dev": "next dev",
     "build": "next build",
+    "analyze": "ANALYZE=true next build",
     "start": "next start",
     "lint": "eslint .",
     "test": "vitest run",

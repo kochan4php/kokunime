@@ -24,7 +24,7 @@ const jetBrainsMono = JetBrains_Mono({
   variable: "--font-mono",
 });
 
-const themeScript = `(function(){try{var t=localStorage.getItem("theme");var d=t?t==="dark":(window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches);document.documentElement.classList.toggle("dark",d);var m=document.querySelector('meta[name="theme-color"]');if(!m){m=document.createElement("meta");m.name="theme-color";document.head.appendChild(m);}m.content=d?"#201613":"#fdf5eb";}catch(e){}})();`;
+const themeScript = `(function(){try{var t=localStorage.getItem("theme");var d=t?t==="dark":(window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches);document.documentElement.classList.toggle("dark",d);var c=localStorage.getItem("kokunime_contrast");if(c==="oled")document.documentElement.setAttribute("data-contrast","oled");var a=localStorage.getItem("kokunime_accent");if(a&&a!=="orange")document.documentElement.setAttribute("data-accent",a);var m=document.querySelector('meta[name="theme-color"]');if(!m){m=document.createElement("meta");m.name="theme-color";document.head.appendChild(m);}m.content=c==="oled"?"#000000":d?"#201613":"#fdf5eb";}catch(e){}})();`;
 
 const RootLayout = ({ children }: ChildrenProps): JSX.Element => (
   <html lang="id" className={`${plusJakartaSans.variable} ${jetBrainsMono.variable}`} suppressHydrationWarning>

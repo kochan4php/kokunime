@@ -65,4 +65,18 @@ describe("upstream fetcher", () => {
     await expect(fetchUpstream("/anime-test")).rejects.toThrow();
     expect(fetchMock).toHaveBeenCalledTimes(3); // Initial + 2 retries
   });
+
+  it("blocks disallowed URLs with SSRF guard", async () => {
+    await expect(fetchUpstream("https://evil-attacker.com/malicious")).rejects.toThrow("SSRF Guard");
+  });
+
+  it("calculates exponential backoff with jitter", async () => {
+    const { calculateBackoff } = await import("@/config/upstream");
+    const delay0 = calculateBackoff(0);
+    const delay1 = calculateBackoff(1);
+    expect(delay0).toBeGreaterThanOrEqual(500);
+    expect(delay0).toBeLessThan(750);
+    expect(delay1).toBeGreaterThanOrEqual(1000);
+    expect(delay1).toBeLessThan(1250);
+  });
 });

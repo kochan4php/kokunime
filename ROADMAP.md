@@ -8,27 +8,27 @@
 
 | No | Pilar Arsitektur | Total Item | Status Selesai | Status Terjadwal |
 | :---: | :--- | :---: | :---: | :---: |
-| 1 | **Scraping Engine & Upstream Resilience** | 25 | 15 Selesai | 10 Terjadwal |
+| 1 | **Scraping Engine & Upstream Resilience** | 25 | 16 Selesai | 9 Terjadwal |
 | 2 | **Public REST API, OpenAPI & Feeds** | 20 | 16 Selesai | 4 Terjadwal |
 | 3 | **Frontend UI/UX, Animasi & Komponen** | 25 | 21 Selesai | 4 Terjadwal |
-| 4 | **Offline Intelligence, PWA & Local Storage** | 18 | 13 Selesai | 5 Terjadwal |
+| 4 | **Offline Intelligence, PWA & Local Storage** | 18 | 14 Selesai | 4 Terjadwal |
 | 5 | **Download Managers & Media Utilities** | 18 | 15 Selesai | 3 Terjadwal |
 | 6 | **Streaming, Video Player & Previews** | 16 | 5 Selesai | 11 Terjadwal |
 | 7 | **Performance, Caching & Core Web Vitals** | 18 | 8 Selesai | 10 Terjadwal |
 | 8 | **SEO, OpenGraph, Metadata & Rich Snippets** | 16 | 10 Selesai | 6 Terjadwal |
-| 9 | **Security, Sanitization & Edge Protection** | 16 | 10 Selesai | 6 Terjadwal |
+| 9 | **Security, Sanitization & Edge Protection** | 16 | 12 Selesai | 4 Terjadwal |
 | 10 | **Accessibility (a11y) & Keyboard Navigation** | 16 | 16 Selesai | 0 Terjadwal |
-| 11 | **Internationalization (i18n) & Theming** | 14 | 8 Selesai | 6 Terjadwal |
+| 11 | **Internationalization (i18n) & Theming** | 14 | 10 Selesai | 4 Terjadwal |
 | 12 | **Testing, QA & Scraper Monitoring** | 16 | 6 Selesai | 10 Terjadwal |
-| 13 | **DevOps, CI/CD & Containerization** | 12 | 7 Selesai | 5 Terjadwal |
-| **Total** | **Master Backlog** | **230 Item** | **142 Selesai** | **88 Terjadwal** |
+| 13 | **DevOps, CI/CD & Containerization** | 12 | 8 Selesai | 4 Terjadwal |
+| **Total** | **Master Backlog** | **230 Item** | **149 Selesai** | **81 Terjadwal** |
 
 ---
 
 ## 🛠️ Pilar 1: Scraping Engine, Parser & Upstream Resilience (25 Item)
 
 - [ ] **001.** Multi-Mirror Upstream Fallback Configuration via environment variable `UPSTREAM_MIRRORS`
-- [ ] **002.** Algoritma Exponential Backoff dengan Randomized Jitter pada auto-retry scraper
+- [x] **002.** Algoritma Exponential Backoff dengan Randomized Jitter pada auto-retry scraper
 - [ ] **003.** Upstream Circuit Breaker & Fast-Fail Protection (siklus probe 15 detik)
 - [x] **004.** Multi-Attribute Lazy-Loaded Image Selector (`data-lazy-src`, `data-srcset`, `src`)
 - [x] **005.** Protocol-Relative (`//`) dan Relative Path URL Resolver otomatis ke HTTPS
@@ -129,7 +129,7 @@
 - [x] **085.** Impor daftar tontonan langsung dari file ekspor XML/JSON MyAnimeList / AniList
 - [x] **086.** Ekspor daftar tontonan ke format yang kompatibel dengan MyAnimeList
 - [ ] **087.** Banner ajakan instalasi PWA non-intrusif dengan penjelasan fitur offline
-- [ ] **088.** Indeks pencarian instan lokal (Minisearch) untuk mencari anime tersimpan saat offline total
+- [x] **088.** Indeks pencarian instan lokal (Minisearch) untuk mencari anime tersimpan saat offline total
 
 ---
 
@@ -231,8 +231,8 @@
 - [x] **162.** Filter pembersih Null-Byte, Path Traversal (`../`), dan karakter kontrol pada pencarian
 - [x] **163.** Pembatasan batas atas ukuran muatan respon upstream (*Maximum 10 MB Ceiling*)
 - [x] **164.** Sanitasi karakter input terhadap potensi mutasi XSS
-- [ ] **165.** Proteksi SSRF (*Server-Side Request Forgery*) dengan validasi whitelist domain upstream
-- [ ] **166.** Penyamaran otomatis pesan error internal (*Stack Trace Masking*) di lingkungan produksi
+- [x] **165.** Proteksi SSRF (*Server-Side Request Forgery*) dengan validasi whitelist domain upstream
+- [x] **166.** Penyamaran otomatis pesan error internal (*Stack Trace Masking*) di lingkungan produksi
 - [ ] **167.** Tautan jebakan bot tak kasat mata (*Honeypot Traps*) untuk memblokir crawler liar
 - [ ] **168.** Validasi header `Origin` dan `Sec-Fetch-Site` pada seluruh endpoint mutasi
 - [x] **169.** Pembatasan jumlah karakter maksimum pada input query pencarian (maks 80 karakter)
@@ -273,18 +273,18 @@
 - [x] **194.** Format penanggalan rilis anime terlokalisasi (misal *"18 Agustus 2026"*)
 - [x] **195.** Konversi penulisan angka desimal skor dan separator ribuan sesuai lokal Indonesia
 - [x] **196.** Terjemahan otomatis istilah genre ke bahasa Indonesia (misal: *Sci-Fi* $\rightarrow$ *Fiksi Ilmiah*)
-- [ ] **197.** Pengaturan opsi tema AMOLED Black murni untuk layar smartphone hemat baterai
+- [x] **197.** Pengaturan opsi tema AMOLED Black murni untuk layar smartphone hemat baterai
 - [x] **198.** Sinkronisasi preferensi tema lintas tab menggunakan storage listener
 - [ ] **199.** Opsi pemilihan jenis font tampilan (Sans Modern, Monospace Retro, Serif Editorial)
 - [ ] **200.** Dukungan teks orientasi vertikal untuk judul asli beraksara Jepang
 - [ ] **201.** Mode peredup layar otomatis saat malam hari (*Night Shift Tint*)
-- [ ] **202.** Penyimpanan seluruh konfigurasi preferensi tampilan di LocalStorage
+- [x] **202.** Penyimpanan seluruh konfigurasi preferensi tampilan di LocalStorage
 
 ---
 
 ## 🧪 Pilar 12: Testing, QA & Scraper Monitoring (16 Item)
 
-- [x] **203.** Unit test suite Vitest dengan 60 test case di 17 file pengujian
+- [x] **203.** Unit test suite Vitest dengan 67 test case di 18 file pengujian
 - [x] **204.** File mock HTML fixture untuk pengujian unit offline tanpa ketergantungan jaringan
 - [x] **205.** Suite pengujian ketahanan parser scraper (*Lazy Image, CJK Title, Entities, URL Resolver*)
 - [x] **206.** Konfigurasi linting ESLint ketat (0 error, 0 warning)
@@ -312,7 +312,7 @@
 - [x] **223.** GitHub Actions Workflow untuk build dan pengujian CI/CD (`.github/workflows/ci.yml`)
 - [ ] **224.** Konfigurasi otomatis deploy preview branch di Netlify / Vercel
 - [x] **225.** Script instalasi dan inisialisasi lingkungan dev satu perintah (`npm run setup`)
-- [ ] **226.** Integrasi `@next/bundle-analyzer` untuk audit ukuran bundle JavaScript sebelum rilis
+- [x] **226.** Integrasi `@next/bundle-analyzer` untuk audit ukuran bundle JavaScript sebelum rilis
 - [ ] **227.** Generator changelog dan rilis versi otomatis berbasis *Conventional Commits*
 - [ ] **228.** Konfigurasi auto-restart container menggunakan healthcheck Docker
 - [ ] **229.** Konfigurasi script backup berkala untuk data cache lokal

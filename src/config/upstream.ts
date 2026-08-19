@@ -3,6 +3,23 @@ import { UPSTREAM_URL } from "@/services/scraper/constants";
 const MAX_RETRIES = 2;
 const RETRY_BASE_MS = 500;
 
+const ALLOWED_HOSTS = new Set(["kusonime.com", "www.kusonime.com"]);
+
+export function isAllowedUpstreamUrl(targetUrl: string): boolean {
+  try {
+    const parsed = new URL(targetUrl);
+    return ALLOWED_HOSTS.has(parsed.hostname.toLowerCase()) || parsed.hostname.endsWith(".kusonime.com");
+  } catch {
+    return false;
+  }
+}
+
+export function calculateBackoff(retryCount: number): number {
+  const base = RETRY_BASE_MS * 2 ** retryCount;
+  const jitter = Math.floor(Math.random() * 200);
+  return base + jitter;
+}
+
 export interface UpstreamResponse {
   data: string;
   url: string;
@@ -11,6 +28,10 @@ export interface UpstreamResponse {
 
 export async function fetchUpstream(path: string, retryCount = 0): Promise<UpstreamResponse> {
   const url = path.startsWith("http") ? path : `${UPSTREAM_URL}${path.startsWith("/") ? path.slice(1) : path}`;
+
+  if (!isAllowedUpstreamUrl(url)) {
+    throw new Error(`SSRF Guard: Disallowed upstream destination (${url})`);
+  }
 
   try {
     const res = await fetch(url, {
@@ -27,7 +48,7 @@ export async function fetchUpstream(path: string, retryCount = 0): Promise<Upstr
       const status = res.status;
       const retryable = status === 429 || status >= 500;
       if (retryable && retryCount < MAX_RETRIES) {
-        const delay = RETRY_BASE_MS * 2 ** (retryCount + 1);
+        const delay = calculateBackoff(retryCount);
         await new Promise((resolve) => setTimeout(resolve, delay));
         return fetchUpstream(path, retryCount + 1);
       }
@@ -41,8 +62,8 @@ export async function fetchUpstream(path: string, retryCount = 0): Promise<Upstr
       status: res.status,
     };
   } catch (err: unknown) {
-    if (retryCount < MAX_RETRIES) {
-      const delay = RETRY_BASE_MS * 2 ** (retryCount + 1);
+    if (retryCount < MAX_RETRIES && !(err instanceof Error && err.message.startsWith("SSRF Guard"))) {
+      const delay = calculateBackoff(retryCount);
       await new Promise((resolve) => setTimeout(resolve, delay));
       return fetchUpstream(path, retryCount + 1);
     }

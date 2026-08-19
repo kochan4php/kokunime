@@ -48,9 +48,13 @@ const BookmarksPage = (): JSX.Element => {
         })
       : history;
 
-  const items = allItems.filter(
-    (item) => !filterQuery.trim() || item.title.toLowerCase().includes(filterQuery.trim().toLowerCase()),
-  );
+  const items = allItems.filter((item) => {
+    const q = filterQuery.trim().toLowerCase();
+    if (!q) return true;
+    const searchTerms = q.split(/\s+/).filter(Boolean);
+    const searchableText = `${item.title} ${(item as { notes?: string }).notes || ""} ${(item as { folder?: string }).folder || ""} ${item.slug}`.toLowerCase();
+    return searchTerms.every((term) => searchableText.includes(term));
+  });
 
   const storageStats = useMemo(() => {
     if (typeof window === "undefined") return { bytesUsed: 0, formattedUsed: "0 B", percentage: 0 };
