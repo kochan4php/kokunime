@@ -53,6 +53,30 @@ describe("upstream fetcher", () => {
     expect(res.data).toBe(mockHtml);
   });
 
+  it("retries on 403 Cloudflare block with fallback user agent", async () => {
+    const mockHtml = "<html>Success after 403 UA fallback</html>";
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce({
+        ok: false,
+        status: 403,
+        statusText: "Forbidden",
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        url: "https://kusonime.com/anime-test-403",
+        headers: new Headers(),
+        text: () => Promise.resolve(mockHtml),
+      });
+
+    vi.stubGlobal("fetch", fetchMock);
+
+    const res = await fetchUpstream("/anime-test-403");
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+    expect(res.data).toBe(mockHtml);
+  });
+
   it("throws error when all retries are exhausted", async () => {
     const fetchMock = vi.fn().mockResolvedValue({
       ok: false,
