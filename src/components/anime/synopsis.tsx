@@ -60,7 +60,7 @@ const Synopsis = ({ anime }: { anime: AnimeDetail }): JSX.Element => {
   return (
     <Reveal>
       <div className="card-shell">
-        <div className="card-core p-7 md:p-10">
+        <div className="card-core p-4 sm:p-7 md:p-10">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div className="flex flex-wrap items-center gap-2">
               <span className="chip">Sinopsis</span>
@@ -149,7 +149,7 @@ const Synopsis = ({ anime }: { anime: AnimeDetail }): JSX.Element => {
           <p
             className={`mt-5 text-ink-muted transition-all duration-300 ${fontClass} ${
               isLong && !expanded ? "line-clamp-4" : ""
-            }`}
+            } break-words`}
           >
             {synopsis}
           </p>

@@ -30,7 +30,7 @@ const DetailHero = ({ anime, slug }: DetailHeroProps): JSX.Element => (
     )}
     <div className="card-shell">
       <div className="card-core grid md:grid-cols-[320px_1fr]">
-        <div className="relative aspect-[3/4] md:aspect-auto md:min-h-full">
+        <div className="relative aspect-[3/4] max-h-[480px] sm:max-h-[560px] md:max-h-none md:aspect-auto md:min-h-full">
           {anime.image && (
             <AnimeImage
               fill
@@ -57,7 +57,7 @@ const DetailHero = ({ anime, slug }: DetailHeroProps): JSX.Element => (
             </span>
           )}
         </div>
-        <div className="p-7 md:p-10 flex flex-col justify-between">
+        <div className="p-4 sm:p-6 md:p-10 flex flex-col justify-between min-w-0">
           <div>
             <div className="flex flex-wrap items-center justify-between gap-3">
               <GenreTags anime={anime} />
@@ -76,7 +76,7 @@ const DetailHero = ({ anime, slug }: DetailHeroProps): JSX.Element => (
               </div>
             </div>
             <div className="mt-4 flex flex-wrap items-center gap-2.5">
-              <h1 className="font-display text-3xl font-extrabold leading-[1.1] tracking-tight text-ink md:text-4xl">
+              <h1 className="font-display text-2xl sm:text-3xl md:text-4xl font-extrabold leading-[1.15] tracking-tight text-ink break-words">
                 {anime.title}
               </h1>
               {anime.title && (
@@ -88,7 +88,7 @@ const DetailHero = ({ anime, slug }: DetailHeroProps): JSX.Element => (
                 />
               )}
             </div>
-            {anime.japanese && <p className="mt-1 font-mono text-xs text-ink-muted/80">{anime.japanese}</p>}
+            {anime.japanese && <p className="mt-1 font-mono text-xs text-ink-muted/80 break-words">{anime.japanese}</p>}
             <div className="mt-3 flex flex-wrap items-center gap-2">
               {anime.status && (
                 <span

@@ -14,7 +14,7 @@ const SeasonYearGroup = ({ year, seasons }: SeasonYearGroupProps): JSX.Element =
     <Reveal>
       <h2 className="mb-4 font-display text-xl font-bold tracking-tight text-ink">{year}</h2>
     </Reveal>
-    <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
+    <div className="grid grid-cols-2 gap-2 min-[480px]:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
       {seasons.map((season) => {
         const slug = endpointSlug(season.endpoint, "seasons");
         if (!slug) return null;

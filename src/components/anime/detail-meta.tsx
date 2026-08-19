@@ -10,9 +10,9 @@ interface MetaItemProps {
 }
 
 const MetaItem = ({ label, value, href }: MetaItemProps): JSX.Element => (
-  <div className="rounded-2xl border border-border bg-surface px-4 py-3">
+  <div className="rounded-2xl border border-border bg-surface px-4 py-3 min-w-0">
     <dt className="font-mono text-[10px] uppercase tracking-widest text-ink-muted">{label}</dt>
-    <dd className="mt-1 text-sm font-semibold text-ink">
+    <dd className="mt-1 text-sm font-semibold text-ink break-words">
       {href ? (
         <Link href={href} className="transition-colors duration-200 hover:text-accent">
           {value || "—"}

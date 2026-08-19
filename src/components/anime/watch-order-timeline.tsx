@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { AnimeDetail } from "@/interfaces";
 import { JSX, useMemo } from "react";
@@ -36,7 +36,7 @@ export const WatchOrderTimeline = ({ anime }: WatchOrderTimelineProps): JSX.Elem
   if (!franchiseInfo) return null;
 
   return (
-    <div id="watch-order" className="mt-12 rounded-3xl border border-border bg-surface p-6 shadow-sm">
+    <div id="watch-order" className="mt-12 rounded-3xl border border-border bg-surface p-4 sm:p-6 shadow-sm">
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border/70 pb-4">
         <div className="flex items-center gap-2">
           <span className="flex h-7 w-7 items-center justify-center rounded-xl bg-accent/15 text-sm font-bold text-accent">

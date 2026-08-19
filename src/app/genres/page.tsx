@@ -44,7 +44,7 @@ const GenresPage = async ({ searchParams }: { searchParams: Promise<{ page?: str
           Genre
         </span>
         <h1 className="mt-3 font-display text-2xl font-extrabold tracking-tight text-ink md:text-4xl">Daftar Genre</h1>
-        <div className="mt-10 grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
+        <div className="mt-10 grid grid-cols-2 gap-2 min-[480px]:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
           {pageGenres.map((genre) => {
             const slug = endpointSlug(genre.endpoint, "genres");
             if (!slug) return null;

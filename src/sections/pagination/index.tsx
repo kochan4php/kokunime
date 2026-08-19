@@ -19,7 +19,7 @@ const Pagination = ({ pagination, basePath }: PaginationProps): JSX.Element => {
   const nextHref = paginationHref(next_page_endpoint ?? null, basePath);
 
   return (
-    <div className="mt-14 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+    <div className="mt-12 md:mt-14 flex flex-col items-center gap-4 md:flex-row md:items-center md:justify-between">
       <p className="hidden font-mono text-xs uppercase tracking-widest text-ink-muted md:block">
         Halaman {current} dari {total}
       </p>

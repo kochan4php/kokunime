@@ -82,21 +82,21 @@ const TrailerButton = ({ trailerUrl, title }: TrailerButtonProps): JSX.Element |
         }}
         className={`backdrop:backdrop-blur-md rounded-2xl border border-border bg-surface-solid p-0 text-ink shadow-2xl transition-all duration-300 ${
           isPipMode
-            ? "fixed right-6 bottom-6 z-50 m-0 w-80 max-w-sm backdrop:bg-transparent shadow-[0_20px_50px_rgba(0,0,0,0.8)]"
+            ? "fixed right-4 bottom-4 sm:right-6 sm:bottom-6 z-50 m-0 w-80 max-w-sm backdrop:bg-transparent shadow-[0_20px_50px_rgba(0,0,0,0.8)]"
             : isTheaterMode
-              ? "m-auto w-full max-w-6xl backdrop:bg-black/95"
-              : "m-auto w-full max-w-3xl backdrop:bg-black/80"
+              ? "m-auto w-[94vw] max-w-6xl backdrop:bg-black/95"
+              : "m-auto w-[94vw] max-w-3xl backdrop:bg-black/80"
         }`}
       >
-        <div className="flex items-center justify-between border-b border-border px-4 py-3">
-          <div className="flex items-center gap-2 sm:gap-3">
-            <h3 className="line-clamp-1 font-display text-sm font-bold text-ink">Trailer: {title}</h3>
+        <div className="flex items-center justify-between border-b border-border px-3.5 py-2.5 sm:px-4 sm:py-3 gap-2">
+          <div className="flex items-center gap-1.5 sm:gap-3 overflow-x-auto [scrollbar-width:none] min-w-0 flex-1">
+            <h3 className="line-clamp-1 font-display text-xs sm:text-sm font-bold text-ink shrink-0">Trailer: {title}</h3>
             {!isPipMode && (
               <button
                 type="button"
                 onClick={() => setIsTheaterMode((prev) => !prev)}
                 title="Perbesar layar dan redupkan suasana sekitar (Mode Bioskop)"
-                className={`rounded-full px-2.5 py-0.5 font-mono text-[10px] font-semibold transition-all cursor-pointer ${
+                className={`hidden sm:inline-flex rounded-full px-2.5 py-0.5 font-mono text-[10px] font-semibold transition-all cursor-pointer shrink-0 ${
                   isTheaterMode
                     ? "bg-amber-400 text-black font-bold shadow-md"
                     : "border border-border bg-surface text-ink-muted hover:text-ink"
@@ -109,19 +109,19 @@ const TrailerButton = ({ trailerUrl, title }: TrailerButtonProps): JSX.Element |
               type="button"
               onClick={togglePip}
               title="Mini Player Mengambang (Picture-in-Picture)"
-              className={`rounded-full px-2.5 py-0.5 font-mono text-[10px] font-semibold transition-all cursor-pointer ${
+              className={`rounded-full px-2 py-0.5 font-mono text-[10px] font-semibold transition-all cursor-pointer shrink-0 ${
                 isPipMode
                   ? "bg-accent text-(--accent-ink) font-bold"
                   : "border border-border bg-surface text-ink-muted hover:text-ink"
               }`}
             >
-              <span>{isPipMode ? "🔲 Mode Normal" : "🔲 PiP"}</span>
+              <span>{isPipMode ? "🔲 Normal" : "🔲 PiP"}</span>
             </button>
             <button
               type="button"
               onClick={cycleAspectRatio}
               title="Ganti Rasio Aspek Video (16:9 / 21:9 / 4:3)"
-              className="rounded-full border border-border bg-surface px-2.5 py-0.5 font-mono text-[10px] font-semibold text-ink-muted hover:text-ink transition-colors cursor-pointer"
+              className="hidden sm:inline-flex rounded-full border border-border bg-surface px-2.5 py-0.5 font-mono text-[10px] font-semibold text-ink-muted hover:text-ink transition-colors cursor-pointer shrink-0"
             >
               <span>📐 {aspectRatio}</span>
             </button>
@@ -129,21 +129,21 @@ const TrailerButton = ({ trailerUrl, title }: TrailerButtonProps): JSX.Element |
               type="button"
               onClick={toggleFullscreen}
               title="Layar Penuh (Shortcut: F)"
-              className="rounded-full border border-border bg-surface px-2.5 py-0.5 font-mono text-[10px] font-semibold text-ink-muted hover:text-ink transition-colors cursor-pointer"
+              className="rounded-full border border-border bg-surface px-2 py-0.5 font-mono text-[10px] font-semibold text-ink-muted hover:text-ink transition-colors cursor-pointer shrink-0"
             >
-              <span>{isFullscreen ? "⤓ Normal" : "⤢ Fullscreen (F)"}</span>
+              <span>{isFullscreen ? "⤓ Normal" : "⤢ Fullscreen"}</span>
             </button>
             <a
               href={trailerUrl.replace("/embed/", "/watch?v=")}
               target="_blank"
               rel="noopener noreferrer"
               title="Buka langsung di YouTube untuk fitur playback speed 2x dan 4K"
-              className="hidden sm:inline-flex rounded-full border border-border bg-surface px-2.5 py-0.5 font-mono text-[10px] font-semibold text-ink-muted hover:text-ink transition-colors cursor-pointer"
+              className="hidden sm:inline-flex rounded-full border border-border bg-surface px-2.5 py-0.5 font-mono text-[10px] font-semibold text-ink-muted hover:text-ink transition-colors cursor-pointer shrink-0"
             >
               <span>↗ YouTube</span>
             </a>
             {resumeTime && resumeTime > 5 && (
-              <span className="hidden md:inline-block rounded-full bg-accent/15 border border-accent/30 px-2 py-0.5 font-mono text-[10px] text-accent">
+              <span className="hidden md:inline-block rounded-full bg-accent/15 border border-accent/30 px-2 py-0.5 font-mono text-[10px] text-accent shrink-0">
                 Resume {Math.floor(resumeTime / 60)}:{(resumeTime % 60).toString().padStart(2, "0")}
               </span>
             )}
@@ -152,7 +152,7 @@ const TrailerButton = ({ trailerUrl, title }: TrailerButtonProps): JSX.Element |
             type="button"
             onClick={closeModal}
             aria-label="Tutup trailer"
-            className="flex h-7 w-7 items-center justify-center rounded-full text-ink-muted transition-colors hover:bg-surface hover:text-ink cursor-pointer"
+            className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-ink-muted transition-colors hover:bg-surface hover:text-ink cursor-pointer"
           >
             ✕
           </button>

@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { JSX, useState } from "react";
 import Image from "next/image";
@@ -19,13 +19,13 @@ export const EpisodeGallery = ({ title, posterImage }: EpisodeGalleryProps): JSX
   ];
 
   return (
-    <div className="mt-8 rounded-3xl border border-border bg-surface p-5">
+    <div className="mt-8 rounded-3xl border border-border bg-surface p-4 sm:p-5">
       <div className="flex items-center justify-between border-b border-border pb-3">
         <h3 className="font-display text-sm font-bold text-ink">📸 Cuplikan Tangkapan Layar Episode</h3>
         <span className="font-mono text-xs text-ink-muted">Galeri Visual</span>
       </div>
 
-      <div className="mt-4 grid grid-cols-3 gap-3">
+      <div className="mt-4 grid grid-cols-3 gap-2 sm:gap-3">
         {previewItems.map((item, idx) => (
           <button
             key={idx}

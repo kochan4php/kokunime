@@ -19,7 +19,7 @@ import { ThemeSongsPlayer } from "./theme-songs-player";
 import { EpisodeGallery } from "./episode-gallery";
 
 const SectionDetail = ({ anime, slug }: { anime: AnimeDetail; slug: string }): JSX.Element => (
-  <section className="container px-4 pb-8 pt-12 md:pb-12 md:pt-16">
+  <section className="container px-4 pb-24 pt-6 md:pb-12 md:pt-16">
     <DetailToc />
     <HistoryTracker slug={slug} title={anime.title ?? ""} image={anime.image} release={anime.release_on} />
     {/* Visible breadcrumb matching the BreadcrumbList JSON-LD — required for

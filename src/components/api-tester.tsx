@@ -56,11 +56,11 @@ const ApiTester = ({ endpoint }: ApiTesterProps): JSX.Element => {
     <div className="card-shell">
       <div className="card-core p-5 md:p-6">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="rounded-md bg-accent/15 px-2.5 py-1 font-mono text-xs font-bold text-accent border border-accent/30">
+          <div className="flex flex-wrap items-center gap-2 min-w-0">
+            <span className="rounded-md bg-accent/15 px-2.5 py-1 font-mono text-xs font-bold text-accent border border-accent/30 shrink-0">
               {endpoint.method}
             </span>
-            <code className="font-mono text-sm font-semibold text-ink">{endpoint.path}</code>
+            <code className="font-mono text-xs sm:text-sm font-semibold text-ink break-all">{endpoint.path}</code>
           </div>
           <div className="flex items-center gap-2">
             <button

@@ -60,7 +60,7 @@ const AnimeGrid = ({ anime, eagerCount = 0, viewMode = "grid" }: AnimeGridProps)
   }
 
   return (
-    <div className="grid grid-cols-2 gap-2 md:grid-cols-3 md:gap-3 lg:grid-cols-4 lg:gap-4 xl:grid-cols-5">
+    <div className="grid grid-cols-2 gap-2 min-[540px]:grid-cols-3 min-[540px]:gap-3 lg:grid-cols-4 lg:gap-4 xl:grid-cols-5">
       {anime.map((item: Anime, index: number) => {
         const endpoint = animeSlug(item?.link?.endpoint);
         if (!endpoint) return null;

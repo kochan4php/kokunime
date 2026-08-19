@@ -33,7 +33,7 @@ const DownloadPlatform = ({ name, url }: { name: string; url?: string }): JSX.El
         target="_blank"
         rel="noopener noreferrer"
         title={needLogin ? `${name} (Mungkin membutuhkan login akun)` : name}
-        className={`group flex min-w-0 flex-1 items-center justify-center gap-2 rounded-full border px-3 py-2 text-sm transition-all duration-300 ${styleClass}`}
+        className={`group flex min-w-0 flex-1 items-center justify-center gap-1.5 sm:gap-2 rounded-full border px-2.5 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm transition-all duration-300 ${styleClass}`}
       >
         <span className="truncate">{name}</span>
         {needLogin && (

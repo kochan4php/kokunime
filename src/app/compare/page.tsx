@@ -106,8 +106,8 @@ const ComparePage = async ({ searchParams }: ComparePageProps): Promise<JSX.Elem
         )}
 
         {animeA && animeB && (
-          <div className="overflow-x-auto">
-            <table className="w-full border-collapse rounded-2xl border border-border bg-surface-solid overflow-hidden shadow-2xl">
+          <div className="overflow-x-auto rounded-2xl border border-border bg-surface-solid shadow-2xl">
+            <table className="w-full min-w-[560px] border-collapse">
               <thead>
                 <tr className="border-b border-border bg-surface-muted/50">
                   <th className="p-4 text-left font-mono text-xs uppercase tracking-wider text-ink-muted w-1/4">

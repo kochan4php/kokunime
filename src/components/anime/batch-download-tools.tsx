@@ -12,6 +12,7 @@ const BatchDownloadTools = ({ group, animeTitle }: BatchDownloadToolsProps): JSX
   const [copied, setCopied] = useState(false);
   const [copiedAria2, setCopiedAria2] = useState(false);
   const [copiedMd, setCopiedMd] = useState(false);
+  const [showMoreTools, setShowMoreTools] = useState(false);
 
   const isLargeBatch = useMemo(() => {
     const text = `${group.title} ${group.link_download.map((r) => r.resolusi).join(" ")}`;
@@ -285,80 +286,97 @@ const BatchDownloadTools = ({ group, animeTitle }: BatchDownloadToolsProps): JSX
 
       <button
         type="button"
-        onClick={copyAria2}
-        title="Salin format untuk aria2c (aria2c -i list.txt)"
-        className={`inline-flex items-center gap-1 rounded-full border px-3 py-1 font-mono text-[11px] font-semibold tracking-wider transition-all duration-200 active:scale-95 cursor-pointer ${
-          copiedAria2
-            ? "border-accent bg-accent/15 text-accent"
+        onClick={() => setShowMoreTools((prev) => !prev)}
+        title="Buka opsi ekspor lanjutan (IDM, DLC, aria2c, cURL, Markdown, Estimasi)"
+        className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-1 font-mono text-[10px] font-semibold transition-all cursor-pointer ${
+          showMoreTools
+            ? "border-accent bg-accent/15 text-accent font-bold"
             : "border-border bg-surface text-ink-muted hover:border-accent hover:text-ink"
         }`}
       >
-        <span>{copiedAria2 ? "✓ aria2c Tersalin!" : "aria2c"}</span>
+        <span>{showMoreTools ? "🛠️ Tutup Opsi ▲" : "🛠️ Opsi Ekspor ▼"}</span>
       </button>
-      <button
-        type="button"
-        onClick={copyMarkdown}
-        title="Salin link dalam format Markdown"
-        className={`inline-flex items-center gap-1 rounded-full border px-3 py-1 font-mono text-[11px] font-semibold tracking-wider transition-all duration-200 active:scale-95 cursor-pointer ${
-          copiedMd
-            ? "border-accent bg-accent/15 text-accent"
-            : "border-border bg-surface text-ink-muted hover:border-accent hover:text-ink"
-        }`}
-      >
-        <span>{copiedMd ? "✓ Markdown Tersalin!" : "Markdown"}</span>
-      </button>
-      <button
-        type="button"
-        onClick={exportTxt}
-        title="Unduh daftar tautan sebagai file teks (.txt)"
-        className="inline-flex items-center gap-1 rounded-full border border-border bg-surface px-3 py-1 font-mono text-[11px] font-semibold tracking-wider text-ink-muted transition-all duration-200 hover:border-accent hover:text-ink active:scale-95 cursor-pointer"
-      >
-        <span>📄 .txt</span>
-      </button>
-      <button
-        type="button"
-        onClick={exportIdmEf2}
-        title="Export file .ef2 untuk Internet Download Manager (IDM)"
-        className="inline-flex items-center gap-1 rounded-full border border-border bg-surface px-3 py-1 font-mono text-[11px] font-semibold tracking-wider text-ink-muted transition-all duration-200 hover:border-accent hover:text-ink active:scale-95 cursor-pointer"
-      >
-        <span>IDM (.ef2)</span>
-      </button>
-      <button
-        type="button"
-        onClick={exportDlc}
-        title="Export file .dlc untuk JDownloader 2"
-        className="inline-flex items-center gap-1 rounded-full border border-border bg-surface px-3 py-1 font-mono text-[11px] font-semibold tracking-wider text-ink-muted transition-all duration-200 hover:border-accent hover:text-ink active:scale-95 cursor-pointer"
-      >
-        <span>JDownloader (.dlc)</span>
-      </button>
-      <button
-        type="button"
-        onClick={exportCurlSh}
-        title="Unduh bash script curl untuk download via Linux / VPS terminal"
-        className="inline-flex items-center gap-1 rounded-full border border-border bg-surface px-3 py-1 font-mono text-[11px] font-semibold tracking-wider text-ink-muted hover:border-accent hover:text-ink transition-all duration-200 active:scale-95 cursor-pointer"
-      >
-        <span>cURL (.sh)</span>
-      </button>
-      <button
-        type="button"
-        onClick={() => setShowRawTextarea((prev) => !prev)}
-        title="Buka area teks mentah untuk salin manual"
-        className="inline-flex items-center gap-1 rounded-full border border-border bg-surface px-3 py-1 font-mono text-[11px] font-semibold tracking-wider text-ink-muted hover:border-accent hover:text-ink transition-all duration-200 active:scale-95 cursor-pointer"
-      >
-        <span>{showRawTextarea ? "✕ Tutup Teks" : "📝 Raw Teks"}</span>
-      </button>
-      <button
-        type="button"
-        onClick={() => setShowSpeedCalc((prev) => !prev)}
-        title="Kalkulator Estimasi Waktu Download"
-        className={`inline-flex items-center gap-1 rounded-full border px-3 py-1 font-mono text-[11px] font-semibold tracking-wider transition-all duration-200 active:scale-95 cursor-pointer ${
-          showSpeedCalc
-            ? "border-accent bg-accent/15 text-accent"
-            : "border-border bg-surface text-ink-muted hover:border-accent hover:text-ink"
-        }`}
-      >
-        <span>⏱️ Estimasi Waktu</span>
-      </button>
+
+      {showMoreTools && (
+        <div className="w-full mt-2 flex flex-wrap items-center gap-1.5 rounded-2xl border border-border/80 bg-surface-muted/40 p-2.5 animate-in fade-in duration-200">
+          <button
+            type="button"
+            onClick={copyAria2}
+            title="Salin format untuk aria2c (aria2c -i list.txt)"
+            className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-1 font-mono text-[10px] font-semibold transition-all cursor-pointer ${
+              copiedAria2
+                ? "border-accent bg-accent/15 text-accent"
+                : "border-border bg-surface text-ink-muted hover:border-accent hover:text-ink"
+            }`}
+          >
+            <span>{copiedAria2 ? "✓ aria2c Tersalin!" : "aria2c"}</span>
+          </button>
+          <button
+            type="button"
+            onClick={copyMarkdown}
+            title="Salin link dalam format Markdown"
+            className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-1 font-mono text-[10px] font-semibold transition-all cursor-pointer ${
+              copiedMd
+                ? "border-accent bg-accent/15 text-accent"
+                : "border-border bg-surface text-ink-muted hover:border-accent hover:text-ink"
+            }`}
+          >
+            <span>{copiedMd ? "✓ Markdown Tersalin!" : "Markdown"}</span>
+          </button>
+          <button
+            type="button"
+            onClick={exportTxt}
+            title="Unduh daftar tautan sebagai file teks (.txt)"
+            className="inline-flex items-center gap-1 rounded-full border border-border bg-surface px-2.5 py-1 font-mono text-[10px] font-semibold text-ink-muted transition-all hover:border-accent hover:text-ink active:scale-95 cursor-pointer"
+          >
+            <span>📄 .txt</span>
+          </button>
+          <button
+            type="button"
+            onClick={exportIdmEf2}
+            title="Export file .ef2 untuk Internet Download Manager (IDM)"
+            className="inline-flex items-center gap-1 rounded-full border border-border bg-surface px-2.5 py-1 font-mono text-[10px] font-semibold text-ink-muted transition-all hover:border-accent hover:text-ink active:scale-95 cursor-pointer"
+          >
+            <span>IDM (.ef2)</span>
+          </button>
+          <button
+            type="button"
+            onClick={exportDlc}
+            title="Export file .dlc untuk JDownloader 2"
+            className="inline-flex items-center gap-1 rounded-full border border-border bg-surface px-2.5 py-1 font-mono text-[10px] font-semibold text-ink-muted transition-all hover:border-accent hover:text-ink active:scale-95 cursor-pointer"
+          >
+            <span>JDownloader (.dlc)</span>
+          </button>
+          <button
+            type="button"
+            onClick={exportCurlSh}
+            title="Unduh bash script curl untuk download via Linux / VPS terminal"
+            className="inline-flex items-center gap-1 rounded-full border border-border bg-surface px-2.5 py-1 font-mono text-[10px] font-semibold text-ink-muted hover:border-accent hover:text-ink transition-all active:scale-95 cursor-pointer"
+          >
+            <span>cURL (.sh)</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => setShowRawTextarea((prev) => !prev)}
+            title="Buka area teks mentah untuk salin manual"
+            className="inline-flex items-center gap-1 rounded-full border border-border bg-surface px-2.5 py-1 font-mono text-[10px] font-semibold text-ink-muted hover:border-accent hover:text-ink transition-all active:scale-95 cursor-pointer"
+          >
+            <span>{showRawTextarea ? "✕ Tutup Teks" : "📝 Raw Teks"}</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => setShowSpeedCalc((prev) => !prev)}
+            title="Kalkulator Estimasi Waktu Download"
+            className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-1 font-mono text-[10px] font-semibold transition-all active:scale-95 cursor-pointer ${
+              showSpeedCalc
+                ? "border-accent bg-accent/15 text-accent"
+                : "border-border bg-surface text-ink-muted hover:border-accent hover:text-ink"
+            }`}
+          >
+            <span>⏱️ Estimasi Waktu</span>
+          </button>
+        </div>
+      )}
 
       {showSpeedCalc && (
         <div className="w-full mt-3 rounded-2xl border border-border bg-surface-solid/95 p-4 shadow-xl backdrop-blur-md">

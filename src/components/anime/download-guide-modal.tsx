@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { JSX, useState } from "react";
 
@@ -45,7 +45,7 @@ export const DownloadGuideModal = (): JSX.Element => {
             role="dialog"
             aria-modal="true"
             aria-label="Panduan Cara Download Anime"
-            className="w-full max-w-lg rounded-3xl border border-border bg-surface-solid p-6 shadow-2xl"
+            className="w-full max-w-lg rounded-3xl border border-border bg-surface-solid p-5 sm:p-6 shadow-2xl max-h-[90vh] overflow-y-auto [scrollbar-width:thin]"
           >
             <div className="flex items-center justify-between border-b border-border pb-4">
               <h3 className="font-display text-lg font-bold text-ink">💡 Panduan Langkah Mengunduh</h3>

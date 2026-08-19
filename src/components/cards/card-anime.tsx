@@ -35,14 +35,14 @@ const CardAnime = ({ src, alt, title, meta, path, eager = false, priority = fals
                 />
               </span>
             )}
-            <span className="absolute bottom-3 left-3 flex items-center gap-1.5 rounded-full bg-black/60 px-2.5 py-1 font-mono text-[10px] uppercase tracking-wider text-white backdrop-blur-xs">
+            <span className="absolute bottom-2.5 left-2.5 sm:bottom-3 sm:left-3 flex items-center gap-1.5 rounded-full bg-black/60 px-2 sm:px-2.5 py-0.5 sm:py-1 font-mono text-[9px] sm:text-[10px] uppercase tracking-wider text-white backdrop-blur-xs">
               {/menit|jam|pm|am|today|hari|ongoing/i.test(meta || "") && (
                 <span className="relative flex h-1.5 w-1.5">
                   <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
                   <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-500" />
                 </span>
               )}
-              <span className="truncate max-w-[140px]">{meta}</span>
+              <span className="truncate max-w-[85px] sm:max-w-[140px]">{meta}</span>
             </span>
             <div className="absolute inset-x-0 bottom-0 p-3 pt-6 bg-gradient-to-t from-black/90 via-black/60 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100 flex items-end justify-between">
               <span className="font-display text-[11px] font-bold text-accent">Lihat Anime →</span>
@@ -54,8 +54,8 @@ const CardAnime = ({ src, alt, title, meta, path, eager = false, priority = fals
               <ArrowUpRightIcon />
             </span>
           </div>
-          <div className="p-4">
-            <h2 className="line-clamp-2 text-sm font-semibold leading-snug text-ink transition-colors duration-200 group-hover:text-accent">
+          <div className="p-3 sm:p-4">
+            <h2 className="line-clamp-2 text-xs sm:text-sm font-semibold leading-snug text-ink transition-colors duration-200 group-hover:text-accent">
               {title}
             </h2>
           </div>

@@ -128,7 +128,7 @@ const CommandPalette = (): JSX.Element => {
         onClick={(e) => {
           if (e.target === dialogRef.current) closePalette();
         }}
-        className="fixed inset-0 m-auto w-[90vw] max-w-lg rounded-2xl border border-border bg-bg p-0 text-ink shadow-2xl backdrop:bg-black/60 backdrop:backdrop-blur-sm"
+        className="fixed inset-0 m-auto w-[94vw] sm:w-[90vw] max-w-lg max-h-[85vh] rounded-2xl border border-border bg-bg p-0 text-ink shadow-2xl backdrop:bg-black/60 backdrop:backdrop-blur-sm"
       >
         <div className="flex flex-col">
           <form onSubmit={handleFormSubmit} className="relative flex items-center border-b border-border px-4 py-3.5">

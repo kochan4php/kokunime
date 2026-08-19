@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import AnimeImage from "@/components/cards/anime-image";
 import { DownloadIcon } from "@/components/icons";
@@ -71,18 +71,18 @@ const FeaturedHero = ({ featured, items = [] }: FeaturedHeroProps): JSX.Element 
               </div>
             )}
           </div>
-          <div className="flex flex-col justify-center gap-4 p-7 md:p-12">
-            <h1 className="font-display text-3xl font-extrabold leading-[1.1] tracking-tight text-ink md:text-5xl">
+          <div className="flex flex-col justify-center gap-3 sm:gap-4 p-5 sm:p-8 md:p-12 min-w-0">
+            <h1 className="font-display text-2xl sm:text-3xl md:text-5xl font-extrabold leading-[1.1] tracking-tight text-ink break-words line-clamp-3 md:line-clamp-none">
               {current?.title ?? "Katalog anime"}
             </h1>
-            <p className="text-ink-muted leading-relaxed">
+            <p className="text-ink-muted leading-relaxed text-xs sm:text-sm">
               {current?.genres?.length
                 ? current.genres.join(" · ")
                 : (current?.release ?? "Daftar lengkapnya ada di bawah.")}
             </p>
             {slug && (
               <div className="mt-2 flex flex-wrap items-center gap-3">
-                <Link href={`/anime/${slug}`} className="btn-primary w-max">
+                <Link href={`/anime/${slug}`} className="btn-primary w-full sm:w-max justify-center">
                   Download Anime
                   <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-black/15 transition-transform duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:translate-y-0.5">
                     <DownloadIcon className="h-3.5 w-3.5" />

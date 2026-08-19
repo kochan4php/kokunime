@@ -34,7 +34,7 @@ const FloatingTopButton = (): JSX.Element => {
       onClick={scrollToTop}
       aria-label="Kembali ke atas halaman"
       title="Kembali ke atas"
-      className={`fixed bottom-6 right-6 z-40 flex h-11 w-11 items-center justify-center rounded-full border border-border bg-bg/85 text-ink shadow-lg backdrop-blur-lg transition-all duration-300 active:scale-95 ${
+      className={`fixed bottom-20 right-4 sm:bottom-6 sm:right-6 z-40 flex h-11 w-11 items-center justify-center rounded-full border border-border bg-bg/85 text-ink shadow-lg backdrop-blur-lg transition-all duration-300 active:scale-95 ${
         visible ? "pointer-events-auto translate-y-0 opacity-100" : "pointer-events-none translate-y-4 opacity-0"
       } hover:border-accent hover:text-accent`}
     >

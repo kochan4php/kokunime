@@ -1,5 +1,5 @@
 ﻿[build]
-  command = "pnpm setup"
+  command = "npx pnpm setup"
   publish = ".next"
 
 [[plugins]]
@@ -9,10 +9,10 @@
   environment = { NODE_ENV = "production" }
 
 [context.deploy-preview]
-  command = "pnpm setup"
+  command = "npx pnpm setup"
 
 [context.branch-deploy]
-  command = "pnpm setup"
+  command = "npx pnpm setup"
 
 [[headers]]
   for = "/*"

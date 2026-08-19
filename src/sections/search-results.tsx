@@ -182,7 +182,7 @@ const SearchResults = ({ anime }: SearchResultsProps): JSX.Element => {
               )}
             </div>
 
-            <div className="flex flex-wrap items-center gap-1.5">
+            <div className="flex flex-wrap items-center gap-1.5 max-h-28 sm:max-h-none overflow-y-auto sm:overflow-visible pr-1 [scrollbar-width:thin]">
               {allGenres.map((genre) => {
                 const isSelected = selectedGenres.includes(genre);
                 return (

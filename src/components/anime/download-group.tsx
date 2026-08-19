@@ -94,7 +94,7 @@ const DownloadGroup = ({ group, animeTitle }: DownloadGroupProps): JSX.Element =
 
   return (
     <div className="card-shell">
-      <div className="card-core p-6 md:p-8">
+      <div className="card-core p-4 sm:p-6 md:p-8">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-3">
             <h3 className="font-display text-lg font-bold tracking-tight text-ink">{group.title}</h3>
@@ -121,7 +121,7 @@ const DownloadGroup = ({ group, animeTitle }: DownloadGroupProps): JSX.Element =
               </div>
             )}
           </div>
-          <div className="flex flex-wrap items-center gap-3">
+          <div className="flex flex-wrap items-center gap-2 sm:gap-3">
             <span className="chip">{group.link_download.length} kualitas</span>
             <BatchDownloadTools group={group} animeTitle={animeTitle} />
           </div>
@@ -177,7 +177,9 @@ const DownloadGroup = ({ group, animeTitle }: DownloadGroupProps): JSX.Element =
                   <OpenAllLinksButton links={res.link} />
                 </div>
                 <div
-                  className={`mt-3 grid grid-cols-2 gap-2 md:grid-cols-3 lg:grid-cols-4 ${res.resolusi ? "" : "mt-0"}`}
+                  className={`mt-3 grid grid-cols-1 min-[420px]:grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4 ${
+                    res.resolusi ? "" : "mt-0"
+                  }`}
                 >
                   {res.link.map((platform: DownloadTarget, i: number) => (
                     <DownloadPlatform key={i} name={platform.platform} url={platform.url} />
