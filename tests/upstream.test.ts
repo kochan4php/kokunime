@@ -79,4 +79,34 @@ describe("upstream fetcher", () => {
     expect(delay1).toBeGreaterThanOrEqual(1000);
     expect(delay1).toBeLessThan(1250);
   });
+
+  it("coalesces concurrent requests for the exact same URL (Singleflight)", async () => {
+    const mockHtml = "<html>Coalesced</html>";
+    let fetchCalls = 0;
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockImplementation(async () => {
+        fetchCalls++;
+        await new Promise((resolve) => setTimeout(resolve, 50));
+        return {
+          ok: true,
+          status: 200,
+          url: "https://kusonime.com/coalesced",
+          headers: new Headers(),
+          text: () => Promise.resolve(mockHtml),
+        };
+      }),
+    );
+
+    const [res1, res2, res3] = await Promise.all([
+      fetchUpstream("/coalesced"),
+      fetchUpstream("/coalesced"),
+      fetchUpstream("/coalesced"),
+    ]);
+
+    expect(fetchCalls).toBe(1);
+    expect(res1.data).toBe(mockHtml);
+    expect(res2.data).toBe(mockHtml);
+    expect(res3.data).toBe(mockHtml);
+  });
 });

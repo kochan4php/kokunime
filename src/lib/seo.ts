@@ -50,6 +50,22 @@ export const buildAnimeJsonLd = (anime: AnimeDetail, slug: string): Record<strin
     jsonLd.numberOfEpisodes = episodesNum;
   }
 
+  const actions: Record<string, unknown>[] = [
+    {
+      "@type": "ConsumeAction",
+      name: `Download ${anime.title}`,
+      target: `${SITE_URL}/anime/${slug}#download`,
+    },
+  ];
+  if (anime.trailer) {
+    actions.push({
+      "@type": "WatchAction",
+      name: `Tonton Trailer ${anime.title}`,
+      target: anime.trailer,
+    });
+  }
+  jsonLd.potentialAction = actions;
+
   return jsonLd;
 };
 

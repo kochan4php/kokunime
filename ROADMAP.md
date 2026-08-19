@@ -13,15 +13,15 @@
 | 3 | **Frontend UI/UX, Animasi & Komponen** | 25 | 21 Selesai | 4 Terjadwal |
 | 4 | **Offline Intelligence, PWA & Local Storage** | 18 | 14 Selesai | 4 Terjadwal |
 | 5 | **Download Managers & Media Utilities** | 18 | 15 Selesai | 3 Terjadwal |
-| 6 | **Streaming, Video Player & Previews** | 16 | 5 Selesai | 11 Terjadwal |
-| 7 | **Performance, Caching & Core Web Vitals** | 18 | 8 Selesai | 10 Terjadwal |
-| 8 | **SEO, OpenGraph, Metadata & Rich Snippets** | 16 | 10 Selesai | 6 Terjadwal |
-| 9 | **Security, Sanitization & Edge Protection** | 16 | 12 Selesai | 4 Terjadwal |
+| 6 | **Streaming, Video Player & Previews** | 16 | 6 Selesai | 10 Terjadwal |
+| 7 | **Performance, Caching & Core Web Vitals** | 18 | 9 Selesai | 9 Terjadwal |
+| 8 | **SEO, OpenGraph, Metadata & Rich Snippets** | 16 | 11 Selesai | 5 Terjadwal |
+| 9 | **Security, Sanitization & Edge Protection** | 16 | 13 Selesai | 3 Terjadwal |
 | 10 | **Accessibility (a11y) & Keyboard Navigation** | 16 | 16 Selesai | 0 Terjadwal |
 | 11 | **Internationalization (i18n) & Theming** | 14 | 10 Selesai | 4 Terjadwal |
 | 12 | **Testing, QA & Scraper Monitoring** | 16 | 6 Selesai | 10 Terjadwal |
 | 13 | **DevOps, CI/CD & Containerization** | 12 | 8 Selesai | 4 Terjadwal |
-| **Total** | **Master Backlog** | **230 Item** | **149 Selesai** | **81 Terjadwal** |
+| **Total** | **Master Backlog** | **230 Item** | **153 Selesai** | **77 Terjadwal** |
 
 ---
 
@@ -171,7 +171,7 @@
 - [ ] **117.** Pengingat timestamp terakhir video trailer yang ditonton
 - [ ] **118.** Pilihan subtitle multisumber pada pemutar video (Indonesia / English)
 - [ ] **119.** Slider pengatur volume audio yang tersimpan di LocalStorage
-- [ ] **120.** Mode layar penuh native (*Fullscreen API*) dengan tombol shortcut <kbd>F</kbd>
+- [x] **120.** Mode layar penuh native (*Fullscreen API*) dengan tombol shortcut <kbd>F</kbd>
 - [ ] **121.** Galeri tangkapan layar episode (*Episode Screenshots*) dari rilisan anime
 - [ ] **122.** Tombol putar musik tema pembuka (*Opening*) dan penutup (*Ending*) via embed audio
 
@@ -187,7 +187,7 @@
 - [x] **128.** Partisi Edge Cache Netlify-Vary berdasarkan parameter query halaman
 - [x] **129.** Arsitektur token Vanilla CSS zero-runtime tanpa overhead kompilasi JavaScript
 - [ ] **130.** Prefetching rute client-side saat kursor mouse mendekati link (prediksi niat 200ms)
-- [ ] **131.** Upstream Request Coalescing (*Singleflight Pattern*) untuk menggabungkan request konkuren
+- [x] **131.** Upstream Request Coalescing (*Singleflight Pattern*) untuk menggabungkan request konkuren
 - [ ] **132.** Virtualized Windowing Scroll untuk katalog dengan ratusan anime agar FPS stabil di 60fps
 - [ ] **133.** Critical CSS Inlining pada viewport atas untuk mencapai First Contentful Paint < 0.4s
 - [ ] **134.** Font Subsetting untuk memangkas ukuran file Google Fonts menjadi < 15 KB
@@ -217,7 +217,7 @@
 - [ ] **153.** Validasi semantic markup HTML5 100% lolos W3C Validator
 - [x] **154.** Integrasi OpenSearch XML Description agar browser mengenali Kokunime sebagai mesin pencari
 - [ ] **155.** Indeks kata kunci pencarian populer (*Trending Search Keywords*) di sitemap
-- [ ] **156.** Rich Snippet indikator ketersediaan download (*DownloadAction* schema)
+- [x] **156.** Rich Snippet indikator ketersediaan download (*DownloadAction* schema)
 
 ---
 
@@ -238,7 +238,7 @@
 - [x] **169.** Pembatasan jumlah karakter maksimum pada input query pencarian (maks 80 karakter)
 - [x] **170.** Sanitasi tautan unduhan sebelum ditampilkan untuk memblokir skema URI `javascript:` atau `data:`
 - [ ] **171.** Pemblokiran request dari User-Agent scraper berbahaya yang teridentifikasi
-- [ ] **172.** Header `Cross-Origin-Opener-Policy: same-origin` untuk isolasi proses tab peramban
+- [x] **172.** Header `Cross-Origin-Opener-Policy: same-origin` untuk isolasi proses tab peramban
 
 ---
 

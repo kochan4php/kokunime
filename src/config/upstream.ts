@@ -26,6 +26,8 @@ export interface UpstreamResponse {
   status: number;
 }
 
+const inFlightRequests = new Map<string, Promise<UpstreamResponse>>();
+
 export async function fetchUpstream(path: string, retryCount = 0): Promise<UpstreamResponse> {
   const url = path.startsWith("http") ? path : `${UPSTREAM_URL}${path.startsWith("/") ? path.slice(1) : path}`;
 
@@ -33,42 +35,60 @@ export async function fetchUpstream(path: string, retryCount = 0): Promise<Upstr
     throw new Error(`SSRF Guard: Disallowed upstream destination (${url})`);
   }
 
-  try {
-    const res = await fetch(url, {
-      signal: AbortSignal.timeout(10_000),
-      headers: {
-        "User-Agent": "*",
-        Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
-        "Accept-Language": "id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7",
-        Referer: "https://kusonime.com/",
-      },
-    });
+  // Singleflight: coalesce concurrent requests for the exact same URL
+  if (retryCount === 0 && inFlightRequests.has(url)) {
+    const existing = inFlightRequests.get(url);
+    if (existing) return existing;
+  }
 
-    if (!res.ok) {
-      const status = res.status;
-      const retryable = status === 429 || status >= 500;
-      if (retryable && retryCount < MAX_RETRIES) {
+  const promise = (async (): Promise<UpstreamResponse> => {
+    try {
+      const res = await fetch(url, {
+        signal: AbortSignal.timeout(10_000),
+        headers: {
+          "User-Agent": "*",
+          Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
+          "Accept-Language": "id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7",
+          Referer: "https://kusonime.com/",
+        },
+      });
+
+      if (!res.ok) {
+        const status = res.status;
+        const retryable = status === 429 || status >= 500;
+        if (retryable && retryCount < MAX_RETRIES) {
+          const delay = calculateBackoff(retryCount);
+          await new Promise((resolve) => setTimeout(resolve, delay));
+          return fetchUpstream(path, retryCount + 1);
+        }
+        throw new Error(`Upstream request failed: ${res.status} ${res.statusText}`);
+      }
+
+      const data = await res.text();
+      return {
+        data,
+        url: res.url,
+        status: res.status,
+      };
+    } catch (err: unknown) {
+      if (retryCount < MAX_RETRIES && !(err instanceof Error && err.message.startsWith("SSRF Guard"))) {
         const delay = calculateBackoff(retryCount);
         await new Promise((resolve) => setTimeout(resolve, delay));
         return fetchUpstream(path, retryCount + 1);
       }
-      throw new Error(`Upstream request failed: ${res.status} ${res.statusText}`);
+      throw err;
+    } finally {
+      if (retryCount === 0) {
+        inFlightRequests.delete(url);
+      }
     }
+  })();
 
-    const data = await res.text();
-    return {
-      data,
-      url: res.url,
-      status: res.status,
-    };
-  } catch (err: unknown) {
-    if (retryCount < MAX_RETRIES && !(err instanceof Error && err.message.startsWith("SSRF Guard"))) {
-      const delay = calculateBackoff(retryCount);
-      await new Promise((resolve) => setTimeout(resolve, delay));
-      return fetchUpstream(path, retryCount + 1);
-    }
-    throw err;
+  if (retryCount === 0) {
+    inFlightRequests.set(url, promise);
   }
+
+  return promise;
 }
 
 const upstream = {
