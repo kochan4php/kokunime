@@ -13,7 +13,7 @@ export async function GET(request: NextRequest): Promise<Response> {
         headers: {
           "Content-Type": "text/csv; charset=utf-8",
           "Content-Disposition": 'inline; filename="kokunime-seasons.csv"',
-          "Cache-Control": "public, s-maxage=3600, stale-while-revalidate=600",
+          "Cache-Control": "private, max-age=600",
         },
       });
     }
@@ -26,7 +26,7 @@ export async function GET(request: NextRequest): Promise<Response> {
       return new Response(xml, {
         headers: {
           "Content-Type": "application/xml; charset=utf-8",
-          "Cache-Control": "public, s-maxage=3600, stale-while-revalidate=600",
+          "Cache-Control": "private, max-age=600",
         },
       });
     }
@@ -38,7 +38,7 @@ export async function GET(request: NextRequest): Promise<Response> {
       },
       {
         headers: {
-          "Cache-Control": "public, s-maxage=3600, stale-while-revalidate=600",
+          "Cache-Control": "private, max-age=600",
         },
       },
     );

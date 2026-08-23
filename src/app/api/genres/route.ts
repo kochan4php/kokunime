@@ -19,7 +19,7 @@ export async function GET(request: NextRequest): Promise<Response> {
         headers: {
           "Content-Type": "text/csv; charset=utf-8",
           "Content-Disposition": 'inline; filename="kokunime-genres.csv"',
-          "Cache-Control": "public, s-maxage=3600, stale-while-revalidate=600",
+          "Cache-Control": "private, max-age=600",
           ETag: etag,
         },
       });
@@ -37,7 +37,7 @@ export async function GET(request: NextRequest): Promise<Response> {
       return new Response(xml, {
         headers: {
           "Content-Type": "application/xml; charset=utf-8",
-          "Cache-Control": "public, s-maxage=3600, stale-while-revalidate=600",
+          "Cache-Control": "private, max-age=600",
           ETag: etag,
         },
       });
@@ -54,7 +54,7 @@ export async function GET(request: NextRequest): Promise<Response> {
 
     return NextResponse.json(payloadObj, {
       headers: {
-        "Cache-Control": "public, s-maxage=3600, stale-while-revalidate=600",
+        "Cache-Control": "private, max-age=600",
         ETag: etag,
       },
     });

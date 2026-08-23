@@ -40,12 +40,7 @@ export const setMemoryCache = <T>(key: string, value: T, ttlSeconds: number): vo
   });
 };
 
-export const cached = async <T>(
-  key: string,
-  ttlSeconds: number,
-  fn: () => Promise<T>,
-  fallback: T,
-): Promise<T> => {
+export const cached = async <T>(key: string, ttlSeconds: number, fn: () => Promise<T>, fallback: T): Promise<T> => {
   // 1. Tier 1: Check In-Memory L1 RAM Cache (0.1ms)
   const memCached = getFromMemoryCache<T>(key);
   if (memCached !== null) {
@@ -53,26 +48,18 @@ export const cached = async <T>(
   }
 
   // 2. Tier 2: Check Next.js unstable_cache (when in Next.js runtime)
+  // Failures must propagate OUTSIDE unstable_cache: a fallback returned inside
+  // the callback would be persisted as if it were valid data (cache poisoning).
   if (typeof unstable_cache === "function" && process.env.NODE_ENV !== "test") {
+    const cachedFn = unstable_cache(fn, [key], { revalidate: ttlSeconds });
     try {
-      const cachedFn = unstable_cache(
-        async () => {
-          try {
-            return await fn();
-          } catch {
-            return fallback;
-          }
-        },
-        [key],
-        { revalidate: ttlSeconds },
-      );
       const result = await cachedFn();
       if (result !== null && result !== undefined) {
         setMemoryCache(key, result, ttlSeconds);
       }
       return result;
     } catch {
-      // Fallback to direct execution
+      return fallback;
     }
   }
 

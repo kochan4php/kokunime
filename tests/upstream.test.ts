@@ -28,7 +28,14 @@ describe("upstream axios instance", () => {
   it("has correct base URL and timeout", () => {
     expect(upstream.defaults.baseURL).toBe("https://kusonime.com/");
     expect(upstream.defaults.timeout).toBe(10_000);
-    expect(upstream.defaults.headers["User-Agent"]).toBe("*");
+    expect(String(upstream.defaults.headers["User-Agent"])).toContain("Mozilla/5.0");
     expect(upstream.defaults.headers["Referer"]).toBe("https://kusonime.com/");
+  });
+
+  it("rejects responses without kusonime content (challenge/block pages)", async () => {
+    vi.spyOn(upstream, "get").mockRejectedValueOnce(
+      new Error("Upstream returned non-kusonime content (5210 bytes) — likely blocked or challenged"),
+    );
+    await expect(upstream.get("/page/2/")).rejects.toThrow(/non-kusonime content/);
   });
 });
