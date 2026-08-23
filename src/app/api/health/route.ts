@@ -1,5 +1,5 @@
 import upstream from "@/config/upstream";
-import { UPSTREAM_URL } from "@/services/scraper/constants";
+import { SCRAPE_BASE_URL } from "@/services/scraper/constants";
 import { load } from "cheerio";
 import type { AxiosError } from "axios";
 import { NextResponse } from "next/server";
@@ -69,7 +69,7 @@ export async function GET(): Promise<NextResponse> {
     return NextResponse.json({
       status: "ok",
       scraper: "operational",
-      upstream: UPSTREAM_URL,
+      upstream: SCRAPE_BASE_URL,
       upstream_status: res.status ?? 200,
       latency_ms: latency,
       probes: [await probe("/page/2/")],
@@ -83,7 +83,7 @@ export async function GET(): Promise<NextResponse> {
       {
         status: "degraded",
         scraper: "unreachable",
-        upstream: UPSTREAM_URL,
+        upstream: SCRAPE_BASE_URL,
         error: err instanceof Error ? err.message : "Upstream error",
         latency_ms: latency,
         probes: [await probe("/page/2/")],

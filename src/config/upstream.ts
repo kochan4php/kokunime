@@ -1,7 +1,7 @@
 import http from "node:http";
 import https from "node:https";
 import axios, { AxiosError, AxiosInstance, InternalAxiosRequestConfig } from "axios";
-import { UPSTREAM_URL } from "@/services/scraper/constants";
+import { SCRAPE_BASE_URL } from "@/services/scraper/constants";
 
 const MAX_RETRIES = 2;
 const RETRY_BASE_MS = 500;
@@ -27,7 +27,7 @@ interface RetryConfig extends InternalAxiosRequestConfig {
 }
 
 const upstream: AxiosInstance = axios.create({
-  baseURL: UPSTREAM_URL,
+  baseURL: SCRAPE_BASE_URL,
   timeout: 10_000,
   maxContentLength: 10 * 1024 * 1024,
   httpAgent,
@@ -40,10 +40,9 @@ const upstream: AxiosInstance = axios.create({
       "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",
     Referer: "https://kusonime.com/",
     "Accept-Encoding": "gzip, deflate, br",
-    "Accept-Language": "en-US,en;q=0.9,id;q=0.8",
-    Connection: "keep-alive",
-    Host: "kusonime.com",
-    Origin: "https://kusonime.com",
+      "Accept-Language": "en-US,en;q=0.9,id;q=0.8",
+      Connection: "keep-alive",
+      Origin: "https://kusonime.com",
     "Sec-Fetch-Dest": "document",
     "Sec-Fetch-Mode": "navigate",
     "Sec-Fetch-User": "?1",
