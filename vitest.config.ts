@@ -9,6 +9,12 @@ export default defineConfig({
   },
   test: {
     environment: "node",
+    // Hermetic: CI (Netlify) exports NODE_ENV=production, which would activate
+    // the unstable_cache branch in services/cache.ts outside any Next request
+    // context. Tests must always exercise the direct-execution path.
+    env: {
+      NODE_ENV: "test",
+    },
     include: ["tests/**/*.test.ts"],
     coverage: {
       provider: "v8",

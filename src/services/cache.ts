@@ -51,15 +51,30 @@ export const cached = async <T>(key: string, ttlSeconds: number, fn: () => Promi
   // Failures must propagate OUTSIDE unstable_cache: a fallback returned inside
   // the callback would be persisted as if it were valid data (cache poisoning).
   if (typeof unstable_cache === "function" && process.env.NODE_ENV !== "test") {
-    const cachedFn = unstable_cache(fn, [key], { revalidate: ttlSeconds });
+    class UpstreamFailure extends Error {}
+    const cachedFn = unstable_cache(
+      async () => {
+        try {
+          return await fn();
+        } catch {
+          throw new UpstreamFailure();
+        }
+      },
+      [key],
+      { revalidate: ttlSeconds },
+    );
     try {
       const result = await cachedFn();
       if (result !== null && result !== undefined) {
         setMemoryCache(key, result, ttlSeconds);
       }
       return result;
-    } catch {
-      return fallback;
+    } catch (err) {
+      if (err instanceof UpstreamFailure) {
+        return fallback;
+      }
+      // Cache layer itself is unavailable (no request context / infra error):
+      // fall through to honest direct execution instead of masking data.
     }
   }
 
