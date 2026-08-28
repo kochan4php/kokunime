@@ -28,7 +28,8 @@ describe("upstream axios instance", () => {
   it("has correct base URL and timeout", () => {
     expect(upstream.defaults.baseURL).toBe("https://kusonime.com/");
     expect(upstream.defaults.timeout).toBe(10_000);
-    expect(String(upstream.defaults.headers["User-Agent"])).toContain("Mozilla/5.0");
+    expect(upstream.defaults.withCredentials).toBe(true);
+    expect(String(upstream.defaults.headers["User-Agent"])).toBe("*");
     expect(upstream.defaults.headers["Referer"]).toBe("https://kusonime.com/");
   });
 
