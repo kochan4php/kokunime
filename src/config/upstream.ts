@@ -55,7 +55,7 @@ upstream.interceptors.response.use(
   async (error: AxiosError) => {
     const config = error.config as RetryConfig | undefined;
     const status = error.response?.status;
-    const retryable = !status || status === 403 || status === 429 || status >= 500;
+    const retryable = !status || status === 429 || status >= 500;
 
     if (!config || !retryable || (config.retryCount ?? 0) >= MAX_RETRIES) {
       return Promise.reject(error);
