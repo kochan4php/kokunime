@@ -1414,5 +1414,83 @@
     "seen": 1787881897.8572702,
     "ast_hash": "587eff8a51f5c6197335fd3a5b5eef48",
     "semantic_hash": "587eff8a51f5c6197335fd3a5b5eef48"
+  },
+  ".husky/post-checkout": {
+    "mtime": 1787881915.4156983,
+    "seen": 1787881955.0910602,
+    "ast_hash": "c3804c1e49072ca4f00b98016d1ffc0a",
+    "semantic_hash": ""
+  },
+  ".husky/post-commit": {
+    "mtime": 1787881915.4151654,
+    "seen": 1787881955.091066,
+    "ast_hash": "9a95a1d50740ed03d7f91944bed60e85",
+    "semantic_hash": ""
+  },
+  ".github/workflows/ci.yml": {
+    "mtime": 1787041089.8358564,
+    "seen": 1787881955.0913334,
+    "ast_hash": "ad3e8eb1267b107a4be06b8dec6da4e6",
+    "semantic_hash": ""
+  },
+  ".github/workflows/scraper-health.yml": {
+    "mtime": 1787117461.7588708,
+    "seen": 1787881955.091335,
+    "ast_hash": "13bf36e69420e0d7a3a0eeda64c852ce",
+    "semantic_hash": ""
+  },
+  "CONTRIBUTING.md": {
+    "mtime": 1787041089.8369005,
+    "seen": 1787881955.0913365,
+    "ast_hash": "feffcee80e20ac1d39155cf58a225b41",
+    "semantic_hash": ""
+  },
+  "README.md": {
+    "mtime": 1786673523.1419554,
+    "seen": 1787881955.091352,
+    "ast_hash": "0b6d8a50dfd2ea44fc28fc9c1c34f271",
+    "semantic_hash": ""
+  },
+  "docker-compose.yml": {
+    "mtime": 1787041089.8395295,
+    "seen": 1787881955.0913534,
+    "ast_hash": "79b29a08fa550b1f8e767f877c4d647d",
+    "semantic_hash": ""
+  },
+  "pnpm-workspace.yaml": {
+    "mtime": 1787131830.4796524,
+    "seen": 1787881955.0913546,
+    "ast_hash": "7490d8ea901d14e73d15702568454abd",
+    "semantic_hash": ""
+  },
+  "public/apple-touch-icon.png": {
+    "mtime": 1786415542.85519,
+    "seen": 1787881955.0913558,
+    "ast_hash": "7ee26c8cfc2624fbf4993a444e575992",
+    "semantic_hash": ""
+  },
+  "public/icons/icon-192.png": {
+    "mtime": 1786415542.856853,
+    "seen": 1787881955.0913572,
+    "ast_hash": "6443f70e6368fab926e9ae58d185b41c",
+    "semantic_hash": ""
+  },
+  "public/icons/icon-512.png": {
+    "mtime": 1786415542.856853,
+    "seen": 1787881955.0913584,
+    "ast_hash": "1312627af1694a800b749031b29f2d63",
+    "semantic_hash": ""
+  },
+  "public/og.png": {
+    "mtime": 1786415542.8588622,
+    "seen": 1787881955.0913599,
+    "ast_hash": "f9a7e460ad7db9afda8fe4107f071006",
+    "semantic_hash": ""
+  },
+  "src/app/icon.svg": {
+    "mtime": 1786415542.8698688,
+    "seen": 1787881955.091361,
+    "ast_hash": "915cc6573ffb65f232caf3746c0ba873",
+    "semantic_hash": ""
   }
 }

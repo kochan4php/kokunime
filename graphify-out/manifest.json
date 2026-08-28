@@ -11,12 +11,6 @@
     "ast_hash": "733cf98a0048ffa29e284a6460b0699c",
     "semantic_hash": "733cf98a0048ffa29e284a6460b0699c"
   },
-  "cloudflare-worker/worker.js": {
-    "mtime": 1787881524.3224998,
-    "seen": 1787881897.8571317,
-    "ast_hash": "98f98f061456ab446e329ca46288fc41",
-    "semantic_hash": "98f98f061456ab446e329ca46288fc41"
-  },
   "next.config.mjs": {
     "mtime": 1787156475.5297234,
     "seen": 1787881897.8571324,
@@ -1044,10 +1038,10 @@
     "semantic_hash": "882ee870e9ead088b2cb01f166fb588d"
   },
   "src/services/scraper/constants.ts": {
-    "mtime": 1787881524.3276389,
-    "seen": 1787881897.8572347,
-    "ast_hash": "81242960c95bb54541b9c2a237abbb6e",
-    "semantic_hash": "81242960c95bb54541b9c2a237abbb6e"
+    "mtime": 1787882307.0104568,
+    "seen": 1787882539.6416395,
+    "ast_hash": "9a77cb11e12b719e7698f9e056aabeb2",
+    "semantic_hash": ""
   },
   "src/services/scraper/genres.ts": {
     "mtime": 1787156363.3107338,
