@@ -1,22 +1,23 @@
 # Graph Report - kokunime  (2026-08-28)
 
 ## Corpus Check
-- 239 files · ~61,896 words
+- 239 files · ~62,008 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 830 nodes · 1789 edges · 49 communities (40 shown, 9 thin omitted)
+- 832 nodes · 1791 edges · 58 communities (49 shown, 9 thin omitted)
 - Extraction: 99% EXTRACTED · 1% INFERRED · 0% AMBIGUOUS · INFERRED: 13 edges (avg confidence: 0.85)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `9bfc4f54`
+- Built from commit: `f18e7dbe`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
 ## Community Hubs (Navigation)
 - scraper/index.ts
-- main-layout.tsx
+- MainLayout
+- download-section.tsx
 - interfaces/index.ts
 - section-detail.tsx
 - scripts
@@ -25,22 +26,30 @@
 - style
 - seo.ts
 - devDependencies
-- [query]/page.tsx
+- main-layout.tsx
+- detail-hero.tsx
+- getAnimeDetail
 - compilerOptions
+- [page]/page.tsx
 - footer/index.tsx
 - biome.json
 - include
+- season-year-group.tsx
 - error-card.tsx
 - ignore
+- home-content.tsx
+- genres-explorer.tsx
 - formatter
 - next.config.mjs
-- getAnimePerPage
+- endpoint-slug.ts
 - defer-hydration.tsx
 - format-date.ts
 - vcs
 - lib
+- detail-skeleton.tsx
 - webhook-dispatcher.ts
 - useTranslation
+- offline-indicator.tsx
 - html5-video-player.tsx
 - smart-prefetch-link.tsx
 - virtualized-grid.tsx
@@ -64,49 +73,53 @@
 10. `getAnimePerPage()` - 16 edges
 
 ## Surprising Connections (you probably didn't know these)
+- `FeaturedHeroProps` --references--> `Anime`  [EXTRACTED]
+  src/sections/featured-hero.tsx → src/interfaces/anime.ts
 - `CompareAnimeClientProps` --references--> `AnimeDetail`  [EXTRACTED]
   src/components/compare-anime-client.tsx → src/interfaces/anime.ts
 - `PaginatedHome()` --calls--> `getAnimePerPage()`  [EXTRACTED]
   src/app/page/[page]/page.tsx → src/services/scraper/anime-list.ts
+- `SeasonYearGroup()` --calls--> `endpointSlug()`  [EXTRACTED]
+  src/sections/season-year-group.tsx → src/utils/endpoint-slug.ts
 - `exclude` --extends--> `node_modules/**`  [EXTRACTED]
   tsconfig.json → biome.json
-- `GenresExplorerProps` --references--> `Genre`  [EXTRACTED]
-  src/components/genres-explorer.tsx → src/interfaces/reference.ts
-- `AnimeDetail` --references--> `Genre`  [EXTRACTED]
-  src/interfaces/anime.ts → src/interfaces/reference.ts
 
 ## Import Cycles
 - None detected.
 
-## Communities (49 total, 9 thin omitted)
+## Communities (58 total, 9 thin omitted)
 
 ### Community 0 - "scraper/index.ts"
-Cohesion: 0.05
-Nodes (65): alt, contentType, Image(), runtime, size, GET(), GET(), GET() (+57 more)
-
-### Community 1 - "main-layout.tsx"
 Cohesion: 0.06
-Nodes (23): dynamic, dynamic, PaginatedHome(), DetailDownloadSkeleton(), DetailHeroSkeleton(), DetailSkeleton(), CardSkeleton(), GridSkeleton() (+15 more)
+Nodes (58): GET(), cleanFirstTitle(), dynamic, GET(), probe(), dynamic, GET(), GET() (+50 more)
+
+### Community 1 - "MainLayout"
+Cohesion: 0.15
+Nodes (5): CardSkeleton(), GridSkeleton(), GridSkeletonProps, MainLayout(), ListingSkeleton()
+
+### Community 2 - "download-section.tsx"
+Cohesion: 0.17
+Nodes (9): DownloadGuideModal(), DownloadSection(), NewSeriesSection(), NewSeriesSkeleton(), ReadingFocusMode(), ReadingFocusModeProps, Synopsis(), Reveal() (+1 more)
 
 ### Community 3 - "interfaces/index.ts"
-Cohesion: 0.06
-Nodes (42): EmptyState(), AnimeGrid(), AnimeGridProps, AnimeImage(), AnimeImageProps, CardAnime(), ChevronLeftIcon(), ChevronRightIcon() (+34 more)
+Cohesion: 0.07
+Nodes (34): EmptyState(), AnimeGrid(), AnimeGridProps, ChevronLeftIcon(), ChevronRightIcon(), SearchIcon(), IconProps, Input() (+26 more)
 
 ### Community 4 - "section-detail.tsx"
-Cohesion: 0.06
-Nodes (33): CopyButton(), CopyButtonProps, DetailHero(), DetailHeroProps, DetailToc(), SECTIONS, DownloadPlatform(), getPlatformStyle() (+25 more)
+Cohesion: 0.17
+Nodes (12): DetailHeroProps, DetailToc(), SECTIONS, EpisodeGallery(), EpisodeGalleryProps, InfoSide(), ThemeSongsPlayer(), ThemeSongsPlayerProps (+4 more)
 
 ### Community 5 - "scripts"
 Cohesion: 0.04
 Nodes (45): axios, cheerio, husky, author, dependencies, axios, cheerio, husky (+37 more)
 
 ### Community 6 - "bookmarks/page.tsx"
-Cohesion: 0.13
-Nodes (36): BookmarksPage(), SERVER_BOOKMARKS, SERVER_HISTORY, BookmarkButton(), BookmarkButtonProps, HistoryTracker(), HistoryTrackerProps, EMPTY_HISTORY (+28 more)
+Cohesion: 0.11
+Nodes (40): BookmarksPage(), SERVER_BOOKMARKS, SERVER_HISTORY, BookmarkButton(), BookmarkButtonProps, HistoryTracker(), HistoryTrackerProps, AnimeImage() (+32 more)
 
 ### Community 7 - "settings.ts"
-Cohesion: 0.10
-Nodes (34): BatchDownloadTools(), BatchDownloadToolsProps, DownloadGroup(), DownloadGroupProps, renderResolutionBadge(), DownloadGuideModal(), DownloadSection(), DEFAULT_STORAGE (+26 more)
+Cohesion: 0.08
+Nodes (40): BatchDownloadTools(), BatchDownloadToolsProps, CopyButton(), CopyButtonProps, DownloadGroup(), DownloadGroupProps, renderResolutionBadge(), DownloadPlatform() (+32 more)
 
 ### Community 8 - "style"
 Cohesion: 0.05
@@ -120,13 +133,25 @@ Nodes (52): .next/**, Anime(), dynamic, generateMetadata(), ApiDocsPage(), ENDPO
 Cohesion: 0.10
 Nodes (21): @biomejs/biome, lint-staged, devDependencies, @biomejs/biome, lint-staged, postcss, tailwindcss, @tailwindcss/postcss (+13 more)
 
-### Community 13 - "[query]/page.tsx"
-Cohesion: 0.16
-Nodes (18): POST(), GET(), POST(), GET(), generateMetadata(), SearchAnime(), checkEtagMatch(), generateEtag() (+10 more)
+### Community 11 - "main-layout.tsx"
+Cohesion: 0.18
+Nodes (7): FloatingTopButton(), HoneypotTrap(), KeyboardNavigation(), SHORTCUTS, BeforeInstallPromptEvent, PwaInstallBanner(), ScrollToTop()
+
+### Community 12 - "detail-hero.tsx"
+Cohesion: 0.19
+Nodes (9): DetailHero(), chipColors, GenreTags(), ShareButton(), ShareButtonProps, TrailerButton(), TrailerButtonProps, VerticalJapaneseTitle() (+1 more)
+
+### Community 13 - "getAnimeDetail"
+Cohesion: 0.10
+Nodes (27): alt, contentType, Image(), runtime, size, POST(), GET(), GET() (+19 more)
 
 ### Community 14 - "compilerOptions"
 Cohesion: 0.12
 Nodes (16): compilerOptions, allowJs, esModuleInterop, forceConsistentCasingInFileNames, incremental, isolatedModules, jsx, module (+8 more)
+
+### Community 15 - "[page]/page.tsx"
+Cohesion: 0.21
+Nodes (5): dynamic, dynamic, PaginatedHome(), HomeContent(), HomeSkeleton()
 
 ### Community 16 - "footer/index.tsx"
 Cohesion: 0.21
@@ -140,9 +165,21 @@ Nodes (10): quoteStyle, semicolons, trailingCommas, javascript, formatter, linte
 Cohesion: 0.20
 Nodes (9): node_modules/**, .next/dev/types/**/*.ts, next-env.d.ts, .next/types/**/*.ts, tailwind.config.js, **/*.ts, **/*.tsx, exclude (+1 more)
 
+### Community 19 - "season-year-group.tsx"
+Cohesion: 0.23
+Nodes (9): getSeasonInfo(), SEASON_META, SeasonsExplorer(), SeasonsExplorerProps, Season, SeasonYearGroup(), SeasonYearGroupProps, TaxonomyCard() (+1 more)
+
 ### Community 21 - "ignore"
 Cohesion: 0.29
 Nodes (7): files, ignore, ignoreUnknown, coverage/**, dist/**, pnpm-lock.yaml, public/**
+
+### Community 22 - "home-content.tsx"
+Cohesion: 0.31
+Nodes (5): RecommendedSkeleton(), FeaturedHero(), FeaturedHeroProps, LatestGrid(), RecommendationSection()
+
+### Community 23 - "genres-explorer.tsx"
+Cohesion: 0.28
+Nodes (7): GENRE_DICTIONARY, GenreMeta, GenresExplorer(), GenresExplorerProps, getGenreMeta(), Genre, Recommendation
 
 ### Community 24 - "formatter"
 Cohesion: 0.40
@@ -152,9 +189,9 @@ Nodes (5): formatter, enabled, indentStyle, indentWidth, lineWidth
 Cohesion: 0.50
 Nodes (3): immutableCacheControl, nextConfig, securityHeaders
 
-### Community 26 - "getAnimePerPage"
-Cohesion: 0.08
-Nodes (29): dynamic, GET(), sitemap(), DetailMeta(), MetaItemProps, chipColors, GenreTags(), GENRE_DICTIONARY (+21 more)
+### Community 26 - "endpoint-slug.ts"
+Cohesion: 0.25
+Nodes (8): sitemap(), DetailMeta(), MetaItemProps, NewSeriesAnime(), RecommendedAnime(), getRecommendations(), animeSlug(), endpointSlug()
 
 ### Community 27 - "defer-hydration.tsx"
 Cohesion: 0.60
@@ -172,9 +209,17 @@ Nodes (4): vcs, clientKind, enabled, useIgnoreFile
 Cohesion: 0.50
 Nodes (4): dom, dom.iterable, esnext, lib
 
+### Community 31 - "detail-skeleton.tsx"
+Cohesion: 0.36
+Nodes (3): DetailDownloadSkeleton(), DetailHeroSkeleton(), DetailSkeleton()
+
 ### Community 33 - "useTranslation"
 Cohesion: 0.11
 Nodes (26): clientSearchCache, CommandPalette(), getRecentSearches(), saveRecentSearch(), CompareAnimeClient(), CompareAnimeClientProps, PRESET_COMPARISONS, DownloadIcon() (+18 more)
+
+### Community 34 - "offline-indicator.tsx"
+Cohesion: 0.83
+Nodes (3): getOnlineSnapshot(), OfflineIndicator(), subscribeOnline()
 
 ### Community 59 - "post-commit"
 Cohesion: 0.40
@@ -185,24 +230,24 @@ Cohesion: 0.50
 Nodes (3): post-checkout script, GRAPHIFY_REBUILD_LOG, PYTHONHASHSEED
 
 ## Knowledge Gaps
-- **217 isolated node(s):** `RetryConfig`, `MemoryCacheEntry`, `FallbackExtractResult`, `ImgLike`, `TaxonomyItem` (+212 more)
+- **218 isolated node(s):** `USER_AGENTS`, `httpAgent`, `httpsAgent`, `RetryConfig`, `MemoryCacheEntry` (+213 more)
   These have ≤1 connection - possible missing edges or undocumented components.
 - **9 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `.next/**` connect `seo.ts` to `main-layout.tsx`, `[query]/page.tsx`, `getAnimePerPage`, `ignore`?**
+- **Why does `.next/**` connect `seo.ts` to `getAnimeDetail`, `endpoint-slug.ts`, `ignore`, `[page]/page.tsx`?**
   _High betweenness centrality (0.177) - this node is a cross-community bridge._
 - **Why does `ignore` connect `ignore` to `seo.ts`, `include`?**
   _High betweenness centrality (0.168) - this node is a cross-community bridge._
 - **Why does `files` connect `ignore` to `biome.json`?**
-  _High betweenness centrality (0.108) - this node is a cross-community bridge._
-- **What connects `RetryConfig`, `MemoryCacheEntry`, `FallbackExtractResult` to the rest of the system?**
-  _217 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _High betweenness centrality (0.107) - this node is a cross-community bridge._
+- **What connects `USER_AGENTS`, `httpAgent`, `httpsAgent` to the rest of the system?**
+  _218 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `scraper/index.ts` be split into smaller, more focused modules?**
-  _Cohesion score 0.05204336947456213 - nodes in this community are weakly interconnected._
-- **Should `main-layout.tsx` be split into smaller, more focused modules?**
-  _Cohesion score 0.05552617662612375 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.05858585858585859 - nodes in this community are weakly interconnected._
+- **Should `MainLayout` be split into smaller, more focused modules?**
+  _Cohesion score 0.1471861471861472 - nodes in this community are weakly interconnected._
 - **Should `interfaces/index.ts` be split into smaller, more focused modules?**
-  _Cohesion score 0.05809802012333658 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.07067307692307692 - nodes in this community are weakly interconnected._
