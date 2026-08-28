@@ -810,9 +810,9 @@
     "semantic_hash": "4d2e2828fca8a3f76fe54f3df00dea33"
   },
   "src/config/upstream.ts": {
-    "mtime": 1787888215.5442996,
-    "seen": 1787888300.6192927,
-    "ast_hash": "42eb0f9042648034605a859214fa58f7",
+    "mtime": 1787890062.6186137,
+    "seen": 1787900781.7867203,
+    "ast_hash": "a444a3d9eee4a14db91292112f958805",
     "semantic_hash": ""
   },
   "src/interfaces/anime.ts": {
