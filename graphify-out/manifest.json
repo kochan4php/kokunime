@@ -810,9 +810,9 @@
     "semantic_hash": "4d2e2828fca8a3f76fe54f3df00dea33"
   },
   "src/config/upstream.ts": {
-    "mtime": 1787884032.2523959,
-    "seen": 1787887260.5283701,
-    "ast_hash": "f4f067c3c6e499abe89de5dad4fa72a3",
+    "mtime": 1787888215.5442996,
+    "seen": 1787888300.6192927,
+    "ast_hash": "42eb0f9042648034605a859214fa58f7",
     "semantic_hash": ""
   },
   "src/interfaces/anime.ts": {
@@ -1386,10 +1386,10 @@
     "semantic_hash": "283caea01d3cca7fd806ede41cecaba0"
   },
   "tests/upstream.test.ts": {
-    "mtime": 1787881524.3293092,
-    "seen": 1787881897.8572686,
-    "ast_hash": "9775ebf70e4c86becfccc10bc7aa7edb",
-    "semantic_hash": "9775ebf70e4c86becfccc10bc7aa7edb"
+    "mtime": 1787888225.948173,
+    "seen": 1787888300.619372,
+    "ast_hash": "00a696918441551a2a0b48f47419083b",
+    "semantic_hash": ""
   },
   "tests/webhook-dispatcher.test.ts": {
     "mtime": 1787118557.6826565,
