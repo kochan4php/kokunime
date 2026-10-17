@@ -9,10 +9,12 @@ export interface ErrorReport {
   route?: string;
 }
 
-// Per-fingerprint throttle: a crash loop must not spam the webhook.
-const THROTTLE_MS = 60_000;
+// Per-fingerprint throttle: a crash loop must not spam the webhook. Suppressed
+// occurrences are counted and attached to the next report for that fingerprint.
+const THROTTLE_MS = 10 * 60_000;
 const MAX_FINGERPRINTS = 200;
 const lastSent = new Map<string, number>();
+const suppressed = new Map<string, number>();
 
 const truncate = (value: string, max: number): string => (value.length > max ? `${value.slice(0, max)}…` : value);
 
@@ -23,8 +25,13 @@ export async function reportError(report: ErrorReport): Promise<boolean> {
   const fingerprint = `${report.source}:${report.path ?? ""}:${truncate(report.message, 120)}`;
   const now = Date.now();
   const last = lastSent.get(fingerprint);
-  if (last && now - last < THROTTLE_MS) return false;
+  if (last && now - last < THROTTLE_MS) {
+    suppressed.set(fingerprint, (suppressed.get(fingerprint) ?? 0) + 1);
+    return false;
+  }
   if (lastSent.size >= MAX_FINGERPRINTS) lastSent.clear();
+  const suppressedCount = suppressed.get(fingerprint) ?? 0;
+  suppressed.delete(fingerprint);
   lastSent.set(fingerprint, now);
 
   const fields = [
@@ -33,6 +40,9 @@ export async function reportError(report: ErrorReport): Promise<boolean> {
     ...(report.route ? [{ name: "Route", value: truncate(report.route, 150), inline: true }] : []),
     ...(report.path ? [{ name: "Path", value: truncate(report.path, 200), inline: true }] : []),
     ...(report.digest ? [{ name: "Digest", value: truncate(report.digest, 100), inline: true }] : []),
+    ...(suppressedCount > 0
+      ? [{ name: "Suppressed", value: `${suppressedCount}x dalam 10 menit terakhir`, inline: true }]
+      : []),
   ];
 
   return dispatchDiscordWebhook(webhook, {

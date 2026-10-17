@@ -1,6 +1,22 @@
-const CACHE = "kokunime-v7";
+// No build step for this file: the cache version comes from the registration
+// URL (?v=<build id>) injected by src/components/sw-register.tsx — a new build
+// registers a new script URL, activates it, and the old cache names are purged.
+const VERSION = new URL(self.location.href).searchParams.get("v") || "dev";
+const CACHE = `kokunime-${VERSION}`;
 const OFFLINE_URL = "/offline";
 const PRECACHE_URLS = [OFFLINE_URL, "/manifest.webmanifest", "/icon.svg"];
+
+// Pages worth keeping offline: app shell pages + anime detail pages. Anything
+// else falls through to the /offline fallback.
+const OFFLINE_PAGES = [/^\/$/, /^\/page\//, /^\/bookmarks/, /^\/genres/, /^\/seasons/, /^\/anime\//];
+
+const isOfflinePage = (pathname) => OFFLINE_PAGES.some((pattern) => pattern.test(pathname));
+
+const notifyServedFromCache = () => {
+  self.clients.matchAll({ type: "window" }).then((clients) => {
+    for (const client of clients) client.postMessage({ type: "kokunime:served-from-cache" });
+  });
+};
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
@@ -36,14 +52,15 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  // Navigation requests: NETWORK-FIRST with offline detail caching
-  // Always fetch live data on normal reload. When successful, cache /anime/[slug] for offline viewing.
-  // If completely offline, serve the cached anime page or /offline fallback.
+  // Navigation requests: NETWORK-FIRST with offline listing/detail caching.
+  // Always fetch live data on normal reload. When successful, cache app-shell
+  // listings and /anime/[slug]. If completely offline, serve the last cached
+  // copy (flagged to the UI via postMessage) or the /offline fallback.
   if (request.mode === "navigate") {
     event.respondWith(
       fetch(request)
         .then((response) => {
-          if (response.ok && url.pathname.startsWith("/anime/")) {
+          if (response.ok && isOfflinePage(url.pathname)) {
             const copy = response.clone();
             caches.open(CACHE).then((cache) => cache.put(request, copy));
           }
@@ -51,7 +68,10 @@ self.addEventListener("fetch", (event) => {
         })
         .catch(async () => {
           const cached = await caches.match(request);
-          if (cached) return cached;
+          if (cached) {
+            notifyServedFromCache();
+            return cached;
+          }
           return caches.match(OFFLINE_URL);
         }),
     );

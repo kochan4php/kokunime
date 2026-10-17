@@ -100,6 +100,8 @@ export const DICTIONARY = {
     "settings.data_saver_desc": "Hemat kuota & batasi media",
     "settings.hide_spoilers": "Lindungi Spoiler",
     "settings.hide_spoilers_desc": "Tutup sinopsis awal",
+    "settings.auto_mark": "Auto-tandai Episode",
+    "settings.auto_mark_desc": "Tandai episode sudah ditonton saat klik link downloadnya",
 
     // Storage & Backup
     "settings.storage_title": "Penyimpanan & Backup",
@@ -156,6 +158,9 @@ export const DICTIONARY = {
     "compare.synopsis_b": "Sinopsis Anime B",
     "compare.loading_msg": "Sedang Mengambil Metadata Komparasi Anime...",
     "compare.empty_prompt": "Pilih Dua Anime di Atas untuk Memulai Komparasi",
+    "compare.similarity": "Tingkat Kemiripan",
+    "compare.similarity_desc":
+      "Dihitung di perangkat Anda dari irisan genre, tahun rilis, skor, dan tipe tayang — tanpa request tambahan.",
 
     // Bookmarks Page
     "bookmarks.title": "Koleksi & Riwayat Tersimpan",
@@ -165,6 +170,25 @@ export const DICTIONARY = {
     "bookmarks.empty_saved": "Belum ada anime yang tersimpan di bookmark.",
     "bookmarks.empty_history": "Belum ada riwayat anime yang ditonton.",
     "bookmarks.clear_all": "Hapus Semua",
+
+    // Watch Progress (detail pages)
+    "watch.continue_ep": "Lanjut Eps",
+    "watch.all_done": "Semua eps ditandai",
+    "watch.view_download": "Lihat Download",
+    "watch.marked_count": "episode ditandai",
+    "watch.nav_episodes": "Navigasi Episode",
+    "watch.jump_ep": "Lompat ke episode",
+    "watch.watched": "sudah ditonton",
+    "watch.mark_ep": "Tandai Episode",
+    "watch.unmark_ep": "Batal tandai Episode",
+    "watch.as_watched": "sudah ditonton",
+    "watch.as_unwatched": "belum ditonton",
+    "watch.mark_short": "Tandai",
+    "watch.marked_short": "Sudah",
+    "watch.progress": "Progres",
+    "update.ics_button": "Pengingat Mingguan (.ics)",
+    "update.ics_title": "Unduh pengingat mingguan (file kalender) untuk anime yang baru update",
+    "update.ics_toast": "pengingat mingguan dibuat (.ics)",
   },
   en: {
     // Navigation
@@ -259,6 +283,8 @@ export const DICTIONARY = {
     "settings.data_saver_desc": "Save bandwidth & limit media",
     "settings.hide_spoilers": "Hide Spoilers",
     "settings.hide_spoilers_desc": "Collapse initial synopses",
+    "settings.auto_mark": "Auto-mark Episodes",
+    "settings.auto_mark_desc": "Mark an episode watched when its download link is clicked",
 
     // Storage & Backup
     "settings.storage_title": "Storage & Backup",
@@ -315,6 +341,9 @@ export const DICTIONARY = {
     "compare.synopsis_b": "Anime B Synopsis",
     "compare.loading_msg": "Fetching Anime Comparison Metadata...",
     "compare.empty_prompt": "Select Two Anime Above to Start Comparison",
+    "compare.similarity": "Similarity Score",
+    "compare.similarity_desc":
+      "Computed on your device from genre overlap, release year, score and broadcast type — no extra requests.",
 
     // Bookmarks Page
     "bookmarks.title": "Saved Collection & Watch History",
@@ -324,6 +353,25 @@ export const DICTIONARY = {
     "bookmarks.empty_saved": "No anime saved in bookmarks yet.",
     "bookmarks.empty_history": "No watched anime history recorded yet.",
     "bookmarks.clear_all": "Clear All",
+
+    // Watch Progress (detail pages)
+    "watch.continue_ep": "Continue Ep",
+    "watch.all_done": "All eps marked",
+    "watch.view_download": "View Downloads",
+    "watch.marked_count": "episodes marked",
+    "watch.nav_episodes": "Episode Navigator",
+    "watch.jump_ep": "Jump to episode",
+    "watch.watched": "watched",
+    "watch.mark_ep": "Mark Episode",
+    "watch.unmark_ep": "Unmark Episode",
+    "watch.as_watched": "as watched",
+    "watch.as_unwatched": "as unwatched",
+    "watch.mark_short": "Mark",
+    "watch.marked_short": "Done",
+    "watch.progress": "Progress",
+    "update.ics_button": "Weekly Reminder (.ics)",
+    "update.ics_title": "Download a weekly calendar reminder for recently updated anime",
+    "update.ics_toast": "weekly reminders created (.ics)",
   },
 } as const;
 

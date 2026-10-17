@@ -179,6 +179,57 @@ export const subscribeProgress = (listener: () => void): (() => void) => {
   };
 };
 
+// First episode in `episodes` not yet in `watched` — the "Lanjut Tonton"
+// target. Null when the list is empty or every episode is marked watched.
+export const nextUnwatchedEpisode = (watched: number[], episodes: number[]): number | null => {
+  if (episodes.length === 0) return null;
+  const seen = new Set(watched);
+  for (const episode of episodes) {
+    if (!seen.has(episode)) return episode;
+  }
+  return null;
+};
+
+// Next unwatched episode from a stored entry alone (no download list needed,
+// e.g. bookmark cards): bounded by `total` when known, else max watched + 1.
+export const nextEpisodeFromProgress = (entry?: ProgressEntry): number | null => {
+  if (!entry || entry.watched.length === 0) return null;
+  const watched = new Set(entry.watched);
+  const max = entry.total ?? Math.max(...entry.watched) + 1;
+  for (let episode = 1; episode <= max; episode++) {
+    if (!watched.has(episode)) return episode;
+  }
+  return null;
+};
+
+// Union-merge incoming entries (share-link import): watched sets are unioned
+// per slug, richer meta wins, order follows recency. Returns merged count.
+export const mergeProgressEntries = (entries: ProgressEntry[]): number => {
+  const incoming = entries.map(sanitizeEntry).filter((entry): entry is ProgressEntry => entry !== null);
+  if (incoming.length === 0) return 0;
+
+  const list = [...getProgressList()];
+  for (const entry of incoming) {
+    const index = list.findIndex((existing) => existing.slug === entry.slug);
+    if (index === -1) {
+      list.push({ ...entry, updatedAt: Date.now() });
+      continue;
+    }
+    const current = list[index];
+    list[index] = {
+      slug: entry.slug,
+      watched: [...new Set([...current.watched, ...entry.watched])].sort((a, b) => a - b),
+      title: entry.title ?? current.title,
+      total: entry.total ?? current.total,
+      updatedAt: Date.now(),
+    };
+  }
+
+  list.sort((a, b) => b.updatedAt - a.updatedAt);
+  writeList(list);
+  return incoming.length;
+};
+
 // "12" / "12 Episode" / "1100+" → 12 / 12 / 1100; "?" or "" → undefined.
 export const parseTotalEpisodes = (raw?: string | null): number | undefined => {
   if (!raw) return undefined;

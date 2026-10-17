@@ -1,6 +1,6 @@
 import axios, { AxiosError, AxiosInstance, InternalAxiosRequestConfig } from "axios";
 import { canRequest, recordFailure, recordSuccess } from "@/lib/circuit-breaker";
-import { incrementMetric } from "@/lib/metrics";
+import { incrementMetric, observeHistogram } from "@/lib/metrics";
 import { SCRAPE_BASE_URL } from "@/services/scraper/constants";
 
 const MAX_RETRIES = 2;
@@ -11,7 +11,14 @@ export const UPSTREAM_CIRCUIT_KEY = "kusonime-upstream";
 
 interface RetryConfig extends InternalAxiosRequestConfig {
   retryCount?: number;
+  requestStartedAt?: number;
 }
+
+const observeUpstreamDuration = (config?: RetryConfig): void => {
+  if (config?.requestStartedAt) {
+    observeHistogram("upstream_request_duration_ms", Date.now() - config.requestStartedAt);
+  }
+};
 
 // Faithful restore of the last known-good direct-scrape config (7e34949,
 // Aug 9): withCredentials, bare "*" UA, Host header, and the DEFAULT Node
@@ -50,6 +57,7 @@ upstream.interceptors.request.use((config) => {
       }),
     );
   }
+  (config as RetryConfig).requestStartedAt = Date.now();
   return config;
 });
 
@@ -59,6 +67,7 @@ upstream.interceptors.request.use((config) => {
 const UPSTREAM_MARK = "Kusonime";
 
 upstream.interceptors.response.use((response) => {
+  observeUpstreamDuration(response.config as RetryConfig);
   const data: unknown = response.data;
   if (typeof data === "string" && !data.includes(UPSTREAM_MARK)) {
     return Promise.reject(
@@ -74,6 +83,8 @@ upstream.interceptors.response.use(
   (response) => response,
   async (error: AxiosError) => {
     const config = error.config as RetryConfig | undefined;
+    // Count every completed attempt (including ones that will be retried).
+    observeUpstreamDuration(config);
     const status = error.response?.status;
     const retryable = !status || status === 429 || status >= 500;
 

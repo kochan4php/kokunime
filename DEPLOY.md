@@ -21,9 +21,10 @@ Also used by the `Monitor` workflow (`monitor.yml`): `PRODUCTION_URL` every 15 m
 
 - Docker + Docker Compose v2.
 - GHCR access: make the package **public** (packages → kokunime → visibility) so the server can pull without credentials. Otherwise run `docker login ghcr.io` on the server first.
-- Optional `.env` in `DEPLOY_DIR` for runtime config: `NEXT_PUBLIC_SITE_URL`, `ERROR_WEBHOOK_URL`, `REDIS_URL`, `METRICS_TOKEN` (see `.env.example`).
+- Optional `.env` in `DEPLOY_DIR` for runtime config: `NEXT_PUBLIC_SITE_URL`, `ERROR_WEBHOOK_URL`, `REDIS_URL`, `METRICS_TOKEN`, `ADMIN_TOKEN` (see `.env.example`).
 - Optional shared cache: `docker compose -f docker-compose.prod.yml --profile cache up -d` then set `REDIS_URL=redis://kokunime-redis:6379` for the app service (add it to the compose `environment` or a `.env` file next to the compose file).
 - Observability endpoints: `/api/live` (liveness, used by docker healthcheck + deploy gate), `/api/ready` (upstream breaker state), `/api/health` (upstream diagnostics), `/api/metrics` (Prometheus text; requires `Authorization: Bearer $METRICS_TOKEN`, 404 when unset).
+- Cache invalidation (admin): `POST /api/admin/revalidate` with `Authorization: Bearer $ADMIN_TOKEN` (falls back to `METRICS_TOKEN`) and body `{"paths":["/","/anime/slug"]}` (max 20 relative paths). 404 when no token is configured. Releases with Redis pub/sub flush sibling instances' local caches too.
 
 ## Manual deploy / rollback
 

@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslation } from "@/utils/i18n";
 import { JSX, useEffect, useState } from "react";
 
 const SECTIONS = [
@@ -10,12 +11,17 @@ const SECTIONS = [
 ];
 
 const DetailToc = (): JSX.Element | null => {
+  const { t } = useTranslation();
   const [activeId, setActiveId] = useState<string>("hero");
   const [visible, setVisible] = useState(false);
+  const [progress, setProgress] = useState(0);
 
   useEffect(() => {
     const handleScroll = () => {
       setVisible(window.scrollY > 350);
+
+      const max = document.documentElement.scrollHeight - window.innerHeight;
+      setProgress(max > 0 ? Math.min(100, Math.round((window.scrollY / max) * 100)) : 0);
 
       const scrollPos = window.scrollY + 200;
       for (let i = SECTIONS.length - 1; i >= 0; i--) {
@@ -27,6 +33,7 @@ const DetailToc = (): JSX.Element | null => {
       }
     };
 
+    handleScroll();
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
@@ -57,6 +64,15 @@ const DetailToc = (): JSX.Element | null => {
           <span>{sec.label}</span>
         </button>
       ))}
+      <div className="mt-1 border-t-2 border-border px-2 pt-2 pb-1">
+        <div className="flex items-center justify-between font-mono text-[10px] text-ink-muted">
+          <span>{t("watch.progress")}</span>
+          <span>{progress}%</span>
+        </div>
+        <div aria-hidden="true" className="mt-1 h-1.5 overflow-hidden rounded-sm border border-border bg-surface">
+          <div className="h-full bg-accent transition-[width] duration-150" style={{ width: `${progress}%` }} />
+        </div>
+      </div>
     </div>
   );
 };

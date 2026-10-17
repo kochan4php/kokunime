@@ -5,6 +5,8 @@ import {
   getProgressList,
   getWatchedCount,
   isEpisodeWatched,
+  mergeProgressEntries,
+  nextEpisodeFromProgress,
   parseTotalEpisodes,
   subscribeProgress,
   syncProgressMeta,
@@ -102,5 +104,27 @@ describe("progress utility", () => {
     expect(parseTotalEpisodes("?")).toBeUndefined();
     expect(parseTotalEpisodes("")).toBeUndefined();
     expect(parseTotalEpisodes(null)).toBeUndefined();
+  });
+
+  it("computes the next episode from stored progress alone", () => {
+    expect(nextEpisodeFromProgress(undefined)).toBeNull();
+    expect(nextEpisodeFromProgress({ slug: "a", watched: [], updatedAt: 1 })).toBeNull();
+    expect(nextEpisodeFromProgress({ slug: "a", watched: [1, 2, 4], updatedAt: 1 })).toBe(3);
+    expect(nextEpisodeFromProgress({ slug: "a", watched: [5], updatedAt: 1 })).toBe(1);
+    expect(nextEpisodeFromProgress({ slug: "a", watched: [1, 2], total: 2, updatedAt: 1 })).toBeNull();
+  });
+
+  it("union-merges imported progress entries and skips invalid ones", () => {
+    toggleEpisodeWatched("anime-9", 1, { title: "Anime 9" });
+    const merged = mergeProgressEntries([
+      { slug: "anime-9", watched: [1, 3], updatedAt: 1 },
+      { slug: "anime-10", watched: [2], updatedAt: 1 },
+      { slug: "", watched: [1], updatedAt: 1 },
+    ]);
+
+    expect(merged).toBe(2);
+    expect(getProgress("anime-9")?.watched).toEqual([1, 3]);
+    expect(getProgress("anime-9")?.title).toBe("Anime 9");
+    expect(getProgress("anime-10")?.watched).toEqual([2]);
   });
 });

@@ -1,3 +1,4 @@
+import { incrementMetric } from "./metrics";
 import { createClient } from "redis";
 
 // Optional shared Redis layer. Everything is env-gated on REDIS_URL:
@@ -102,3 +103,63 @@ export async function redisHealth(): Promise<"disabled" | "connected" | "error">
     return "error";
   }
 }
+
+// --- Cross-instance cache invalidation -------------------------------------
+// A write to one instance's cache publishes on a Redis channel so sibling
+// instances drop their local L1/stale copies for that key. The message also
+// carries the publisher id: an instance must NOT invalidate its own freshly
+// warmed entry (it is already the freshest copy).
+const INVALIDATE_CHANNEL = `${KEY_PREFIX}invalidate`;
+const INSTANCE_ID = crypto.randomUUID();
+
+let subscriber: RedisClient | null = null;
+let subscribePromise: Promise<void> | null = null;
+let invalidateHandler: ((key: string | null) => void) | null = null;
+
+const handleInvalidateMessage = (message: string): void => {
+  try {
+    const parsed = JSON.parse(message) as { o?: string; k?: string };
+    if (!parsed.o || parsed.o === INSTANCE_ID) return;
+    incrementMetric("cache_invalidate_received");
+    invalidateHandler?.(parsed.k === "*" ? null : (parsed.k ?? null));
+  } catch {}
+};
+
+const ensureSubscriber = async (): Promise<void> => {
+  if (subscriber?.isReady) return;
+  if (subscribePromise) return subscribePromise;
+  subscribePromise = (async () => {
+    try {
+      const base = await getRedis();
+      if (!base) return;
+      const sub = base.duplicate();
+      sub.on("error", () => {});
+      await sub.connect();
+      await sub.subscribe(INVALIDATE_CHANNEL, handleInvalidateMessage);
+      subscriber = sub;
+    } catch {
+      // Retried on the next publish/registration attempt.
+      subscriber = null;
+    } finally {
+      subscribePromise = null;
+    }
+  })();
+  return subscribePromise;
+};
+
+// Register the per-process handler that drops local caches when a sibling
+// instance (or the admin route) invalidates a key, or everything with null.
+export const onCacheInvalidate = (handler: (key: string | null) => void): void => {
+  invalidateHandler = handler;
+  void ensureSubscriber();
+};
+
+export const publishCacheInvalidate = async (key?: string): Promise<void> => {
+  const c = await getRedis();
+  if (!c) return;
+  void ensureSubscriber();
+  try {
+    await c.publish(INVALIDATE_CHANNEL, JSON.stringify({ o: INSTANCE_ID, k: key ?? "*" }));
+    incrementMetric("cache_invalidate_published");
+  } catch {}
+};

@@ -3,9 +3,11 @@
 // Route checks: expected status + optional body substring (SEO/feed contracts).
 const routes = [
   { path: "/", status: 200, contains: "application/ld+json" },
+  { path: "/update", status: 200 },
   { path: "/bookmarks", status: 200 },
   { path: "/genres", status: 200 },
   { path: "/seasons", status: 200 },
+  { path: "/compare", status: 200 },
   { path: "/offline", status: 200 },
   { path: "/robots.txt", status: 200, contains: "Sitemap" },
   { path: "/sitemap.xml", status: 200, contains: "<urlset" },

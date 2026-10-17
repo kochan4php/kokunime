@@ -1,0 +1,24 @@
+name: Backup drill
+
+on:
+  schedule:
+    # Every Monday 03:17 UTC — proves the backup script still runs and that a
+    # fresh snapshot passes its own integrity + freshness check.
+    - cron: "17 3 * * 1"
+  workflow_dispatch:
+
+jobs:
+  drill:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Create a fresh backup snapshot
+        run: node scripts/backup-cache.mjs
+
+      - name: Verify the latest snapshot
+        run: node scripts/backup-cache.mjs --verify

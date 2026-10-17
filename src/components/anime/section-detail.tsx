@@ -5,8 +5,8 @@ import NewSeriesSection from "./new-series-section";
 import Synopsis from "./synopsis";
 import HistoryTracker from "./history-tracker";
 import DetailToc from "./detail-toc";
+import ContinueWatching from "./continue-watching";
 import Reveal from "@/components/reveal";
-import { ArrowDownIcon } from "@/components/icons";
 import { AnimeDetail } from "@/interfaces";
 import Link from "next/link";
 import { JSX } from "react";
@@ -85,15 +85,12 @@ const SectionDetail = ({ anime, slug }: { anime: AnimeDetail; slug: string }): J
             className="!h-11 !w-11 rounded-sm border-2 border-border bg-surface text-ink shadow-[2px_2px_0_0_var(--border)]"
           />
         </div>
-        <a
-          href="#download"
+        <ContinueWatching
+          slug={slug}
+          downloads={anime.download}
+          variant="bar"
           className="btn-primary min-w-0 flex-1 justify-center !h-11 !px-3 sm:!px-6 !text-xs sm:!text-sm"
-        >
-          <span className="truncate">Lihat Download</span>
-          <span className="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-sm border-2 border-nb-ink bg-nb-ink text-nb-cream">
-            <ArrowDownIcon className="h-3 w-3" />
-          </span>
-        </a>
+        />
       </div>
     )}
   </section>

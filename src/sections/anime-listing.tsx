@@ -5,6 +5,9 @@ import Pagination from "@/sections/pagination";
 import PaginationBar from "@/sections/pagination/bar";
 import { SearchIcon } from "@/components/icons";
 import { Anime, PaginationInfo } from "@/interfaces";
+import { buildItemListJsonLd, safeJsonLd } from "@/lib/seo";
+import { animeSlug } from "@/utils/endpoint-slug";
+import { fuzzyScore } from "@/utils/fuzzy";
 import { JSX, useMemo, useState } from "react";
 
 interface AnimeListingProps {
@@ -20,14 +23,33 @@ const AnimeListing = ({ chip, title, anime, pagination, eagerCount = 0 }: AnimeL
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const hasNumbers = (pagination?.total_page ?? 0) > 0;
 
+  const jsonLdItems = useMemo(
+    () =>
+      anime
+        .map((item) => ({ title: item.title ?? "", slug: animeSlug(item?.link?.endpoint) }))
+        .filter((item): item is { title: string; slug: string } => Boolean(item.slug)),
+    [anime],
+  );
+
   const filteredAnime = useMemo(() => {
-    const q = filterQuery.trim().toLowerCase();
+    const q = filterQuery.trim();
     if (!q) return anime;
-    return anime.filter((item) => item.title.toLowerCase().includes(q));
+    // Fuzzy filter + re-rank: prefix hits first, subsequence matches still land.
+    return anime
+      .map((item) => ({ item, score: fuzzyScore(q, item.title) }))
+      .filter((entry) => entry.score > 0)
+      .sort((a, b) => b.score - a.score)
+      .map((entry) => entry.item);
   }, [anime, filterQuery]);
 
   return (
     <section className="container px-4 pt-6 pb-12 md:pt-10 md:pb-20">
+      {jsonLdItems.length > 0 && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: safeJsonLd(buildItemListJsonLd(title, jsonLdItems)) }}
+        />
+      )}
       <div className="mb-8 flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
         <div>
           <div className="flex items-center gap-2">

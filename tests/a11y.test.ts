@@ -31,6 +31,10 @@ import CardAnime from "@/components/cards/card-anime";
 import AnimeListing from "@/sections/anime-listing";
 import ErrorCard from "@/components/error-card";
 import Footer from "@/components/footer";
+import ContinueWatching from "@/components/anime/continue-watching";
+import EpisodeNavigator from "@/components/anime/episode-navigator";
+import EpisodeWatchedToggle from "@/components/anime/episode-watched-toggle";
+import UpdateIcsButton from "@/components/update-ics-button";
 
 // jsdom has no layout/paint, so axe cannot evaluate color-contrast/target-size.
 // Everything structural (landmarks, names, alt text, labelling, heading order)
@@ -137,6 +141,29 @@ describe("axe accessibility audit", () => {
         },
         eagerCount: 2,
       }),
+    );
+
+    expect(await runAxe(markup)).toEqual([]);
+  });
+
+  it("watch-progress + update components have no axe violations", async () => {
+    const markup = renderToStaticMarkup(
+      createElement(
+        "section",
+        null,
+        createElement("h1", null, "One Piece"),
+        createElement(ContinueWatching, {
+          slug: "one-piece",
+          downloads: [{ title: "One Piece Episode 1", is_batch: false, link_download: [] }],
+          variant: "bar",
+          className: "btn-primary",
+        }),
+        createElement(EpisodeNavigator, { slug: "one-piece", episodes: [1, 2, 3] }),
+        createElement(EpisodeWatchedToggle, { slug: "one-piece", episode: 1, title: "One Piece", total: 3 }),
+        createElement(UpdateIcsButton, {
+          events: [{ title: "One Piece", url: "https://kokunime.example/anime/one-piece" }],
+        }),
+      ),
     );
 
     expect(await runAxe(markup)).toEqual([]);

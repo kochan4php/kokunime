@@ -85,7 +85,7 @@ describe("settings utility", () => {
   it("calculates storage breakdown accurately", () => {
     store.kokunime_bookmarks = JSON.stringify([{ slug: "one-piece", title: "One Piece" }]);
     store.kokunime_watch_history = JSON.stringify([{ slug: "bleach", title: "Bleach" }]);
-    store.kokunime_search_history = JSON.stringify(["naruto", "jujutsu"]);
+    store.kokunime_recent_searches = JSON.stringify(["naruto", "jujutsu"]);
 
     const breakdown = calculateStorageBreakdown();
     expect(breakdown.bookmarksCount).toBe(1);

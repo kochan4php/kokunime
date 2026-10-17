@@ -5,7 +5,9 @@ import BookmarkButton from "./bookmark-button";
 import ShareButton from "./share-button";
 import TrailerButton from "./trailer-button";
 import CopyButton from "./copy-button";
+import ContinueWatching from "./continue-watching";
 import { AnimeDetail } from "@/interfaces";
+import Link from "next/link";
 import { JSX } from "react";
 
 import { VerticalJapaneseTitle } from "./vertical-japanese-title";
@@ -65,6 +67,16 @@ const DetailHero = ({ anime, slug }: DetailHeroProps): JSX.Element => (
                   />
                 )}
                 <ShareButton title={anime.title ?? ""} />
+                {slug && <ContinueWatching slug={slug} downloads={anime.download} variant="hero" />}
+                {slug && (
+                  <Link
+                    href={`/compare?a=${slug}`}
+                    title="Bandingkan anime ini dengan judul lain"
+                    className="inline-flex items-center gap-1 rounded-sm border-2 border-border bg-surface px-2 py-0.5 font-mono text-[11px] font-bold text-ink shadow-[2px_2px_0_0_var(--border)] transition-all duration-150 hover:-translate-y-0.5 hover:bg-nb-cyan active:translate-y-0 active:shadow-none"
+                  >
+                    <span>⚖ Banding</span>
+                  </Link>
+                )}
               </div>
             </div>
             <div className="mt-3 flex flex-col sm:flex-row sm:items-baseline gap-2 min-w-0">

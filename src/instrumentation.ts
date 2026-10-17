@@ -1,6 +1,16 @@
 import { reportError } from "@/lib/error-reporter";
 import type { Instrumentation } from "next";
 
+// Node runtime only: edge runtime has no process signal handling. The lifecycle
+// module is imported dynamically so the Edge bundle never statically contains
+// Node-only APIs (process.on/process.exit).
+export const register = async (): Promise<void> => {
+  if (process.env.NEXT_RUNTIME === "nodejs") {
+    const { registerNodeLifecycle } = await import("@/lib/lifecycle-node");
+    registerNodeLifecycle();
+  }
+};
+
 // Server error tracking. Alerts go to ERROR_WEBHOOK_URL (Discord webhook)
 // when configured; without it this is a silent no-op. See src/lib/error-reporter.ts.
 export const onRequestError: Instrumentation.onRequestError = async (err, request, context) => {

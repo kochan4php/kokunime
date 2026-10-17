@@ -22,6 +22,7 @@ export interface AppSettings {
   downloadLayout: DownloadLayoutMode;
   dataSaver: boolean;
   hideSpoilers: boolean;
+  autoMarkWatched: boolean;
 }
 
 export const DEFAULT_SETTINGS: AppSettings = {
@@ -36,6 +37,7 @@ export const DEFAULT_SETTINGS: AppSettings = {
   downloadLayout: "cards",
   dataSaver: false,
   hideSpoilers: false,
+  autoMarkWatched: false,
 };
 
 export const ACCENT_PRESETS: { key: AccentColor; label: string; color: string; desc: string }[] = [
@@ -193,7 +195,7 @@ export const calculateStorageBreakdown = (): StorageBreakdown => {
 
   const rawBookmarks = localStorage.getItem("kokunime_bookmarks") || "[]";
   const rawHistory = localStorage.getItem("kokunime_watch_history") || "[]";
-  const rawSearches = localStorage.getItem("kokunime_search_history") || "[]";
+  const rawSearches = localStorage.getItem("kokunime_recent_searches") || "[]";
   const rawSettings = localStorage.getItem(SETTINGS_STORAGE_KEY) || "{}";
 
   const bookmarksCount = (JSON.parse(rawBookmarks) || []).length;
@@ -231,7 +233,7 @@ export const exportAllAppData = (): string => {
     settings: getStoredSettings(),
     bookmarks: JSON.parse(localStorage.getItem("kokunime_bookmarks") || "[]"),
     history: JSON.parse(localStorage.getItem("kokunime_watch_history") || "[]"),
-    searches: JSON.parse(localStorage.getItem("kokunime_search_history") || "[]"),
+    searches: JSON.parse(localStorage.getItem("kokunime_recent_searches") || "[]"),
   };
   return JSON.stringify(data, null, 2);
 };
@@ -252,7 +254,7 @@ export const importAllAppData = (jsonString: string): boolean => {
       localStorage.setItem("kokunime_watch_history", JSON.stringify(parsed.history));
     }
     if (Array.isArray(parsed.searches)) {
-      localStorage.setItem("kokunime_search_history", JSON.stringify(parsed.searches));
+      localStorage.setItem("kokunime_recent_searches", JSON.stringify(parsed.searches));
     }
 
     window.dispatchEvent(new Event("storage"));

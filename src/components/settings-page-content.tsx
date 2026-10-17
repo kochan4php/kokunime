@@ -113,7 +113,7 @@ const SettingsPageContent = (): JSX.Element => {
   const handleClearSearches = () => {
     const msg = language === "en" ? "Clear all recent search history?" : "Hapus semua riwayat pencarian terakhir?";
     if (confirm(msg)) {
-      localStorage.removeItem("kokunime_search_history");
+      localStorage.removeItem("kokunime_recent_searches");
       setStorage(calculateStorageBreakdown());
       window.dispatchEvent(new Event("storage"));
     }
@@ -600,6 +600,22 @@ const SettingsPageContent = (): JSX.Element => {
                     type="checkbox"
                     checked={mounted ? settings.hideSpoilers : false}
                     onChange={(e) => updateSetting("hideSpoilers", e.target.checked)}
+                    className="h-4 w-4 rounded-sm border-border accent-accent cursor-pointer ml-3"
+                  />
+                </label>
+
+                {/* 5. Auto-mark watched */}
+                <label className="flex items-center justify-between p-4 rounded-sm border-2 border-border bg-surface-solid hover:border-accent/50 transition-colors cursor-pointer">
+                  <div>
+                    <span className="font-display text-xs sm:text-sm font-bold text-ink block">
+                      ✅ {t("settings.auto_mark")}
+                    </span>
+                    <span className="text-[11px] text-ink-muted">{t("settings.auto_mark_desc")}</span>
+                  </div>
+                  <input
+                    type="checkbox"
+                    checked={mounted ? settings.autoMarkWatched : false}
+                    onChange={(e) => updateSetting("autoMarkWatched", e.target.checked)}
                     className="h-4 w-4 rounded-sm border-border accent-accent cursor-pointer ml-3"
                   />
                 </label>

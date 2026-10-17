@@ -4,6 +4,7 @@ import { SearchIcon } from "@/components/icons";
 import { Anime } from "@/interfaces";
 import { animeSlug } from "@/utils/endpoint-slug";
 import AnimeImage from "@/components/cards/anime-image";
+import { fuzzyScore, highlightSegments } from "@/utils/fuzzy";
 import { useTranslation } from "@/utils/i18n";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -107,23 +108,30 @@ const CommandPalette = (): JSX.Element => {
       return;
     }
 
+    const controller = new AbortController();
     const timer = setTimeout(async () => {
       setIsLoading(true);
       try {
-        const res = await fetch(`/api/search?q=${encodeURIComponent(trimmed)}`);
+        const res = await fetch(`/api/search?q=${encodeURIComponent(trimmed)}`, { signal: controller.signal });
         if (!res.ok) throw new Error("Search failed");
         const data = await res.json();
         const results = (data.results || []) as Anime[];
-        clientSearchCache.set(trimmed, results);
-        setLiveResults(results);
-      } catch {
-        setLiveResults([]);
+        // Client-side fuzzy re-rank: server order is upstream relevance, but
+        // prefix/substring hits on the exact title should float to the top.
+        const ranked = [...results].sort((a, b) => fuzzyScore(trimmed, b.title) - fuzzyScore(trimmed, a.title));
+        clientSearchCache.set(trimmed, ranked);
+        setLiveResults(ranked);
+      } catch (error) {
+        if ((error as Error)?.name !== "AbortError") setLiveResults([]);
       } finally {
-        setIsLoading(false);
+        if (!controller.signal.aborted) setIsLoading(false);
       }
     }, 180);
 
-    return () => clearTimeout(timer);
+    return () => {
+      clearTimeout(timer);
+      controller.abort();
+    };
   }, [query]);
 
   const handleSearch = (searchQuery: string) => {
@@ -262,7 +270,17 @@ const CommandPalette = (): JSX.Element => {
                             {item.link.image && <AnimeImage fill sizes="36px" src={item.link.image} alt={item.title} />}
                           </div>
                           <div className="min-w-0 flex-1">
-                            <h4 className="line-clamp-1 text-xs sm:text-sm font-semibold text-ink">{item.title}</h4>
+                            <h4 className="line-clamp-1 text-xs sm:text-sm font-semibold text-ink">
+                              {highlightSegments(item.title, query.trim()).map((segment, index) =>
+                                segment.match ? (
+                                  <mark key={`${segment.text}-${index}`} className="bg-nb-yellow px-0.5 text-ink">
+                                    {segment.text}
+                                  </mark>
+                                ) : (
+                                  <span key={`${segment.text}-${index}`}>{segment.text}</span>
+                                ),
+                              )}
+                            </h4>
                             <p className="line-clamp-1 font-mono text-[10px] sm:text-xs text-ink-muted mt-0.5">
                               {item.release || "Subtitle Indonesia"}
                             </p>

@@ -7,8 +7,9 @@ const ServiceWorkerRegister = (): null => {
     if (typeof window === "undefined" || !("serviceWorker" in navigator)) return;
 
     if (process.env.NODE_ENV === "production") {
+      const buildId = process.env.NEXT_PUBLIC_BUILD_ID ?? "dev";
       navigator.serviceWorker
-        .register("/sw.js")
+        .register(`/sw.js?v=${buildId}`)
         .then((reg) => {
           reg.update().catch(() => {});
         })

@@ -97,6 +97,24 @@ export const buildSubpageBreadcrumbJsonLd = (items: { name: string; url: string 
   ],
 });
 
+// Listing pages (genre/season/year/pagination) expose their visible grid as a
+// ranked ItemList so search engines read it as a collection, not loose links.
+export const buildItemListJsonLd = (
+  name: string,
+  items: { title: string; slug: string }[],
+): Record<string, unknown> => ({
+  "@context": "https://schema.org",
+  "@type": "ItemList",
+  name,
+  numberOfItems: items.length,
+  itemListElement: items.map((item, index) => ({
+    "@type": "ListItem",
+    position: index + 1,
+    name: item.title,
+    url: `${SITE_URL}/anime/${item.slug}`,
+  })),
+});
+
 export const buildFaqJsonLd = (anime: AnimeDetail): Record<string, unknown> => ({
   "@context": "https://schema.org",
   "@type": "FAQPage",

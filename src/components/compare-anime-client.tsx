@@ -4,6 +4,7 @@ import { Anime, AnimeDetail } from "@/interfaces";
 import { animeSlug } from "@/utils/endpoint-slug";
 import AnimeImage from "@/components/cards/anime-image";
 import { useTranslation } from "@/utils/i18n";
+import { extractYear, similarityScore } from "@/utils/similar";
 import Link from "next/link";
 import { JSX, useCallback, useEffect, useRef, useState } from "react";
 
@@ -341,6 +342,15 @@ const CompareAnimeClient = ({
   const uniqueGenresA = genresA.filter((g) => !genresB.includes(g));
   const uniqueGenresB = genresB.filter((g) => !genresA.includes(g));
 
+  // Local-only similarity — genre overlap + year/score/type proximity.
+  const similarity =
+    animeA && animeB
+      ? similarityScore(
+          { genres: genresA, score: animeA.score, year: extractYear(animeA.release_on), type: animeA.type },
+          { genres: genresB, score: animeB.score, year: extractYear(animeB.release_on), type: animeB.type },
+        )
+      : 0;
+
   return (
     <div className="w-full space-y-8">
       {/* Top Interactive Selector Card */}
@@ -583,6 +593,18 @@ const CompareAnimeClient = ({
       {/* Full Comparison Dashboard */}
       {!isOverallLoading && animeA && animeB && (
         <div className="space-y-8 animate-fade-in">
+          {/* Client-side similarity summary (no network) */}
+          <div className="rounded-sm border-2 border-border bg-surface-solid p-4 shadow-[4px_4px_0_0_var(--border)]">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <span className="font-display text-sm font-bold text-ink">🤝 {t("compare.similarity")}</span>
+              <span className="font-mono text-lg font-extrabold text-accent">{similarity}%</span>
+            </div>
+            <div aria-hidden="true" className="mt-2 h-2 overflow-hidden rounded-sm border border-border bg-surface">
+              <div className="h-full bg-accent transition-[width] duration-500" style={{ width: `${similarity}%` }} />
+            </div>
+            <p className="mt-1.5 font-mono text-[10px] text-ink-muted">{t("compare.similarity_desc")}</p>
+          </div>
+
           {/* Header Side-by-Side Cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Anime A Card */}

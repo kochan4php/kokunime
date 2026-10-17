@@ -1,17 +1,37 @@
 "use client";
 
+import { toggleEpisodeWatched } from "@/utils/progress";
 import { JSX, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
 const SHORTCUTS = [
   { key: "⌘K / /", desc: "Pencarian Cepat / Command Palette" },
   { key: "← → ↑ ↓", desc: "Navigasi Antar Kartu Anime di Grid" },
+  { key: "← →", desc: "Detail Anime: Episode Sebelumnya / Selanjutnya" },
+  { key: "W", desc: "Detail Anime: Tandai episode terdekat sudah ditonton" },
+  { key: "B", desc: "Detail Anime: Simpan / Hapus dari Tersimpan" },
   { key: "D", desc: "Lompat ke bagian Download (Detail Anime)" },
   { key: "T", desc: "Putar Trailer YouTube (Detail Anime)" },
   { key: "R", desc: "Buka Anime Acak / Randomizer" },
   { key: "?", desc: "Buka Panduan Pintasan Keyboard" },
   { key: "Esc", desc: "Tutup Modal / Popup Aktif" },
 ];
+
+const episodeAnchors = (): HTMLElement[] =>
+  Array.from(document.querySelectorAll<HTMLElement>("[data-episode-anchor]")).sort(
+    (a, b) => Number(a.dataset.episodeAnchor) - Number(b.dataset.episodeAnchor),
+  );
+
+// The episode whose download group is closest to the reading position.
+const nearestEpisodeAnchor = (anchors: HTMLElement[]): HTMLElement | null => {
+  const probe = window.innerHeight * 0.35;
+  let current: HTMLElement | null = null;
+  for (const anchor of anchors) {
+    if (anchor.getBoundingClientRect().top <= probe) current = anchor;
+    else break;
+  }
+  return current ?? anchors[0] ?? null;
+};
 
 const KeyboardNavigation = (): JSX.Element | null => {
   const [showHelp, setShowHelp] = useState(false);
@@ -41,6 +61,26 @@ const KeyboardNavigation = (): JSX.Element | null => {
       if (e.key === "Escape") {
         setShowHelp(false);
         return;
+      }
+
+      // Detail pages: ←/→ hop between episode anchors while focus is NOT on a
+      // card; card focus keeps the grid navigation below. On pages without
+      // anchors this block is a no-op.
+      if (
+        (e.key === "ArrowLeft" || e.key === "ArrowRight") &&
+        !(document.activeElement as HTMLElement | null)?.closest?.("a.group.card-shell")
+      ) {
+        const anchors = episodeAnchors();
+        if (anchors.length > 0) {
+          e.preventDefault();
+          const current = nearestEpisodeAnchor(anchors);
+          const index = current ? anchors.indexOf(current) : -1;
+          const nextIndex = e.key === "ArrowRight" ? Math.min(anchors.length - 1, index + 1) : Math.max(0, index - 1);
+          if (nextIndex !== index) {
+            anchors[nextIndex]?.scrollIntoView({ behavior: "smooth", block: "start" });
+          }
+          return;
+        }
       }
 
       if (["ArrowRight", "ArrowLeft", "ArrowDown", "ArrowUp"].includes(e.key)) {
@@ -88,6 +128,29 @@ const KeyboardNavigation = (): JSX.Element | null => {
         if (trailerBtn) {
           e.preventDefault();
           trailerBtn.click();
+        }
+      }
+
+      if ((e.key === "w" || e.key === "W") && !e.defaultPrevented) {
+        const downloadEl = document.getElementById("download");
+        const slug = downloadEl?.dataset.animeSlug;
+        const anchor = nearestEpisodeAnchor(episodeAnchors());
+        const episode = anchor ? Number(anchor.dataset.episodeAnchor) : Number.NaN;
+        if (slug && anchor && Number.isFinite(episode) && episode > 0) {
+          e.preventDefault();
+          const total = Number(downloadEl?.dataset.animeTotal);
+          toggleEpisodeWatched(slug, episode, {
+            title: downloadEl?.dataset.animeTitle || undefined,
+            total: Number.isFinite(total) && total > 0 ? total : undefined,
+          });
+        }
+      }
+
+      if ((e.key === "b" || e.key === "B") && !e.defaultPrevented) {
+        const bookmarkBtn = document.querySelector<HTMLButtonElement>("[data-bookmark-toggle]");
+        if (bookmarkBtn) {
+          e.preventDefault();
+          bookmarkBtn.click();
         }
       }
     };

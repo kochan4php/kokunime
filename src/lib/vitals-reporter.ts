@@ -1,4 +1,5 @@
 import { dispatchDiscordWebhook } from "./webhook-dispatcher";
+import { incrementMetric } from "./metrics";
 
 // "Poor" thresholds (web.dev). Only values ABOVE these are forwarded — good
 // numbers stay in the browser, so the webhook remains a signal, not noise.
@@ -28,6 +29,7 @@ export async function reportVitals(report: VitalsReport): Promise<boolean> {
   const webhook = process.env.ERROR_WEBHOOK_URL?.trim();
   if (!webhook) return false;
   if (!(report.value > VITALS_THRESHOLDS[report.name])) return false;
+  incrementMetric(`vitals_poor_${report.name.toLowerCase()}`);
 
   const fingerprint = `${report.name}:${report.path}`;
   const now = Date.now();

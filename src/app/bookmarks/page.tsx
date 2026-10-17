@@ -16,12 +16,21 @@ import {
   updateBookmarkUserMeta,
 } from "@/utils/bookmarks";
 import { HistoryItem, clearAllHistory, getHistory, subscribeHistory } from "@/utils/history";
+import {
+  ProgressEntry,
+  getProgressList,
+  mergeProgressEntries,
+  nextEpisodeFromProgress,
+  subscribeProgress,
+} from "@/utils/progress";
+import { decodeSyncPayload, encodeSyncPayload } from "@/utils/sync-codec";
 import { showToast } from "@/utils/toast";
 import Link from "next/link";
 import { JSX, useEffect, useMemo, useState, useSyncExternalStore } from "react";
 
 const SERVER_BOOKMARKS: BookmarkItem[] = [];
 const SERVER_HISTORY: HistoryItem[] = [];
+const SERVER_PROGRESS: ProgressEntry[] = [];
 
 const itemTime = (item: BookmarkItem | HistoryItem): number => ("addedAt" in item ? item.addedAt : item.viewedAt);
 
@@ -34,40 +43,61 @@ const BookmarksPage = (): JSX.Element => {
   const [sortBy, setSortBy] = useState<"recent" | "oldest" | "title" | "rating">("recent");
   const [shareCopied, setShareCopied] = useState(false);
 
+  // Share-link import: gzip-compressed bookmark + progress payload appended as
+  // #sync=.... Merge is confirm-gated and additive (undo-safe), replacing the
+  // old alert+reload flow. Legacy uncompressed links still decode.
   useEffect(() => {
     if (typeof window === "undefined") return;
     const hash = window.location.hash;
-    if (hash.startsWith("#sync=")) {
-      try {
-        const raw = decodeURIComponent(atob(hash.replace("#sync=", "")));
-        const items = JSON.parse(raw);
-        if (Array.isArray(items) && items.length > 0) {
-          const current = getBookmarks();
-          const merged = [...items, ...current.filter((c) => !items.some((i) => i.slug === c.slug))];
-          localStorage.setItem("kokunime_bookmarks", JSON.stringify(merged));
-          window.location.hash = "";
-          alert(`Berhasil mensinkronkan ${items.length} anime dari cloud link!`);
-          window.location.reload();
-        }
-      } catch {}
-    }
+    if (!hash.startsWith("#sync=")) return;
+
+    void (async () => {
+      const payload = await decodeSyncPayload(hash.slice("#sync=".length));
+      const incomingBookmarks = Array.isArray(payload?.b) ? (payload.b as BookmarkItem[]) : [];
+      const incomingProgress = Array.isArray(payload?.p) ? (payload.p as ProgressEntry[]) : [];
+      if (incomingBookmarks.length === 0 && incomingProgress.length === 0) return;
+
+      window.history.replaceState(null, "", window.location.pathname);
+      const accepted = window.confirm(
+        `Tautan sinkronisasi berisi ${incomingBookmarks.length} bookmark dan ${incomingProgress.length} data progres. Gabungkan dengan data di perangkat ini?`,
+      );
+      if (!accepted) return;
+
+      if (incomingBookmarks.length > 0) restoreBookmarks(incomingBookmarks);
+      const mergedProgress = mergeProgressEntries(incomingProgress);
+      showToast(`Sinkron selesai: ${incomingBookmarks.length} bookmark, ${mergedProgress} data progres`);
+    })();
   }, []);
 
   const copySyncLink = () => {
-    try {
-      const saved = localStorage.getItem("kokunime_bookmarks") || "[]";
-      const b64 = btoa(encodeURIComponent(saved));
-      const url = `${window.location.origin}/bookmarks#sync=${b64}`;
-      navigator.clipboard.writeText(url).then(() => {
+    void (async () => {
+      try {
+        const token = await encodeSyncPayload({ v: 1, b: getBookmarks(), p: getProgressList() });
+        await navigator.clipboard.writeText(`${window.location.origin}/bookmarks#sync=${token}`);
         setShareCopied(true);
         setTimeout(() => setShareCopied(false), 2000);
-      });
-    } catch {}
+        showToast("Tautan sync (bookmark + progres) disalin");
+      } catch {
+        showToast("Gagal menyalin tautan sync");
+      }
+    })();
   };
 
   const bookmarks = useSyncExternalStore(subscribeBookmarks, getBookmarks, () => SERVER_BOOKMARKS);
 
   const history = useSyncExternalStore(subscribeHistory, getHistory, () => SERVER_HISTORY);
+
+  const progressList = useSyncExternalStore(subscribeProgress, getProgressList, () => SERVER_PROGRESS);
+
+  // slug → next unwatched episode, for the "▶ Eps N" continue chips.
+  const nextEpisodes = useMemo(() => {
+    const map = new Map<string, number>();
+    for (const entry of progressList) {
+      const next = nextEpisodeFromProgress(entry);
+      if (next !== null) map.set(entry.slug, next);
+    }
+    return map;
+  }, [progressList]);
 
   const folders = useMemo(() => {
     const set = new Set<string>();
@@ -329,8 +359,8 @@ const BookmarksPage = (): JSX.Element => {
                 <button
                   type="button"
                   onClick={copySyncLink}
-                  title="Salin tautan sinkronisasi cloud untuk memindahkan bookmark ke perangkat lain"
-                  className="rounded-sm border-2 border-border bg-surface px-3 py-1.5 font-mono text-xs font-semibold text-ink-muted shadow-[2px_2px_0_0_var(--border)] transition-all hover:-translate-y-0.5 hover:text-ink active:translate-y-0 active:shadow-none cursor-pointer cursor-pointer"
+                  title="Salin tautan sinkronisasi (bookmark + progres menonton) untuk perangkat lain"
+                  className="rounded-sm border-2 border-border bg-surface px-3 py-1.5 font-mono text-xs font-semibold text-ink-muted shadow-[2px_2px_0_0_var(--border)] transition-all hover:-translate-y-0.5 hover:text-ink active:translate-y-0 active:shadow-none cursor-pointer"
                 >
                   {shareCopied ? "✓ Link Disalin" : "☁️ Sync Cloud"}
                 </button>
@@ -432,6 +462,15 @@ const BookmarksPage = (): JSX.Element => {
                       </div>
                     </Link>
                     <div className="flex items-center gap-2 shrink-0">
+                      {nextEpisodes.has(item.slug) && (
+                        <Link
+                          href={`/anime/${item.slug}#ep-${nextEpisodes.get(item.slug)}`}
+                          title={`Lanjut menonton episode ${nextEpisodes.get(item.slug)}`}
+                          className="rounded-sm border-2 border-border bg-nb-lime px-2.5 py-1 font-mono text-[11px] font-bold text-nb-ink shadow-[2px_2px_0_0_var(--border)] transition-all hover:-translate-y-0.5 active:translate-y-0 active:shadow-none"
+                        >
+                          ▶ Eps {nextEpisodes.get(item.slug)}
+                        </Link>
+                      )}
                       <Link
                         href={`/anime/${item.slug}`}
                         className="rounded-sm border-2 border-border bg-accent px-2.5 py-1 font-mono text-[11px] font-bold text-(--accent-ink) shadow-[2px_2px_0_0_var(--border)] transition-all group-hover:-translate-y-0.5 group-hover:shadow-[4px_4px_0_0_var(--border)]"
@@ -449,6 +488,15 @@ const BookmarksPage = (): JSX.Element => {
                 const bookmark = activeTab === "bookmarks" ? (item as BookmarkItem) : null;
                 return (
                   <div key={item.slug} className="group relative flex flex-col">
+                    {nextEpisodes.has(item.slug) && (
+                      <Link
+                        href={`/anime/${item.slug}#ep-${nextEpisodes.get(item.slug)}`}
+                        title={`Lanjut menonton episode ${nextEpisodes.get(item.slug)}`}
+                        className="absolute left-1.5 top-1.5 z-10 rounded-sm border-2 border-border bg-nb-lime px-1.5 py-0.5 font-mono text-[10px] font-bold text-nb-ink shadow-[2px_2px_0_0_var(--border)] transition-transform hover:-translate-y-0.5"
+                      >
+                        ▶ {nextEpisodes.get(item.slug)}
+                      </Link>
+                    )}
                     <CardAnime
                       path={`/anime/${item.slug}`}
                       src={item.image as string}

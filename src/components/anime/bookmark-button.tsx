@@ -84,6 +84,7 @@ const BookmarkButton = ({
       <button
         type="button"
         onClick={handleClick}
+        data-bookmark-toggle
         aria-pressed={active}
         aria-label={active ? `Hapus ${title} dari tersimpan` : `Simpan ${title}`}
         title={active ? "Hapus dari tersimpan" : "Simpan anime"}

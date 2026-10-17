@@ -15,8 +15,34 @@ const subscribeOnline = (callback: () => void) => {
 
 const getOnlineSnapshot = () => (typeof navigator !== "undefined" ? navigator.onLine : true);
 
+// The service worker postMessages whenever it served a navigation from cache
+// (offline). Cleared as soon as the connection returns.
+let servedFromCache = false;
+const subscribeCacheServed = (callback: () => void) => {
+  if (typeof window === "undefined") return () => {};
+  const onMessage = (event: MessageEvent) => {
+    if ((event.data as { type?: string } | null)?.type === "kokunime:served-from-cache") {
+      servedFromCache = true;
+      callback();
+    }
+  };
+  const onOnline = () => {
+    servedFromCache = false;
+    callback();
+  };
+  window.addEventListener("message", onMessage);
+  window.addEventListener("online", onOnline);
+  return () => {
+    window.removeEventListener("message", onMessage);
+    window.removeEventListener("online", onOnline);
+  };
+};
+
+const getCacheServedSnapshot = () => servedFromCache;
+
 const OfflineIndicator = (): JSX.Element | null => {
   const isOnline = useSyncExternalStore(subscribeOnline, getOnlineSnapshot, () => true);
+  const fromCache = useSyncExternalStore(subscribeCacheServed, getCacheServedSnapshot, () => false);
 
   if (isOnline) return null;
 
@@ -27,7 +53,9 @@ const OfflineIndicator = (): JSX.Element | null => {
           <span className="flex h-2.5 w-2.5 rounded-full bg-amber-400 animate-ping" />
           <div>
             <p className="text-xs font-bold text-ink">Mode Offline Aktif</p>
-            <p className="text-[11px] text-ink-muted">Anda tidak terhubung ke internet.</p>
+            <p className="text-[11px] text-ink-muted">
+              {fromCache ? "Menampilkan versi tersimpan dari cache." : "Anda tidak terhubung ke internet."}
+            </p>
           </div>
         </div>
         <Link

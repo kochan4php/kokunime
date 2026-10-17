@@ -1,4 +1,6 @@
 import { reportError } from "@/lib/error-reporter";
+import { logJson } from "@/lib/logger";
+import { incrementMetric } from "@/lib/metrics";
 import { checkRateLimit, getRateLimitHeaders } from "@/lib/rate-limit";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -6,10 +8,40 @@ export const dynamic = "force-dynamic";
 
 const MAX_BODY_BYTES = 8 * 1024;
 
+// CSP report-uri posts (application/csp-report) and Reporting API batches
+// (application/reports+json). Enforce-nothing: count + log only. Browsers
+// expect 204 for reports, and a flood must be silently dropped, never 4xx/5xx.
+const handleCspReport = async (request: NextRequest, ip: string): Promise<NextResponse> => {
+  const rate = await checkRateLimit(`csp:${ip}`, 30, 60_000);
+  if (!rate.success) return new NextResponse(null, { status: 204 });
+
+  try {
+    const body = JSON.parse((await request.text()).slice(0, MAX_BODY_BYTES)) as {
+      "csp-report"?: Record<string, unknown>;
+    };
+    const report = body["csp-report"];
+    incrementMetric("csp_violation");
+    logJson("warn", "csp_violation", {
+      directive: report?.["violated-directive"],
+      blocked: report?.["blocked-uri"],
+      document: report?.["document-uri"],
+    });
+  } catch {
+    // Malformed report: still 204 so the browser never retries/errors.
+  }
+  return new NextResponse(null, { status: 204 });
+};
+
 // Client-side error boundary reports land here. Rate-limited so the endpoint
 // can never be used as an open relay into the Discord webhook.
 export async function POST(request: NextRequest): Promise<NextResponse> {
   const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "report-client";
+
+  const contentType = request.headers.get("content-type") ?? "";
+  if (contentType.includes("csp-report") || contentType.includes("reports+json")) {
+    return handleCspReport(request, ip);
+  }
+
   const rate = await checkRateLimit(`report-error:${ip}`, 10, 60_000);
   const rateHeaders = getRateLimitHeaders(rate);
 

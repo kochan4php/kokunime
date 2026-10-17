@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslation } from "@/utils/i18n";
 import { isEpisodeWatched, subscribeProgress, toggleEpisodeWatched } from "@/utils/progress";
 import { JSX, useSyncExternalStore } from "react";
 
@@ -13,6 +14,7 @@ interface EpisodeWatchedToggleProps {
 // Per-episode watched marker stored in localStorage. Local state only — this
 // is a personal checklist, not a server-side watch history.
 const EpisodeWatchedToggle = ({ slug, episode, title, total }: EpisodeWatchedToggleProps): JSX.Element => {
+  const { t } = useTranslation();
   const watched = useSyncExternalStore(
     subscribeProgress,
     () => isEpisodeWatched(slug, episode),
@@ -24,7 +26,11 @@ const EpisodeWatchedToggle = ({ slug, episode, title, total }: EpisodeWatchedTog
       type="button"
       onClick={() => toggleEpisodeWatched(slug, episode, { title, total })}
       aria-pressed={watched}
-      title={watched ? `Tandai Episode ${episode} belum ditonton` : `Tandai Episode ${episode} sudah ditonton`}
+      title={
+        watched
+          ? `${t("watch.unmark_ep")} ${episode} ${t("watch.as_unwatched")}`
+          : `${t("watch.mark_ep")} ${episode} ${t("watch.as_watched")}`
+      }
       className={`inline-flex shrink-0 items-center gap-1 rounded-sm border-2 border-border px-2 py-0.5 font-mono text-[10px] font-semibold transition-all cursor-pointer ${
         watched
           ? "bg-nb-lime text-nb-ink shadow-[2px_2px_0_0_var(--border)]"
@@ -32,7 +38,7 @@ const EpisodeWatchedToggle = ({ slug, episode, title, total }: EpisodeWatchedTog
       }`}
     >
       <span aria-hidden="true">{watched ? "✓" : "○"}</span>
-      <span>{watched ? "Sudah" : "Tandai"}</span>
+      <span>{watched ? t("watch.marked_short") : t("watch.mark_short")}</span>
     </button>
   );
 };

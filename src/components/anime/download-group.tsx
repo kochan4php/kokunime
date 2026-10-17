@@ -7,6 +7,7 @@ import EpisodeWatchedToggle from "./episode-watched-toggle";
 import { parseEpisodeRange } from "@/services/scraper/sanitize";
 import { useSettings } from "@/utils/settings";
 import { useTranslation } from "@/utils/i18n";
+import { isEpisodeWatched, toggleEpisodeWatched } from "@/utils/progress";
 import { JSX, useMemo, useState } from "react";
 
 interface DownloadGroupProps {
@@ -14,6 +15,7 @@ interface DownloadGroupProps {
   animeTitle?: string;
   slug?: string;
   animeTotal?: number;
+  anchorId?: string;
 }
 
 const renderResolutionBadge = (res: DownloadResolution): JSX.Element => {
@@ -85,7 +87,7 @@ const OpenAllLinksButton = ({ links }: { links: DownloadTarget[] }): JSX.Element
   );
 };
 
-const DownloadGroup = ({ group, animeTitle, slug, animeTotal }: DownloadGroupProps): JSX.Element => {
+const DownloadGroup = ({ group, animeTitle, slug, animeTotal, anchorId }: DownloadGroupProps): JSX.Element => {
   const settings = useSettings();
   const { t } = useTranslation();
   const [userOverride, setUserOverride] = useState<"cards" | "matrix" | null>(null);
@@ -109,8 +111,23 @@ const DownloadGroup = ({ group, animeTitle, slug, animeTotal }: DownloadGroupPro
     return Array.from(set);
   }, [group]);
 
+  // Opt-in auto-mark: clicking any download link of a single-episode group
+  // marks that episode watched (only on the unwatched → watched transition).
+  const handleCaptureClick = (event: React.MouseEvent<HTMLDivElement>) => {
+    if (!settings.autoMarkWatched || !slug || !episodeNumber) return;
+    if (!(event.target as HTMLElement).closest("a[href]")) return;
+    if (!isEpisodeWatched(slug, episodeNumber)) {
+      toggleEpisodeWatched(slug, episodeNumber, { title: animeTitle, total: animeTotal });
+    }
+  };
+
   return (
-    <div className="card-shell min-w-0 max-w-full overflow-hidden border-l-[10px] border-l-(color:--nb-card)">
+    <div
+      id={anchorId}
+      data-episode-anchor={anchorId ? Number(anchorId.slice(3)) : undefined}
+      onClickCapture={handleCaptureClick}
+      className="card-shell min-w-0 max-w-full overflow-hidden border-l-[10px] border-l-(color:--nb-card) scroll-mt-28"
+    >
       <div className="card-core bg-surface-solid p-3.5 sm:p-6 md:p-8 min-w-0 max-w-full overflow-hidden">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-2 sm:gap-3 min-w-0">

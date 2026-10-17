@@ -93,3 +93,9 @@ jobs:
         env:
           SITE_URL: ${{ vars.PRODUCTION_URL }}
         run: node scripts/indexnow.mjs
+
+      - name: Canary smoke test (production)
+        if: vars.PRODUCTION_URL != ''
+        env:
+          BASE_URL: ${{ vars.PRODUCTION_URL }}
+        run: node scripts/e2e-smoke.mjs

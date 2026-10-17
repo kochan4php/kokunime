@@ -1,5 +1,6 @@
 ﻿import { describe, expect, it, vi, beforeEach, afterEach } from "vitest";
 import upstream from "@/config/upstream";
+import { resetCircuits } from "@/lib/circuit-breaker";
 
 describe("upstream axios instance", () => {
   beforeEach(() => {
@@ -38,5 +39,60 @@ describe("upstream axios instance", () => {
       new Error("Upstream returned non-kusonime content (5210 bytes) — likely blocked or challenged"),
     );
     await expect(upstream.get("/page/2/")).rejects.toThrow(/non-kusonime content/);
+  });
+});
+
+// Chaos drill for the retry interceptor: drives a throwaway adapter so the
+// real request/response interceptor chain (breaker gate, retries, brand check,
+// metrics) executes exactly as in production.
+describe("upstream retry chaos", () => {
+  const originalAdapter = upstream.defaults.adapter;
+
+  beforeEach(() => {
+    resetCircuits();
+    vi.useFakeTimers();
+  });
+
+  afterEach(() => {
+    upstream.defaults.adapter = originalAdapter;
+    vi.useRealTimers();
+    vi.restoreAllMocks();
+  });
+
+  const failingAdapter = (failuresBeforeSuccess: number) => {
+    let calls = 0;
+    upstream.defaults.adapter = async (config) => {
+      calls++;
+      if (calls <= failuresBeforeSuccess) {
+        const error = Object.assign(new Error("socket hang up"), { config, isAxiosError: true });
+        throw error;
+      }
+      return {
+        data: "<html><head><title>Kusonime</title></head></html>",
+        status: 200,
+        statusText: "OK",
+        headers: {},
+        config,
+      } as never;
+    };
+    return () => calls;
+  };
+
+  it("retries transient network failures and succeeds on the third attempt", async () => {
+    const callCount = failingAdapter(2);
+    const promise = upstream.get("/anime/chaos-retry");
+    await vi.runAllTimersAsync();
+    const response = await promise;
+    expect(response.status).toBe(200);
+    expect(callCount()).toBe(3); // initial + MAX_RETRIES(2)
+  });
+
+  it("gives up after MAX_RETRIES and records the failure once", async () => {
+    const callCount = failingAdapter(Number.POSITIVE_INFINITY);
+    const promise = upstream.get("/anime/always-down");
+    const assertion = expect(promise).rejects.toThrow("socket hang up");
+    await vi.runAllTimersAsync();
+    await assertion;
+    expect(callCount()).toBe(3); // no infinite retry loop
   });
 });

@@ -1,6 +1,6 @@
 import { UPSTREAM_CIRCUIT_KEY } from "@/config/upstream";
 import { getCircuitState } from "@/lib/circuit-breaker";
-import { getMetrics } from "@/lib/metrics";
+import { HISTOGRAM_BUCKETS, getHistograms, getMetrics } from "@/lib/metrics";
 import { redisHealth } from "@/lib/redis";
 import { safeCompare } from "@/lib/safe-compare";
 import { NextRequest } from "next/server";
@@ -25,14 +25,32 @@ export async function GET(request: NextRequest): Promise<Response> {
   }
 
   const counters = getMetrics();
+  const histograms = getHistograms();
   const redis = await redisHealth();
   const circuit = getCircuitState(UPSTREAM_CIRCUIT_KEY);
   const mem = process.memoryUsage();
+
+  const histogramLines: string[] = [];
+  for (const [metric, state] of Object.entries(histograms)) {
+    HISTOGRAM_BUCKETS.forEach((bound, index) => {
+      histogramLines.push(
+        `kokunime_histogram_milliseconds_bucket{metric="${metric}",le="${bound}"} ${state.bucketCounts[index]}`,
+      );
+    });
+    histogramLines.push(
+      `kokunime_histogram_milliseconds_bucket{metric="${metric}",le="+Inf"} ${state.bucketCounts[HISTOGRAM_BUCKETS.length]}`,
+      `kokunime_histogram_milliseconds_sum{metric="${metric}"} ${state.sum}`,
+      `kokunime_histogram_milliseconds_count{metric="${metric}"} ${state.count}`,
+    );
+  }
 
   const lines: string[] = [
     "# HELP kokunime_events_total Process-local event counters (one series per key).",
     "# TYPE kokunime_events_total counter",
     ...Object.entries(counters).map(([event, value]) => `kokunime_events_total{event="${event}"} ${value}`),
+    "# HELP kokunime_histogram_milliseconds Process-local latency histograms in milliseconds.",
+    "# TYPE kokunime_histogram_milliseconds histogram",
+    ...histogramLines,
     "# HELP kokunime_uptime_seconds Process uptime.",
     "# TYPE kokunime_uptime_seconds gauge",
     `kokunime_uptime_seconds ${process.uptime().toFixed(1)}`,

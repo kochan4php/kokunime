@@ -206,6 +206,86 @@ export async function GET(): Promise<NextResponse> {
           },
         },
       },
+      "/api/live": {
+        get: {
+          summary: "Liveness probe",
+          description: "Answers 200 with { ok: true } as long as the process is serving requests.",
+          responses: {
+            "200": {
+              description: "Process is alive",
+            },
+          },
+        },
+      },
+      "/api/ready": {
+        get: {
+          summary: "Readiness probe",
+          description:
+            "503 while the upstream circuit is open or the instance is shutting down; 200 when fresh data can be fetched. Stale-cache serving keeps working either way.",
+          responses: {
+            "200": {
+              description: "Instance is ready",
+            },
+            "503": {
+              description: "Circuit open or graceful shutdown in progress",
+            },
+          },
+        },
+      },
+      "/api/metrics": {
+        get: {
+          summary: "Prometheus-style metrics (token-gated)",
+          description:
+            "Counters and histograms in text/plain format. Requires Authorization: Bearer <METRICS_TOKEN> when the token is configured.",
+          responses: {
+            "200": {
+              description: "Plain-text metrics dump",
+            },
+            "401": {
+              description: "Missing or invalid token",
+            },
+          },
+        },
+      },
+      "/api/admin/revalidate": {
+        post: {
+          summary: "Invalidate cached pages (admin, token-gated)",
+          description:
+            "Bearer ADMIN_TOKEN (falls back to METRICS_TOKEN). Body { paths: string[] } with up to 20 relative site paths. Responds 404 when no token is configured, so the route is invisible by default.",
+          requestBody: {
+            required: true,
+            content: {
+              "application/json": {
+                schema: {
+                  type: "object",
+                  required: ["paths"],
+                  properties: {
+                    paths: {
+                      type: "array",
+                      items: { type: "string" },
+                      example: ["/", "/anime/one-piece"],
+                    },
+                  },
+                },
+              },
+            },
+          },
+          responses: {
+            "200": {
+              description: "Revalidated paths with warm-up status",
+            },
+            "400": {
+              description: "Invalid paths payload",
+            },
+            "401": {
+              description: "Missing or invalid token",
+            },
+            "404": {
+              description: "Endpoint disabled (no token configured)",
+            },
+          },
+        },
+      },
       "/feed.xml": {
         get: {
           summary: "RSS / Atom Feed",

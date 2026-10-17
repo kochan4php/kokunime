@@ -1,15 +1,19 @@
 "use client";
 
 import DownloadGroup from "./download-group";
+import EpisodeNavigator from "./episode-navigator";
 import { DownloadGuideModal } from "./download-guide-modal";
 import Reveal from "@/components/reveal";
 import { AnimeDetail, DownloadOption } from "@/interfaces";
+import { parseEpisodeRange } from "@/services/scraper/sanitize";
+import { listEpisodeNumbers } from "@/utils/episodes";
 import { parseTotalEpisodes } from "@/utils/progress";
 import { JSX, useMemo, useState } from "react";
 
 const DownloadSection = ({ anime, slug }: { anime: AnimeDetail; slug?: string }): JSX.Element => {
   const downloads = useMemo(() => anime.download ?? [], [anime.download]);
   const totalEpisodes = useMemo(() => parseTotalEpisodes(anime.total_episode), [anime.total_episode]);
+  const episodeNumbers = useMemo(() => listEpisodeNumbers(downloads), [downloads]);
   const [selectedRes, setSelectedRes] = useState<string>("all");
   const [typeFilter, setTypeFilter] = useState<"all" | "batch" | "episode">("all");
 
@@ -49,7 +53,13 @@ const DownloadSection = ({ anime, slug }: { anime: AnimeDetail; slug?: string })
   if (downloads.length === 0) return <></>;
 
   return (
-    <div id="download" className="mt-16 scroll-mt-28">
+    <div
+      id="download"
+      data-anime-slug={slug}
+      data-anime-title={anime.title}
+      data-anime-total={totalEpisodes}
+      className="mt-16 scroll-mt-28"
+    >
       <Reveal>
         <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
@@ -135,16 +145,38 @@ const DownloadSection = ({ anime, slug }: { anime: AnimeDetail; slug?: string })
           </div>
         </div>
       </Reveal>
+      <EpisodeNavigator slug={slug} episodes={episodeNumbers} />
       <div className="nb-cycle grid gap-6 min-w-0 max-w-full overflow-hidden">
-        {filteredDownloads.map((group: DownloadOption, index: number) => (
-          <Reveal
-            key={`${group.title}-${selectedRes}-${typeFilter}-${index}`}
-            delay={index * 80}
-            className="min-w-0 max-w-full overflow-hidden"
-          >
-            <DownloadGroup group={group} animeTitle={anime.title} slug={slug} animeTotal={totalEpisodes} />
-          </Reveal>
-        ))}
+        {(() => {
+          // First occurrence of an episode number wins the anchor id — the
+          // keyboard/shortcut jump must land on exactly one group.
+          const anchored = new Set<number>();
+          return filteredDownloads.map((group: DownloadOption, index: number) => {
+            let anchorId: string | undefined;
+            if (!group.is_batch) {
+              const range = parseEpisodeRange(group.title);
+              if (range.total === 1 && range.start && !anchored.has(range.start)) {
+                anchored.add(range.start);
+                anchorId = `ep-${range.start}`;
+              }
+            }
+            return (
+              <Reveal
+                key={`${group.title}-${selectedRes}-${typeFilter}-${index}`}
+                delay={index * 80}
+                className="min-w-0 max-w-full overflow-hidden"
+              >
+                <DownloadGroup
+                  group={group}
+                  animeTitle={anime.title}
+                  slug={slug}
+                  animeTotal={totalEpisodes}
+                  anchorId={anchorId}
+                />
+              </Reveal>
+            );
+          });
+        })()}
       </div>
     </div>
   );

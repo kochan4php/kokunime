@@ -1,6 +1,15 @@
-import { incrementMetric } from "@/lib/metrics";
-import { redisGet, redisSet } from "@/lib/redis";
+import { incrementMetric, observeHistogram } from "@/lib/metrics";
+import { onCacheInvalidate, publishCacheInvalidate, redisGet, redisSet } from "@/lib/redis";
 import { unstable_cache } from "next/cache";
+
+const timed = async <T>(fn: () => Promise<T>): Promise<T> => {
+  const startedAt = Date.now();
+  try {
+    return await fn();
+  } finally {
+    observeHistogram("cache_compute_duration_ms", Date.now() - startedAt);
+  }
+};
 
 export const TTL = {
   home: 10 * 60, // 10 minutes
@@ -52,6 +61,23 @@ const STALE_GRACE_MS = 24 * 60 * 60 * 1000;
 // Single-flight: concurrent misses for the same key share one upstream fetch.
 const inFlight = new Map<string, Promise<CachedResult<unknown>>>();
 
+// Sibling instances publish invalidations (see src/lib/redis.ts): drop the
+// affected local tiers. null = flush everything (admin revalidate).
+let invalidateRegistered = false;
+const ensureInvalidation = (): void => {
+  if (invalidateRegistered) return;
+  invalidateRegistered = true;
+  onCacheInvalidate((key) => {
+    if (key === null) {
+      memoryCache.clear();
+      staleCache.clear();
+      return;
+    }
+    memoryCache.delete(key);
+    staleCache.delete(key);
+  });
+};
+
 export const getFromMemoryCache = <T>(key: string): T | null => {
   const entry = memoryCache.get(key);
   if (!entry) return null;
@@ -99,6 +125,8 @@ const rememberLocally = <T>(key: string, value: T, ttlSeconds: number): void => 
 const storeFresh = async <T>(key: string, value: T, ttlSeconds: number): Promise<void> => {
   rememberLocally(key, value, ttlSeconds);
   await redisSet(key, value, ttlSeconds);
+  // Tell sibling instances to drop their local copies of this key.
+  void publishCacheInvalidate(key);
 };
 
 export const cachedWithMeta = async <T>(
@@ -107,6 +135,8 @@ export const cachedWithMeta = async <T>(
   fn: () => Promise<T>,
   fallback: T,
 ): Promise<CachedResult<T>> => {
+  ensureInvalidation();
+
   // 1. Tier 1: Check In-Memory L1 RAM Cache (0.1ms)
   const memCached = getFromMemoryCache<T>(key);
   if (memCached !== null) {
@@ -139,7 +169,7 @@ export const cachedWithMeta = async <T>(
       const cachedFn = unstable_cache(
         async () => {
           try {
-            return await fn();
+            return await timed(fn);
           } catch {
             throw new UpstreamFailure();
           }
@@ -167,7 +197,7 @@ export const cachedWithMeta = async <T>(
 
     // 3. Direct execution with In-Memory cache storage
     try {
-      const result = await fn();
+      const result = await timed(fn);
       if (result !== null && result !== undefined) {
         await storeFresh(key, result, ttlSeconds);
       }
