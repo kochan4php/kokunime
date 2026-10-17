@@ -1,6 +1,7 @@
 "use client";
 
 import { recordHistory } from "@/utils/history";
+import { syncProgressMeta } from "@/utils/progress";
 import { useEffect } from "react";
 
 interface HistoryTrackerProps {
@@ -8,14 +9,16 @@ interface HistoryTrackerProps {
   title: string;
   image?: string;
   release?: string;
+  total?: number;
 }
 
-const HistoryTracker = ({ slug, title, image, release }: HistoryTrackerProps): null => {
+const HistoryTracker = ({ slug, title, image, release, total }: HistoryTrackerProps): null => {
   useEffect(() => {
     if (slug && title) {
       recordHistory({ slug, title, image, release });
+      syncProgressMeta(slug, { title, total });
     }
-  }, [slug, title, image, release]);
+  }, [slug, title, image, release, total]);
 
   return null;
 };

@@ -1,14 +1,34 @@
 "use client";
 
 import { HistoryItem, getHistory, clearAllHistory, subscribeHistory } from "@/utils/history";
+import { ProgressEntry, getProgressList, subscribeProgress } from "@/utils/progress";
 import AnimeImage from "@/components/cards/anime-image";
 import Link from "next/link";
-import { JSX, useSyncExternalStore } from "react";
+import { JSX, useMemo, useSyncExternalStore } from "react";
 
 const EMPTY_HISTORY: HistoryItem[] = [];
+const EMPTY_PROGRESS: ProgressEntry[] = [];
+
+// Watched-episode badge: "▶ 5/12 ep" while in progress, "✓ Tamat" when the
+// store's episode total is reached. Nothing renders without explicit toggles.
+const ProgressBadge = ({ entry }: { entry: ProgressEntry }): JSX.Element | null => {
+  if (entry.watched.length === 0) return null;
+  const complete = Boolean(entry.total) && entry.watched.length >= (entry.total ?? 0);
+  return (
+    <span
+      className={`inline-flex w-fit items-center gap-1 rounded-sm border-2 border-border px-1.5 py-0.5 font-mono text-[10px] font-bold text-nb-ink shadow-[2px_2px_0_0_var(--border)] ${
+        complete ? "bg-nb-lime" : "bg-nb-yellow"
+      }`}
+    >
+      {complete ? "✓ Tamat" : `▶ ${entry.watched.length}${entry.total ? `/${entry.total}` : ""} ep`}
+    </span>
+  );
+};
 
 const HomeHistoryStrip = (): JSX.Element | null => {
   const history = useSyncExternalStore(subscribeHistory, getHistory, () => EMPTY_HISTORY);
+  const progressList = useSyncExternalStore(subscribeProgress, getProgressList, () => EMPTY_PROGRESS);
+  const progressBySlug = useMemo(() => new Map(progressList.map((entry) => [entry.slug, entry])), [progressList]);
 
   if (history.length === 0) return null;
 
@@ -33,28 +53,32 @@ const HomeHistoryStrip = (): JSX.Element | null => {
           </div>
 
           <div className="flex snap-x gap-3 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-            {history.slice(0, 10).map((item) => (
-              <Link
-                key={item.slug}
-                href={`/anime/${item.slug}`}
-                className="group flex w-32 shrink-0 snap-start flex-col gap-2 sm:w-36"
-              >
-                <div className="relative aspect-[3/4] w-full overflow-hidden rounded-sm border-2 border-border bg-surface-muted">
-                  {item.image ? (
-                    <AnimeImage
-                      fill
-                      sizes="144px"
-                      src={item.image}
-                      alt={item.title}
-                      className="transition-transform duration-300 group-hover:scale-105"
-                    />
-                  ) : null}
-                </div>
-                <h4 className="line-clamp-2 text-xs font-semibold leading-tight text-ink transition-colors group-hover:underline decoration-2 underline-offset-2">
-                  {item.title}
-                </h4>
-              </Link>
-            ))}
+            {history.slice(0, 10).map((item) => {
+              const progress = progressBySlug.get(item.slug);
+              return (
+                <Link
+                  key={item.slug}
+                  href={`/anime/${item.slug}`}
+                  className="group flex w-32 shrink-0 snap-start flex-col gap-2 sm:w-36"
+                >
+                  <div className="relative aspect-[3/4] w-full overflow-hidden rounded-sm border-2 border-border bg-surface-muted">
+                    {item.image ? (
+                      <AnimeImage
+                        fill
+                        sizes="144px"
+                        src={item.image}
+                        alt={item.title}
+                        className="transition-transform duration-300 group-hover:scale-105"
+                      />
+                    ) : null}
+                  </div>
+                  <h4 className="line-clamp-2 text-xs font-semibold leading-tight text-ink transition-colors group-hover:underline decoration-2 underline-offset-2">
+                    {item.title}
+                  </h4>
+                  {progress ? <ProgressBadge entry={progress} /> : null}
+                </Link>
+              );
+            })}
           </div>
         </div>
       </div>

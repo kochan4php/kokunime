@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Runs ON the deployment server (shipped there by .github/workflows/deploy.yml).
-# Pulls the requested image tag, restarts the stack, waits for /api/health,
+# Pulls the requested image tag, restarts the stack, waits for /api/live,
 # and rolls back to the previously running image if the new one fails.
 set -euo pipefail
 
@@ -9,7 +9,9 @@ TAG="${1:-latest}"
 export KOKUNIME_TAG="$TAG"
 
 CONTAINER="kokunime-app"
-HEALTH_URL="http://localhost:3000/api/health"
+# Liveness keeps the deploy gate independent of upstream: a healthy container
+# that serves stale cache while kusonime is down must not be rolled back.
+HEALTH_URL="http://localhost:3000/api/live"
 COMPOSE=(docker compose -f docker-compose.prod.yml)
 
 PREV_IMAGE="$(docker inspect -f '{{.Config.Image}}' "$CONTAINER" 2>/dev/null || true)"

@@ -11,10 +11,12 @@ import {
   getBookmarks,
   getStorageUsageStats,
   importBookmarksJson,
+  restoreBookmarks,
   subscribeBookmarks,
   updateBookmarkUserMeta,
 } from "@/utils/bookmarks";
 import { HistoryItem, clearAllHistory, getHistory, subscribeHistory } from "@/utils/history";
+import { showToast } from "@/utils/toast";
 import Link from "next/link";
 import { JSX, useEffect, useMemo, useState, useSyncExternalStore } from "react";
 
@@ -112,7 +114,14 @@ const BookmarksPage = (): JSX.Element => {
   const handleClear = () => {
     if (activeTab === "bookmarks") {
       if (window.confirm("Hapus semua anime tersimpan?")) {
+        const snapshot = getBookmarks();
         clearAllBookmarks();
+        if (snapshot.length > 0) {
+          showToast(`${snapshot.length} anime dihapus dari Tersimpan`, {
+            actionLabel: "Urungkan",
+            onAction: () => restoreBookmarks(snapshot),
+          });
+        }
       }
     } else {
       if (window.confirm("Hapus semua riwayat terakhir?")) {
@@ -361,6 +370,10 @@ const BookmarksPage = (): JSX.Element => {
             )}
           </div>
         </div>
+
+        {/* List/grid item titles render as h3; hidden h2 keeps the outline
+            valid (axe heading-order) without changing the visual design. */}
+        <h2 className="sr-only">{activeTab === "bookmarks" ? "Anime tersimpan" : "Riwayat tontonan"}</h2>
 
         {sortedItems.length > 0 ? (
           viewMode === "list" ? (

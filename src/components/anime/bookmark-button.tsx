@@ -4,10 +4,12 @@ import {
   BookmarkStatus,
   getBookmarks,
   isBookmarked,
+  restoreBookmarks,
   subscribeBookmarks,
   toggleBookmark,
   updateBookmarkStatus,
 } from "@/utils/bookmarks";
+import { showToast } from "@/utils/toast";
 import { JSX, useState, useSyncExternalStore } from "react";
 
 interface BookmarkButtonProps {
@@ -46,7 +48,14 @@ const BookmarkButton = ({
   const handleClick = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
+    const removed = getBookmarks().find((bookmark) => bookmark.slug === slug);
     const isNowActive = toggleBookmark({ slug, title, image, release });
+    if (!isNowActive && removed) {
+      showToast(`"${removed.title}" dihapus dari Tersimpan`, {
+        actionLabel: "Urungkan",
+        onAction: () => restoreBookmarks([removed]),
+      });
+    }
     if (isNowActive && showLabel) {
       setShowStatusPicker(true);
     } else {

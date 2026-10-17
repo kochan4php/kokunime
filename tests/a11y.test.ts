@@ -28,6 +28,7 @@ vi.mock("next/image", () => ({
 
 import MainLayout from "@/layouts/main-layout";
 import CardAnime from "@/components/cards/card-anime";
+import AnimeListing from "@/sections/anime-listing";
 import ErrorCard from "@/components/error-card";
 import Footer from "@/components/footer";
 
@@ -101,6 +102,41 @@ describe("axe accessibility audit", () => {
         ),
         createElement(Footer),
       ),
+    );
+
+    expect(await runAxe(markup)).toEqual([]);
+  });
+
+  it("listing page with filter + pagination has no axe violations", async () => {
+    const markup = renderToStaticMarkup(
+      createElement(AnimeListing, {
+        chip: "Genre",
+        title: "Action",
+        anime: [
+          {
+            title: "One Piece",
+            release: "Ongoing",
+            genres: ["Action"],
+            link: { endpoint: "one-piece/", image: "https://img.example/op.jpg" },
+          },
+          {
+            title: "Naruto",
+            release: "Tamat",
+            genres: ["Action", "Adventure"],
+            link: { endpoint: "naruto/", image: "https://img.example/naruto.jpg" },
+          },
+        ],
+        pagination: {
+          first_page_endpoint: "genres/action/",
+          next_page_endpoint: "genres/action/page/2/",
+          current_page: 1,
+          pages_of: "10",
+          total_page: 10,
+          prev_page_endpoint: null,
+          last_page_endpoint: "genres/action/page/10/",
+        },
+        eagerCount: 2,
+      }),
     );
 
     expect(await runAxe(markup)).toEqual([]);

@@ -3,6 +3,8 @@
 import { DownloadOption, DownloadResolution, DownloadTarget } from "@/interfaces";
 import DownloadPlatform from "./download-platform";
 import BatchDownloadTools from "./batch-download-tools";
+import EpisodeWatchedToggle from "./episode-watched-toggle";
+import { parseEpisodeRange } from "@/services/scraper/sanitize";
 import { useSettings } from "@/utils/settings";
 import { useTranslation } from "@/utils/i18n";
 import { JSX, useMemo, useState } from "react";
@@ -10,6 +12,8 @@ import { JSX, useMemo, useState } from "react";
 interface DownloadGroupProps {
   group: DownloadOption;
   animeTitle?: string;
+  slug?: string;
+  animeTotal?: number;
 }
 
 const renderResolutionBadge = (res: DownloadResolution): JSX.Element => {
@@ -81,11 +85,19 @@ const OpenAllLinksButton = ({ links }: { links: DownloadTarget[] }): JSX.Element
   );
 };
 
-const DownloadGroup = ({ group, animeTitle }: DownloadGroupProps): JSX.Element => {
+const DownloadGroup = ({ group, animeTitle, slug, animeTotal }: DownloadGroupProps): JSX.Element => {
   const settings = useSettings();
   const { t } = useTranslation();
   const [userOverride, setUserOverride] = useState<"cards" | "matrix" | null>(null);
   const layout = userOverride ?? (settings.downloadLayout || "cards");
+
+  // Only single-episode groups (total === 1) get a watched toggle — batch
+  // groups and "Episode 01-12" ranges are not one episode.
+  const episodeNumber = useMemo(() => {
+    if (group.is_batch) return null;
+    const range = parseEpisodeRange(group.title);
+    return range.total === 1 && range.start ? range.start : null;
+  }, [group.is_batch, group.title]);
 
   const allPlatforms = useMemo(() => {
     const set = new Set<string>();
@@ -105,6 +117,9 @@ const DownloadGroup = ({ group, animeTitle }: DownloadGroupProps): JSX.Element =
             <h3 className="font-display text-base sm:text-lg font-bold tracking-tight text-ink min-w-0 truncate">
               {group.title}
             </h3>
+            {slug && episodeNumber ? (
+              <EpisodeWatchedToggle slug={slug} episode={episodeNumber} title={animeTitle} total={animeTotal} />
+            ) : null}
             {allPlatforms.length > 2 && (
               <div className="flex items-center gap-1 rounded-sm border-2 border-border bg-surface p-0.5 font-mono text-[10px] shrink-0">
                 <button

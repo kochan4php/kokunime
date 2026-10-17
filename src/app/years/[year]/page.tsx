@@ -9,7 +9,13 @@ import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { JSX } from "react";
 
-export const dynamic = "force-dynamic";
+// On-demand ISR (10 min): a year page aggregates several season fetches.
+// Empty param list = no build-time prerender, cached after the first request.
+export const revalidate = 600;
+
+export function generateStaticParams(): { year: string }[] {
+  return [];
+}
 
 const YEAR_RE = /^(19|20)\d{2}$/;
 

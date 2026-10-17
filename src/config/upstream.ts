@@ -1,8 +1,13 @@
 import axios, { AxiosError, AxiosInstance, InternalAxiosRequestConfig } from "axios";
+import { canRequest, recordFailure, recordSuccess } from "@/lib/circuit-breaker";
+import { incrementMetric } from "@/lib/metrics";
 import { SCRAPE_BASE_URL } from "@/services/scraper/constants";
 
 const MAX_RETRIES = 2;
 const RETRY_BASE_MS = 500;
+
+// Single upstream host — one breaker guards it. Consumed by /api/ready.
+export const UPSTREAM_CIRCUIT_KEY = "kusonime-upstream";
 
 interface RetryConfig extends InternalAxiosRequestConfig {
   retryCount?: number;
@@ -35,6 +40,19 @@ const upstream: AxiosInstance = axios.create({
   },
 });
 
+// Fast-fail gate: once the breaker is open every request (including retries)
+// rejects immediately instead of hammering a challenged upstream.
+upstream.interceptors.request.use((config) => {
+  if (!canRequest(UPSTREAM_CIRCUIT_KEY)) {
+    return Promise.reject(
+      Object.assign(new Error("Upstream circuit is open — fast-failing to protect the scraper"), {
+        code: "CIRCUIT_OPEN",
+      }),
+    );
+  }
+  return config;
+});
+
 // Every genuine kusonime page carries the brand (title/footer/nav). Anything
 // else is a Cloudflare challenge/block page — reject it so parsers never
 // mistake it for an empty result set.
@@ -47,6 +65,8 @@ upstream.interceptors.response.use((response) => {
       new Error(`Upstream returned non-kusonime content (${data.length} bytes) — likely blocked or challenged`),
     );
   }
+  recordSuccess(UPSTREAM_CIRCUIT_KEY);
+  incrementMetric("upstream_success");
   return response;
 });
 
@@ -58,11 +78,17 @@ upstream.interceptors.response.use(
     const retryable = !status || status === 429 || status >= 500;
 
     if (!config || !retryable || (config.retryCount ?? 0) >= MAX_RETRIES) {
+      if (retryable) {
+        recordFailure(UPSTREAM_CIRCUIT_KEY);
+        incrementMetric("upstream_failure");
+      }
       return Promise.reject(error);
     }
 
     config.retryCount = (config.retryCount ?? 0) + 1;
-    const delay = RETRY_BASE_MS * 2 ** config.retryCount;
+    incrementMetric("upstream_retry");
+    // Jitter prevents retry stampedes when several pages fail together.
+    const delay = RETRY_BASE_MS * 2 ** config.retryCount + Math.floor(Math.random() * 250);
     await new Promise((resolve) => setTimeout(resolve, delay));
     return upstream.request(config);
   },

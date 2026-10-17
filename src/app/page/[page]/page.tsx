@@ -7,7 +7,14 @@ import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { JSX, Suspense } from "react";
 
-export const dynamic = "force-dynamic";
+// On-demand ISR (5 min): every visitor sees the same listing, so the render
+// is cached after the first hit instead of re-running per request.
+// Empty param list = no build-time prerender.
+export const revalidate = 300;
+
+export function generateStaticParams(): { page: string }[] {
+  return [];
+}
 
 export async function generateMetadata({ params }: { params: Promise<{ page: string }> }): Promise<Metadata> {
   const page = Number((await params).page);

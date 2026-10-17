@@ -82,4 +82,38 @@ describe("parseAnimeDetail", () => {
     expect(detail.audio).toBe("Dual Audio");
     expect(detail.subtitle).toBe("Indo Sub");
   });
+
+  it("collects japanese/english synonyms into aliases", () => {
+    const aliasHtml = `<div class="venser"><div class="post-thumb"><img src="https://example.com/a.jpg" title="Attack on Titan" /></div>
+      <div class="venutama"><div class="lexot"><div class="info">
+        <p><b>Japanese</b>: 進撃の巨人</p>
+        <p><b>English</b>: Attack on Titan, AoT</p>
+      </div></div></div></div>`;
+    const detail = parseAnimeDetail(load(aliasHtml));
+    expect(detail.japanese).toBe("進撃の巨人");
+    expect(detail.synonyms).toBe("Attack on Titan, AoT");
+    expect(detail.aliases).toContain("進撃の巨人");
+    expect(detail.aliases).toContain("Attack on Titan");
+    expect(detail.aliases).toContain("AoT");
+  });
+
+  it("marks single episodes vs batch groups in the download contract", () => {
+    // is_batch drives the batch/episode filter AND the watched toggle — both
+    // sides of that contract are pinned here.
+    const downloadHtml = `<div class="venser"><div class="post-thumb"><img src="https://example.com/a.jpg" title="Anime Foo" /></div>
+      <div class="venutama"><div class="lexot">
+        <div class="smokeddl">
+          <div class="smokettl">Batch</div>
+          <div class="smokeurl"><strong>360p</strong><a href="https://example.com/b360.mp4">Mega</a></div>
+        </div>
+        <div class="smokeddl">
+          <div class="smokettl">Episode 01</div>
+          <div class="smokeurl"><strong>360p</strong><a href="https://example.com/e01.mp4">Mega</a></div>
+        </div>
+      </div></div></div>`;
+    const detail = parseAnimeDetail(load(downloadHtml));
+    expect(detail.download).toHaveLength(2);
+    expect(detail.download[0]).toMatchObject({ title: "Batch", is_batch: true });
+    expect(detail.download[1]).toMatchObject({ title: "Episode 01", is_batch: false });
+  });
 });

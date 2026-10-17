@@ -15,14 +15,15 @@ Set these on GitHub → Settings → Secrets and variables → Actions:
 | Secret   | `DEPLOY_SSH_KEY`      | Private key allowed to SSH into the server               |
 | Secret   | `DISCORD_WEBHOOK_URL` | Webhook for uptime/canary/deploy alerts (optional)       |
 
-Also used by the `Monitor` workflow (`monitor.yml`): `PRODUCTION_URL` every 15 min for `/api/health`, plus a 6-hourly e2e smoke canary.
+Also used by the `Monitor` workflow (`monitor.yml`): `PRODUCTION_URL` every 15 min for a combined probe (`/api/live` latency, `/api/health`, critical routes `/`, `/genres`, `/seasons`, TLS expiry < 14 days), plus a 6-hourly e2e smoke canary.
 
 ## Server prerequisites
 
 - Docker + Docker Compose v2.
 - GHCR access: make the package **public** (packages → kokunime → visibility) so the server can pull without credentials. Otherwise run `docker login ghcr.io` on the server first.
-- Optional `.env` in `DEPLOY_DIR` for runtime config: `NEXT_PUBLIC_SITE_URL`, `ERROR_WEBHOOK_URL`, `REDIS_URL` (see `.env.example`).
+- Optional `.env` in `DEPLOY_DIR` for runtime config: `NEXT_PUBLIC_SITE_URL`, `ERROR_WEBHOOK_URL`, `REDIS_URL`, `METRICS_TOKEN` (see `.env.example`).
 - Optional shared cache: `docker compose -f docker-compose.prod.yml --profile cache up -d` then set `REDIS_URL=redis://kokunime-redis:6379` for the app service (add it to the compose `environment` or a `.env` file next to the compose file).
+- Observability endpoints: `/api/live` (liveness, used by docker healthcheck + deploy gate), `/api/ready` (upstream breaker state), `/api/health` (upstream diagnostics), `/api/metrics` (Prometheus text; requires `Authorization: Bearer $METRICS_TOKEN`, 404 when unset).
 
 ## Manual deploy / rollback
 

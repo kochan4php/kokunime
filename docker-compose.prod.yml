@@ -14,9 +14,11 @@ services:
       - HOSTNAME=0.0.0.0
       - NEXT_PUBLIC_SITE_URL=${NEXT_PUBLIC_SITE_URL:-}
       - ERROR_WEBHOOK_URL=${ERROR_WEBHOOK_URL:-}
+      - METRICS_TOKEN=${METRICS_TOKEN:-}
       - REDIS_URL=${REDIS_URL:-}
     healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/api/health"]
+      # Liveness only: cached pages keep serving when upstream is down.
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/api/live"]
       interval: 30s
       timeout: 5s
       retries: 3

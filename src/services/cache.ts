@@ -1,3 +1,4 @@
+import { incrementMetric } from "@/lib/metrics";
 import { redisGet, redisSet } from "@/lib/redis";
 import { unstable_cache } from "next/cache";
 
@@ -11,6 +12,29 @@ export const TTL = {
   recommendations: 30 * 60, // 30 minutes
 };
 
+// Which cache path served a value — surfaced as X-Cache headers by API routes
+// and counted in /api/metrics.
+export type CacheTier = "memory" | "redis" | "next" | "miss" | "stale" | "fallback";
+
+export interface CachedResult<T> {
+  value: T;
+  tier: CacheTier;
+}
+
+const TIER_EVENT: Record<CacheTier, string> = {
+  memory: "cache_hit_memory",
+  redis: "cache_hit_redis",
+  next: "cache_hit_next",
+  miss: "cache_miss",
+  stale: "cache_stale",
+  fallback: "cache_fallback",
+};
+
+export const xCacheHeaders = (tier: CacheTier): Record<string, string> => ({
+  "X-Cache": tier === "memory" || tier === "redis" || tier === "next" ? "HIT" : tier.toUpperCase(),
+  "X-Cache-Tier": tier,
+});
+
 interface MemoryCacheEntry<T> {
   value: T;
   expiresAt: number;
@@ -19,6 +43,14 @@ interface MemoryCacheEntry<T> {
 // In-Memory L1 Fast Cache (Node process RAM) for sub-millisecond response times
 const memoryCache = new Map<string, MemoryCacheEntry<unknown>>();
 const MAX_MEMORY_ENTRIES = 500;
+
+// Last known-good values kept past their TTL: an upstream outage degrades to
+// slightly stale data instead of an empty fallback.
+const staleCache = new Map<string, { value: unknown; staleUntil: number }>();
+const STALE_GRACE_MS = 24 * 60 * 60 * 1000;
+
+// Single-flight: concurrent misses for the same key share one upstream fetch.
+const inFlight = new Map<string, Promise<CachedResult<unknown>>>();
 
 export const getFromMemoryCache = <T>(key: string): T | null => {
   const entry = memoryCache.get(key);
@@ -41,62 +73,125 @@ export const setMemoryCache = <T>(key: string, value: T, ttlSeconds: number): vo
   });
 };
 
-export const cached = async <T>(key: string, ttlSeconds: number, fn: () => Promise<T>, fallback: T): Promise<T> => {
+const rememberStale = (key: string, value: unknown, ttlSeconds: number): void => {
+  if (staleCache.size >= MAX_MEMORY_ENTRIES && !staleCache.has(key)) {
+    const firstKey = staleCache.keys().next().value;
+    if (firstKey) staleCache.delete(firstKey);
+  }
+  staleCache.set(key, { value, staleUntil: Date.now() + ttlSeconds * 1000 + STALE_GRACE_MS });
+};
+
+const getStale = <T>(key: string): T | null => {
+  const entry = staleCache.get(key);
+  if (!entry) return null;
+  if (Date.now() > entry.staleUntil) {
+    staleCache.delete(key);
+    return null;
+  }
+  return entry.value as T;
+};
+
+const rememberLocally = <T>(key: string, value: T, ttlSeconds: number): void => {
+  setMemoryCache(key, value, ttlSeconds);
+  rememberStale(key, value, ttlSeconds);
+};
+
+const storeFresh = async <T>(key: string, value: T, ttlSeconds: number): Promise<void> => {
+  rememberLocally(key, value, ttlSeconds);
+  await redisSet(key, value, ttlSeconds);
+};
+
+export const cachedWithMeta = async <T>(
+  key: string,
+  ttlSeconds: number,
+  fn: () => Promise<T>,
+  fallback: T,
+): Promise<CachedResult<T>> => {
   // 1. Tier 1: Check In-Memory L1 RAM Cache (0.1ms)
   const memCached = getFromMemoryCache<T>(key);
   if (memCached !== null) {
-    return memCached;
+    incrementMetric(TIER_EVENT.memory);
+    return { value: memCached, tier: "memory" };
   }
 
-  // 1.5 Tier: Shared Redis cache (survives restarts, spans instances). No-op
-  // unless REDIS_URL is configured.
-  const redisCached = await redisGet(key);
-  if (redisCached !== null) {
-    setMemoryCache(key, redisCached as T, ttlSeconds);
-    return redisCached as T;
+  // Single-flight gate: callers racing on the same cold key await one fetch.
+  const pending = inFlight.get(key);
+  if (pending) {
+    return (await pending) as CachedResult<T>;
   }
 
-  // 2. Tier 2: Check Next.js unstable_cache (when in Next.js runtime)
-  // Failures must propagate OUTSIDE unstable_cache: a fallback returned inside
-  // the callback would be persisted as if it were valid data (cache poisoning).
-  if (typeof unstable_cache === "function" && process.env.NODE_ENV !== "test") {
-    class UpstreamFailure extends Error {}
-    const cachedFn = unstable_cache(
-      async () => {
-        try {
-          return await fn();
-        } catch {
-          throw new UpstreamFailure();
+  const work = (async (): Promise<CachedResult<T>> => {
+    // 1.5 Tier: Shared Redis cache (survives restarts, spans instances). No-op
+    // unless REDIS_URL is configured.
+    const redisCached = await redisGet(key);
+    if (redisCached !== null) {
+      const value = redisCached as T;
+      // Already in shared cache — only hydrate local tiers (no write-back).
+      rememberLocally(key, value, ttlSeconds);
+      return { value, tier: "redis" };
+    }
+
+    // 2. Tier 2: Check Next.js unstable_cache (when in Next.js runtime)
+    // Failures must propagate OUTSIDE unstable_cache: a fallback returned inside
+    // the callback would be persisted as if it were valid data (cache poisoning).
+    if (typeof unstable_cache === "function" && process.env.NODE_ENV !== "test") {
+      class UpstreamFailure extends Error {}
+      const cachedFn = unstable_cache(
+        async () => {
+          try {
+            return await fn();
+          } catch {
+            throw new UpstreamFailure();
+          }
+        },
+        [key],
+        { revalidate: ttlSeconds },
+      );
+      try {
+        const result = await cachedFn();
+        if (result !== null && result !== undefined) {
+          await storeFresh(key, result, ttlSeconds);
         }
-      },
-      [key],
-      { revalidate: ttlSeconds },
-    );
-    try {
-      const result = await cachedFn();
-      if (result !== null && result !== undefined) {
-        setMemoryCache(key, result, ttlSeconds);
-        await redisSet(key, result, ttlSeconds);
+        return { value: result, tier: "next" };
+      } catch (err) {
+        if (err instanceof UpstreamFailure) {
+          // Upstream failed: prefer the last known-good value over the fallback.
+          const stale = getStale<T>(key);
+          if (stale !== null) return { value: stale, tier: "stale" };
+          return { value: fallback, tier: "fallback" };
+        }
+        // Cache layer itself is unavailable (no request context / infra error):
+        // fall through to honest direct execution instead of masking data.
       }
-      return result;
-    } catch (err) {
-      if (err instanceof UpstreamFailure) {
-        return fallback;
-      }
-      // Cache layer itself is unavailable (no request context / infra error):
-      // fall through to honest direct execution instead of masking data.
     }
-  }
 
-  // 3. Direct execution with In-Memory cache storage
-  try {
-    const result = await fn();
-    if (result !== null && result !== undefined) {
-      setMemoryCache(key, result, ttlSeconds);
-      await redisSet(key, result, ttlSeconds);
+    // 3. Direct execution with In-Memory cache storage
+    try {
+      const result = await fn();
+      if (result !== null && result !== undefined) {
+        await storeFresh(key, result, ttlSeconds);
+      }
+      return { value: result, tier: "miss" };
+    } catch {
+      const stale = getStale<T>(key);
+      if (stale !== null) return { value: stale, tier: "stale" };
+      return { value: fallback, tier: "fallback" };
     }
-    return result;
-  } catch {
-    return fallback;
-  }
+  })();
+
+  const tracked = work
+    .then((result) => {
+      incrementMetric(TIER_EVENT[result.tier]);
+      return result;
+    })
+    .finally(() => {
+      inFlight.delete(key);
+    });
+
+  inFlight.set(key, tracked as Promise<CachedResult<unknown>>);
+  return tracked;
+};
+
+export const cached = async <T>(key: string, ttlSeconds: number, fn: () => Promise<T>, fallback: T): Promise<T> => {
+  return (await cachedWithMeta(key, ttlSeconds, fn, fallback)).value;
 };

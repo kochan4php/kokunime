@@ -74,16 +74,4 @@ const nextConfig = {
   },
 };
 
-let config = nextConfig;
-
-if (process.env.ANALYZE === "true") {
-  try {
-    const bundleAnalyzerModule = await import("@next/bundle-analyzer");
-    const withBundleAnalyzer = bundleAnalyzerModule.default({
-      enabled: true,
-    });
-    config = withBundleAnalyzer(nextConfig);
-  } catch {}
-}
-
-export default config;
+export default nextConfig;

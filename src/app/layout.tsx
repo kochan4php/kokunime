@@ -1,6 +1,8 @@
 import { ChildrenProps } from "@/interfaces";
 import ServiceWorkerRegister from "@/components/sw-register";
 import RouteProgressBar from "@/components/route-progress-bar";
+import WebVitals from "@/components/web-vitals";
+import Toaster from "@/components/toaster";
 import { JetBrains_Mono, Plus_Jakarta_Sans } from "next/font/google";
 import { JSX, Suspense } from "react";
 import { Viewport } from "next";
@@ -71,6 +73,8 @@ const RootLayout = ({ children }: ChildrenProps): JSX.Element => (
         <div className="absolute bottom-8 right-10 h-14 w-14 rotate-6 border-[3px] border-border bg-nb-orange shadow-[6px_6px_0_0_var(--border)]" />
       </div>
       <ServiceWorkerRegister />
+      <WebVitals />
+      <Toaster />
       <Suspense fallback={null}>
         <RouteProgressBar />
       </Suspense>

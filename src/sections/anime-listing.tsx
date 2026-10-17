@@ -99,6 +99,10 @@ const AnimeListing = ({ chip, title, anime, pagination, eagerCount = 0 }: AnimeL
         </div>
       </div>
 
+      {/* Card titles render as h3; this hidden h2 bridges the h1 → h3 gap so
+          the heading outline stays valid (axe heading-order). */}
+      <h2 className="sr-only">Daftar anime {title}</h2>
+
       {filteredAnime.length > 0 ? (
         <AnimeGrid anime={filteredAnime} eagerCount={eagerCount} viewMode={viewMode} />
       ) : (

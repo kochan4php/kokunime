@@ -1,13 +1,13 @@
 import upstream from "@/config/upstream";
 import { AnimeDetail } from "@/interfaces";
-import { cached, TTL } from "@/services/cache";
+import { cachedWithMeta, TTL, type CacheTier } from "@/services/cache";
 import { load } from "cheerio";
 import { parseAnimeDetail } from "./parse";
 import { extractWithFallback } from "./parse-fallback";
 import { stripHtmlNoise } from "./sanitize";
 
-export async function getAnimeDetail(slug: string): Promise<AnimeDetail | null> {
-  return cached(
+export async function getAnimeDetailWithMeta(slug: string): Promise<{ anime: AnimeDetail | null; tier: CacheTier }> {
+  const { value, tier } = await cachedWithMeta<AnimeDetail | null>(
     `anime-detail:${slug}`,
     TTL.detail,
     async () => {
@@ -26,4 +26,9 @@ export async function getAnimeDetail(slug: string): Promise<AnimeDetail | null> 
     },
     null,
   );
+
+  return { anime: value, tier };
 }
+
+export const getAnimeDetail = async (slug: string): Promise<AnimeDetail | null> =>
+  (await getAnimeDetailWithMeta(slug)).anime;

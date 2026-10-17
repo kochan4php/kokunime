@@ -1,6 +1,7 @@
 import { getAnimeDetail, getAnimePerPage } from "@/services/scraper";
-import { cached, TTL } from "@/services/cache";
+import { cachedWithMeta, TTL, xCacheHeaders } from "@/services/cache";
 import { checkRateLimit, getRateLimitHeaders } from "@/lib/rate-limit";
+import { getRequestId } from "@/lib/request-id";
 import { scoreRecommendations, type RecommendationPayload } from "@/lib/recommend";
 import { Anime } from "@/interfaces";
 import { NextRequest, NextResponse } from "next/server";
@@ -15,12 +16,16 @@ const EMPTY: RecommendationPayload = { topGenre: null, items: [] };
 // Personal recommendations from the user's saved titles. The client sends
 // bookmark slugs; we score cached listing items against their genres.
 export async function GET(request: NextRequest): Promise<NextResponse> {
+  const started = performance.now();
   const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "recommend-client";
   const rate = await checkRateLimit(`recommend:${ip}`, 30, 60_000);
   const rateHeaders = getRateLimitHeaders(rate);
 
   if (!rate.success) {
-    return NextResponse.json({ error: "Too many requests. Please slow down." }, { status: 429, headers: rateHeaders });
+    return NextResponse.json(
+      { error: "Too many requests. Please slow down.", requestId: getRequestId(request) },
+      { status: 429, headers: rateHeaders },
+    );
   }
 
   const raw = request.nextUrl.searchParams.get("slugs") ?? "";
@@ -37,7 +42,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     return NextResponse.json(EMPTY, { headers: rateHeaders });
   }
 
-  const payload = await cached(
+  const { value: payload, tier } = await cachedWithMeta<RecommendationPayload>(
     `recommend:${[...slugs].sort().join(",")}`,
     TTL.recommendations,
     async (): Promise<RecommendationPayload> => {
@@ -71,5 +76,11 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     EMPTY,
   );
 
-  return NextResponse.json(payload, { headers: rateHeaders });
+  return NextResponse.json(payload, {
+    headers: {
+      ...xCacheHeaders(tier),
+      "Server-Timing": `app;dur=${(performance.now() - started).toFixed(1)}`,
+      ...rateHeaders,
+    },
+  });
 }

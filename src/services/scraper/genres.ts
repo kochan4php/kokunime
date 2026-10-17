@@ -1,15 +1,18 @@
 import upstream from "@/config/upstream";
 import { AnimePage, Genre } from "@/interfaces";
-import { cached, TTL } from "@/services/cache";
+import { cached, TTL, type CacheTier } from "@/services/cache";
 import { load } from "cheerio";
 import { formatAnimeData } from "./parse";
 import { parseSimplePagination } from "./parse-simple-pagination";
-import parseTaxonomy from "./parse-taxonomy";
+import { parseTaxonomyWithMeta } from "./parse-taxonomy";
 import { stripHtmlNoise } from "./sanitize";
 
-export async function getGenres(): Promise<Genre[]> {
-  return parseTaxonomy("/genres") as Promise<Genre[]>;
-}
+export const getGenres = async (): Promise<Genre[]> => (await getGenresWithMeta()).genres;
+
+export const getGenresWithMeta = async (): Promise<{ genres: Genre[]; tier: CacheTier }> => {
+  const { items, tier } = await parseTaxonomyWithMeta("/genres");
+  return { genres: items as Genre[], tier };
+};
 
 async function fetchSingleGenrePage(cleanGenre: string, pageNum: number): Promise<AnimePage> {
   try {

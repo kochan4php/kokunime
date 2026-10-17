@@ -1,15 +1,18 @@
 import upstream from "@/config/upstream";
 import { AnimePage, Season } from "@/interfaces";
-import { cached, TTL } from "@/services/cache";
+import { cached, TTL, type CacheTier } from "@/services/cache";
 import { load } from "cheerio";
 import { formatAnimeData } from "./parse";
 import { parseSimplePagination } from "./parse-simple-pagination";
-import parseTaxonomy from "./parse-taxonomy";
+import { parseTaxonomyWithMeta } from "./parse-taxonomy";
 import { stripHtmlNoise } from "./sanitize";
 
-export async function getSeasons(): Promise<Season[]> {
-  return parseTaxonomy("/seasons-list") as Promise<Season[]>;
-}
+export const getSeasons = async (): Promise<Season[]> => (await getSeasonsWithMeta()).seasons;
+
+export const getSeasonsWithMeta = async (): Promise<{ seasons: Season[]; tier: CacheTier }> => {
+  const { items, tier } = await parseTaxonomyWithMeta("/seasons-list");
+  return { seasons: items as Season[], tier };
+};
 
 async function fetchSingleSeasonPage(cleanSeason: string, pageNum: number): Promise<AnimePage> {
   try {

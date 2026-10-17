@@ -13,11 +13,15 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   return buildDetailMetadata(params);
 }
 
-// Fully dynamic: upstream data (download links, synopsis, recommendations)
-// changes constantly, so a build-time static page would serve stale content
-// until the next deploy. Every request renders fresh; the upstream fetch is
-// still deduped by unstable_cache (15m TTL in cache.ts).
-export const dynamic = "force-dynamic";
+// On-demand ISR: the empty param list means nothing is prerendered at build
+// (a flaky upstream during `next build` can never bake an empty detail page);
+// every slug renders on first request, then is served from cache for 5 min.
+// Data freshness is still bounded by the unstable_cache TTLs.
+export const revalidate = 300;
+
+export function generateStaticParams(): { slug: string }[] {
+  return [];
+}
 
 const Anime = async ({ params }: { params: Promise<{ slug: string }> }): Promise<JSX.Element> => {
   const { slug } = await params;

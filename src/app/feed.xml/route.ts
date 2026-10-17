@@ -1,4 +1,5 @@
 import { getAnimeByGenres, getAnimeBySeasons, getAnimePerPage } from "@/services/scraper";
+import { SITE_URL } from "@/lib/site";
 import { NextRequest } from "next/server";
 
 const escapeXml = (unsafe: string): string =>
@@ -22,7 +23,7 @@ const escapeXml = (unsafe: string): string =>
 export const dynamic = "force-dynamic";
 
 export async function GET(request: NextRequest): Promise<Response> {
-  const siteUrl = "https://kokunime.netlify.app";
+  const siteUrl = SITE_URL;
   const { searchParams } = new URL(request.url);
   const genre = searchParams.get("genre");
   const season = searchParams.get("season");

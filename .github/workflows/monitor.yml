@@ -20,17 +20,54 @@ jobs:
         env:
           BASE: ${{ vars.PRODUCTION_URL }}
         run: |
+          fail() { echo "::error::$1"; echo "$1" >> "$GITHUB_STEP_SUMMARY"; exit 1; }
+
+          # 1) Liveness + latency: does the app itself serve, fast?
+          live_code=$(curl -s -o /dev/null -w "%{http_code}" --max-time 15 "$BASE/api/live" || true)
+          live_time=$(curl -s -o /dev/null -w "%{time_total}" --max-time 15 "$BASE/api/live" || true)
+          echo "live: HTTP $live_code in ${live_time}s"
+
+          # 2) Upstream-backed health (diagnostics endpoint).
+          healthy=0
           for attempt in 1 2 3; do
             code=$(curl -s -o /tmp/health.json -w "%{http_code}" --max-time 20 "$BASE/api/health" || true)
-            if [ "$code" = "200" ]; then
-              echo "healthy (attempt $attempt)"
-              exit 0
-            fi
-            echo "unhealthy: HTTP $code (attempt $attempt)"
+            if [ "$code" = "200" ]; then healthy=1; break; fi
+            echo "health attempt $attempt -> HTTP $code"
             sleep 20
           done
-          echo "DOWN after 3 attempts"
-          exit 1
+
+          # 3) Critical routes: the pages users actually hit must render.
+          routes_failed=""
+          for route in / /genres /seasons; do
+            rcode=$(curl -s -o /dev/null -w "%{http_code}" --max-time 20 "$BASE$route" || true)
+            echo "$route -> HTTP $rcode"
+            [ "$rcode" = "200" ] || routes_failed="$routes_failed $route($rcode)"
+          done
+
+          # 4) TLS certificate days remaining.
+          days_left=""
+          HOST="$(printf '%s' "$BASE" | sed -E 's#^https?://##; s#/.*$##')"
+          end_date="$(echo | timeout 15 openssl s_client -servername "$HOST" -connect "$HOST:443" 2>/dev/null | openssl x509 -noout -enddate 2>/dev/null | cut -d= -f2 || true)"
+          if [ -n "$end_date" ]; then
+            end_epoch="$(date -d "$end_date" +%s 2>/dev/null || true)"
+            if [ -n "$end_epoch" ]; then
+              days_left=$(( (end_epoch - $(date +%s)) / 86400 ))
+            fi
+          fi
+
+          echo "live=$live_code latency=${live_time}s healthy=$healthy tls_days_left=${days_left:-unknown} routes_failed='${routes_failed}'" >> "$GITHUB_STEP_SUMMARY"
+
+          [ "$live_code" = "200" ] || fail "liveness DOWN: HTTP $live_code"
+          if [ -n "$live_time" ] && awk "BEGIN{exit !($live_time > 5)}"; then
+            fail "liveness latency ${live_time}s > 5s threshold"
+          fi
+          [ "$healthy" = "1" ] || fail "health endpoint DOWN after 3 attempts"
+          [ -z "$routes_failed" ] || fail "critical routes failing:$routes_failed"
+          if [ -n "$days_left" ] && [ "$days_left" -lt 14 ]; then
+            fail "TLS certificate expires in ${days_left} days"
+          fi
+
+          echo "probe OK"
 
       - name: Skip notice
         if: vars.PRODUCTION_URL == ''
@@ -44,7 +81,7 @@ jobs:
         run: |
           [ -z "$WEBHOOK" ] && { echo "no DISCORD_WEBHOOK_URL secret"; exit 0; }
           curl -sf -X POST -H "Content-Type: application/json" \
-            --data "{\"content\":\"Kokunime DOWN - $BASE/api/health gagal 3x berturut-turut.\"}" \
+            --data "{\"content\":\"Kokunime probe gagal di $BASE - cek step summary (liveness/health/tls/rute kritis).\"}" \
             "$WEBHOOK" || true
 
   canary:
@@ -55,7 +92,7 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
 
       - name: Run smoke tests against production
         if: vars.PRODUCTION_URL != ''

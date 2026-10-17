@@ -88,6 +88,27 @@ export const removeBookmark = (slug: string): void => {
   } catch {}
 };
 
+// Undo support: re-inserts previously removed items. Existing entries win, so
+// a stale undo can never overwrite newer edits; order follows addedAt desc,
+// the same ordering toggleBookmark/import maintain.
+export const restoreBookmarks = (items: BookmarkItem[]): void => {
+  const storage = getStorage();
+  if (!storage || !Array.isArray(items) || items.length === 0) return;
+  const bySlug = new Map(getBookmarks().map((item) => [item.slug, item]));
+  for (const item of items) {
+    if (!item?.slug || bySlug.has(item.slug)) continue;
+    bySlug.set(item.slug, item);
+  }
+  const list = [...bySlug.values()].sort((a, b) => (b.addedAt ?? 0) - (a.addedAt ?? 0));
+  try {
+    const serialized = JSON.stringify(list);
+    storage.setItem(STORAGE_KEY, serialized);
+    lastRawData = serialized;
+    cachedList = list;
+    window.dispatchEvent(new CustomEvent(EVENT_NAME, { detail: { restored: items.length } }));
+  } catch {}
+};
+
 export const updateBookmarkStatus = (slug: string, status?: BookmarkStatus): void => {
   const storage = getStorage();
   if (!storage || !slug) return;

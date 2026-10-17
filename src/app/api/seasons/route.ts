@@ -1,9 +1,16 @@
-import { getSeasons } from "@/services/scraper";
+import { getSeasonsWithMeta } from "@/services/scraper";
+import { xCacheHeaders } from "@/services/cache";
+import { getRequestId } from "@/lib/request-id";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(request: NextRequest): Promise<Response> {
+  const started = performance.now();
   try {
-    const seasons = await getSeasons();
+    const { seasons, tier } = await getSeasonsWithMeta();
+    const cacheHeaders = {
+      ...xCacheHeaders(tier),
+      "Server-Timing": `app;dur=${(performance.now() - started).toFixed(1)}`,
+    };
     const { searchParams } = new URL(request.url);
     const format = searchParams.get("format")?.toLowerCase();
 
@@ -14,6 +21,7 @@ export async function GET(request: NextRequest): Promise<Response> {
           "Content-Type": "text/csv; charset=utf-8",
           "Content-Disposition": 'inline; filename="kokunime-seasons.csv"',
           "Cache-Control": "private, max-age=600",
+          ...cacheHeaders,
         },
       });
     }
@@ -27,6 +35,7 @@ export async function GET(request: NextRequest): Promise<Response> {
         headers: {
           "Content-Type": "application/xml; charset=utf-8",
           "Cache-Control": "private, max-age=600",
+          ...cacheHeaders,
         },
       });
     }
@@ -39,10 +48,14 @@ export async function GET(request: NextRequest): Promise<Response> {
       {
         headers: {
           "Cache-Control": "private, max-age=600",
+          ...cacheHeaders,
         },
       },
     );
   } catch {
-    return NextResponse.json({ error: "Failed to fetch seasons" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to fetch seasons", requestId: getRequestId(request) },
+      { status: 500, headers: { ...xCacheHeaders("fallback") } },
+    );
   }
 }

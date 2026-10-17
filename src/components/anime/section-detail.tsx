@@ -13,6 +13,7 @@ import { JSX } from "react";
 
 import BookmarkButton from "./bookmark-button";
 import ShareButton from "./share-button";
+import { parseTotalEpisodes } from "@/utils/progress";
 
 import { WatchOrderTimeline } from "./watch-order-timeline";
 import { ThemeSongsPlayer } from "./theme-songs-player";
@@ -21,7 +22,13 @@ import { EpisodeGallery } from "./episode-gallery";
 const SectionDetail = ({ anime, slug }: { anime: AnimeDetail; slug: string }): JSX.Element => (
   <section className="container px-4 pb-24 pt-6 md:pb-12 md:pt-16">
     <DetailToc />
-    <HistoryTracker slug={slug} title={anime.title ?? ""} image={anime.image} release={anime.release_on} />
+    <HistoryTracker
+      slug={slug}
+      title={anime.title ?? ""}
+      image={anime.image}
+      release={anime.release_on}
+      total={parseTotalEpisodes(anime.total_episode)}
+    />
     {/* Visible breadcrumb matching the BreadcrumbList JSON-LD — required for
         the breadcrumb rich result. */}
     <nav aria-label="Breadcrumb" className="mb-6">
@@ -51,7 +58,7 @@ const SectionDetail = ({ anime, slug }: { anime: AnimeDetail; slug: string }): J
     <WatchOrderTimeline anime={anime} />
     <ThemeSongsPlayer animeTitle={anime.title ?? ""} />
     {anime.image && <EpisodeGallery title={anime.title ?? ""} posterImage={anime.image} />}
-    <DownloadSection anime={anime} />
+    <DownloadSection anime={anime} slug={slug} />
     <NewSeriesSection slug={slug} />
 
     {/* Mobile-only sticky CTA: the download action is the core task — keep it
