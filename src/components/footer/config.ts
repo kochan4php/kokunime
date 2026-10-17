@@ -18,4 +18,3 @@ export const footerDevLinks = [
   { label: "JSON Feed", href: "/feed.json" },
   { label: "API Health Check", href: "/api/health" },
 ];
-

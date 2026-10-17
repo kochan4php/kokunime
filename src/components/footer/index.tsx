@@ -6,14 +6,10 @@ import Link from "next/link";
 import { JSX } from "react";
 
 const Footer = (): JSX.Element => (
-  <footer className="relative overflow-hidden border-t border-border bg-bg/50 backdrop-blur-xs">
+  <footer className="relative overflow-hidden border-t-2 border-border bg-surface-muted">
     <div
       aria-hidden
-      className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-border to-transparent opacity-60"
-    />
-    <div
-      aria-hidden
-      className="pointer-events-none absolute -bottom-10 left-1/2 -translate-x-1/2 select-none whitespace-nowrap font-display text-[13rem] font-extrabold leading-none tracking-tight text-ink/[0.03] md:text-[18rem]"
+      className="pointer-events-none absolute -bottom-10 left-1/2 -translate-x-1/2 select-none whitespace-nowrap font-display text-[13rem] font-extrabold leading-none tracking-tight text-ink/[0.04] md:text-[18rem]"
     >
       Koku
     </div>

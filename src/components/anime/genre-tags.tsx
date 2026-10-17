@@ -3,13 +3,13 @@ import { AnimeDetail, Genre } from "@/interfaces";
 import Link from "next/link";
 import { JSX } from "react";
 
-const chipColors = ["bg-accent/10 text-accent", "bg-accent-2/10 text-accent-2", "bg-accent-amber/10 text-accent-amber"];
+const chipColors = ["bg-nb-yellow", "bg-nb-pink", "bg-nb-teal", "bg-nb-lime", "bg-nb-purple", "bg-nb-orange"];
 
 const GenreTags = ({ anime }: { anime: AnimeDetail }): JSX.Element => (
   <div className="flex flex-wrap gap-2">
     {anime.genre.map((item: Genre, index: number) => {
       const slug = endpointSlug(item.endpoint, "genres");
-      const className = `rounded-full px-3 py-1 font-mono text-[11px] font-medium uppercase tracking-wider ${chipColors[index % chipColors.length]} transition-opacity duration-200 hover:opacity-70`;
+      const className = `rounded-sm border-2 border-border px-3 py-1 font-mono text-[11px] font-bold uppercase tracking-wider text-nb-ink shadow-[2px_2px_0_0_var(--border)] ${chipColors[index % chipColors.length]} transition-all duration-150 hover:-translate-y-0.5 hover:shadow-[4px_4px_0_0_var(--border)] active:translate-y-0 active:shadow-none`;
 
       return slug ? (
         <Link key={index} href={`/genres/${slug}`} className={className}>

@@ -15,29 +15,29 @@ const SEASON_META: Record<string, { icon: string; name: string; months: string; 
     icon: "❄️",
     name: "Winter (Musim Dingin)",
     months: "Januari - Maret",
-    color: "text-sky-400 border-sky-500/30 bg-sky-500/10",
-    gradient: "from-sky-500/20 to-blue-500/10 border-sky-500/30",
+    color: "text-nb-ink border-nb-ink/40 bg-white/60",
+    gradient: "bg-nb-purple border-border",
   },
   spring: {
     icon: "🌸",
     name: "Spring (Musim Semi)",
     months: "April - Juni",
-    color: "text-pink-400 border-pink-500/30 bg-pink-500/10",
-    gradient: "from-pink-500/20 to-rose-500/10 border-pink-500/30",
+    color: "text-nb-ink border-nb-ink/40 bg-white/60",
+    gradient: "bg-nb-pink border-border",
   },
   summer: {
     icon: "☀️",
     name: "Summer (Musim Panas)",
     months: "Juli - September",
-    color: "text-amber-400 border-amber-500/30 bg-amber-500/10",
-    gradient: "from-amber-500/20 to-orange-500/10 border-amber-500/30",
+    color: "text-nb-ink border-nb-ink/40 bg-white/60",
+    gradient: "bg-nb-yellow border-border",
   },
   fall: {
     icon: "🍁",
     name: "Fall (Musim Gugur)",
     months: "Oktober - Desember",
-    color: "text-orange-400 border-orange-500/30 bg-orange-500/10",
-    gradient: "from-orange-500/20 to-amber-500/10 border-orange-500/30",
+    color: "text-nb-ink border-nb-ink/40 bg-white/60",
+    gradient: "bg-nb-orange border-border",
   },
 };
 
@@ -51,8 +51,8 @@ const getSeasonInfo = (name: string) => {
     icon: "📅",
     name,
     months: "Musim Rilis",
-    color: "text-accent border-accent/30 bg-accent/10",
-    gradient: "from-accent/20 to-accent-2/10 border-accent/30",
+    color: "text-nb-ink border-nb-ink/40 bg-white/60",
+    gradient: "bg-nb-teal border-border",
   };
 };
 
@@ -92,16 +92,18 @@ export const SeasonsExplorer = ({ groups, years }: SeasonsExplorerProps): JSX.El
           {Object.entries(SEASON_META).map(([key, meta]) => (
             <div
               key={key}
-              className={`rounded-3xl border bg-gradient-to-br ${meta.gradient} p-4 transition-all duration-300`}
+              className={`rounded-sm border-2 ${meta.gradient} p-4 text-nb-ink shadow-[2px_2px_0_0_var(--border)] transition-all duration-300`}
             >
               <div className="flex items-center justify-between">
                 <span className="text-2xl">{meta.icon}</span>
-                <span className={`rounded-full border px-2.5 py-0.5 font-mono text-[10px] font-bold ${meta.color}`}>
+                <span className={`rounded-sm border-2 px-2.5 py-0.5 font-mono text-[10px] font-bold ${meta.color}`}>
                   {meta.months}
                 </span>
               </div>
-              <h3 className="font-display text-base font-bold text-ink mt-3">{meta.name}</h3>
-              <p className="font-mono text-xs text-ink-muted mt-0.5">Kuartal {key === "winter" ? "Q1" : key === "spring" ? "Q2" : key === "summer" ? "Q3" : "Q4"}</p>
+              <h3 className="font-display text-base font-bold text-nb-ink mt-3">{meta.name}</h3>
+              <p className="font-mono text-xs text-nb-ink/75 mt-0.5">
+                Kuartal {key === "winter" ? "Q1" : key === "spring" ? "Q2" : key === "summer" ? "Q3" : "Q4"}
+              </p>
             </div>
           ))}
         </div>
@@ -117,10 +119,10 @@ export const SeasonsExplorer = ({ groups, years }: SeasonsExplorerProps): JSX.El
                 setSelectedYear("all");
                 setSearchQuery("");
               }}
-              className={`rounded-full px-3.5 py-1.5 font-mono text-xs font-semibold transition-all shrink-0 cursor-pointer ${
+              className={`rounded-sm border-2 px-3.5 py-1.5 font-mono text-xs font-semibold transition-all shrink-0 cursor-pointer ${
                 selectedYear === "all"
-                  ? "bg-accent text-(--accent-ink) font-bold"
-                  : "border border-border bg-surface text-ink-muted hover:border-accent hover:text-ink"
+                  ? "border-border bg-accent text-(--accent-ink) font-bold shadow-[2px_2px_0_0_var(--border)]"
+                  : "border-border bg-surface text-ink-muted hover:text-ink"
               }`}
             >
               Semua Tahun ({years.length})
@@ -133,10 +135,10 @@ export const SeasonsExplorer = ({ groups, years }: SeasonsExplorerProps): JSX.El
                   setSelectedYear(yr);
                   setSearchQuery("");
                 }}
-                className={`rounded-full px-3.5 py-1.5 font-mono text-xs font-semibold transition-all shrink-0 cursor-pointer ${
+                className={`rounded-sm border-2 px-3.5 py-1.5 font-mono text-xs font-semibold transition-all shrink-0 cursor-pointer ${
                   selectedYear === yr
-                    ? "bg-accent text-(--accent-ink) font-bold"
-                    : "border border-border bg-surface text-ink-muted hover:border-accent hover:text-ink"
+                    ? "border-border bg-accent text-(--accent-ink) font-bold shadow-[2px_2px_0_0_var(--border)]"
+                    : "border-border bg-surface text-ink-muted hover:text-ink"
                 }`}
               >
                 {yr}
@@ -154,7 +156,7 @@ export const SeasonsExplorer = ({ groups, years }: SeasonsExplorerProps): JSX.El
               }}
               placeholder="Cari tahun atau musim..."
               aria-label="Cari musim anime"
-              className="h-10 w-full rounded-2xl border border-border bg-surface-solid pl-9 pr-8 text-xs text-ink outline-none transition-all placeholder:text-ink-muted focus:border-accent focus:bg-surface"
+              className="h-10 w-full rounded-sm border-2 border-border bg-surface-solid pl-9 pr-8 text-xs text-ink shadow-[2px_2px_0_0_var(--border)] outline-none transition-all placeholder:text-ink-muted focus:border-accent focus:bg-surface"
             />
             <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-ink-muted text-xs">
               🔍
@@ -179,11 +181,11 @@ export const SeasonsExplorer = ({ groups, years }: SeasonsExplorerProps): JSX.El
               if (seasonsInYear.length === 0) return null;
 
               return (
-                <div key={year} className="rounded-3xl border border-border/80 bg-surface/30 p-5 md:p-6 space-y-4">
-                  <div className="flex items-center justify-between border-b border-border/60 pb-3">
+                <div key={year} className="rounded-sm border-2 border-border bg-surface p-5 md:p-6 space-y-4">
+                  <div className="flex items-center justify-between border-b-2 border-border pb-3">
                     <div className="flex items-center gap-3">
                       <span className="font-display text-2xl font-black text-ink">{year}</span>
-                      <span className="rounded-full bg-surface-muted px-2.5 py-0.5 font-mono text-[10px] font-bold text-ink-muted">
+                      <span className="rounded-sm border-2 border-border bg-nb-yellow px-2.5 py-0.5 font-mono text-[10px] font-bold text-nb-ink">
                         {seasonsInYear.length} Musim Rilis
                       </span>
                     </div>
@@ -200,10 +202,10 @@ export const SeasonsExplorer = ({ groups, years }: SeasonsExplorerProps): JSX.El
                         <Link
                           key={slug}
                           href={`/seasons/${slug}`}
-                          className="group relative flex items-center justify-between rounded-2xl border border-border bg-surface-solid p-3.5 transition-all duration-200 hover:border-accent hover:bg-accent/5 hover:shadow-lg active:scale-[0.98]"
+                          className="group relative flex items-center justify-between rounded-sm border-2 border-border bg-surface-solid p-3.5 shadow-[2px_2px_0_0_var(--border)] transition-all duration-150 hover:-translate-y-0.5 hover:shadow-[4px_4px_0_0_var(--border)] active:translate-y-0 active:shadow-none"
                         >
                           <div className="flex items-center gap-3 min-w-0">
-                            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-surface text-xl group-hover:scale-110 transition-transform">
+                            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-sm border-2 border-border bg-surface text-xl group-hover:scale-110 transition-transform">
                               {meta.icon}
                             </span>
                             <div className="min-w-0">
@@ -224,7 +226,7 @@ export const SeasonsExplorer = ({ groups, years }: SeasonsExplorerProps): JSX.El
               );
             })
           ) : (
-            <div className="rounded-3xl border border-border bg-surface-solid p-8 text-center">
+            <div className="rounded-sm border-2 border-border bg-surface-solid p-8 text-center shadow-[2px_2px_0_0_var(--border)]">
               <span className="text-3xl">📅</span>
               <p className="font-display text-base font-bold text-ink mt-2">Musim rilis tidak ditemukan</p>
               <p className="text-xs text-ink-muted mt-1">Coba gunakan kata kunci tahun atau musim yang lain.</p>

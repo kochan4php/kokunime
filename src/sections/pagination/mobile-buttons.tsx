@@ -9,8 +9,8 @@ interface MobilePaginationProps {
   nextHref: string | null;
 }
 
-const compact = "inline-flex h-9 items-center gap-1 rounded-full px-3 text-xs";
-const glassCompact = `${compact} glass font-semibold text-ink transition-all duration-300 hover:text-accent active:scale-95`;
+const compact = "inline-flex h-10 items-center gap-1 rounded-sm px-3 text-xs";
+const glassCompact = `${compact} glass font-semibold text-ink shadow-[2px_2px_0_0_var(--border)] transition-all duration-150 hover:-translate-y-0.5 active:translate-y-0 active:shadow-none`;
 const primaryCompact = `${compact} btn-primary`;
 
 const MobilePagination = ({ current, total, prevHref, nextHref }: MobilePaginationProps): JSX.Element => (

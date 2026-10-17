@@ -224,7 +224,7 @@ const BatchDownloadTools = ({ group, animeTitle }: BatchDownloadToolsProps): JSX
       {isLargeBatch && (
         <span
           title="Ukuran batch ini tergolong besar (>= 10 GB). Pastikan ruang penyimpanan mencukupi."
-          className="inline-flex items-center gap-1 rounded-full border border-amber-500/30 bg-amber-500/10 px-2 py-0.5 font-mono text-[10px] font-bold text-amber-500"
+          className="inline-flex items-center gap-1 rounded-sm border-2 border-border bg-nb-red px-2 py-0.5 font-mono text-[10px] font-bold text-nb-ink shadow-[2px_2px_0_0_var(--border)]"
         >
           ⚠️ &gt; 10 GB
         </span>
@@ -233,10 +233,10 @@ const BatchDownloadTools = ({ group, animeTitle }: BatchDownloadToolsProps): JSX
         type="button"
         onClick={copyAll}
         title="Salin semua URL link untuk IDM / JDownloader"
-        className={`inline-flex items-center gap-1 rounded-full border px-3 py-1 font-mono text-[11px] font-semibold tracking-wider transition-all duration-200 active:scale-95 cursor-pointer ${
+        className={`inline-flex items-center gap-1 rounded-sm border-2 px-3 py-1 font-mono text-[11px] font-semibold tracking-wider transition-all duration-150 cursor-pointer ${
           copied
-            ? "border-accent bg-accent/15 text-accent"
-            : "border-border bg-surface text-ink-muted hover:border-accent hover:text-ink"
+            ? "border-border bg-nb-lime text-nb-ink shadow-[2px_2px_0_0_var(--border)]"
+            : "border-border bg-surface text-ink-muted shadow-[2px_2px_0_0_var(--border)] hover:-translate-y-0.5 hover:text-ink active:translate-y-0 active:shadow-none"
         }`}
       >
         <span>{copied ? "✓ Tersalin!" : "Salin Semua URL"}</span>
@@ -251,10 +251,10 @@ const BatchDownloadTools = ({ group, animeTitle }: BatchDownloadToolsProps): JSX
             type="button"
             onClick={() => copyQuality(q)}
             title={`Salin semua link resolusi ${q}`}
-            className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 sm:px-2.5 sm:py-1 font-mono text-[10px] font-semibold transition-all cursor-pointer ${
+            className={`inline-flex items-center gap-1 rounded-sm border-2 px-2 py-0.5 sm:px-2.5 sm:py-1 font-mono text-[10px] font-semibold transition-all duration-150 cursor-pointer ${
               copiedRes === q
-                ? "border-accent bg-accent/15 text-accent"
-                : "border-border bg-surface text-ink-muted hover:border-accent hover:text-ink"
+                ? "border-border bg-nb-lime text-nb-ink shadow-[2px_2px_0_0_var(--border)]"
+                : "border-border bg-surface text-ink-muted shadow-[2px_2px_0_0_var(--border)] hover:-translate-y-0.5 hover:text-ink active:translate-y-0 active:shadow-none"
             }`}
           >
             <span>{copiedRes === q ? `✓ ${q}` : `📋 ${q}`}</span>
@@ -266,17 +266,17 @@ const BatchDownloadTools = ({ group, animeTitle }: BatchDownloadToolsProps): JSX
         type="button"
         onClick={() => setShowMoreTools((prev) => !prev)}
         title="Buka opsi ekspor lanjutan (Provider, IDM, DLC, aria2c, cURL, Markdown, Estimasi)"
-        className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-1 font-mono text-[10px] font-semibold transition-all cursor-pointer ${
+        className={`inline-flex items-center gap-1 rounded-sm border-2 px-2.5 py-1 font-mono text-[10px] font-semibold transition-all duration-150 cursor-pointer ${
           showMoreTools
-            ? "border-accent bg-accent/15 text-accent font-bold"
-            : "border-border bg-surface text-ink-muted hover:border-accent hover:text-ink"
+            ? "border-border bg-accent text-(--accent-ink) font-bold shadow-[2px_2px_0_0_var(--border)]"
+            : "border-border bg-surface text-ink-muted shadow-[2px_2px_0_0_var(--border)] hover:-translate-y-0.5 hover:text-ink active:translate-y-0 active:shadow-none"
         }`}
       >
         <span>{showMoreTools ? "🛠️ Tutup Opsi ▲" : "🛠️ Opsi Ekspor ▼"}</span>
       </button>
 
       {showMoreTools && (
-        <div className="w-full mt-2 flex flex-wrap items-center gap-1.5 rounded-2xl border border-border/80 bg-surface-muted/40 p-2.5 animate-in fade-in duration-200">
+        <div className="w-full mt-2 flex flex-wrap items-center gap-1.5 rounded-sm border-2 border-border bg-surface-muted p-2.5 animate-in fade-in duration-200">
           {["GDrive", "Mega", "Mediafire", "Acefile"].map((p) => {
             const hasP = group.link_download.some((r) =>
               r.link.some((t) => t.platform.toLowerCase().includes(p.toLowerCase())),
@@ -288,10 +288,10 @@ const BatchDownloadTools = ({ group, animeTitle }: BatchDownloadToolsProps): JSX
                 type="button"
                 onClick={() => copyPlatform(p)}
                 title={`Salin semua link khusus provider ${p}`}
-                className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-1 font-mono text-[10px] font-semibold transition-all cursor-pointer ${
+                className={`inline-flex items-center gap-1 rounded-sm border-2 px-2.5 py-1 font-mono text-[10px] font-semibold transition-all cursor-pointer ${
                   copiedPlatform === p
-                    ? "border-accent bg-accent/15 text-accent"
-                    : "border-border bg-surface text-ink-muted hover:border-accent hover:text-ink"
+                    ? "border-border bg-nb-lime text-nb-ink shadow-[2px_2px_0_0_var(--border)]"
+                    : "border-border bg-surface text-ink-muted shadow-[2px_2px_0_0_var(--border)] hover:-translate-y-0.5 hover:text-ink active:translate-y-0 active:shadow-none"
                 }`}
               >
                 <span>{copiedPlatform === p ? `✓ ${p}` : `📦 ${p}`}</span>
@@ -302,10 +302,10 @@ const BatchDownloadTools = ({ group, animeTitle }: BatchDownloadToolsProps): JSX
             type="button"
             onClick={copyAria2}
             title="Salin format untuk aria2c (aria2c -i list.txt)"
-            className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-1 font-mono text-[10px] font-semibold transition-all cursor-pointer ${
+            className={`inline-flex items-center gap-1 rounded-sm border-2 px-2.5 py-1 font-mono text-[10px] font-semibold transition-all cursor-pointer ${
               copiedAria2
-                ? "border-accent bg-accent/15 text-accent"
-                : "border-border bg-surface text-ink-muted hover:border-accent hover:text-ink"
+                ? "border-border bg-nb-lime text-nb-ink shadow-[2px_2px_0_0_var(--border)]"
+                : "border-border bg-surface text-ink-muted shadow-[2px_2px_0_0_var(--border)] hover:-translate-y-0.5 hover:text-ink active:translate-y-0 active:shadow-none"
             }`}
           >
             <span>{copiedAria2 ? "✓ aria2c Tersalin!" : "aria2c"}</span>
@@ -314,10 +314,10 @@ const BatchDownloadTools = ({ group, animeTitle }: BatchDownloadToolsProps): JSX
             type="button"
             onClick={copyMarkdown}
             title="Salin link dalam format Markdown"
-            className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-1 font-mono text-[10px] font-semibold transition-all cursor-pointer ${
+            className={`inline-flex items-center gap-1 rounded-sm border-2 px-2.5 py-1 font-mono text-[10px] font-semibold transition-all cursor-pointer ${
               copiedMd
-                ? "border-accent bg-accent/15 text-accent"
-                : "border-border bg-surface text-ink-muted hover:border-accent hover:text-ink"
+                ? "border-border bg-nb-lime text-nb-ink shadow-[2px_2px_0_0_var(--border)]"
+                : "border-border bg-surface text-ink-muted shadow-[2px_2px_0_0_var(--border)] hover:-translate-y-0.5 hover:text-ink active:translate-y-0 active:shadow-none"
             }`}
           >
             <span>{copiedMd ? "✓ Markdown Tersalin!" : "Markdown"}</span>
@@ -326,7 +326,7 @@ const BatchDownloadTools = ({ group, animeTitle }: BatchDownloadToolsProps): JSX
             type="button"
             onClick={exportTxt}
             title="Unduh daftar tautan sebagai file teks (.txt)"
-            className="inline-flex items-center gap-1 rounded-full border border-border bg-surface px-2.5 py-1 font-mono text-[10px] font-semibold text-ink-muted transition-all hover:border-accent hover:text-ink active:scale-95 cursor-pointer"
+            className="inline-flex items-center gap-1 rounded-sm border-2 border-border bg-surface px-2.5 py-1 font-mono text-[10px] font-semibold shadow-[2px_2px_0_0_var(--border)] text-ink-muted transition-all hover:-translate-y-0.5 hover:text-ink active:translate-y-0 active:shadow-none cursor-pointer"
           >
             <span>📄 .txt</span>
           </button>
@@ -334,7 +334,7 @@ const BatchDownloadTools = ({ group, animeTitle }: BatchDownloadToolsProps): JSX
             type="button"
             onClick={exportIdmEf2}
             title="Export file .ef2 untuk Internet Download Manager (IDM)"
-            className="inline-flex items-center gap-1 rounded-full border border-border bg-surface px-2.5 py-1 font-mono text-[10px] font-semibold text-ink-muted transition-all hover:border-accent hover:text-ink active:scale-95 cursor-pointer"
+            className="inline-flex items-center gap-1 rounded-sm border-2 border-border bg-surface px-2.5 py-1 font-mono text-[10px] font-semibold shadow-[2px_2px_0_0_var(--border)] text-ink-muted transition-all hover:-translate-y-0.5 hover:text-ink active:translate-y-0 active:shadow-none cursor-pointer"
           >
             <span>IDM (.ef2)</span>
           </button>
@@ -342,7 +342,7 @@ const BatchDownloadTools = ({ group, animeTitle }: BatchDownloadToolsProps): JSX
             type="button"
             onClick={exportDlc}
             title="Export file .dlc untuk JDownloader 2"
-            className="inline-flex items-center gap-1 rounded-full border border-border bg-surface px-2.5 py-1 font-mono text-[10px] font-semibold text-ink-muted transition-all hover:border-accent hover:text-ink active:scale-95 cursor-pointer"
+            className="inline-flex items-center gap-1 rounded-sm border-2 border-border bg-surface px-2.5 py-1 font-mono text-[10px] font-semibold shadow-[2px_2px_0_0_var(--border)] text-ink-muted transition-all hover:-translate-y-0.5 hover:text-ink active:translate-y-0 active:shadow-none cursor-pointer"
           >
             <span>JDownloader (.dlc)</span>
           </button>
@@ -350,7 +350,7 @@ const BatchDownloadTools = ({ group, animeTitle }: BatchDownloadToolsProps): JSX
             type="button"
             onClick={exportCurlSh}
             title="Unduh bash script curl untuk download via Linux / VPS terminal"
-            className="inline-flex items-center gap-1 rounded-full border border-border bg-surface px-2.5 py-1 font-mono text-[10px] font-semibold text-ink-muted hover:border-accent hover:text-ink transition-all active:scale-95 cursor-pointer"
+            className="inline-flex items-center gap-1 rounded-sm border-2 border-border bg-surface px-2.5 py-1 font-mono text-[10px] font-semibold shadow-[2px_2px_0_0_var(--border)] text-ink-muted hover:-translate-y-0.5 hover:text-ink transition-all active:translate-y-0 active:shadow-none cursor-pointer"
           >
             <span>cURL (.sh)</span>
           </button>
@@ -358,7 +358,7 @@ const BatchDownloadTools = ({ group, animeTitle }: BatchDownloadToolsProps): JSX
             type="button"
             onClick={() => setShowRawTextarea((prev) => !prev)}
             title="Buka area teks mentah untuk salin manual"
-            className="inline-flex items-center gap-1 rounded-full border border-border bg-surface px-2.5 py-1 font-mono text-[10px] font-semibold text-ink-muted hover:border-accent hover:text-ink transition-all active:scale-95 cursor-pointer"
+            className="inline-flex items-center gap-1 rounded-sm border-2 border-border bg-surface px-2.5 py-1 font-mono text-[10px] font-semibold shadow-[2px_2px_0_0_var(--border)] text-ink-muted hover:-translate-y-0.5 hover:text-ink transition-all active:translate-y-0 active:shadow-none cursor-pointer"
           >
             <span>{showRawTextarea ? "✕ Tutup Teks" : "📝 Raw Teks"}</span>
           </button>
@@ -366,10 +366,10 @@ const BatchDownloadTools = ({ group, animeTitle }: BatchDownloadToolsProps): JSX
             type="button"
             onClick={() => setShowSpeedCalc((prev) => !prev)}
             title="Kalkulator Estimasi Waktu Download"
-            className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-1 font-mono text-[10px] font-semibold transition-all active:scale-95 cursor-pointer ${
+            className={`inline-flex items-center gap-1 rounded-sm border-2 px-2.5 py-1 font-mono text-[10px] font-semibold transition-all active:scale-95 cursor-pointer ${
               showSpeedCalc
-                ? "border-accent bg-accent/15 text-accent"
-                : "border-border bg-surface text-ink-muted hover:border-accent hover:text-ink"
+                ? "border-border bg-nb-lime text-nb-ink shadow-[2px_2px_0_0_var(--border)]"
+                : "border-border bg-surface text-ink-muted shadow-[2px_2px_0_0_var(--border)] hover:-translate-y-0.5 hover:text-ink active:translate-y-0 active:shadow-none"
             }`}
           >
             <span>⏱️ Estimasi Waktu</span>
@@ -378,11 +378,11 @@ const BatchDownloadTools = ({ group, animeTitle }: BatchDownloadToolsProps): JSX
       )}
 
       {showSpeedCalc && (
-        <div className="w-full mt-3 rounded-2xl border border-border bg-surface-solid/95 p-4 shadow-xl backdrop-blur-md">
-          <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border/70 pb-3">
+        <div className="w-full mt-3 rounded-sm border-2 border-border bg-surface-solid p-4 shadow-[6px_6px_0_0_var(--border)]">
+          <div className="flex flex-wrap items-center justify-between gap-2 border-b-2 border-border pb-3">
             <span className="font-display text-xs font-bold text-ink">
-              ⏱️ Estimasi Waktu Unduh (
-              {fileSizeMb >= 1000 ? `${(fileSizeMb / 1000).toFixed(1)} GB` : `${fileSizeMb} MB`})
+              ⏱️ Estimasi Waktu Unduh ({fileSizeMb >= 1000 ? `${(fileSizeMb / 1000).toFixed(1)} GB` : `${fileSizeMb} MB`}
+              )
             </span>
             <div className="flex items-center gap-1.5">
               <span className="font-mono text-[10px] text-ink-muted">Pilih Ukuran:</span>
@@ -391,10 +391,10 @@ const BatchDownloadTools = ({ group, animeTitle }: BatchDownloadToolsProps): JSX
                   key={size}
                   type="button"
                   onClick={() => setFileSizeMb(size)}
-                  className={`rounded-md px-2 py-0.5 font-mono text-[10px] font-semibold transition-colors cursor-pointer ${
+                  className={`rounded-sm border-2 px-2 py-0.5 font-mono text-[10px] font-semibold transition-colors cursor-pointer ${
                     fileSizeMb === size
-                      ? "bg-accent text-(--accent-ink)"
-                      : "bg-surface border border-border text-ink-muted hover:text-ink"
+                      ? "border-border bg-accent text-(--accent-ink)"
+                      : "border-border bg-surface text-ink-muted hover:text-ink"
                   }`}
                 >
                   {size >= 1000 ? `${size / 1000}GB` : `${size}MB`}
@@ -403,28 +403,36 @@ const BatchDownloadTools = ({ group, animeTitle }: BatchDownloadToolsProps): JSX
             </div>
           </div>
           <div className="mt-3 grid grid-cols-2 sm:grid-cols-4 gap-2 font-mono text-xs">
-            <div className="rounded-xl border border-border bg-surface p-2.5 text-center">
+            <div className="rounded-sm border-2 border-border bg-surface p-2.5 text-center shadow-[2px_2px_0_0_var(--border)]">
               <span className="block text-[10px] text-ink-muted">10 Mbps (1.2 MB/s)</span>
-              <strong className="mt-1 block font-bold text-amber-500">{calculateTime(fileSizeMb, 10)}</strong>
+              <strong className="mt-1 inline-block rounded-sm border-2 border-border bg-nb-orange px-1.5 font-bold text-nb-ink">
+                {calculateTime(fileSizeMb, 10)}
+              </strong>
             </div>
-            <div className="rounded-xl border border-border bg-surface p-2.5 text-center">
+            <div className="rounded-sm border-2 border-border bg-surface p-2.5 text-center shadow-[2px_2px_0_0_var(--border)]">
               <span className="block text-[10px] text-ink-muted">50 Mbps (6.2 MB/s)</span>
-              <strong className="mt-1 block font-bold text-emerald-500">{calculateTime(fileSizeMb, 50)}</strong>
+              <strong className="mt-1 inline-block rounded-sm border-2 border-border bg-nb-lime px-1.5 font-bold text-nb-ink">
+                {calculateTime(fileSizeMb, 50)}
+              </strong>
             </div>
-            <div className="rounded-xl border border-border bg-surface p-2.5 text-center">
+            <div className="rounded-sm border-2 border-border bg-surface p-2.5 text-center shadow-[2px_2px_0_0_var(--border)]">
               <span className="block text-[10px] text-ink-muted">100 Mbps (12.5 MB/s)</span>
-              <strong className="mt-1 block font-bold text-sky-500">{calculateTime(fileSizeMb, 100)}</strong>
+              <strong className="mt-1 inline-block rounded-sm border-2 border-border bg-nb-teal px-1.5 font-bold text-nb-ink">
+                {calculateTime(fileSizeMb, 100)}
+              </strong>
             </div>
-            <div className="rounded-xl border border-border bg-surface p-2.5 text-center">
+            <div className="rounded-sm border-2 border-border bg-surface p-2.5 text-center shadow-[2px_2px_0_0_var(--border)]">
               <span className="block text-[10px] text-ink-muted">1 Gbps (125 MB/s)</span>
-              <strong className="mt-1 block font-bold text-accent">{calculateTime(fileSizeMb, 1000)}</strong>
+              <strong className="mt-1 inline-block rounded-sm border-2 border-border bg-nb-yellow px-1.5 font-bold text-nb-ink">
+                {calculateTime(fileSizeMb, 1000)}
+              </strong>
             </div>
           </div>
         </div>
       )}
 
       {showRawTextarea && (
-        <div className="w-full mt-3 rounded-2xl border border-border bg-surface-solid/95 p-4 shadow-xl backdrop-blur-md">
+        <div className="w-full mt-3 rounded-sm border-2 border-border bg-surface-solid p-4 shadow-[6px_6px_0_0_var(--border)]">
           <div className="flex items-center justify-between mb-2">
             <span className="font-display text-xs font-bold text-ink">
               📝 Salin Manual (Klik teks untuk Select All / Ctrl + A)
@@ -442,7 +450,7 @@ const BatchDownloadTools = ({ group, animeTitle }: BatchDownloadToolsProps): JSX
             rows={5}
             value={getLinks().join("\n")}
             onClick={(e) => e.currentTarget.select()}
-            className="w-full rounded-xl border border-border bg-surface p-2.5 font-mono text-xs text-ink focus:border-accent focus:outline-none select-all cursor-text"
+            className="w-full rounded-sm border-2 border-border bg-surface p-2.5 font-mono text-xs text-ink shadow-[2px_2px_0_0_var(--border)] focus:border-accent focus:outline-none select-all cursor-text"
           />
         </div>
       )}

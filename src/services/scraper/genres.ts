@@ -62,8 +62,8 @@ export async function getAnimeByGenres(genre: string, page: number | string): Pr
       const combinedAnime = [...res1.anime, ...res2.anime, ...res3.anime];
       const hasNextPage = Boolean(
         res3.pagination?.next_page_endpoint ||
-        res2.pagination?.next_page_endpoint ||
-        res1.pagination?.next_page_endpoint
+          res2.pagination?.next_page_endpoint ||
+          res1.pagination?.next_page_endpoint,
       );
 
       const pagination = {

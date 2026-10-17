@@ -29,7 +29,7 @@ const InfoSide = ({ anime }: { anime: AnimeDetail }): JSX.Element => (
       {anime.download?.length > 0 && (
         <a href="#download" className="btn-primary w-full justify-center">
           Lihat Download
-          <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-black/15">
+          <span className="inline-flex h-7 w-7 items-center justify-center rounded-sm border-2 border-nb-ink bg-nb-ink text-nb-cream">
             <ArrowDownIcon className="h-3.5 w-3.5" />
           </span>
         </a>

@@ -25,7 +25,7 @@ const SearchAnime = async ({ params }: { params: Promise<{ query: string }> }): 
           Hasil pencarian
         </span>
         <h1 className="mt-4 font-display text-3xl font-extrabold tracking-tight text-ink md:text-5xl">
-          <span className="bg-gradient-to-r from-accent via-accent-2 to-accent-amber bg-clip-text text-transparent">
+          <span className="inline-block rounded-sm border-2 border-border bg-nb-yellow px-2 text-nb-ink shadow-[3px_3px_0_0_var(--border)]">
             “{query.split("+").join(" ")}”
           </span>
         </h1>

@@ -46,10 +46,10 @@ export const PwaInstallBanner = (): JSX.Element | null => {
   return (
     <aside
       aria-label="Install Aplikasi Kokunime"
-      className="fixed bottom-4 left-4 right-4 z-40 mx-auto max-w-md rounded-2xl border border-accent/40 bg-surface-solid/95 p-4 shadow-2xl backdrop-blur-md transition-all duration-300 md:bottom-6 md:right-6 md:left-auto"
+      className="fixed bottom-4 left-4 right-4 z-40 mx-auto max-w-md rounded-sm border-2 border-border bg-surface-solid p-4 shadow-[6px_6px_0_0_var(--border)] transition-all duration-300 md:bottom-6 md:right-6 md:left-auto"
     >
       <div className="flex items-start gap-3">
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-accent text-lg font-black text-(--accent-ink)">
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-sm border-2 border-border bg-nb-yellow text-lg font-black text-[#0a0a0a]">
           K
         </div>
         <div className="flex-1 min-w-0">
@@ -61,14 +61,14 @@ export const PwaInstallBanner = (): JSX.Element | null => {
             <button
               type="button"
               onClick={handleInstall}
-              className="rounded-full bg-accent px-4 py-1.5 font-display text-xs font-bold text-(--accent-ink) transition-transform hover:scale-105 active:scale-95 cursor-pointer shadow-md"
+              className="rounded-sm border-2 border-border bg-accent px-4 py-1.5 font-display text-xs font-bold text-(--accent-ink) shadow-[2px_2px_0_0_var(--border)] transition-all hover:-translate-y-0.5 active:translate-y-0 active:shadow-none cursor-pointer"
             >
               ⬇ Pasang Sekarang
             </button>
             <button
               type="button"
               onClick={handleDismiss}
-              className="rounded-full border border-border px-3 py-1.5 font-display text-xs text-ink-muted hover:text-ink transition-colors cursor-pointer"
+              className="rounded-sm border-2 border-border bg-surface px-3 py-1.5 font-display text-xs text-ink-muted hover:text-ink transition-colors cursor-pointer"
             >
               Nanti Saja
             </button>
@@ -78,7 +78,7 @@ export const PwaInstallBanner = (): JSX.Element | null => {
           type="button"
           onClick={handleDismiss}
           aria-label="Tutup pesan"
-          className="text-ink-muted hover:text-ink p-1 cursor-pointer"
+          className="text-ink-muted hover:text-ink p-2 -m-1 cursor-pointer"
         >
           ✕
         </button>

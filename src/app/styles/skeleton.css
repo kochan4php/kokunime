@@ -1,27 +1,24 @@
 .skeleton {
   position: relative;
   overflow: hidden;
-  background: var(--surface-solid);
-  border: 1px solid var(--border);
+  background: var(--surface-muted);
+  border: 2px solid var(--border);
+  animation: nb-pulse 1.4s ease-in-out infinite;
 }
 
-.skeleton::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  transform: translateX(-100%);
-  background: linear-gradient(90deg, transparent, var(--border), transparent);
-  animation: shimmer 1.6s ease-in-out infinite;
-}
-
-@keyframes shimmer {
+@keyframes nb-pulse {
+  0%,
   100% {
-    transform: translateX(100%);
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.55;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .skeleton::after {
+  .skeleton {
     animation: none;
   }
 }

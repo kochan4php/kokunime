@@ -76,10 +76,10 @@ const BookmarkButton = ({
         aria-pressed={active}
         aria-label={active ? `Hapus ${title} dari tersimpan` : `Simpan ${title}`}
         title={active ? "Hapus dari tersimpan" : "Simpan anime"}
-        className={`inline-flex items-center justify-center gap-2 rounded-full border transition-all duration-200 active:scale-95 cursor-pointer ${
+        className={`inline-flex items-center justify-center gap-2 rounded-sm border-2 transition-all duration-150 cursor-pointer ${
           active
-            ? "border-accent bg-accent/15 text-accent font-semibold"
-            : "border-border bg-surface text-ink-muted hover:border-accent hover:text-accent hover:bg-surface-muted"
+            ? "border-border bg-nb-yellow! text-nb-ink! font-semibold shadow-[2px_2px_0_0_var(--border)]"
+            : "border-border bg-surface text-ink-muted shadow-[2px_2px_0_0_var(--border)] hover:-translate-y-0.5 hover:text-ink active:translate-y-0 active:shadow-none"
         } ${showLabel ? "px-4 py-2 text-sm font-semibold" : "h-9 w-9 p-0"} ${className}`}
       >
         <svg
@@ -103,7 +103,7 @@ const BookmarkButton = ({
           type="button"
           onClick={() => setShowStatusPicker((prev) => !prev)}
           title="Ubah status nonton"
-          className="ml-1 rounded-full border border-border bg-surface px-2 py-2 text-xs text-ink-muted hover:border-accent hover:text-accent transition-all cursor-pointer"
+          className="ml-1 rounded-sm border-2 border-border bg-surface px-2 py-2 text-xs text-ink-muted shadow-[2px_2px_0_0_var(--border)] hover:-translate-y-0.5 hover:text-ink transition-all duration-150 active:translate-y-0 active:shadow-none cursor-pointer"
         >
           ▼
         </button>
@@ -111,7 +111,7 @@ const BookmarkButton = ({
 
       {showStatusPicker && active && (
         <div
-          className={`absolute left-0 z-50 flex flex-col gap-1 rounded-2xl border border-border bg-surface-solid/95 p-2 shadow-2xl backdrop-blur-md min-w-40 ${
+          className={`absolute left-0 z-50 flex flex-col gap-1 rounded-sm border-2 border-border bg-surface-solid p-2 shadow-[6px_6px_0_0_var(--border)] min-w-40 ${
             dropdownPlacement === "top" ? "bottom-full mb-2" : "top-full mt-2"
           }`}
         >
@@ -119,7 +119,7 @@ const BookmarkButton = ({
           <button
             type="button"
             onClick={() => handleSelectStatus("watching")}
-            className="flex items-center gap-2 rounded-xl px-3 py-1.5 text-xs text-ink hover:bg-accent/15 hover:text-accent transition-colors text-left cursor-pointer"
+            className="flex items-center gap-2 rounded-sm px-3 py-1.5 text-xs text-ink hover:bg-nb-yellow hover:text-nb-ink transition-colors text-left cursor-pointer"
           >
             <span>📺</span>
             <span>Sedang Nonton</span>
@@ -127,7 +127,7 @@ const BookmarkButton = ({
           <button
             type="button"
             onClick={() => handleSelectStatus("plan")}
-            className="flex items-center gap-2 rounded-xl px-3 py-1.5 text-xs text-ink hover:bg-accent/15 hover:text-accent transition-colors text-left cursor-pointer"
+            className="flex items-center gap-2 rounded-sm px-3 py-1.5 text-xs text-ink hover:bg-nb-yellow hover:text-nb-ink transition-colors text-left cursor-pointer"
           >
             <span>📌</span>
             <span>Rencana Nonton</span>
@@ -135,7 +135,7 @@ const BookmarkButton = ({
           <button
             type="button"
             onClick={() => handleSelectStatus("completed")}
-            className="flex items-center gap-2 rounded-xl px-3 py-1.5 text-xs text-ink hover:bg-accent/15 hover:text-accent transition-colors text-left cursor-pointer"
+            className="flex items-center gap-2 rounded-sm px-3 py-1.5 text-xs text-ink hover:bg-nb-yellow hover:text-nb-ink transition-colors text-left cursor-pointer"
           >
             <span>✓</span>
             <span>Selesai Nonton</span>

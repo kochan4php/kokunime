@@ -19,7 +19,7 @@ export const Html5VideoPlayer = ({ src, poster, title }: Html5VideoPlayerProps):
   };
 
   return (
-    <div className="relative overflow-hidden rounded-2xl border border-border bg-black shadow-xl">
+    <div className="relative overflow-hidden rounded-sm border-2 border-border bg-black shadow-[6px_6px_0_0_var(--border)]">
       <video
         ref={videoRef}
         src={src}
@@ -28,7 +28,7 @@ export const Html5VideoPlayer = ({ src, poster, title }: Html5VideoPlayerProps):
         playsInline
         className="w-full aspect-video object-contain"
       />
-      <div className="flex items-center justify-between border-t border-border bg-surface px-4 py-2 text-xs font-mono text-ink-muted">
+      <div className="flex items-center justify-between border-t-2 border-border bg-surface px-4 py-2 text-xs font-mono text-ink-muted">
         <span className="font-semibold text-ink truncate max-w-[200px]">{title}</span>
         <div className="flex items-center gap-1.5">
           <span className="text-[10px]">Kecepatan:</span>
@@ -37,8 +37,10 @@ export const Html5VideoPlayer = ({ src, poster, title }: Html5VideoPlayerProps):
               key={s}
               type="button"
               onClick={() => changeSpeed(s)}
-              className={`rounded px-1.5 py-0.5 text-[10px] font-bold cursor-pointer transition-colors ${
-                playbackSpeed === s ? "bg-accent text-(--accent-ink)" : "bg-surface-muted hover:text-ink"
+              className={`rounded-sm border-2 px-1.5 py-0.5 text-[10px] font-bold cursor-pointer transition-colors ${
+                playbackSpeed === s
+                  ? "border-border bg-accent text-(--accent-ink)"
+                  : "border-border bg-surface-muted hover:text-ink"
               }`}
             >
               {s}x

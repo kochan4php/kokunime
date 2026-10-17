@@ -4,18 +4,18 @@ import { JSX } from "react";
 
 const getPlatformStyle = (name: string): string => {
   if (/google|gdrive|^gd$/i.test(name)) {
-    return "border-blue-500/30 bg-blue-500/5 font-bold text-blue-400 hover:border-blue-500 hover:bg-blue-500/15";
+    return "border-border bg-nb-yellow font-bold text-nb-ink";
   }
   if (/mega/i.test(name)) {
-    return "border-rose-500/30 bg-rose-500/5 font-bold text-rose-400 hover:border-rose-500 hover:bg-rose-500/15";
+    return "border-border bg-nb-red font-bold text-nb-ink";
   }
   if (/mediafire/i.test(name)) {
-    return "border-sky-500/30 bg-sky-500/5 font-bold text-sky-400 hover:border-sky-500 hover:bg-sky-500/15";
+    return "border-border bg-nb-teal font-bold text-nb-ink";
   }
   if (/acefile|racaty|droplover/i.test(name)) {
-    return "border-amber-500/30 bg-amber-500/5 font-bold text-amber-400 hover:border-amber-500 hover:bg-amber-500/15";
+    return "border-border bg-nb-orange font-bold text-nb-ink";
   }
-  return "border-border bg-surface font-semibold text-ink hover:border-accent hover:bg-accent/10 hover:text-accent";
+  return "border-border bg-surface font-semibold text-ink hover:bg-nb-purple";
 };
 
 const requiresLogin = (name: string): boolean => {
@@ -33,20 +33,20 @@ const DownloadPlatform = ({ name, url }: { name: string; url?: string }): JSX.El
         target="_blank"
         rel="noopener noreferrer"
         title={needLogin ? `${name} (Mungkin membutuhkan login akun)` : name}
-        className={`group flex min-w-0 flex-1 items-center justify-between gap-1.5 sm:gap-2 rounded-full border px-3 sm:px-4 py-2 text-xs sm:text-sm transition-all duration-300 ${styleClass}`}
+        className={`group flex min-w-0 flex-1 items-center justify-between gap-1.5 sm:gap-2 rounded-sm border-2 px-3 sm:px-4 py-2 text-xs sm:text-sm shadow-[2px_2px_0_0_var(--border)] transition-all duration-150 hover:-translate-y-0.5 hover:shadow-[4px_4px_0_0_var(--border)] active:translate-y-0 active:shadow-none ${styleClass}`}
       >
         <div className="flex items-center gap-1.5 min-w-0">
           <span className="truncate">{name}</span>
           {needLogin && (
             <span
               title="Penyedia ini mungkin memerlukan login akun"
-              className="rounded-full bg-amber-500/20 px-1.5 py-0.2 font-mono text-[9px] font-bold text-amber-500 uppercase shrink-0"
+              className="rounded-sm border border-nb-ink/50 bg-white/60 px-1.5 py-0.2 font-mono text-[9px] font-bold text-nb-ink uppercase shrink-0"
             >
               🔑 Login
             </span>
           )}
         </div>
-        <span className="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-surface-muted text-ink-muted transition-all duration-300 group-hover:bg-accent group-hover:text-(--accent-ink)">
+        <span className="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-sm border border-nb-ink/50 bg-white/50 text-nb-ink transition-all duration-150 group-hover:bg-nb-ink group-hover:text-nb-cream">
           <DownloadIcon className="h-3 w-3" />
         </span>
       </a>

@@ -30,18 +30,10 @@ export async function getAnimePerPage(page: number): Promise<AnimePage> {
   const p2 = p1 + 1;
   const p3 = p1 + 2;
 
-  const [res1, res2, res3] = await Promise.all([
-    fetchSinglePage(p1),
-    fetchSinglePage(p2),
-    fetchSinglePage(p3),
-  ]);
+  const [res1, res2, res3] = await Promise.all([fetchSinglePage(p1), fetchSinglePage(p2), fetchSinglePage(p3)]);
 
   const combinedAnime = [...res1.anime, ...res2.anime, ...res3.anime];
-  const upstreamTotal =
-    res1.pagination?.total_page ??
-    res2.pagination?.total_page ??
-    res3.pagination?.total_page ??
-    1;
+  const upstreamTotal = res1.pagination?.total_page ?? res2.pagination?.total_page ?? res3.pagination?.total_page ?? 1;
   const total_page = Math.max(1, Math.ceil(upstreamTotal / 3));
 
   const pagination: PaginationInfo = {

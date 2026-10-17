@@ -18,7 +18,10 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 
   const ua = request.headers.get("user-agent") || "";
   if (BLOCKED_USER_AGENTS.test(ua)) {
-    return NextResponse.json({ error: "Access Denied: Malicious Crawler Blocked" }, { status: 403, headers: rateHeaders });
+    return NextResponse.json(
+      { error: "Access Denied: Malicious Crawler Blocked" },
+      { status: 403, headers: rateHeaders },
+    );
   }
 
   try {

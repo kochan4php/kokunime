@@ -238,7 +238,7 @@ const CompareAnimeClient = ({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-const compareSearchCache = new Map<string, Anime[]>();
+  const compareSearchCache = new Map<string, Anime[]>();
 
   // Search A debounce with instant in-memory client cache
   useEffect(() => {
@@ -346,22 +346,20 @@ const compareSearchCache = new Map<string, Anime[]>();
       {/* Top Interactive Selector Card */}
       <div className="card-shell overflow-visible">
         <div className="card-core p-5 sm:p-7 space-y-6">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-border pb-4">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b-2 border-border pb-4">
             <div>
               <span className="chip">
                 <span className="h-2 w-2 rounded-full bg-accent animate-pulse" />
                 {t("compare.select_header")}
               </span>
-              <h2 className="mt-1 font-display text-lg sm:text-xl font-bold text-ink">
-                {t("compare.select_header")}
-              </h2>
+              <h2 className="mt-1 font-display text-lg sm:text-xl font-bold text-ink">{t("compare.select_header")}</h2>
             </div>
 
             {slugA && slugB && animeA && animeB && !isOverallLoading && (
               <button
                 type="button"
                 onClick={handleCopyShare}
-                className="inline-flex items-center gap-1.5 self-start sm:self-auto rounded-full border border-border bg-surface px-3.5 py-1.5 font-mono text-xs font-semibold text-ink-muted hover:border-accent hover:text-accent active:scale-95 transition-all cursor-pointer"
+                className="inline-flex items-center gap-1.5 self-start sm:self-auto rounded-sm border-2 border-border bg-surface px-3.5 py-1.5 font-mono text-xs font-semibold text-ink-muted shadow-[2px_2px_0_0_var(--border)] transition-all hover:-translate-y-0.5 hover:text-ink active:translate-y-0 active:shadow-none cursor-pointer"
               >
                 <span>{shareCopied ? `✓ ${t("common.copied")}` : `🔗 ${t("compare.share")}`}</span>
               </button>
@@ -397,7 +395,7 @@ const compareSearchCache = new Map<string, Anime[]>();
                       setShowDropdownA(true);
                     }
                   }}
-                  className="w-full rounded-2xl border border-border bg-surface px-4 py-3 text-xs sm:text-sm text-ink outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all"
+                  className="w-full rounded-sm border-2 border-border bg-surface px-4 py-3 text-xs sm:text-sm text-ink shadow-[2px_2px_0_0_var(--border)] outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all"
                 />
                 {isSearchingA && (
                   <span className="absolute right-3.5 top-1/2 -translate-y-1/2 font-mono text-xs text-ink-muted animate-spin">
@@ -408,15 +406,15 @@ const compareSearchCache = new Map<string, Anime[]>();
 
               {/* Dropdown A */}
               {showDropdownA && resultsA.length > 0 && (
-                <div className="absolute z-50 mt-2 max-h-72 w-full overflow-y-auto rounded-2xl border border-border bg-surface-solid/98 backdrop-blur-xl p-2 shadow-2xl space-y-1">
+                <div className="absolute z-50 mt-2 max-h-72 w-full overflow-y-auto rounded-sm border-2 border-border bg-surface-solid p-2 shadow-[6px_6px_0_0_var(--border)] space-y-1">
                   {resultsA.map((item, idx) => (
                     <button
                       key={idx}
                       type="button"
                       onClick={() => selectAnimeA(item)}
-                      className="flex w-full items-center gap-3 rounded-xl p-2 text-left hover:bg-surface-muted transition-colors cursor-pointer"
+                      className="flex w-full items-center gap-3 rounded-sm p-2 text-left hover:bg-nb-yellow transition-colors cursor-pointer"
                     >
-                      <div className="relative h-12 w-9 shrink-0 overflow-hidden rounded-lg bg-surface-muted border border-border">
+                      <div className="relative h-12 w-9 shrink-0 overflow-hidden rounded-sm bg-surface-muted border-2 border-border">
                         <AnimeImage fill sizes="36px" src={item.link.image as string} alt={item.title} />
                       </div>
                       <div className="min-w-0 flex-1">
@@ -438,7 +436,7 @@ const compareSearchCache = new Map<string, Anime[]>();
                 onClick={handleSwap}
                 title="Tukar Posisi Anime A dan B"
                 disabled={(!slugA && !slugB) || isOverallLoading}
-                className="flex h-11 w-11 items-center justify-center rounded-full border border-border bg-surface text-ink-muted transition-all hover:border-accent hover:bg-accent/10 hover:text-accent active:scale-95 disabled:opacity-40 cursor-pointer shadow-sm"
+                className="flex h-11 w-11 items-center justify-center rounded-sm border-2 border-border bg-surface text-ink-muted shadow-[2px_2px_0_0_var(--border)] transition-all hover:-translate-y-0.5 hover:bg-nb-yellow hover:text-nb-ink active:translate-y-0 active:shadow-none disabled:opacity-40 cursor-pointer"
               >
                 <span className="text-base font-bold">⇄</span>
               </button>
@@ -471,7 +469,7 @@ const compareSearchCache = new Map<string, Anime[]>();
                       setShowDropdownB(true);
                     }
                   }}
-                  className="w-full rounded-2xl border border-border bg-surface px-4 py-3 text-xs sm:text-sm text-ink outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all"
+                  className="w-full rounded-sm border-2 border-border bg-surface px-4 py-3 text-xs sm:text-sm text-ink shadow-[2px_2px_0_0_var(--border)] outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all"
                 />
                 {isSearchingB && (
                   <span className="absolute right-3.5 top-1/2 -translate-y-1/2 font-mono text-xs text-ink-muted animate-spin">
@@ -482,15 +480,15 @@ const compareSearchCache = new Map<string, Anime[]>();
 
               {/* Dropdown B */}
               {showDropdownB && resultsB.length > 0 && (
-                <div className="absolute z-50 mt-2 max-h-72 w-full overflow-y-auto rounded-2xl border border-border bg-surface-solid/98 backdrop-blur-xl p-2 shadow-2xl space-y-1">
+                <div className="absolute z-50 mt-2 max-h-72 w-full overflow-y-auto rounded-sm border-2 border-border bg-surface-solid p-2 shadow-[6px_6px_0_0_var(--border)] space-y-1">
                   {resultsB.map((item, idx) => (
                     <button
                       key={idx}
                       type="button"
                       onClick={() => selectAnimeB(item)}
-                      className="flex w-full items-center gap-3 rounded-xl p-2 text-left hover:bg-surface-muted transition-colors cursor-pointer"
+                      className="flex w-full items-center gap-3 rounded-sm p-2 text-left hover:bg-nb-yellow transition-colors cursor-pointer"
                     >
-                      <div className="relative h-12 w-9 shrink-0 overflow-hidden rounded-lg bg-surface-muted border border-border">
+                      <div className="relative h-12 w-9 shrink-0 overflow-hidden rounded-sm bg-surface-muted border-2 border-border">
                         <AnimeImage fill sizes="36px" src={item.link.image as string} alt={item.title} />
                       </div>
                       <div className="min-w-0 flex-1">
@@ -516,7 +514,7 @@ const compareSearchCache = new Map<string, Anime[]>();
                   type="button"
                   disabled={isOverallLoading}
                   onClick={() => handlePreset(p.queryA, p.queryB)}
-                  className="rounded-full border border-border bg-surface px-3 py-1 font-mono text-xs text-ink-muted transition-all hover:border-accent hover:bg-accent/10 hover:text-ink active:scale-95 disabled:opacity-50 cursor-pointer"
+                  className="rounded-sm border-2 border-border bg-surface px-3 py-1 font-mono text-xs text-ink-muted shadow-[2px_2px_0_0_var(--border)] transition-all hover:-translate-y-0.5 hover:bg-nb-purple hover:text-nb-ink active:translate-y-0 active:shadow-none disabled:opacity-50 cursor-pointer"
                 >
                   {p.label}
                 </button>
@@ -530,12 +528,12 @@ const compareSearchCache = new Map<string, Anime[]>();
       {(errorA || errorB) && (
         <div className="space-y-2">
           {errorA && (
-            <div className="rounded-2xl border border-red-500/30 bg-red-500/10 p-4 text-xs font-mono text-red-400">
+            <div className="rounded-sm border-2 border-border bg-nb-red p-4 text-xs font-mono font-bold text-nb-ink shadow-[2px_2px_0_0_var(--border)]">
               🔴 {errorA}
             </div>
           )}
           {errorB && (
-            <div className="rounded-2xl border border-red-500/30 bg-red-500/10 p-4 text-xs font-mono text-red-400">
+            <div className="rounded-sm border-2 border-border bg-nb-red p-4 text-xs font-mono font-bold text-nb-ink shadow-[2px_2px_0_0_var(--border)]">
               🔵 {errorB}
             </div>
           )}
@@ -547,9 +545,7 @@ const compareSearchCache = new Map<string, Anime[]>();
         <div className="card-shell animate-pulse">
           <div className="card-core p-8 text-center space-y-3">
             <span className="inline-block text-3xl animate-spin">⏳</span>
-            <h3 className="font-display text-base font-bold text-ink">
-              {t("compare.loading_msg")}
-            </h3>
+            <h3 className="font-display text-base font-bold text-ink">{t("compare.loading_msg")}</h3>
             <p className="text-xs text-ink-muted max-w-md mx-auto">
               {language === "en"
                 ? "Fetching rating scores, studios, episodes, duration, and complete synopses in real-time."
@@ -568,8 +564,12 @@ const compareSearchCache = new Map<string, Anime[]>();
               {!animeA && !animeB
                 ? t("compare.empty_prompt")
                 : !animeA
-                  ? (language === "en" ? "Select Anime A to Complete Comparison" : "Pilih Anime Pertama (A) untuk Melengkapi Komparasi")
-                  : (language === "en" ? "Select Anime B to Complete Comparison" : "Pilih Anime Kedua (B) untuk Melengkapi Komparasi")}
+                  ? language === "en"
+                    ? "Select Anime A to Complete Comparison"
+                    : "Pilih Anime Pertama (A) untuk Melengkapi Komparasi"
+                  : language === "en"
+                    ? "Select Anime B to Complete Comparison"
+                    : "Pilih Anime Kedua (B) untuk Melengkapi Komparasi"}
             </h3>
             <p className="max-w-md mx-auto text-xs text-ink-muted leading-relaxed">
               {language === "en"
@@ -589,9 +589,14 @@ const compareSearchCache = new Map<string, Anime[]>();
             <div className="card-shell overflow-hidden">
               <div className="card-core p-5 sm:p-6 space-y-4">
                 <div className="flex items-start gap-4">
-                  <div className="relative aspect-[3/4] w-28 sm:w-32 shrink-0 overflow-hidden rounded-2xl border border-border shadow-lg bg-surface-muted">
+                  <div className="relative aspect-[3/4] w-28 sm:w-32 shrink-0 overflow-hidden rounded-sm border-2 border-border bg-surface-muted shadow-[4px_4px_0_0_var(--border)]">
                     {animeA.image && (
-                      <AnimeImage fill sizes="(max-width: 640px) 112px, 128px" src={animeA.image} alt={animeA.title ?? ""} />
+                      <AnimeImage
+                        fill
+                        sizes="(max-width: 640px) 112px, 128px"
+                        src={animeA.image}
+                        alt={animeA.title ?? ""}
+                      />
                     )}
                   </div>
                   <div className="min-w-0 flex-1 space-y-2">
@@ -600,20 +605,20 @@ const compareSearchCache = new Map<string, Anime[]>();
                       {animeA.title}
                     </h3>
                     <div className="flex flex-wrap items-center gap-1.5 font-mono text-xs">
-                      <span className="rounded-md bg-accent/15 px-2 py-0.5 font-bold text-accent">
+                      <span className="rounded-sm border-2 border-border bg-nb-yellow px-2 py-0.5 font-bold text-nb-ink">
                         ⭐ {animeA.score || "N/A"}
                       </span>
-                      <span className="rounded-md bg-surface-muted px-2 py-0.5 text-ink-muted">
+                      <span className="rounded-sm border border-border bg-surface-muted px-2 py-0.5 text-ink-muted">
                         {animeA.status || "N/A"}
                       </span>
-                      <span className="rounded-md bg-surface-muted px-2 py-0.5 text-ink-muted">
+                      <span className="rounded-sm border border-border bg-surface-muted px-2 py-0.5 text-ink-muted">
                         {animeA.total_episode || "?"} Ep
                       </span>
                     </div>
                     <div className="pt-2">
                       <Link
                         href={`/anime/${slugA}`}
-                        className="inline-flex items-center gap-1.5 rounded-xl bg-accent px-3.5 py-1.5 font-mono text-xs font-bold text-(--accent-ink) hover:scale-[1.02] transition-transform"
+                        className="inline-flex items-center gap-1.5 rounded-sm border-2 border-border bg-accent px-3.5 py-1.5 font-mono text-xs font-bold text-(--accent-ink) shadow-[2px_2px_0_0_var(--border)] hover:-translate-y-0.5 active:translate-y-0 active:shadow-none transition-all"
                       >
                         <span>{t("compare.open_detail_a")}</span>
                       </Link>
@@ -627,9 +632,14 @@ const compareSearchCache = new Map<string, Anime[]>();
             <div className="card-shell overflow-hidden">
               <div className="card-core p-5 sm:p-6 space-y-4">
                 <div className="flex items-start gap-4">
-                  <div className="relative aspect-[3/4] w-28 sm:w-32 shrink-0 overflow-hidden rounded-2xl border border-border shadow-lg bg-surface-muted">
+                  <div className="relative aspect-[3/4] w-28 sm:w-32 shrink-0 overflow-hidden rounded-sm border-2 border-border bg-surface-muted shadow-[4px_4px_0_0_var(--border)]">
                     {animeB.image && (
-                      <AnimeImage fill sizes="(max-width: 640px) 112px, 128px" src={animeB.image} alt={animeB.title ?? ""} />
+                      <AnimeImage
+                        fill
+                        sizes="(max-width: 640px) 112px, 128px"
+                        src={animeB.image}
+                        alt={animeB.title ?? ""}
+                      />
                     )}
                   </div>
                   <div className="min-w-0 flex-1 space-y-2">
@@ -638,20 +648,20 @@ const compareSearchCache = new Map<string, Anime[]>();
                       {animeB.title}
                     </h3>
                     <div className="flex flex-wrap items-center gap-1.5 font-mono text-xs">
-                      <span className="rounded-md bg-accent/15 px-2 py-0.5 font-bold text-accent">
+                      <span className="rounded-sm border-2 border-border bg-nb-yellow px-2 py-0.5 font-bold text-nb-ink">
                         ⭐ {animeB.score || "N/A"}
                       </span>
-                      <span className="rounded-md bg-surface-muted px-2 py-0.5 text-ink-muted">
+                      <span className="rounded-sm border border-border bg-surface-muted px-2 py-0.5 text-ink-muted">
                         {animeB.status || "N/A"}
                       </span>
-                      <span className="rounded-md bg-surface-muted px-2 py-0.5 text-ink-muted">
+                      <span className="rounded-sm border border-border bg-surface-muted px-2 py-0.5 text-ink-muted">
                         {animeB.total_episode || "?"} Ep
                       </span>
                     </div>
                     <div className="pt-2">
                       <Link
                         href={`/anime/${slugB}`}
-                        className="inline-flex items-center gap-1.5 rounded-xl bg-accent px-3.5 py-1.5 font-mono text-xs font-bold text-(--accent-ink) hover:scale-[1.02] transition-transform"
+                        className="inline-flex items-center gap-1.5 rounded-sm border-2 border-border bg-accent px-3.5 py-1.5 font-mono text-xs font-bold text-(--accent-ink) shadow-[2px_2px_0_0_var(--border)] hover:-translate-y-0.5 active:translate-y-0 active:shadow-none transition-all"
                       >
                         <span>{t("compare.open_detail_b")}</span>
                       </Link>
@@ -667,21 +677,21 @@ const compareSearchCache = new Map<string, Anime[]>();
             <div className="card-core p-0 overflow-x-auto">
               <table className="w-full min-w-[620px] border-collapse text-left">
                 <thead>
-                  <tr className="border-b border-border bg-surface-muted/50 font-mono text-xs uppercase tracking-wider text-ink-muted">
+                  <tr className="border-b-2 border-border bg-surface-muted font-mono text-xs uppercase tracking-wider text-ink-muted">
                     <th className="p-4 w-1/4">{t("compare.spec_parameter")}</th>
                     <th className="p-4 w-[37.5%] font-display text-sm font-bold text-ink">🔴 {animeA.title}</th>
                     <th className="p-4 w-[37.5%] font-display text-sm font-bold text-ink">🔵 {animeB.title}</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-border/60 text-xs sm:text-sm font-mono">
+                <tbody className="divide-y-2 divide-border text-xs sm:text-sm font-mono">
                   {/* Rating Score */}
-                  <tr className="hover:bg-surface/30">
+                  <tr className="hover:bg-surface-muted">
                     <td className="p-4 font-bold text-ink-muted">⭐ {t("compare.score_rating")}</td>
                     <td className="p-4 font-bold">
                       <span
-                        className={`inline-flex items-center gap-1 rounded-full px-3 py-1 ${
+                        className={`inline-flex items-center gap-1 px-3 py-1 ${
                           scoreA > scoreB && scoreA > 0
-                            ? "bg-amber-400/20 text-amber-400 border border-amber-400/40 font-black"
+                            ? "rounded-sm border-2 border-border bg-nb-yellow text-nb-ink font-black shadow-[2px_2px_0_0_var(--border)]"
                             : "text-ink"
                         }`}
                       >
@@ -690,9 +700,9 @@ const compareSearchCache = new Map<string, Anime[]>();
                     </td>
                     <td className="p-4 font-bold">
                       <span
-                        className={`inline-flex items-center gap-1 rounded-full px-3 py-1 ${
+                        className={`inline-flex items-center gap-1 px-3 py-1 ${
                           scoreB > scoreA && scoreB > 0
-                            ? "bg-amber-400/20 text-amber-400 border border-amber-400/40 font-black"
+                            ? "rounded-sm border-2 border-border bg-nb-yellow text-nb-ink font-black shadow-[2px_2px_0_0_var(--border)]"
                             : "text-ink"
                         }`}
                       >
@@ -702,52 +712,56 @@ const compareSearchCache = new Map<string, Anime[]>();
                   </tr>
 
                   {/* Total Episodes */}
-                  <tr className="hover:bg-surface/30">
+                  <tr className="hover:bg-surface-muted">
                     <td className="p-4 font-bold text-ink-muted">🎬 {t("compare.total_episodes")}</td>
                     <td className="p-4">
                       {animeA.total_episode || "N/A"}{" "}
                       {epA > epB && epB > 0 && (
-                        <span className="text-emerald-500 font-bold">({epA - epB} {t("compare.more_episodes")})</span>
+                        <span className="rounded-sm border border-border bg-nb-lime px-1.5 font-bold text-nb-ink">
+                          ({epA - epB} {t("compare.more_episodes")})
+                        </span>
                       )}
                     </td>
                     <td className="p-4">
                       {animeB.total_episode || "N/A"}{" "}
                       {epB > epA && epA > 0 && (
-                        <span className="text-emerald-500 font-bold">({epB - epA} {t("compare.more_episodes")})</span>
+                        <span className="rounded-sm border border-border bg-nb-lime px-1.5 font-bold text-nb-ink">
+                          ({epB - epA} {t("compare.more_episodes")})
+                        </span>
                       )}
                     </td>
                   </tr>
 
                   {/* Duration */}
-                  <tr className="hover:bg-surface/30">
+                  <tr className="hover:bg-surface-muted">
                     <td className="p-4 font-bold text-ink-muted">⏱️ {t("compare.duration")}</td>
                     <td className="p-4 text-ink">{animeA.duration || "N/A"}</td>
                     <td className="p-4 text-ink">{animeB.duration || "N/A"}</td>
                   </tr>
 
                   {/* Studio */}
-                  <tr className="hover:bg-surface/30">
+                  <tr className="hover:bg-surface-muted">
                     <td className="p-4 font-bold text-ink-muted">🏢 {t("compare.studio")}</td>
                     <td className="p-4 text-accent font-bold">{animeA.studio || animeA.producer || "N/A"}</td>
                     <td className="p-4 text-accent font-bold">{animeB.studio || animeB.producer || "N/A"}</td>
                   </tr>
 
                   {/* Type */}
-                  <tr className="hover:bg-surface/30">
+                  <tr className="hover:bg-surface-muted">
                     <td className="p-4 font-bold text-ink-muted">📺 {t("compare.type")}</td>
                     <td className="p-4 text-ink">{animeA.type || "TV Series"}</td>
                     <td className="p-4 text-ink">{animeB.type || "TV Series"}</td>
                   </tr>
 
                   {/* Release Season / Year */}
-                  <tr className="hover:bg-surface/30">
+                  <tr className="hover:bg-surface-muted">
                     <td className="p-4 font-bold text-ink-muted">📅 {t("compare.release")}</td>
                     <td className="p-4 text-ink">{animeA.season?.name || animeA.release_on || "N/A"}</td>
                     <td className="p-4 text-ink">{animeB.season?.name || animeB.release_on || "N/A"}</td>
                   </tr>
 
                   {/* Status */}
-                  <tr className="hover:bg-surface/30">
+                  <tr className="hover:bg-surface-muted">
                     <td className="p-4 font-bold text-ink-muted">📡 {t("compare.status")}</td>
                     <td className="p-4 text-ink">{animeA.status || "N/A"}</td>
                     <td className="p-4 text-ink">{animeB.status || "N/A"}</td>
@@ -760,21 +774,19 @@ const compareSearchCache = new Map<string, Anime[]>();
           {/* Genre Overlap Analysis */}
           <div className="card-shell">
             <div className="card-core p-5 sm:p-6 space-y-4">
-              <h4 className="font-display text-sm sm:text-base font-bold text-ink">
-                🎭 {t("compare.genre_analysis")}
-              </h4>
+              <h4 className="font-display text-sm sm:text-base font-bold text-ink">🎭 {t("compare.genre_analysis")}</h4>
 
               {/* Shared Genres */}
               {sharedGenres.length > 0 && (
                 <div className="space-y-1.5">
-                  <span className="font-mono text-xs font-bold text-emerald-500 block">
+                  <span className="font-mono text-xs font-bold text-ink block">
                     🤝 {t("compare.shared_genres")} ({sharedGenres.length}):
                   </span>
                   <div className="flex flex-wrap gap-1.5">
                     {sharedGenres.map((g) => (
                       <span
                         key={g}
-                        className="rounded-lg bg-emerald-500/15 border border-emerald-500/30 px-2.5 py-1 font-mono text-xs font-bold text-emerald-400"
+                        className="rounded-sm border-2 border-border bg-nb-lime px-2.5 py-1 font-mono text-xs font-bold text-nb-ink shadow-[2px_2px_0_0_var(--border)]"
                       >
                         ✓ {g}
                       </span>
@@ -785,14 +797,17 @@ const compareSearchCache = new Map<string, Anime[]>();
 
               {/* Unique Genres Grid */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
-                <div className="p-3.5 rounded-2xl bg-surface border border-border space-y-1.5">
+                <div className="p-3.5 rounded-sm border-2 border-border bg-surface space-y-1.5">
                   <span className="font-mono text-xs font-bold text-accent block">
                     🔴 {t("compare.unique_genres_a")} ({animeA.title}):
                   </span>
                   <div className="flex flex-wrap gap-1.5">
                     {uniqueGenresA.length > 0 ? (
                       uniqueGenresA.map((g) => (
-                        <span key={g} className="rounded-lg bg-accent/15 px-2 py-0.5 font-mono text-xs text-accent">
+                        <span
+                          key={g}
+                          className="rounded-sm border border-border bg-accent/15 px-2 py-0.5 font-mono text-xs font-bold text-accent"
+                        >
                           {g}
                         </span>
                       ))
@@ -802,14 +817,17 @@ const compareSearchCache = new Map<string, Anime[]>();
                   </div>
                 </div>
 
-                <div className="p-3.5 rounded-2xl bg-surface border border-border space-y-1.5">
+                <div className="p-3.5 rounded-sm border-2 border-border bg-surface space-y-1.5">
                   <span className="font-mono text-xs font-bold text-accent block">
                     🔵 {t("compare.unique_genres_b")} ({animeB.title}):
                   </span>
                   <div className="flex flex-wrap gap-1.5">
                     {uniqueGenresB.length > 0 ? (
                       uniqueGenresB.map((g) => (
-                        <span key={g} className="rounded-lg bg-accent/15 px-2 py-0.5 font-mono text-xs text-accent">
+                        <span
+                          key={g}
+                          className="rounded-sm border border-border bg-accent/15 px-2 py-0.5 font-mono text-xs font-bold text-accent"
+                        >
                           {g}
                         </span>
                       ))
@@ -826,9 +844,7 @@ const compareSearchCache = new Map<string, Anime[]>();
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="card-shell">
               <div className="card-core p-5 sm:p-6 space-y-3">
-                <h4 className="font-display text-sm sm:text-base font-bold text-ink">
-                  📖 {t("compare.synopsis_a")}
-                </h4>
+                <h4 className="font-display text-sm sm:text-base font-bold text-ink">📖 {t("compare.synopsis_a")}</h4>
                 <p className="text-xs sm:text-sm text-ink-muted leading-relaxed whitespace-pre-line">
                   {animeA.synopsis || "Sinopsis tidak tersedia."}
                 </p>
@@ -837,9 +853,7 @@ const compareSearchCache = new Map<string, Anime[]>();
 
             <div className="card-shell">
               <div className="card-core p-5 sm:p-6 space-y-3">
-                <h4 className="font-display text-sm sm:text-base font-bold text-ink">
-                  📖 {t("compare.synopsis_b")}
-                </h4>
+                <h4 className="font-display text-sm sm:text-base font-bold text-ink">📖 {t("compare.synopsis_b")}</h4>
                 <p className="text-xs sm:text-sm text-ink-muted leading-relaxed whitespace-pre-line">
                   {animeB.synopsis || "Sinopsis tidak tersedia."}
                 </p>

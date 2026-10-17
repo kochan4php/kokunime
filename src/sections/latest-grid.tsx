@@ -33,25 +33,25 @@ const LatestGrid = ({ anime, pagination, basePath }: LatestGridProps): JSX.Eleme
                 <span className="h-1.5 w-1.5 rounded-full bg-accent" />
                 Katalog
               </span>
-              <span className="rounded-full bg-surface-muted px-2.5 py-0.5 font-mono text-[10px] font-bold text-ink-muted">
+              <span className="rounded-sm border-2 border-border bg-nb-teal px-2.5 py-0.5 font-mono text-[10px] font-bold text-nb-ink shadow-[2px_2px_0_0_var(--border)]">
                 {filteredAnime.length} Anime
               </span>
             </div>
-            <h2 className="mt-3 font-display text-2xl font-extrabold tracking-tight text-ink md:text-3xl">
+            <h2 className="mt-3 font-display text-2xl font-extrabold uppercase tracking-tight text-ink md:text-3xl">
               Update Terbaru
             </h2>
           </div>
 
           <div className="flex flex-wrap items-center gap-3">
             {/* View Mode Toggle */}
-            <div className="flex items-center gap-1 rounded-xl border border-border bg-surface p-0.5">
+            <div className="flex items-center gap-1 rounded-sm border-2 border-border bg-surface p-0.5 shadow-[2px_2px_0_0_var(--border)]">
               <button
                 type="button"
                 onClick={() => setViewMode("grid")}
                 aria-label="Tampilan Grid"
                 title="Tampilan Grid"
-                className={`flex h-7 w-7 items-center justify-center rounded-lg text-xs transition-all cursor-pointer ${
-                  viewMode === "grid" ? "bg-accent text-(--accent-ink) shadow-xs font-bold" : "text-ink-muted hover:text-ink"
+                className={`flex h-8 w-8 items-center justify-center rounded-sm text-xs transition-all cursor-pointer ${
+                  viewMode === "grid" ? "bg-accent text-(--accent-ink) font-bold" : "text-ink-muted hover:text-ink"
                 }`}
               >
                 ⊞
@@ -61,8 +61,8 @@ const LatestGrid = ({ anime, pagination, basePath }: LatestGridProps): JSX.Eleme
                 onClick={() => setViewMode("list")}
                 aria-label="Tampilan List"
                 title="Tampilan List"
-                className={`flex h-7 w-7 items-center justify-center rounded-lg text-xs transition-all cursor-pointer ${
-                  viewMode === "list" ? "bg-accent text-(--accent-ink) shadow-xs font-bold" : "text-ink-muted hover:text-ink"
+                className={`flex h-8 w-8 items-center justify-center rounded-sm text-xs transition-all cursor-pointer ${
+                  viewMode === "list" ? "bg-accent text-(--accent-ink) font-bold" : "text-ink-muted hover:text-ink"
                 }`}
               >
                 ☰
@@ -80,7 +80,7 @@ const LatestGrid = ({ anime, pagination, basePath }: LatestGridProps): JSX.Eleme
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="Filter di halaman ini..."
                 aria-label="Filter anime di halaman ini"
-                className="h-9 w-full rounded-2xl border border-border bg-surface pl-9 pr-8 text-xs text-ink outline-none transition-all placeholder:text-ink-muted focus:border-accent hover:border-accent/60"
+                className="h-10 w-full rounded-sm border-2 border-border bg-surface pl-9 pr-8 text-xs text-ink shadow-[2px_2px_0_0_var(--border)] outline-none transition-all placeholder:text-ink-muted focus:border-accent"
               />
               {query && (
                 <button

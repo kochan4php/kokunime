@@ -55,7 +55,7 @@ const DownloadSection = ({ anime }: { anime: AnimeDetail }): JSX.Element => {
               <span className="h-1.5 w-1.5 rounded-full bg-accent" />
               Download
             </span>
-            <h2 className="font-display text-2xl font-extrabold tracking-tight text-ink">Pilih Kualitas</h2>
+            <h2 className="font-display text-2xl font-extrabold uppercase tracking-tight text-ink">Pilih Kualitas</h2>
             <DownloadGuideModal />
           </div>
 
@@ -65,10 +65,10 @@ const DownloadSection = ({ anime }: { anime: AnimeDetail }): JSX.Element => {
                 <button
                   type="button"
                   onClick={() => setTypeFilter("all")}
-                  className={`rounded-full px-2.5 py-0.5 font-mono text-xs transition-all ${
+                  className={`rounded-sm border-2 px-2.5 py-0.5 font-mono text-xs transition-all cursor-pointer ${
                     typeFilter === "all"
-                      ? "border border-accent/40 bg-accent/15 font-bold text-accent"
-                      : "border border-border bg-surface text-ink-muted hover:text-ink"
+                      ? "border-border bg-accent font-bold text-(--accent-ink) shadow-[2px_2px_0_0_var(--border)]"
+                      : "border-border bg-surface text-ink-muted hover:text-ink"
                   }`}
                 >
                   Semua
@@ -76,10 +76,10 @@ const DownloadSection = ({ anime }: { anime: AnimeDetail }): JSX.Element => {
                 <button
                   type="button"
                   onClick={() => setTypeFilter("batch")}
-                  className={`rounded-full px-2.5 py-0.5 font-mono text-xs transition-all ${
+                  className={`rounded-sm border-2 px-2.5 py-0.5 font-mono text-xs transition-all cursor-pointer ${
                     typeFilter === "batch"
-                      ? "border border-accent/40 bg-accent/15 font-bold text-accent"
-                      : "border border-border bg-surface text-ink-muted hover:text-ink"
+                      ? "border-border bg-accent font-bold text-(--accent-ink) shadow-[2px_2px_0_0_var(--border)]"
+                      : "border-border bg-surface text-ink-muted hover:text-ink"
                   }`}
                 >
                   📦 Batch
@@ -87,10 +87,10 @@ const DownloadSection = ({ anime }: { anime: AnimeDetail }): JSX.Element => {
                 <button
                   type="button"
                   onClick={() => setTypeFilter("episode")}
-                  className={`rounded-full px-2.5 py-0.5 font-mono text-xs transition-all ${
+                  className={`rounded-sm border-2 px-2.5 py-0.5 font-mono text-xs transition-all cursor-pointer ${
                     typeFilter === "episode"
-                      ? "border border-accent/40 bg-accent/15 font-bold text-accent"
-                      : "border border-border bg-surface text-ink-muted hover:text-ink"
+                      ? "border-border bg-accent font-bold text-(--accent-ink) shadow-[2px_2px_0_0_var(--border)]"
+                      : "border-border bg-surface text-ink-muted hover:text-ink"
                   }`}
                 >
                   🎬 Satuan
@@ -100,14 +100,16 @@ const DownloadSection = ({ anime }: { anime: AnimeDetail }): JSX.Element => {
 
             {availableResolutions.length > 1 && (
               <div className="flex items-center gap-1.5 overflow-x-auto [scrollbar-width:none] max-w-full">
-                <span className="font-mono text-[11px] uppercase tracking-wider text-ink-muted shrink-0">Resolusi:</span>
+                <span className="font-mono text-[11px] uppercase tracking-wider text-ink-muted shrink-0">
+                  Resolusi:
+                </span>
                 <button
                   type="button"
                   onClick={() => setSelectedRes("all")}
-                  className={`rounded-full px-3 py-1 font-mono text-xs transition-all shrink-0 ${
+                  className={`rounded-sm border-2 px-3 py-1 font-mono text-xs transition-all shrink-0 cursor-pointer ${
                     selectedRes === "all"
-                      ? "border border-accent/40 bg-accent/15 font-bold text-accent"
-                      : "border border-border bg-surface text-ink-muted hover:text-ink"
+                      ? "border-border bg-accent font-bold text-(--accent-ink) shadow-[2px_2px_0_0_var(--border)]"
+                      : "border-border bg-surface text-ink-muted hover:text-ink"
                   }`}
                 >
                   Semua
@@ -117,10 +119,10 @@ const DownloadSection = ({ anime }: { anime: AnimeDetail }): JSX.Element => {
                     key={res}
                     type="button"
                     onClick={() => setSelectedRes(res)}
-                    className={`rounded-full px-3 py-1 font-mono text-xs transition-all shrink-0 ${
+                    className={`rounded-sm border-2 px-3 py-1 font-mono text-xs transition-all shrink-0 cursor-pointer ${
                       selectedRes === res
-                        ? "border border-accent/40 bg-accent/15 font-bold text-accent"
-                        : "border border-border bg-surface text-ink-muted hover:text-ink"
+                        ? "border-border bg-accent font-bold text-(--accent-ink) shadow-[2px_2px_0_0_var(--border)]"
+                        : "border-border bg-surface text-ink-muted hover:text-ink"
                     }`}
                   >
                     {res}
@@ -131,7 +133,7 @@ const DownloadSection = ({ anime }: { anime: AnimeDetail }): JSX.Element => {
           </div>
         </div>
       </Reveal>
-      <div className="grid gap-6 min-w-0 max-w-full overflow-hidden">
+      <div className="nb-cycle grid gap-6 min-w-0 max-w-full overflow-hidden">
         {filteredDownloads.map((group: DownloadOption, index: number) => (
           <Reveal
             key={`${group.title}-${selectedRes}-${typeFilter}-${index}`}

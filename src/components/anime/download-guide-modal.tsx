@@ -34,40 +34,40 @@ export const DownloadGuideModal = (): JSX.Element => {
       <button
         type="button"
         onClick={() => setIsOpen(true)}
-        className="inline-flex items-center gap-1.5 rounded-full border border-accent/40 bg-accent/10 px-3 py-1 font-mono text-[11px] font-bold text-accent transition-colors hover:bg-accent/20 cursor-pointer"
+        className="inline-flex items-center gap-1.5 rounded-sm border-2 border-border bg-nb-yellow px-3 py-1 font-mono text-[11px] font-bold text-nb-ink shadow-[2px_2px_0_0_var(--border)] transition-all duration-150 hover:-translate-y-0.5 active:translate-y-0 active:shadow-none cursor-pointer"
       >
         <span>💡 Panduan Unduh</span>
       </button>
 
       {isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-xs animate-in fade-in duration-200">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 animate-in fade-in duration-200">
           <div
             role="dialog"
             aria-modal="true"
             aria-label="Panduan Cara Download Anime"
-            className="w-full max-w-lg rounded-3xl border border-border bg-surface-solid p-5 sm:p-6 shadow-2xl max-h-[90vh] overflow-y-auto [scrollbar-width:thin]"
+            className="w-full max-w-lg rounded-sm border-2 border-border bg-surface-solid p-5 sm:p-6 shadow-[6px_6px_0_0_var(--border)] max-h-[90vh] overflow-y-auto [scrollbar-width:thin]"
           >
-            <div className="flex items-center justify-between border-b border-border pb-4">
+            <div className="flex items-center justify-between border-b-2 border-border pb-4">
               <h3 className="font-display text-lg font-bold text-ink">💡 Panduan Langkah Mengunduh</h3>
               <button
                 type="button"
                 onClick={() => setIsOpen(false)}
                 aria-label="Tutup panduan"
-                className="rounded-full p-1 text-ink-muted hover:text-ink cursor-pointer"
+                className="rounded-sm p-1 text-ink-muted hover:text-ink cursor-pointer"
               >
                 ✕
               </button>
             </div>
 
             <div className="my-5">
-              <div className="flex gap-2 border-b border-border pb-3 mb-4">
+              <div className="flex gap-2 border-b-2 border-border pb-3 mb-4">
                 {steps.map((_, idx) => (
                   <button
                     key={idx}
                     type="button"
                     onClick={() => setActiveStep(idx)}
-                    className={`h-2 flex-1 rounded-full transition-all cursor-pointer ${
-                      activeStep === idx ? "bg-accent" : idx < activeStep ? "bg-accent/40" : "bg-border"
+                    className={`h-2.5 flex-1 rounded-sm border border-border transition-all cursor-pointer ${
+                      activeStep === idx ? "bg-accent" : idx < activeStep ? "bg-accent/40" : "bg-surface-muted"
                     }`}
                   />
                 ))}
@@ -76,18 +76,18 @@ export const DownloadGuideModal = (): JSX.Element => {
               <div className="min-h-[140px]">
                 <h4 className="font-display text-base font-bold text-ink mb-2">{steps[activeStep].title}</h4>
                 <p className="text-sm text-ink-muted leading-relaxed mb-3">{steps[activeStep].desc}</p>
-                <div className="rounded-xl border border-amber-500/20 bg-amber-500/10 p-3 font-mono text-xs text-amber-500">
+                <div className="rounded-sm border-2 border-border bg-nb-yellow p-3 font-mono text-xs text-nb-ink">
                   <strong>Tips: </strong> {steps[activeStep].tip}
                 </div>
               </div>
             </div>
 
-            <div className="flex items-center justify-between border-t border-border pt-4">
+            <div className="flex items-center justify-between border-t-2 border-border pt-4">
               <button
                 type="button"
                 onClick={() => setActiveStep((prev) => Math.max(0, prev - 1))}
                 disabled={activeStep === 0}
-                className="rounded-full border border-border px-4 py-1.5 font-display text-xs font-semibold text-ink-muted hover:text-ink disabled:opacity-40 disabled:pointer-events-none cursor-pointer"
+                className="rounded-sm border-2 border-border bg-surface px-4 py-1.5 font-display text-xs font-semibold text-ink-muted shadow-[2px_2px_0_0_var(--border)] hover:text-ink disabled:opacity-40 disabled:pointer-events-none cursor-pointer"
               >
                 ← Sebelumnya
               </button>
@@ -95,7 +95,7 @@ export const DownloadGuideModal = (): JSX.Element => {
                 <button
                   type="button"
                   onClick={() => setActiveStep((prev) => Math.min(steps.length - 1, prev + 1))}
-                  className="rounded-full bg-accent px-4 py-1.5 font-display text-xs font-bold text-(--accent-ink) hover:scale-105 transition-transform cursor-pointer"
+                  className="rounded-sm border-2 border-border bg-accent px-4 py-1.5 font-display text-xs font-bold text-(--accent-ink) shadow-[2px_2px_0_0_var(--border)] hover:-translate-y-0.5 active:translate-y-0 active:shadow-none transition-all cursor-pointer"
                 >
                   Lanjut →
                 </button>
@@ -103,7 +103,7 @@ export const DownloadGuideModal = (): JSX.Element => {
                 <button
                   type="button"
                   onClick={() => setIsOpen(false)}
-                  className="rounded-full bg-emerald-500 px-5 py-1.5 font-display text-xs font-bold text-white hover:scale-105 transition-transform cursor-pointer"
+                  className="rounded-sm border-2 border-border bg-nb-lime px-5 py-1.5 font-display text-xs font-bold text-nb-ink shadow-[2px_2px_0_0_var(--border)] hover:-translate-y-0.5 active:translate-y-0 active:shadow-none transition-all cursor-pointer"
                 >
                   ✓ Paham, Tutup
                 </button>

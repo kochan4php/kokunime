@@ -34,15 +34,15 @@ const FloatingTopButton = (): JSX.Element => {
       onClick={scrollToTop}
       aria-label="Kembali ke atas halaman"
       title="Kembali ke atas"
-      className={`fixed bottom-20 right-4 sm:bottom-6 sm:right-6 z-40 flex h-11 w-11 items-center justify-center rounded-full border border-border bg-bg/85 text-ink shadow-lg backdrop-blur-lg transition-all duration-300 active:scale-95 ${
+      className={`fixed bottom-20 right-4 sm:bottom-6 sm:right-6 z-40 flex h-11 w-11 items-center justify-center rounded-sm border-2 border-border bg-surface-solid text-ink shadow-[2px_2px_0_0_var(--border)] transition-all duration-300 ${
         visible ? "pointer-events-auto translate-y-0 opacity-100" : "pointer-events-none translate-y-4 opacity-0"
-      } hover:border-accent hover:text-accent`}
+      } hover:-translate-y-0.5 hover:text-accent`}
     >
-      <svg className="absolute inset-0 -rotate-90" width="44" height="44">
-        <circle cx="22" cy="22" r={radius} fill="none" stroke="var(--border)" strokeWidth="2" />
+      <svg className="absolute inset-0 -rotate-90" width="40" height="40">
+        <circle cx="20" cy="20" r={radius} fill="none" stroke="var(--border)" strokeWidth="2" />
         <circle
-          cx="22"
-          cy="22"
+          cx="20"
+          cy="20"
           r={radius}
           fill="none"
           stroke="var(--color-accent)"

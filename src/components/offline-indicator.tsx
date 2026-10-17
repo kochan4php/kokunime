@@ -22,7 +22,7 @@ const OfflineIndicator = (): JSX.Element | null => {
 
   return (
     <div className="fixed bottom-4 left-4 right-4 z-50 mx-auto max-w-md animate-bounce">
-      <div className="flex items-center justify-between rounded-2xl border border-amber-500/40 bg-surface-solid/95 p-3.5 shadow-2xl backdrop-blur-md">
+      <div className="flex items-center justify-between rounded-sm border-2 border-border bg-surface-solid p-3.5 shadow-[4px_4px_0_0_var(--border)]">
         <div className="flex items-center gap-2.5">
           <span className="flex h-2.5 w-2.5 rounded-full bg-amber-400 animate-ping" />
           <div>
@@ -32,7 +32,7 @@ const OfflineIndicator = (): JSX.Element | null => {
         </div>
         <Link
           href="/bookmarks"
-          className="rounded-full bg-amber-500/15 border border-amber-500/30 px-3 py-1 font-mono text-[11px] font-bold text-amber-400 hover:bg-amber-500 hover:text-black transition-colors"
+          className="rounded-sm border-2 border-border bg-nb-yellow px-3 py-1 font-mono text-[11px] font-bold text-[#0a0a0a] shadow-[2px_2px_0_0_var(--border)] transition-all hover:-translate-y-0.5 active:translate-y-0 active:shadow-none"
         >
           Lihat Bookmark →
         </Link>

@@ -84,10 +84,7 @@ export default function RouteProgressBar() {
   if (!visible && progress === 0) return null;
 
   return (
-    <div
-      aria-hidden="true"
-      className="pointer-events-none fixed inset-x-0 top-0 z-[99999] h-[3px] bg-transparent"
-    >
+    <div aria-hidden="true" className="pointer-events-none fixed inset-x-0 top-0 z-[99999] h-1 bg-transparent">
       <div
         className="h-full bg-accent transition-all duration-150 ease-out"
         style={{

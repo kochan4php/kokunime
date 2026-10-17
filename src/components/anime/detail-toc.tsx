@@ -41,17 +41,17 @@ const DetailToc = (): JSX.Element | null => {
   };
 
   return (
-    <div className="fixed right-6 top-24 z-40 hidden xl:flex flex-col gap-1.5 rounded-2xl border border-border bg-surface-solid/90 p-2 shadow-xl backdrop-blur-md">
+    <div className="fixed right-6 top-24 z-40 hidden xl:flex flex-col gap-1.5 rounded-sm border-2 border-border bg-surface-solid p-2 shadow-[6px_6px_0_0_var(--border)]">
       <span className="px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider text-ink-muted">Navigasi</span>
       {SECTIONS.map((sec) => (
         <button
           key={sec.id}
           type="button"
           onClick={() => scrollTo(sec.id)}
-          className={`flex items-center justify-between rounded-xl px-3 py-1.5 font-mono text-xs transition-all cursor-pointer ${
+          className={`flex items-center justify-between rounded-sm border-2 px-3 py-1.5 font-mono text-xs transition-all cursor-pointer ${
             activeId === sec.id
-              ? "bg-accent/15 font-bold text-accent border border-accent/30"
-              : "text-ink-muted hover:bg-surface hover:text-ink"
+              ? "bg-accent font-bold text-(--accent-ink) border-border shadow-[2px_2px_0_0_var(--border)]"
+              : "border-transparent text-ink-muted hover:bg-surface hover:text-ink"
           }`}
         >
           <span>{sec.label}</span>

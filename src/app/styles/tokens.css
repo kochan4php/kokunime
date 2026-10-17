@@ -1,87 +1,56 @@
 :root {
+  /* Neobrutalism paper palette */
   --bg: #fdf5eb;
-  --surface: rgba(251, 236, 225, 0.7);
-  --surface-solid: #fbece1;
-  --surface-muted: #f3dfcd;
-  --border: #e6cbb8;
-  --ink: #32201d;
-  --ink-muted: #7e6454;
-  --accent: #ff6a33;
-  --accent-strong: #e8551e;
-  --accent-2: #ea4f2e;
-  --accent-amber: #d98e2b;
-  --accent-ink: #261815;
-  --glow-accent: transparent;
-  --glow-2: transparent;
-  --glow-amber: transparent;
+  --surface: #ffffff;
+  --surface-solid: #ffffff;
+  --surface-muted: #f1e7d8;
+  --border: #0a0a0a;
+  --ink: #0a0a0a;
+  --ink-muted: #5c544b;
+  --accent: #ff8a3d;
+  --accent-strong: #e96a1a;
+  --accent-2: #ffb457;
+  --accent-amber: #ffd93d;
+  --accent-ink: #0a0a0a;
+
+  /* Backdrop grid (graph paper) */
+  --grid-ink: rgba(10, 10, 10, 0.07);
+
+  /* Hard offset shadows + tight radius */
+  --radius-nb: 0.25rem;
+  --shadow-hard-sm: 2px 2px 0 0 var(--border);
+  --shadow-hard: 4px 4px 0 0 var(--border);
+  --shadow-hard-lg: 6px 6px 0 0 var(--border);
 }
 
-.dark {
-  --bg: #201613;
-  --surface: rgba(47, 31, 28, 0.6);
-  --surface-solid: #2f1f1c;
-  --surface-muted: #3d2a24;
-  --border: #504136;
-  --ink: #f4e7df;
-  --ink-muted: #c7a693;
-  --accent: #ff7c47;
-  --accent-strong: #ff9a6b;
-  --accent-2: #ff8a5c;
-  --accent-amber: #f0b45f;
-  --glow-accent: transparent;
-  --glow-2: transparent;
-  --glow-amber: transparent;
-}
-
-:root[data-contrast="oled"],
-.dark[data-contrast="oled"] {
-  --bg: #000000;
-  --surface: rgba(10, 10, 10, 0.85);
-  --surface-solid: #050505;
-  --surface-muted: #151515;
-  --border: #333333;
-  --ink: #ffffff;
-  --ink-muted: #d4d4d4;
-}
-
-:root[data-accent="emerald"],
-.dark[data-accent="emerald"] {
+:root[data-accent="emerald"] {
   --accent: #10b981;
-  --accent-strong: #059669;
-  --accent-2: #047857;
-  --glow-accent: transparent;
+  --accent-strong: #047857;
+  --accent-2: #6ee7b7;
 }
 
-:root[data-accent="violet"],
-.dark[data-accent="violet"] {
+:root[data-accent="violet"] {
   --accent: #8b5cf6;
-  --accent-strong: #7c3aed;
-  --accent-2: #6d28d9;
-  --glow-accent: transparent;
+  --accent-strong: #6d28d9;
+  --accent-2: #c4a1ff;
 }
 
-:root[data-accent="cyan"],
-.dark[data-accent="cyan"] {
+:root[data-accent="cyan"] {
   --accent: #06b6d4;
-  --accent-strong: #0891b2;
-  --accent-2: #0e7490;
-  --glow-accent: transparent;
+  --accent-strong: #0e7490;
+  --accent-2: #67e8f9;
 }
 
-:root[data-accent="rose"],
-.dark[data-accent="rose"] {
+:root[data-accent="rose"] {
   --accent: #f43f5e;
-  --accent-strong: #e11d48;
-  --accent-2: #be123c;
-  --glow-accent: transparent;
+  --accent-strong: #be123c;
+  --accent-2: #ff90e8;
 }
 
-:root[data-accent="amber"],
-.dark[data-accent="amber"] {
+:root[data-accent="amber"] {
   --accent: #f59e0b;
-  --accent-strong: #d97706;
-  --accent-2: #b45309;
-  --glow-accent: transparent;
+  --accent-strong: #b45309;
+  --accent-2: #ffd93d;
 }
 
 @theme inline {
@@ -96,7 +65,24 @@
   --color-accent-strong: var(--accent-strong);
   --color-accent-2: var(--accent-2);
   --color-accent-amber: var(--accent-amber);
-  --font-display: "JetBrains Mono", "SF Mono", Consolas, monospace;
+
+  /* Flat sticker colors — always paired with ink text */
+  --color-nb-yellow: #ffde00;
+  --color-nb-pink: #ff90e8;
+  --color-nb-teal: #23a094;
+  --color-nb-lime: #a8e10c;
+  --color-nb-purple: #c4a1ff;
+  --color-nb-orange: #ff8a3d;
+  --color-nb-red: #ff6b6b;
+  --color-nb-ink: #0a0a0a;
+  --color-nb-cream: #fdf5eb;
+
+  --shadow-nb-sm: var(--shadow-hard-sm);
+  --shadow-nb: var(--shadow-hard);
+  --shadow-nb-lg: var(--shadow-hard-lg);
+
+  /* Chunky sans for headings; body + meta stay mono */
+  --font-display: "Plus Jakarta Sans", "Segoe UI", system-ui, sans-serif;
   --font-sans: "Plus Jakarta Sans", "Segoe UI", system-ui, sans-serif;
   --font-mono: "JetBrains Mono", "SF Mono", Consolas, monospace;
 }

@@ -11,4 +11,5 @@
   margin-inline: auto;
 }
 
+/* UI is light-only; dark: variants must stay inert instead of following OS dark mode. */
 @custom-variant dark (&:where(.dark, .dark *));

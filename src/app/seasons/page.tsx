@@ -12,7 +12,8 @@ export async function generateMetadata(): Promise<Metadata> {
 
   return {
     title: "Jadwal & Daftar Musim Anime Lengkap",
-    description: "Jelajahi anime berdasarkan kalender 4 musim rilis (Winter, Spring, Summer, Fall) dari tahun ke tahun di Kokunime.",
+    description:
+      "Jelajahi anime berdasarkan kalender 4 musim rilis (Winter, Spring, Summer, Fall) dari tahun ke tahun di Kokunime.",
     alternates: { canonical, languages: { "id-ID": canonical } },
     openGraph: {
       title: "Jadwal & Daftar Musim Anime Lengkap · Kokunime",
@@ -33,9 +34,7 @@ const SeasonsPage = async (): Promise<JSX.Element> => {
         id="seasons-breadcrumb-jsonld"
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: safeJsonLd(
-            buildSubpageBreadcrumbJsonLd([{ name: "Daftar Musim", url: "/seasons" }]),
-          ),
+          __html: safeJsonLd(buildSubpageBreadcrumbJsonLd([{ name: "Daftar Musim", url: "/seasons" }])),
         }}
         suppressHydrationWarning
       />
@@ -49,7 +48,8 @@ const SeasonsPage = async (): Promise<JSX.Element> => {
             Jadwal & Musim Rilis Anime
           </h1>
           <p className="mt-2 text-sm text-ink-muted max-w-2xl">
-            Cari anime berdasarkan musim penayangan dari tahun 2000-an hingga musim terbaru saat ini: Musim Dingin (*Winter*), Musim Semi (*Spring*), Musim Panas (*Summer*), dan Musim Gugur (*Fall*).
+            Cari anime berdasarkan musim penayangan dari tahun 2000-an hingga musim terbaru saat ini: Musim Dingin
+            (*Winter*), Musim Semi (*Spring*), Musim Panas (*Summer*), dan Musim Gugur (*Fall*).
           </p>
         </div>
 

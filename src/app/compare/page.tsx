@@ -10,13 +10,15 @@ export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Komparasi Anime Side-by-Side · Kokunime",
-  description: "Bandingkan skor rating, studio produksi, total episode, durasi, dan genre antara dua anime berdampingan secara instan.",
+  description:
+    "Bandingkan skor rating, studio produksi, total episode, durasi, dan genre antara dua anime berdampingan secara instan.",
   alternates: {
     canonical: `${SITE_URL}/compare`,
   },
   openGraph: {
     title: "Komparasi Anime Side-by-Side · Kokunime",
-    description: "Bandingkan skor rating, studio produksi, total episode, durasi, dan genre antara dua anime berdampingan.",
+    description:
+      "Bandingkan skor rating, studio produksi, total episode, durasi, dan genre antara dua anime berdampingan.",
     url: `${SITE_URL}/compare`,
   },
 };
@@ -53,7 +55,7 @@ const ComparePage = async ({ searchParams }: ComparePageProps): Promise<JSX.Elem
               <span className="h-1.5 w-1.5 rounded-full bg-accent" />
               Fitur Eksklusif
             </span>
-            <span className="rounded-full bg-surface-muted px-2.5 py-0.5 font-mono text-[10px] font-bold text-ink-muted">
+            <span className="rounded-sm border border-border bg-surface-muted px-2.5 py-0.5 font-mono text-[10px] font-bold text-ink-muted">
               Side-by-Side
             </span>
           </div>
@@ -61,16 +63,12 @@ const ComparePage = async ({ searchParams }: ComparePageProps): Promise<JSX.Elem
             Perbandingan Anime Side-by-Side
           </h1>
           <p className="text-xs sm:text-sm text-ink-muted max-w-3xl">
-            Pilih dan bandingkan dua anime secara berdampingan untuk menganalisis perbedaan skor MyAnimeList, studio produksi, total episode, durasi tayang, genre unik, dan sinopsis secara instan.
+            Pilih dan bandingkan dua anime secara berdampingan untuk menganalisis perbedaan skor MyAnimeList, studio
+            produksi, total episode, durasi tayang, genre unik, dan sinopsis secara instan.
           </p>
         </div>
 
-        <CompareAnimeClient
-          initialAnimeA={animeA}
-          initialAnimeB={animeB}
-          initialSlugA={slugA}
-          initialSlugB={slugB}
-        />
+        <CompareAnimeClient initialAnimeA={animeA} initialAnimeB={animeB} initialSlugA={slugA} initialSlugB={slugB} />
       </section>
     </MainLayout>
   );

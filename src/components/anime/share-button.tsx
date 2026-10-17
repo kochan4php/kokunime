@@ -63,7 +63,7 @@ const ShareButton = ({
         onClick={handleShare}
         aria-label="Bagikan anime ini"
         title="Bagikan anime"
-        className={`inline-flex items-center justify-center gap-2 rounded-full border border-border bg-surface px-4 py-2 text-sm font-semibold text-ink-muted transition-all duration-200 hover:border-accent hover:text-accent hover:bg-surface-muted active:scale-95 cursor-pointer ${className}`}
+        className={`inline-flex items-center justify-center gap-2 rounded-sm border-2 border-border bg-surface px-4 py-2 text-sm font-semibold text-ink-muted shadow-[2px_2px_0_0_var(--border)] transition-all duration-150 hover:-translate-y-0.5 hover:text-ink active:translate-y-0 active:shadow-none cursor-pointer ${className}`}
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -87,7 +87,7 @@ const ShareButton = ({
 
       {showOptions && (
         <div
-          className={`absolute z-50 flex items-center gap-1.5 rounded-2xl border border-border bg-surface-solid/95 p-1.5 shadow-2xl backdrop-blur-md ${
+          className={`absolute z-50 flex items-center gap-1.5 rounded-sm border-2 border-border bg-surface-solid p-1.5 shadow-[6px_6px_0_0_var(--border)] ${
             dropdownPlacement === "top" ? "bottom-full mb-2 left-0" : "top-full mt-2 right-0"
           }`}
         >
@@ -97,7 +97,7 @@ const ShareButton = ({
             rel="noopener noreferrer"
             title="Bagikan ke WhatsApp"
             onClick={() => setShowOptions(false)}
-            className="flex items-center gap-1 rounded-xl bg-emerald-500/10 px-2.5 py-1 text-xs font-semibold text-emerald-400 hover:bg-emerald-500 hover:text-white transition-colors"
+            className="flex items-center gap-1 rounded-sm border-2 border-border bg-nb-lime px-2.5 py-1 text-xs font-bold text-nb-ink shadow-[2px_2px_0_0_var(--border)] transition-all duration-150 hover:-translate-y-0.5 active:translate-y-0 active:shadow-none"
           >
             <span>WhatsApp</span>
           </a>
@@ -107,14 +107,14 @@ const ShareButton = ({
             rel="noopener noreferrer"
             title="Bagikan ke X (Twitter)"
             onClick={() => setShowOptions(false)}
-            className="flex items-center gap-1 rounded-xl bg-sky-500/10 px-2.5 py-1 text-xs font-semibold text-sky-400 hover:bg-sky-500 hover:text-white transition-colors"
+            className="flex items-center gap-1 rounded-sm border-2 border-border bg-nb-ink px-2.5 py-1 text-xs font-bold text-nb-cream shadow-[2px_2px_0_0_var(--border)] transition-all duration-150 hover:-translate-y-0.5 active:translate-y-0 active:shadow-none"
           >
             <span>X (Twitter)</span>
           </a>
           <button
             type="button"
             onClick={() => setShowOptions(false)}
-            className="rounded-lg p-1 text-xs text-ink-muted hover:text-ink cursor-pointer"
+            className="rounded-sm p-1 text-xs text-ink-muted hover:text-ink cursor-pointer"
           >
             ✕
           </button>

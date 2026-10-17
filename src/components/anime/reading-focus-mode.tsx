@@ -18,7 +18,7 @@ const ReadingFocusMode = ({ synopsis, title }: ReadingFocusModeProps): JSX.Eleme
         type="button"
         onClick={() => setIsFocus(true)}
         title="Mode fokus membaca sinopsis tanpa distraksi"
-        className="rounded-full border border-border bg-surface px-2.5 py-0.5 font-mono text-[11px] font-semibold text-ink-muted transition-colors hover:border-accent hover:text-ink cursor-pointer"
+        className="rounded-sm border-2 border-border bg-surface px-2.5 py-0.5 font-mono text-[11px] font-semibold text-ink-muted shadow-[2px_2px_0_0_var(--border)] transition-all hover:-translate-y-0.5 hover:text-ink active:translate-y-0 active:shadow-none cursor-pointer"
       >
         <span>📖 Mode Baca</span>
       </button>
@@ -28,15 +28,15 @@ const ReadingFocusMode = ({ synopsis, title }: ReadingFocusModeProps): JSX.Eleme
           role="dialog"
           aria-modal="true"
           aria-label={`Mode Fokus Membaca ${title}`}
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4 backdrop-blur-md"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4"
         >
-          <div className="relative max-h-[85vh] w-full max-w-2xl overflow-y-auto rounded-2xl border border-border bg-surface-solid p-6 md:p-8 text-ink shadow-2xl">
-            <div className="mb-4 flex items-center justify-between border-b border-border pb-3">
+          <div className="relative max-h-[85vh] w-full max-w-2xl overflow-y-auto rounded-sm border-2 border-border bg-surface-solid p-6 md:p-8 text-ink shadow-[6px_6px_0_0_var(--border)]">
+            <div className="mb-4 flex items-center justify-between border-b-2 border-border pb-3">
               <h3 className="font-display text-lg font-bold text-accent">{title}</h3>
               <button
                 type="button"
                 onClick={() => setIsFocus(false)}
-                className="rounded-full border border-border bg-surface px-3 py-1 font-mono text-xs font-semibold text-ink-muted hover:text-ink cursor-pointer"
+                className="rounded-sm border-2 border-border bg-surface px-3 py-1 font-mono text-xs font-semibold text-ink-muted shadow-[2px_2px_0_0_var(--border)] hover:text-ink cursor-pointer"
               >
                 ✕ Tutup
               </button>
@@ -48,7 +48,7 @@ const ReadingFocusMode = ({ synopsis, title }: ReadingFocusModeProps): JSX.Eleme
               <button
                 type="button"
                 onClick={() => setIsFocus(false)}
-                className="rounded-full bg-accent px-4 py-1.5 font-display text-xs font-bold text-(--accent-ink) hover:opacity-90 cursor-pointer"
+                className="rounded-sm border-2 border-border bg-accent px-4 py-1.5 font-display text-xs font-bold text-(--accent-ink) shadow-[2px_2px_0_0_var(--border)] hover:-translate-y-0.5 active:translate-y-0 active:shadow-none transition-all cursor-pointer"
               >
                 Selesai Membaca
               </button>

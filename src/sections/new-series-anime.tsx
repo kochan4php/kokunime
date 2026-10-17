@@ -15,7 +15,7 @@ const NewSeriesAnime = async ({ slug }: { slug: string }): Promise<JSX.Element> 
   });
 
   return (
-    <div className="flex snap-x gap-3 overflow-x-auto pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+    <div className="nb-cycle flex snap-x gap-3 overflow-x-auto pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
       {newSeriesAnime?.map((item: Anime, index: number) => {
         const endpoint = animeSlug(item.link.endpoint);
         if (!endpoint) return null;
@@ -27,7 +27,7 @@ const NewSeriesAnime = async ({ slug }: { slug: string }): Promise<JSX.Element> 
             className="card-shell group block w-32 shrink-0 snap-start sm:w-36"
           >
             <div className="card-core">
-              <div className="relative aspect-[3/4] w-full">
+              <div className="relative aspect-[3/4] w-full border-b-2 border-border">
                 <AnimeImage
                   fill
                   sizes="144px"
@@ -35,10 +35,9 @@ const NewSeriesAnime = async ({ slug }: { slug: string }): Promise<JSX.Element> 
                   alt={item.title}
                   className="transition-transform duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:scale-105"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/0 to-transparent" />
               </div>
               <div className="p-2.5">
-                <h3 className="line-clamp-2 text-[11px] font-semibold leading-snug text-ink transition-colors duration-200 group-hover:text-accent">
+                <h3 className="line-clamp-2 text-[11px] font-semibold leading-snug group-hover:underline decoration-2 underline-offset-2">
                   {item.title}
                 </h3>
               </div>

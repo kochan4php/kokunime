@@ -19,8 +19,8 @@ export const EpisodeGallery = ({ title, posterImage }: EpisodeGalleryProps): JSX
   ];
 
   return (
-    <div className="mt-8 rounded-3xl border border-border bg-surface p-4 sm:p-5">
-      <div className="flex items-center justify-between border-b border-border pb-3">
+    <div className="mt-8 rounded-sm border-2 border-border bg-surface p-4 sm:p-5 shadow-[2px_2px_0_0_var(--border)]">
+      <div className="flex items-center justify-between border-b-2 border-border pb-3">
         <h3 className="font-display text-sm font-bold text-ink">📸 Cuplikan Tangkapan Layar Episode</h3>
         <span className="font-mono text-xs text-ink-muted">Galeri Visual</span>
       </div>
@@ -31,7 +31,7 @@ export const EpisodeGallery = ({ title, posterImage }: EpisodeGalleryProps): JSX
             key={idx}
             type="button"
             onClick={() => setSelectedImage(item.src)}
-            className="group relative aspect-video overflow-hidden rounded-xl border border-border bg-black/40 cursor-pointer"
+            className="group relative aspect-video overflow-hidden rounded-sm border-2 border-border bg-surface-muted cursor-pointer"
           >
             <Image
               src={item.src}
@@ -41,7 +41,7 @@ export const EpisodeGallery = ({ title, posterImage }: EpisodeGalleryProps): JSX
               className="object-cover transition-transform duration-300 group-hover:scale-105"
             />
             <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-              <span className="font-mono text-[10px] font-bold text-white bg-black/70 px-2 py-0.5 rounded">
+              <span className="font-mono text-[10px] font-bold text-nb-ink bg-nb-yellow px-2 py-0.5 rounded-sm border-2 border-border">
                 🔍 Perbesar
               </span>
             </div>
@@ -52,14 +52,14 @@ export const EpisodeGallery = ({ title, posterImage }: EpisodeGalleryProps): JSX
       {selectedImage && (
         <div
           onClick={() => setSelectedImage(null)}
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 animate-in fade-in"
         >
-          <div className="relative max-w-2xl w-full aspect-video rounded-2xl overflow-hidden border border-white/20">
+          <div className="relative max-w-2xl w-full aspect-video rounded-sm overflow-hidden border-[3px] border-nb-cream">
             <Image src={selectedImage} alt={title} fill className="object-contain" />
             <button
               type="button"
               onClick={() => setSelectedImage(null)}
-              className="absolute top-3 right-3 rounded-full bg-black/60 px-2.5 py-1 text-xs text-white font-bold cursor-pointer"
+              className="absolute top-3 right-3 rounded-sm border-2 border-border bg-nb-yellow px-2.5 py-1 text-xs font-bold text-nb-ink cursor-pointer"
             >
               ✕ Tutup
             </button>

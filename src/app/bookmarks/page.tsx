@@ -128,10 +128,10 @@ const BookmarksPage = (): JSX.Element => {
                   setActiveTab("bookmarks");
                   setFilterQuery("");
                 }}
-                className={`rounded-full px-4 py-1.5 font-display text-sm font-bold tracking-tight transition-all duration-200 ${
+                className={`rounded-sm border-2 border-border px-4 py-1.5 font-display text-sm font-bold tracking-tight transition-all duration-150 cursor-pointer ${
                   activeTab === "bookmarks"
-                    ? "bg-accent text-(--accent-ink)"
-                    : "border border-border bg-surface text-ink-muted hover:border-accent hover:text-ink"
+                    ? "bg-accent text-(--accent-ink) shadow-[2px_2px_0_0_var(--border)]"
+                    : "bg-surface text-ink-muted hover:text-ink"
                 }`}
               >
                 Tersimpan ({bookmarks.length})
@@ -142,10 +142,10 @@ const BookmarksPage = (): JSX.Element => {
                   setActiveTab("history");
                   setFilterQuery("");
                 }}
-                className={`rounded-full px-4 py-1.5 font-display text-sm font-bold tracking-tight transition-all duration-200 ${
+                className={`rounded-sm border-2 border-border px-4 py-1.5 font-display text-sm font-bold tracking-tight transition-all duration-150 cursor-pointer ${
                   activeTab === "history"
-                    ? "bg-accent text-(--accent-ink)"
-                    : "border border-border bg-surface text-ink-muted hover:border-accent hover:text-ink"
+                    ? "bg-accent text-(--accent-ink) shadow-[2px_2px_0_0_var(--border)]"
+                    : "bg-surface text-ink-muted hover:text-ink"
                 }`}
               >
                 Riwayat Terakhir ({history.length})
@@ -160,10 +160,10 @@ const BookmarksPage = (): JSX.Element => {
                 <button
                   type="button"
                   onClick={() => setStatusFilter("all")}
-                  className={`rounded-full px-3 py-1 font-mono text-xs transition-all ${
+                  className={`rounded-sm border-2 px-3 py-1 font-mono text-xs transition-all cursor-pointer ${
                     statusFilter === "all"
-                      ? "border border-accent/40 bg-accent/15 font-bold text-accent"
-                      : "border border-border bg-surface text-ink-muted hover:text-ink"
+                      ? "border-border bg-accent font-bold text-(--accent-ink) shadow-[2px_2px_0_0_var(--border)]"
+                      : "border-border bg-surface text-ink-muted hover:text-ink"
                   }`}
                 >
                   Semua ({bookmarks.length})
@@ -171,10 +171,10 @@ const BookmarksPage = (): JSX.Element => {
                 <button
                   type="button"
                   onClick={() => setStatusFilter("watching")}
-                  className={`rounded-full px-3 py-1 font-mono text-xs transition-all ${
+                  className={`rounded-sm border-2 px-3 py-1 font-mono text-xs transition-all cursor-pointer ${
                     statusFilter === "watching"
-                      ? "border border-accent/40 bg-accent/15 font-bold text-accent"
-                      : "border border-border bg-surface text-ink-muted hover:text-ink"
+                      ? "border-border bg-accent font-bold text-(--accent-ink) shadow-[2px_2px_0_0_var(--border)]"
+                      : "border-border bg-surface text-ink-muted hover:text-ink"
                   }`}
                 >
                   📺 Sedang Nonton ({bookmarks.filter((b) => b.status === "watching").length})
@@ -182,10 +182,10 @@ const BookmarksPage = (): JSX.Element => {
                 <button
                   type="button"
                   onClick={() => setStatusFilter("plan")}
-                  className={`rounded-full px-3 py-1 font-mono text-xs transition-all ${
+                  className={`rounded-sm border-2 px-3 py-1 font-mono text-xs transition-all cursor-pointer ${
                     statusFilter === "plan"
-                      ? "border border-accent/40 bg-accent/15 font-bold text-accent"
-                      : "border border-border bg-surface text-ink-muted hover:text-ink"
+                      ? "border-border bg-accent font-bold text-(--accent-ink) shadow-[2px_2px_0_0_var(--border)]"
+                      : "border-border bg-surface text-ink-muted hover:text-ink"
                   }`}
                 >
                   📌 Rencana ({bookmarks.filter((b) => b.status === "plan").length})
@@ -193,10 +193,10 @@ const BookmarksPage = (): JSX.Element => {
                 <button
                   type="button"
                   onClick={() => setStatusFilter("completed")}
-                  className={`rounded-full px-3 py-1 font-mono text-xs transition-all ${
+                  className={`rounded-sm border-2 px-3 py-1 font-mono text-xs transition-all cursor-pointer ${
                     statusFilter === "completed"
-                      ? "border border-accent/40 bg-accent/15 font-bold text-accent"
-                      : "border border-border bg-surface text-ink-muted hover:text-ink"
+                      ? "border-border bg-accent font-bold text-(--accent-ink) shadow-[2px_2px_0_0_var(--border)]"
+                      : "border-border bg-surface text-ink-muted hover:text-ink"
                   }`}
                 >
                   ✓ Selesai ({bookmarks.filter((b) => b.status === "completed").length})
@@ -209,10 +209,10 @@ const BookmarksPage = (): JSX.Element => {
                 <button
                   type="button"
                   onClick={() => setFolderFilter("all")}
-                  className={`rounded-full px-2.5 py-0.5 font-mono text-[10px] transition-all cursor-pointer ${
+                  className={`rounded-sm border-2 px-2.5 py-0.5 font-mono text-[10px] transition-all cursor-pointer ${
                     folderFilter === "all"
-                      ? "bg-accent text-(--accent-ink) font-bold"
-                      : "border border-border bg-surface text-ink-muted hover:text-ink"
+                      ? "border-border bg-accent text-(--accent-ink) font-bold shadow-[2px_2px_0_0_var(--border)]"
+                      : "border-border bg-surface text-ink-muted hover:text-ink"
                   }`}
                 >
                   Semua
@@ -222,10 +222,10 @@ const BookmarksPage = (): JSX.Element => {
                     key={f}
                     type="button"
                     onClick={() => setFolderFilter(f)}
-                    className={`rounded-full px-2.5 py-0.5 font-mono text-[10px] transition-all cursor-pointer ${
+                    className={`rounded-sm border-2 px-2.5 py-0.5 font-mono text-[10px] transition-all cursor-pointer ${
                       folderFilter === f
-                        ? "bg-accent text-(--accent-ink) font-bold"
-                        : "border border-border bg-surface text-ink-muted hover:text-ink"
+                        ? "border-border bg-accent text-(--accent-ink) font-bold shadow-[2px_2px_0_0_var(--border)]"
+                        : "border-border bg-surface text-ink-muted hover:text-ink"
                     }`}
                   >
                     📁 {f}
@@ -236,14 +236,14 @@ const BookmarksPage = (): JSX.Element => {
           </div>
           <div className="flex flex-wrap items-center gap-2">
             {/* View Mode Toggle */}
-            <div className="flex items-center gap-1 rounded-xl border border-border bg-surface p-0.5">
+            <div className="flex items-center gap-1 rounded-sm border-2 border-border bg-surface p-0.5">
               <button
                 type="button"
                 onClick={() => setViewMode("grid")}
                 aria-label="Tampilan Grid"
                 title="Tampilan Grid"
-                className={`flex h-7 w-7 items-center justify-center rounded-lg text-xs transition-all cursor-pointer ${
-                  viewMode === "grid" ? "bg-accent text-(--accent-ink) shadow-xs font-bold" : "text-ink-muted hover:text-ink"
+                className={`flex h-7 w-7 items-center justify-center rounded-sm text-xs transition-all cursor-pointer ${
+                  viewMode === "grid" ? "bg-accent text-(--accent-ink) font-bold" : "text-ink-muted hover:text-ink"
                 }`}
               >
                 ⊞
@@ -253,8 +253,8 @@ const BookmarksPage = (): JSX.Element => {
                 onClick={() => setViewMode("list")}
                 aria-label="Tampilan List"
                 title="Tampilan List"
-                className={`flex h-7 w-7 items-center justify-center rounded-lg text-xs transition-all cursor-pointer ${
-                  viewMode === "list" ? "bg-accent text-(--accent-ink) shadow-xs font-bold" : "text-ink-muted hover:text-ink"
+                className={`flex h-7 w-7 items-center justify-center rounded-sm text-xs transition-all cursor-pointer ${
+                  viewMode === "list" ? "bg-accent text-(--accent-ink) font-bold" : "text-ink-muted hover:text-ink"
                 }`}
               >
                 ☰
@@ -268,14 +268,14 @@ const BookmarksPage = (): JSX.Element => {
                 onChange={(e) => setFilterQuery(e.target.value)}
                 placeholder="Filter daftar..."
                 aria-label="Filter anime di daftar ini"
-                className="h-8 rounded-full border border-border bg-surface px-3 text-xs text-ink outline-none transition-all placeholder:text-ink-muted focus:border-accent"
+                className="h-8 rounded-sm border-2 border-border bg-surface px-3 text-xs text-ink outline-none transition-all placeholder:text-ink-muted focus:border-accent"
               />
             )}
             {activeTab === "bookmarks" && (
               <>
                 <span
                   title={`Penggunaan penyimpanan lokal: ${storageStats.formattedUsed} (~${storageStats.percentage}%)`}
-                  className="hidden md:inline-flex items-center gap-1 rounded-full border border-border bg-surface px-2.5 py-1 font-mono text-[11px] text-ink-muted"
+                  className="hidden md:inline-flex items-center gap-1 rounded-sm border-2 border-border bg-surface px-2.5 py-1 font-mono text-[11px] text-ink-muted"
                 >
                   <span>💾 {storageStats.formattedUsed}</span>
                 </span>
@@ -283,7 +283,7 @@ const BookmarksPage = (): JSX.Element => {
                   type="button"
                   onClick={copySyncLink}
                   title="Salin tautan sinkronisasi cloud untuk memindahkan bookmark ke perangkat lain"
-                  className="rounded-full border border-border bg-surface px-3 py-1.5 font-mono text-xs font-semibold text-ink-muted transition-all hover:border-accent hover:text-ink active:scale-95 cursor-pointer"
+                  className="rounded-sm border-2 border-border bg-surface px-3 py-1.5 font-mono text-xs font-semibold text-ink-muted shadow-[2px_2px_0_0_var(--border)] transition-all hover:-translate-y-0.5 hover:text-ink active:translate-y-0 active:shadow-none cursor-pointer cursor-pointer"
                 >
                   {shareCopied ? "✓ Link Disalin" : "☁️ Sync Cloud"}
                 </button>
@@ -291,7 +291,7 @@ const BookmarksPage = (): JSX.Element => {
                   type="button"
                   onClick={exportBookmarksJson}
                   title="Export backup bookmark ke file JSON"
-                  className="rounded-full border border-border bg-surface px-3 py-1.5 font-mono text-xs font-semibold text-ink-muted transition-all hover:border-accent hover:text-ink active:scale-95"
+                  className="rounded-sm border-2 border-border bg-surface px-3 py-1.5 font-mono text-xs font-semibold text-ink-muted shadow-[2px_2px_0_0_var(--border)] transition-all hover:-translate-y-0.5 hover:text-ink active:translate-y-0 active:shadow-none cursor-pointer"
                 >
                   Export .json
                 </button>
@@ -299,13 +299,13 @@ const BookmarksPage = (): JSX.Element => {
                   type="button"
                   onClick={exportBookmarksMalXml}
                   title="Export daftar tontonan ke format XML MyAnimeList"
-                  className="rounded-full border border-border bg-surface px-3 py-1.5 font-mono text-xs font-semibold text-ink-muted transition-all hover:border-accent hover:text-ink active:scale-95"
+                  className="rounded-sm border-2 border-border bg-surface px-3 py-1.5 font-mono text-xs font-semibold text-ink-muted shadow-[2px_2px_0_0_var(--border)] transition-all hover:-translate-y-0.5 hover:text-ink active:translate-y-0 active:shadow-none cursor-pointer"
                 >
                   Export MAL .xml
                 </button>
                 <label
                   title="Import backup bookmark dari file JSON, AniList JSON, atau MyAnimeList XML"
-                  className="cursor-pointer rounded-full border border-border bg-surface px-3 py-1.5 font-mono text-xs font-semibold text-ink-muted transition-all hover:border-accent hover:text-ink active:scale-95"
+                  className="cursor-pointer rounded-sm border-2 border-border bg-surface px-3 py-1.5 font-mono text-xs font-semibold text-ink-muted shadow-[2px_2px_0_0_var(--border)] transition-all hover:-translate-y-0.5 hover:text-ink active:translate-y-0 active:shadow-none cursor-pointer"
                 >
                   Import JSON / MAL XML
                   <input type="file" accept=".json,.xml" onChange={handleImport} className="hidden" />
@@ -316,7 +316,7 @@ const BookmarksPage = (): JSX.Element => {
               <button
                 type="button"
                 onClick={handleClear}
-                className="rounded-full border border-border bg-surface px-3 py-1.5 font-mono text-xs font-semibold text-ink-muted transition-all hover:border-red-500/50 hover:bg-red-500/10 hover:text-red-500 active:scale-95"
+                className="rounded-sm border-2 border-border bg-surface px-3 py-1.5 font-mono text-xs font-semibold text-ink-muted shadow-[2px_2px_0_0_var(--border)] transition-all hover:-translate-y-0.5 hover:bg-nb-red hover:text-nb-ink active:translate-y-0 active:shadow-none cursor-pointer"
               >
                 Hapus Semua
               </button>
@@ -332,10 +332,10 @@ const BookmarksPage = (): JSX.Element => {
                 return (
                   <div
                     key={item.slug}
-                    className="group relative flex items-center justify-between gap-2.5 sm:gap-3.5 rounded-xl sm:rounded-2xl border border-border bg-surface-solid/90 p-2 sm:p-2.5 transition-all duration-200 hover:border-accent/60 hover:bg-surface hover:shadow-sm"
+                    className="group relative flex items-center justify-between gap-2.5 sm:gap-3.5 rounded-sm border-2 border-border bg-surface-solid p-2 sm:p-2.5 transition-all duration-150 hover:-translate-y-0.5 hover:shadow-[3px_3px_0_0_var(--border)]"
                   >
                     <Link href={`/anime/${item.slug}`} className="flex items-center gap-2.5 sm:gap-3 flex-1 min-w-0">
-                      <div className="relative h-13 w-10 sm:h-16 sm:w-12 shrink-0 overflow-hidden rounded-lg sm:rounded-xl bg-surface-muted border border-border/80 shadow-xs">
+                      <div className="relative h-13 w-10 sm:h-16 sm:w-12 shrink-0 overflow-hidden rounded-sm bg-surface-muted border-2 border-border">
                         {item.image && (
                           <img
                             src={item.image}
@@ -351,9 +351,21 @@ const BookmarksPage = (): JSX.Element => {
                         <div className="mt-0.5 flex flex-wrap items-center gap-1.5 font-mono text-[9px] sm:text-[10px] text-ink-muted">
                           {activeTab === "bookmarks" ? (
                             <>
-                              {bookmark?.status === "watching" && <span className="text-emerald-500 font-bold">📺 Nonton</span>}
-                              {bookmark?.status === "plan" && <span className="text-amber-500 font-bold">📌 Rencana</span>}
-                              {bookmark?.status === "completed" && <span className="text-accent font-bold">✓ Selesai</span>}
+                              {bookmark?.status === "watching" && (
+                                <span className="rounded-sm border border-border bg-nb-teal px-1.5 font-bold text-nb-ink">
+                                  📺 Nonton
+                                </span>
+                              )}
+                              {bookmark?.status === "plan" && (
+                                <span className="rounded-sm border border-border bg-nb-yellow px-1.5 font-bold text-nb-ink">
+                                  📌 Rencana
+                                </span>
+                              )}
+                              {bookmark?.status === "completed" && (
+                                <span className="rounded-sm border border-border bg-nb-lime px-1.5 font-bold text-nb-ink">
+                                  ✓ Selesai
+                                </span>
+                              )}
                               {bookmark?.rating && <span>• ⭐ {bookmark.rating}/10</span>}
                               {bookmark?.folder && <span>• 📁 {bookmark.folder}</span>}
                             </>
@@ -366,7 +378,7 @@ const BookmarksPage = (): JSX.Element => {
                     <div className="flex items-center gap-2 shrink-0">
                       <Link
                         href={`/anime/${item.slug}`}
-                        className="rounded-lg bg-accent/10 px-2.5 py-1 font-mono text-[11px] font-semibold text-accent group-hover:bg-accent group-hover:text-(--accent-ink) transition-colors"
+                        className="rounded-sm border-2 border-border bg-accent px-2.5 py-1 font-mono text-[11px] font-bold text-(--accent-ink) shadow-[2px_2px_0_0_var(--border)] transition-all group-hover:-translate-y-0.5 group-hover:shadow-[4px_4px_0_0_var(--border)]"
                       >
                         Buka →
                       </Link>
@@ -376,7 +388,7 @@ const BookmarksPage = (): JSX.Element => {
               })}
             </div>
           ) : (
-            <div className="mt-8 grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-2.5 md:grid-cols-5 md:gap-3 lg:grid-cols-5 lg:gap-3.5 xl:grid-cols-6 2xl:grid-cols-6">
+            <div className="nb-cycle mt-8 grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-2.5 md:grid-cols-5 md:gap-3 lg:grid-cols-5 lg:gap-3.5 xl:grid-cols-6 2xl:grid-cols-6">
               {items.map((item, index) => {
                 const bookmark = activeTab === "bookmarks" ? (item as BookmarkItem) : null;
                 return (
@@ -463,7 +475,7 @@ const BookmarksPage = (): JSX.Element => {
         ) : (
           <div className="card-shell mt-10">
             <div className="card-core flex flex-col items-center justify-center p-12 text-center md:p-20">
-              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-surface-muted text-ink-muted">
+              <div className="flex h-16 w-16 items-center justify-center rounded-sm border-2 border-border bg-nb-yellow text-nb-ink shadow-[2px_2px_0_0_var(--border)]">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 24 24"

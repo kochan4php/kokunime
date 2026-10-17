@@ -11,13 +11,7 @@ import {
 
 describe("settings utility", () => {
   let store: Record<string, string> = {};
-  const mockClassList = {
-    add: vi.fn(),
-    remove: vi.fn(),
-    toggle: vi.fn(),
-  };
   const mockRoot = {
-    classList: mockClassList,
     setAttribute: vi.fn(),
     removeAttribute: vi.fn(),
   };
@@ -43,7 +37,6 @@ describe("settings utility", () => {
       dispatchEvent: vi.fn(),
       addEventListener: vi.fn(),
       removeEventListener: vi.fn(),
-      matchMedia: () => ({ matches: false }),
     });
     vi.stubGlobal("document", {
       documentElement: mockRoot,
@@ -59,7 +52,6 @@ describe("settings utility", () => {
     const custom = {
       ...DEFAULT_SETTINGS,
       language: "en" as const,
-      theme: "oled" as const,
       accent: "cyan" as const,
       font: "sans" as const,
       downloadLayout: "matrix" as const,
@@ -68,7 +60,6 @@ describe("settings utility", () => {
     saveSettings(custom);
     const retrieved = getStoredSettings();
     expect(retrieved.language).toBe("en");
-    expect(retrieved.theme).toBe("oled");
     expect(retrieved.accent).toBe("cyan");
     expect(retrieved.font).toBe("sans");
     expect(retrieved.downloadLayout).toBe("matrix");
@@ -79,19 +70,15 @@ describe("settings utility", () => {
     applySettingsToDom({
       ...DEFAULT_SETTINGS,
       language: "en",
-      theme: "dark",
       accent: "emerald",
       fontSize: "large",
       reduceMotion: true,
-      glassEffects: false,
       readingMode: "sepia",
     });
 
-    expect(mockClassList.add).toHaveBeenCalledWith("dark");
     expect(mockRoot.setAttribute).toHaveBeenCalledWith("data-accent", "emerald");
     expect(mockRoot.setAttribute).toHaveBeenCalledWith("data-font-size", "large");
     expect(mockRoot.setAttribute).toHaveBeenCalledWith("data-reduce-motion", "true");
-    expect(mockRoot.setAttribute).toHaveBeenCalledWith("data-glass", "false");
     expect(mockRoot.setAttribute).toHaveBeenCalledWith("data-reading-mode", "sepia");
   });
 

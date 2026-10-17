@@ -17,6 +17,7 @@ const PaginationBar = ({ pagination }: PaginationBarProps): JSX.Element => {
   return (
     <div className="mt-12 flex flex-col items-center gap-4">
       <p className="font-mono text-xs uppercase tracking-widest text-ink-muted">
+        {" "}
         Halaman {current_page}
         {knownTotal ? ` dari ${total_page}` : ""}
       </p>

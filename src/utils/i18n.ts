@@ -50,11 +50,13 @@ export const DICTIONARY = {
     // Settings Page
     "settings.hub": "Pusat Kontrol & Preferensi",
     "settings.title": "Pengaturan Aplikasi",
-    "settings.subtitle": "Kustomisasi tema tampilan, bahasa aplikasi, palet warna aksen, tipografi font, preferensi katalog, dan kelola backup penyimpanan lokal Anda secara terpusat.",
+    "settings.subtitle":
+      "Kustomisasi tema tampilan, bahasa aplikasi, palet warna aksen, tipografi font, preferensi katalog, dan kelola backup penyimpanan lokal Anda secara terpusat.",
     "settings.export_backup": "Ekspor Backup",
     "settings.reset_default": "Reset ke Bawaan",
     "settings.live_preview": "Live Preview Antarmuka",
-    "settings.preview_desc": "Perubahan bahasa, tema, warna aksen, dan gaya font langsung diterapkan secara instan ke seluruh antarmuka aplikasi.",
+    "settings.preview_desc":
+      "Perubahan bahasa, tema, warna aksen, dan gaya font langsung diterapkan secara instan ke seluruh antarmuka aplikasi.",
 
     // Language Settings Section
     "settings.language_title": "Bahasa Aplikasi (Language)",
@@ -65,22 +67,12 @@ export const DICTIONARY = {
     "settings.lang_en_desc": "English navigation, menus, badges, and controls",
 
     // Theme & Appearance
-    "settings.theme_title": "Tema & Warna Antarmuka",
-    "settings.theme_desc": "Pilih mode tampilan gelap/terang dan palet warna aksen favorit.",
-    "settings.theme_system": "Otomatis (OS)",
-    "settings.theme_system_desc": "Ikuti sistem perangkat",
-    "settings.theme_light": "Terang (Light)",
-    "settings.theme_light_desc": "Cerah & bersih",
-    "settings.theme_dark": "Gelap (Dark)",
-    "settings.theme_dark_desc": "Hangat khas Kokunime",
-    "settings.theme_oled": "AMOLED Black",
-    "settings.theme_oled_desc": "Hitam murni (#000000)",
+    "settings.theme_title": "Tampilan & Warna Aksen",
+    "settings.theme_desc": "Palet warna aksen, efek gerak, dan kenyamanan mata.",
 
     "settings.accent_palette": "Palet Warna Aksen Utama",
     "settings.night_shift": "Night Shift",
     "settings.night_shift_desc": "Filter peredup mata hangat",
-    "settings.glassmorphism": "Glassmorphism",
-    "settings.glassmorphism_desc": "Efek kaca frosted blur",
     "settings.reduce_motion": "Hemat Animasi",
     "settings.reduce_motion_desc": "Matikan animasi dekoratif",
 
@@ -133,7 +125,8 @@ export const DICTIONARY = {
 
     // Compare Page
     "compare.title": "Perbandingan Anime Side-by-Side",
-    "compare.subtitle": "Pilih dan bandingkan dua anime secara berdampingan untuk menganalisis perbedaan skor MyAnimeList, studio produksi, total episode, durasi tayang, genre unik, dan sinopsis secara instan.",
+    "compare.subtitle":
+      "Pilih dan bandingkan dua anime secara berdampingan untuk menganalisis perbedaan skor MyAnimeList, studio produksi, total episode, durasi tayang, genre unik, dan sinopsis secara instan.",
     "compare.select_header": "Pilih 2 Anime untuk Dibandingkan",
     "compare.anime_a": "Anime Pertama (A)",
     "compare.anime_b": "Anime Kedua (B)",
@@ -215,37 +208,30 @@ export const DICTIONARY = {
     // Settings Page
     "settings.hub": "Control Center & Preferences",
     "settings.title": "App Settings",
-    "settings.subtitle": "Customize appearance themes, app language, accent palettes, typography fonts, catalog preferences, and manage your local data backups in one place.",
+    "settings.subtitle":
+      "Customize appearance themes, app language, accent palettes, typography fonts, catalog preferences, and manage your local data backups in one place.",
     "settings.export_backup": "Export Backup",
     "settings.reset_default": "Reset to Default",
     "settings.live_preview": "Live Interface Preview",
-    "settings.preview_desc": "Changes to language, theme, accent colors, and font styles are applied instantly across the entire application interface.",
+    "settings.preview_desc":
+      "Changes to language, theme, accent colors, and font styles are applied instantly across the entire application interface.",
 
     // Language Settings Section
     "settings.language_title": "App Language",
-    "settings.language_desc": "Choose your preferred application display language for navigation, menus, badges, and controls.",
+    "settings.language_desc":
+      "Choose your preferred application display language for navigation, menus, badges, and controls.",
     "settings.lang_id_title": "Bahasa Indonesia",
     "settings.lang_id_desc": "Display, navigation, and labels in Indonesian",
     "settings.lang_en_title": "English (International)",
     "settings.lang_en_desc": "English navigation, menus, badges, and controls",
 
     // Theme & Appearance
-    "settings.theme_title": "Theme & Appearance",
-    "settings.theme_desc": "Select dark/light mode and your preferred primary accent color.",
-    "settings.theme_system": "System (OS)",
-    "settings.theme_system_desc": "Follow device appearance",
-    "settings.theme_light": "Light Mode",
-    "settings.theme_light_desc": "Bright & clean",
-    "settings.theme_dark": "Dark Mode",
-    "settings.theme_dark_desc": "Signature Kokunime dark",
-    "settings.theme_oled": "AMOLED Black",
-    "settings.theme_oled_desc": "True pitch black (#000000)",
+    "settings.theme_title": "Appearance & Accent",
+    "settings.theme_desc": "Accent palette, motion effects, and eye comfort.",
 
     "settings.accent_palette": "Primary Accent Palette",
     "settings.night_shift": "Night Shift",
     "settings.night_shift_desc": "Warm eye-comfort filter",
-    "settings.glassmorphism": "Glassmorphism",
-    "settings.glassmorphism_desc": "Frosted glass blur effect",
     "settings.reduce_motion": "Reduce Motion",
     "settings.reduce_motion_desc": "Disable decorative animations",
 
@@ -298,7 +284,8 @@ export const DICTIONARY = {
 
     // Compare Page
     "compare.title": "Side-by-Side Anime Comparison",
-    "compare.subtitle": "Select and compare two anime side-by-side to analyze differences in MyAnimeList scores, animation studios, total episodes, duration, unique genres, and synopses instantly.",
+    "compare.subtitle":
+      "Select and compare two anime side-by-side to analyze differences in MyAnimeList scores, animation studios, total episodes, duration, unique genres, and synopses instantly.",
     "compare.select_header": "Select 2 Anime to Compare",
     "compare.anime_a": "First Anime (A)",
     "compare.anime_b": "Second Anime (B)",

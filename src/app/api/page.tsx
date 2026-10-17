@@ -8,7 +8,8 @@ import { JSX } from "react";
 
 export const metadata: Metadata = {
   title: "Developer REST API & GraphQL · Kokunime Hub",
-  description: "Dokumentasi publik REST API & GraphQL Kokunime untuk bot Discord/Telegram, aplikasi mobile, dan automasi.",
+  description:
+    "Dokumentasi publik REST API & GraphQL Kokunime untuk bot Discord/Telegram, aplikasi mobile, dan automasi.",
   alternates: {
     canonical: `${SITE_URL}/api`,
   },
@@ -79,7 +80,8 @@ const ENDPOINTS: ApiEndpoint[] = [
     method: "GET",
     path: "/api/anime/{slug}",
     category: "Detail",
-    description: "Mengambil metadata detail lengkap anime (judul, poster, sinopsis, produser, skor, trailer, download).",
+    description:
+      "Mengambil metadata detail lengkap anime (judul, poster, sinopsis, produser, skor, trailer, download).",
     sampleUrl: "/api/anime/naruto-batch-sub-indo",
     defaultParam: { key: "slug", value: "naruto-batch-sub-indo", placeholder: "slug anime..." },
     paramsDescription: "slug: string identifier",
@@ -139,7 +141,7 @@ const ApiDocsPage = (): JSX.Element => (
                 <span className="h-2 w-2 rounded-full bg-accent animate-pulse" />
                 Developer Hub
               </span>
-              <span className="rounded-full bg-surface-muted px-2.5 py-0.5 font-mono text-xs font-bold text-ink-muted">
+              <span className="rounded-sm border border-border bg-surface-muted px-2.5 py-0.5 font-mono text-xs font-bold text-ink-muted">
                 Public API v1.0
               </span>
             </div>
@@ -147,7 +149,8 @@ const ApiDocsPage = (): JSX.Element => (
               Kokunime Public REST API
             </h1>
             <p className="text-xs sm:text-sm text-ink-muted max-w-2xl">
-              Gunakan REST API publik Kokunime secara gratis untuk integrasi aplikasi mobile, bot Discord/Telegram, atau workflow automasi Anda.
+              Gunakan REST API publik Kokunime secara gratis untuk integrasi aplikasi mobile, bot Discord/Telegram, atau
+              workflow automasi Anda.
             </p>
           </div>
 
@@ -156,13 +159,13 @@ const ApiDocsPage = (): JSX.Element => (
               href="/api/openapi.json"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 rounded-full bg-accent px-4 py-2 font-mono text-xs font-bold text-(--accent-ink) shadow-md transition-transform hover:scale-[1.02] active:scale-95"
+              className="inline-flex items-center gap-1.5 rounded-sm border-2 border-border bg-accent px-4 py-2 font-mono text-xs font-bold text-(--accent-ink) shadow-[2px_2px_0_0_var(--border)] transition-all hover:-translate-y-0.5 active:translate-y-0 active:shadow-none"
             >
               <span>📜 OpenAPI 3.1 Spec ↗</span>
             </a>
             <Link
               href="/api/graphql"
-              className="inline-flex items-center gap-1.5 rounded-full border border-border bg-surface px-4 py-2 font-mono text-xs font-bold text-ink hover:border-accent hover:text-accent transition-colors"
+              className="inline-flex items-center gap-1.5 rounded-sm border-2 border-border bg-surface px-4 py-2 font-mono text-xs font-bold text-ink shadow-[2px_2px_0_0_var(--border)] hover:-translate-y-0.5 hover:text-ink transition-all active:translate-y-0 active:shadow-none"
             >
               <span>⚡ GraphQL Playground</span>
             </Link>
@@ -174,11 +177,22 @@ const ApiDocsPage = (): JSX.Element => (
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {[
           { title: "Zero Auth Required", desc: "Akses instan tanpa perlu API key atau registrasi akun.", icon: "🔓" },
-          { title: "CORS Enabled", desc: "Mendukung Access-Control-Allow-Origin: * untuk frontend web klien.", icon: "🌐" },
-          { title: "In-Memory & Edge Cache", desc: "Header Stale-While-Revalidate untuk latensi sub-15ms.", icon: "⚡" },
+          {
+            title: "CORS Enabled",
+            desc: "Mendukung Access-Control-Allow-Origin: * untuk frontend web klien.",
+            icon: "🌐",
+          },
+          {
+            title: "In-Memory & Edge Cache",
+            desc: "Header Stale-While-Revalidate untuk latensi sub-15ms.",
+            icon: "⚡",
+          },
           { title: "Multi-Format Output", desc: "Tersedia format JSON, RSS XML, JSON Feed, dan OpenAPI.", icon: "📡" },
         ].map((f, i) => (
-          <div key={i} className="p-4 rounded-2xl border border-border bg-surface-solid space-y-1">
+          <div
+            key={i}
+            className="p-4 rounded-sm border-2 border-border bg-surface-solid space-y-1 shadow-[2px_2px_0_0_var(--border)]"
+          >
             <span className="text-xl">{f.icon}</span>
             <h3 className="font-display text-xs font-bold text-ink">{f.title}</h3>
             <p className="text-[11px] text-ink-muted leading-snug">{f.desc}</p>
@@ -188,8 +202,10 @@ const ApiDocsPage = (): JSX.Element => (
 
       {/* Endpoints Explorer */}
       <div className="space-y-6">
-        <div className="flex items-center gap-2 border-b border-border pb-3">
-          <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-accent/15 text-sm">📡</span>
+        <div className="flex items-center gap-2 border-b-2 border-border pb-3">
+          <span className="flex h-7 w-7 items-center justify-center rounded-sm border-2 border-border bg-nb-pink text-sm text-nb-ink">
+            📡
+          </span>
           <h2 className="font-display text-lg font-bold text-ink">Daftar Endpoint API & Live Tester</h2>
         </div>
 

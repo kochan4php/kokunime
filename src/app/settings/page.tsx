@@ -6,7 +6,8 @@ import { JSX } from "react";
 
 export const metadata: Metadata = {
   title: "Pengaturan & Kustomisasi · Kokunime",
-  description: "Atur tema, mode tampilan, warna aksen, font, mode baca sinopsis, dan kelola data penyimpanan lokal Anda.",
+  description:
+    "Atur tema, mode tampilan, warna aksen, font, mode baca sinopsis, dan kelola data penyimpanan lokal Anda.",
   alternates: { canonical: "/settings" },
   openGraph: {
     title: "Pengaturan & Kustomisasi · Kokunime",

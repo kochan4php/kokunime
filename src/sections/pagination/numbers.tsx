@@ -12,7 +12,7 @@ interface PageNumbersProps {
 }
 
 const navButton =
-  "flex h-10 w-10 items-center justify-center rounded-full text-ink-muted transition-all duration-300 hover:bg-surface-muted hover:text-accent active:scale-95";
+  "flex h-11 w-11 items-center justify-center rounded-sm border-2 border-border bg-surface text-ink shadow-[2px_2px_0_0_var(--border)] transition-all duration-150 hover:-translate-y-0.5 hover:shadow-[4px_4px_0_0_var(--border)] active:translate-y-0 active:shadow-none";
 
 const PageNumbers = ({ current, total, prevHref, nextHref, basePath }: PageNumbersProps): JSX.Element => (
   <div className="hidden items-center gap-1.5 md:flex">
@@ -27,7 +27,11 @@ const PageNumbers = ({ current, total, prevHref, nextHref, basePath }: PageNumbe
     )}
     {getPages(current, total).map((page, index) =>
       page === "…" ? (
-        <span key={`ellipsis-${index}`} aria-hidden className="flex h-10 items-center px-1 font-mono text-sm text-ink-muted">
+        <span
+          key={`ellipsis-${index}`}
+          aria-hidden
+          className="flex h-11 items-center px-1 font-mono text-sm text-ink-muted"
+        >
           …
         </span>
       ) : (
@@ -38,8 +42,8 @@ const PageNumbers = ({ current, total, prevHref, nextHref, basePath }: PageNumbe
           aria-current={page === current ? "page" : undefined}
           className={
             page === current
-              ? "flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-accent to-accent-2 text-sm font-bold text-(--accent-ink) shadow-xs transition-transform duration-300 active:scale-95"
-              : "glass flex h-10 w-10 items-center justify-center rounded-full text-sm font-semibold text-ink transition-all duration-300 hover:text-accent active:scale-95"
+              ? "flex h-11 w-11 items-center justify-center rounded-sm border-2 border-border bg-accent text-sm font-black text-(--accent-ink) shadow-[2px_2px_0_0_var(--border)] transition-transform duration-150"
+              : "glass flex h-11 w-11 items-center justify-center rounded-sm text-sm font-semibold text-ink shadow-[2px_2px_0_0_var(--border)] transition-all duration-150 hover:-translate-y-0.5 hover:shadow-[4px_4px_0_0_var(--border)] active:translate-y-0 active:shadow-none"
           }
         >
           {page}

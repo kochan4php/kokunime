@@ -17,17 +17,10 @@ interface DetailHeroProps {
 
 const DetailHero = ({ anime, slug }: DetailHeroProps): JSX.Element => (
   <div className="relative overflow-hidden sm:overflow-visible">
-    {anime.image && (
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0 sm:-inset-8 -z-10 rounded-[2.5rem] opacity-25 dark:opacity-20 blur-3xl transition-opacity duration-1000"
-        style={{
-          backgroundImage: `url(${anime.image})`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-        }}
-      />
-    )}
+    <div
+      aria-hidden="true"
+      className="pointer-events-none absolute inset-0 -z-10 hidden translate-x-3 translate-y-3 rounded-sm border-2 border-border bg-nb-pink sm:block"
+    />
     <div className="card-shell">
       <div className="card-core grid md:grid-cols-[320px_1fr]">
         <div className="relative aspect-[3/4] max-h-[480px] sm:max-h-[560px] md:max-h-none md:aspect-auto md:min-h-full">
@@ -42,15 +35,14 @@ const DetailHero = ({ anime, slug }: DetailHeroProps): JSX.Element => (
             />
           )}
           <VerticalJapaneseTitle japanese={anime.japanese} />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
           {anime.score && (
             <span
-              className={`absolute bottom-4 left-4 flex items-center gap-1 rounded-full px-3 py-1 font-mono text-xs font-bold backdrop-blur-sm ${
+              className={`absolute bottom-4 left-4 flex items-center gap-1 rounded-sm border-2 border-border px-3 py-1 font-mono text-xs font-bold shadow-[2px_2px_0_0_var(--border)] ${
                 parseFloat(anime.score) >= 8.0
-                  ? "bg-amber-400 text-black font-bold"
+                  ? "bg-nb-yellow text-nb-ink"
                   : parseFloat(anime.score) >= 7.0
-                    ? "bg-emerald-500 text-white"
-                    : "bg-black/70 text-white"
+                    ? "bg-nb-lime text-nb-ink"
+                    : "bg-nb-ink text-nb-cream"
               }`}
             >
               ⭐ Skor {anime.score}
@@ -92,44 +84,38 @@ const DetailHero = ({ anime, slug }: DetailHeroProps): JSX.Element => (
             <div className="mt-3 flex flex-wrap items-center gap-2">
               {anime.status && (
                 <span
-                  className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 font-mono text-[11px] font-semibold ${
-                    /complete/i.test(anime.status)
-                      ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20"
-                      : "bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20"
+                  className={`inline-flex items-center gap-1.5 rounded-sm border-2 border-border px-2.5 py-0.5 font-mono text-[11px] font-bold shadow-[2px_2px_0_0_var(--border)] ${
+                    /complete/i.test(anime.status) ? "bg-nb-teal text-nb-ink" : "bg-nb-lime text-nb-ink"
                   }`}
                 >
                   {/ongoing/i.test(anime.status) ? (
                     <span className="relative flex h-2 w-2">
-                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                      <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-nb-ink opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-2 w-2 bg-nb-ink"></span>
                     </span>
                   ) : (
-                    <span
-                      className={`h-1.5 w-1.5 rounded-full ${
-                        /complete/i.test(anime.status) ? "bg-emerald-500" : "bg-amber-500"
-                      }`}
-                    />
+                    <span className="h-1.5 w-1.5 rounded-full bg-nb-ink" />
                   )}
                   {anime.status}
                 </span>
               )}
               {anime.rating && (
-                <span className="rounded-full border border-amber-500/30 bg-amber-500/10 px-2.5 py-0.5 font-mono text-[11px] font-semibold text-amber-500">
+                <span className="rounded-sm border-2 border-border bg-surface px-2.5 py-0.5 font-mono text-[11px] font-semibold text-ink shadow-[2px_2px_0_0_var(--border)]">
                   🛡️ {anime.rating}
                 </span>
               )}
               {anime.type && (
-                <span className="rounded-full border border-border bg-surface px-2.5 py-0.5 font-mono text-[11px] font-medium text-ink-muted">
+                <span className="rounded-sm border-2 border-border bg-surface px-2.5 py-0.5 font-mono text-[11px] font-medium text-ink-muted shadow-[2px_2px_0_0_var(--border)]">
                   {anime.type}
                 </span>
               )}
               {anime.total_episode && (
-                <span className="rounded-full border border-border bg-surface px-2.5 py-0.5 font-mono text-[11px] font-medium text-ink-muted">
+                <span className="rounded-sm border-2 border-border bg-surface px-2.5 py-0.5 font-mono text-[11px] font-medium text-ink-muted shadow-[2px_2px_0_0_var(--border)]">
                   {anime.total_episode}
                 </span>
               )}
               {anime.duration && (
-                <span className="rounded-full border border-border bg-surface px-2.5 py-0.5 font-mono text-[11px] font-medium text-ink-muted">
+                <span className="rounded-sm border-2 border-border bg-surface px-2.5 py-0.5 font-mono text-[11px] font-medium text-ink-muted shadow-[2px_2px_0_0_var(--border)]">
                   {anime.duration}
                 </span>
               )}
@@ -140,7 +126,7 @@ const DetailHero = ({ anime, slug }: DetailHeroProps): JSX.Element => (
                     target="_blank"
                     rel="noopener noreferrer"
                     title={`Cari ${anime.title} di MyAnimeList`}
-                    className="inline-flex items-center gap-1 rounded-full border border-blue-500/30 bg-blue-500/10 px-2 py-0.5 font-mono text-[11px] font-bold text-blue-400 hover:bg-blue-500 hover:text-white transition-all duration-200 active:scale-95"
+                    className="inline-flex items-center gap-1 rounded-sm border-2 border-border bg-surface px-2 py-0.5 font-mono text-[11px] font-bold text-ink shadow-[2px_2px_0_0_var(--border)] transition-all duration-150 hover:-translate-y-0.5 hover:bg-nb-purple active:translate-y-0 active:shadow-none"
                   >
                     <span>MAL ↗</span>
                   </a>
@@ -149,7 +135,7 @@ const DetailHero = ({ anime, slug }: DetailHeroProps): JSX.Element => (
                     target="_blank"
                     rel="noopener noreferrer"
                     title={`Cari ${anime.title} di AniList`}
-                    className="inline-flex items-center gap-1 rounded-full border border-cyan-500/30 bg-cyan-500/10 px-2 py-0.5 font-mono text-[11px] font-bold text-cyan-400 hover:bg-cyan-500 hover:text-white transition-all duration-200 active:scale-95"
+                    className="inline-flex items-center gap-1 rounded-sm border-2 border-border bg-surface px-2 py-0.5 font-mono text-[11px] font-bold text-ink shadow-[2px_2px_0_0_var(--border)] transition-all duration-150 hover:-translate-y-0.5 hover:bg-nb-teal active:translate-y-0 active:shadow-none"
                   >
                     <span>AniList ↗</span>
                   </a>

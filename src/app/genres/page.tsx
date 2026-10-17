@@ -11,7 +11,8 @@ export async function generateMetadata(): Promise<Metadata> {
 
   return {
     title: "Daftar Genre Anime Lengkap",
-    description: "Jelajahi dan temukan ribuan anime subtitle Indonesia berdasarkan genre dan tema favorit Anda di Kokunime.",
+    description:
+      "Jelajahi dan temukan ribuan anime subtitle Indonesia berdasarkan genre dan tema favorit Anda di Kokunime.",
     alternates: { canonical, languages: { "id-ID": canonical } },
     openGraph: {
       title: "Daftar Genre Anime Lengkap · Kokunime",
@@ -30,9 +31,7 @@ const GenresPage = async (): Promise<JSX.Element> => {
         id="genres-breadcrumb-jsonld"
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: safeJsonLd(
-            buildSubpageBreadcrumbJsonLd([{ name: "Daftar Genre", url: "/genres" }]),
-          ),
+          __html: safeJsonLd(buildSubpageBreadcrumbJsonLd([{ name: "Daftar Genre", url: "/genres" }])),
         }}
         suppressHydrationWarning
       />
@@ -46,7 +45,8 @@ const GenresPage = async (): Promise<JSX.Element> => {
             Daftar Genre Anime
           </h1>
           <p className="mt-2 text-sm text-ink-muted max-w-2xl">
-            Temukan tontonan anime favorit Anda berdasarkan kategori, mulai dari aksi menegangkan, petualangan dunia lain (*Isekai*), romansa manis, hingga komedi.
+            Temukan tontonan anime favorit Anda berdasarkan kategori, mulai dari aksi menegangkan, petualangan dunia
+            lain (*Isekai*), romansa manis, hingga komedi.
           </p>
         </div>
 

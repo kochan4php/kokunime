@@ -14,10 +14,10 @@ const TaxonomyCard = ({ href, title, meta, dot = false }: TaxonomyCardProps): JS
       {dot && (
         <span className="h-1.5 w-1.5 rounded-full bg-accent transition-transform duration-300 group-hover:scale-150" />
       )}
-      <span className="line-clamp-2 text-xs sm:text-sm font-semibold text-ink transition-colors duration-200 group-hover:text-accent break-words">
+      <span className="line-clamp-2 text-xs sm:text-sm font-semibold group-hover:underline decoration-2 underline-offset-2 break-words">
         {title}
       </span>
-      {meta && <span className="font-mono text-[10px] uppercase tracking-wider text-ink-muted">{meta}</span>}
+      {meta && <span className="font-mono text-[10px] uppercase tracking-wider opacity-70">{meta}</span>}
     </div>
   </Link>
 );

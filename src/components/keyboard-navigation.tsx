@@ -103,16 +103,16 @@ const KeyboardNavigation = (): JSX.Element | null => {
       role="dialog"
       aria-modal="true"
       aria-labelledby="shortcuts-title"
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4"
       onClick={() => setShowHelp(false)}
     >
       <div
-        className="w-full max-w-md rounded-2xl border border-border bg-surface-solid p-6 shadow-2xl"
+        className="w-full max-w-md rounded-sm border-2 border-border bg-surface-solid p-6 shadow-[6px_6px_0_0_var(--border)]"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-center justify-between border-b border-border pb-4">
+        <div className="flex items-center justify-between border-b-2 border-border pb-4">
           <div className="flex items-center gap-2">
-            <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-accent/15 font-mono text-sm font-bold text-accent">
+            <span className="flex h-7 w-7 items-center justify-center rounded-sm border-2 border-border bg-nb-yellow font-mono text-sm font-bold text-[#0a0a0a]">
               ⌨
             </span>
             <h2 id="shortcuts-title" className="font-display text-lg font-bold text-ink">
@@ -129,11 +129,11 @@ const KeyboardNavigation = (): JSX.Element | null => {
           </button>
         </div>
 
-        <div className="mt-4 divide-y divide-border/60">
+        <div className="mt-4 divide-y-2 divide-border">
           {SHORTCUTS.map((sc) => (
             <div key={sc.key} className="flex items-center justify-between py-2.5">
               <span className="text-xs text-ink-muted">{sc.desc}</span>
-              <kbd className="rounded-md border border-border bg-surface px-2 py-1 font-mono text-[11px] font-semibold text-ink shadow-xs">
+              <kbd className="rounded-sm border-2 border-border bg-surface px-2 py-1 font-mono text-[11px] font-semibold text-ink shadow-[2px_2px_0_0_var(--border)]">
                 {sc.key}
               </kbd>
             </div>
@@ -142,7 +142,7 @@ const KeyboardNavigation = (): JSX.Element | null => {
 
         <div className="mt-5 text-center">
           <span className="font-mono text-[11px] text-ink-muted">
-            Tekan <kbd className="rounded border border-border px-1 py-0.5 text-[10px]">Esc</kbd> untuk menutup
+            Tekan <kbd className="rounded-sm border-2 border-border px-1 py-0.5 text-[10px]">Esc</kbd> untuk menutup
           </span>
         </div>
       </div>

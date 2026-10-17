@@ -19,7 +19,9 @@ const HomeHistoryStrip = (): JSX.Element | null => {
           <div className="mb-4 flex items-center justify-between">
             <div className="flex items-center gap-2">
               <span className="flex h-2 w-2 rounded-full bg-accent animate-pulse" />
-              <h3 className="font-display text-sm font-bold tracking-tight text-ink md:text-base">Terakhir Dilihat</h3>
+              <h3 className="font-display text-sm font-bold uppercase tracking-tight text-ink md:text-base">
+                Terakhir Dilihat
+              </h3>
             </div>
             <button
               type="button"
@@ -37,7 +39,7 @@ const HomeHistoryStrip = (): JSX.Element | null => {
                 href={`/anime/${item.slug}`}
                 className="group flex w-32 shrink-0 snap-start flex-col gap-2 sm:w-36"
               >
-                <div className="relative aspect-[3/4] w-full overflow-hidden rounded-xl border border-border bg-surface-muted">
+                <div className="relative aspect-[3/4] w-full overflow-hidden rounded-sm border-2 border-border bg-surface-muted">
                   {item.image ? (
                     <AnimeImage
                       fill
@@ -47,9 +49,8 @@ const HomeHistoryStrip = (): JSX.Element | null => {
                       className="transition-transform duration-300 group-hover:scale-105"
                     />
                   ) : null}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
                 </div>
-                <h4 className="line-clamp-2 text-xs font-semibold leading-tight text-ink transition-colors group-hover:text-accent">
+                <h4 className="line-clamp-2 text-xs font-semibold leading-tight text-ink transition-colors group-hover:underline decoration-2 underline-offset-2">
                   {item.title}
                 </h4>
               </Link>

@@ -7,14 +7,7 @@
   },
   "files": {
     "ignoreUnknown": true,
-    "ignore": [
-      ".next/**",
-      "node_modules/**",
-      "dist/**",
-      "coverage/**",
-      "pnpm-lock.yaml",
-      "public/**"
-    ]
+    "ignore": [".next/**", "node_modules/**", "dist/**", "coverage/**", "pnpm-lock.yaml", "public/**"]
   },
   "formatter": {
     "enabled": true,

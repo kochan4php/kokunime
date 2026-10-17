@@ -29,12 +29,12 @@ const PageJump = ({ current, total, basePath }: { current: number; total: number
         value={value}
         onChange={(e) => setValue(e.target.value)}
         aria-label={`Lompat ke halaman (1-${total})`}
-        className="h-8 w-14 rounded-full border border-border bg-surface px-2 text-center font-mono text-xs text-ink outline-none transition-all focus:border-accent hover:border-accent/60"
+        className="h-9 w-14 rounded-sm border-2 border-border bg-surface px-2 text-center font-mono text-xs text-ink shadow-[2px_2px_0_0_var(--border)] outline-none transition-all focus:border-accent"
       />
       <button
         type="submit"
         aria-label="Lompat ke halaman"
-        className="h-8 rounded-full border border-border bg-surface px-2.5 font-mono text-xs text-ink-muted transition-all hover:border-accent hover:text-ink active:scale-95"
+        className="h-9 rounded-sm border-2 border-border bg-nb-yellow px-2.5 font-mono text-xs font-bold text-nb-ink shadow-[2px_2px_0_0_var(--border)] transition-all hover:-translate-y-0.5 active:translate-y-0 active:shadow-none"
       >
         Go
       </button>

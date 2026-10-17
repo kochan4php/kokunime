@@ -36,44 +36,51 @@ export const WatchOrderTimeline = ({ anime }: WatchOrderTimelineProps): JSX.Elem
   if (!franchiseInfo) return null;
 
   return (
-    <div id="watch-order" className="mt-12 rounded-3xl border border-border bg-surface p-4 sm:p-6 shadow-sm">
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border/70 pb-4">
+    <div
+      id="watch-order"
+      className="mt-12 rounded-sm border-2 border-border bg-surface p-4 sm:p-6 shadow-[2px_2px_0_0_var(--border)]"
+    >
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b-2 border-border pb-4">
         <div className="flex items-center gap-2">
-          <span className="flex h-7 w-7 items-center justify-center rounded-xl bg-accent/15 text-sm font-bold text-accent">
+          <span className="flex h-7 w-7 items-center justify-center rounded-sm border-2 border-border bg-nb-purple text-sm font-bold text-nb-ink">
             ⏳
           </span>
           <h3 className="font-display text-lg font-bold text-ink">Urutan Menonton (Watch Order)</h3>
         </div>
         <Link
           href={`/search/${encodeURIComponent(franchiseInfo.baseName)}`}
-          className="font-mono text-xs font-semibold text-accent hover:underline"
+          className="font-mono text-xs font-bold text-accent hover:underline"
         >
           Cari Semua Seri {franchiseInfo.baseName} →
         </Link>
       </div>
 
       <div className="mt-5 grid gap-3 sm:grid-cols-3">
-        <div className="relative rounded-2xl border border-border/70 bg-surface-solid p-4 min-w-0">
+        <div className="relative rounded-sm border-2 border-border bg-surface-solid p-4 min-w-0 shadow-[2px_2px_0_0_var(--border)]">
           <div className="flex items-center justify-between text-xs font-mono text-ink-muted">
-            <span className="rounded-full bg-surface px-2 py-0.5 font-bold">1. Season 1 / Prekuel</span>
+            <span className="rounded-sm border border-border bg-surface px-2 py-0.5 font-bold">
+              1. Season 1 / Prekuel
+            </span>
             <span>Utama</span>
           </div>
-          <p className="mt-2 font-display text-sm font-bold text-ink line-clamp-1 break-words">{franchiseInfo.baseName}</p>
+          <p className="mt-2 font-display text-sm font-bold text-ink line-clamp-1 break-words">
+            {franchiseInfo.baseName}
+          </p>
           <span className="mt-1 block text-xs text-ink-muted">Mulai tonton dari awal cerita.</span>
         </div>
 
-        <div className="relative rounded-2xl border-2 border-accent bg-accent/5 p-4 shadow-md min-w-0">
-          <div className="flex items-center justify-between text-xs font-mono text-accent">
-            <span className="rounded-full bg-accent/20 px-2 py-0.5 font-bold">2. Halaman Ini</span>
+        <div className="relative rounded-sm border-2 border-border bg-nb-yellow p-4 shadow-[2px_2px_0_0_var(--border)] min-w-0">
+          <div className="flex items-center justify-between text-xs font-mono text-nb-ink">
+            <span className="rounded-sm border border-nb-ink/40 bg-white/50 px-2 py-0.5 font-bold">2. Halaman Ini</span>
             <span>⭐ Sedang Dibuka</span>
           </div>
-          <p className="mt-2 font-display text-sm font-bold text-ink line-clamp-1 break-words">{title}</p>
-          <span className="mt-1 block text-xs text-ink-muted">{franchiseInfo.currentSeason}</span>
+          <p className="mt-2 font-display text-sm font-bold text-nb-ink line-clamp-1 break-words">{title}</p>
+          <span className="mt-1 block text-xs text-nb-ink/70">{franchiseInfo.currentSeason}</span>
         </div>
 
-        <div className="relative rounded-2xl border border-border/70 bg-surface-solid p-4 min-w-0">
+        <div className="relative rounded-sm border-2 border-border bg-surface-solid p-4 min-w-0 shadow-[2px_2px_0_0_var(--border)]">
           <div className="flex items-center justify-between text-xs font-mono text-ink-muted">
-            <span className="rounded-full bg-surface px-2 py-0.5 font-bold">3. Sekuel / Movie</span>
+            <span className="rounded-sm border border-border bg-surface px-2 py-0.5 font-bold">3. Sekuel / Movie</span>
             <span>Lanjutan</span>
           </div>
           <p className="mt-2 font-display text-sm font-bold text-ink line-clamp-1 break-words">Kelanjutan Cerita</p>

@@ -29,7 +29,7 @@ export function VirtualizedGrid<T>({
           <button
             type="button"
             onClick={() => setExpandedCount((prev) => prev + chunkSize)}
-            className="rounded-full border border-border bg-surface px-5 py-2 font-display text-xs font-bold text-ink hover:border-accent hover:text-accent transition-all active:scale-95 cursor-pointer"
+            className="rounded-sm border-2 border-border bg-surface px-5 py-2 font-display text-xs font-bold text-ink shadow-[2px_2px_0_0_var(--border)] hover:-translate-y-0.5 hover:text-accent transition-all active:translate-y-0 active:shadow-none cursor-pointer"
           >
             Muat Lebih Banyak ({items.length - visibleCount} anime tersisa) ↓
           </button>

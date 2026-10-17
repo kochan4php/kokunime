@@ -3,7 +3,6 @@
 import { useSyncExternalStore } from "react";
 
 export type AppLanguage = "id" | "en";
-export type ThemeMode = "system" | "light" | "dark" | "oled";
 export type AccentColor = "orange" | "emerald" | "violet" | "cyan" | "rose" | "amber";
 export type FontFamily = "sans" | "mono" | "serif";
 export type FontSize = "compact" | "normal" | "large";
@@ -13,13 +12,11 @@ export type DownloadLayoutMode = "cards" | "matrix";
 
 export interface AppSettings {
   language: AppLanguage;
-  theme: ThemeMode;
   accent: AccentColor;
   font: FontFamily;
   fontSize: FontSize;
   nightShift: boolean;
   reduceMotion: boolean;
-  glassEffects: boolean;
   readingMode: ReadingMode;
   defaultView: DefaultViewMode;
   downloadLayout: DownloadLayoutMode;
@@ -29,13 +26,11 @@ export interface AppSettings {
 
 export const DEFAULT_SETTINGS: AppSettings = {
   language: "id",
-  theme: "system",
   accent: "orange",
   font: "mono",
   fontSize: "normal",
   nightShift: false,
   reduceMotion: true,
-  glassEffects: true,
   readingMode: "none",
   defaultView: "grid",
   downloadLayout: "cards",
@@ -65,12 +60,10 @@ export const getStoredSettings = (): AppSettings => {
     if (!raw) {
       const legacyLang = localStorage.getItem("kokunime_lang") as AppLanguage;
       const legacyAccent = localStorage.getItem("kokunime_accent") as AccentColor;
-      const legacyContrast = localStorage.getItem("kokunime_contrast");
       const legacyFont = localStorage.getItem("kokunime_font") as FontFamily;
       const legacyNightShift = localStorage.getItem("kokunime_night_shift") === "true";
-      const legacyTheme = localStorage.getItem("theme");
 
-      const legacyFingerprint = `legacy:${legacyLang}_${legacyAccent}_${legacyContrast}_${legacyFont}_${legacyNightShift}_${legacyTheme}`;
+      const legacyFingerprint = `legacy:${legacyLang}_${legacyAccent}_${legacyFont}_${legacyNightShift}`;
       if (cachedSettingsRaw === legacyFingerprint) {
         return cachedSettingsObject;
       }
@@ -80,7 +73,6 @@ export const getStoredSettings = (): AppSettings => {
         ...DEFAULT_SETTINGS,
         language: legacyLang === "en" ? "en" : "id",
         accent: legacyAccent || DEFAULT_SETTINGS.accent,
-        theme: legacyContrast === "oled" ? "oled" : legacyTheme === "dark" ? "dark" : legacyTheme === "light" ? "light" : "system",
         font: legacyFont || DEFAULT_SETTINGS.font,
         nightShift: legacyNightShift,
       };
@@ -109,36 +101,7 @@ export const applySettingsToDom = (settings: AppSettings): void => {
   localStorage.setItem("kokunime_lang", lang);
   window.dispatchEvent(new CustomEvent("kokunime:lang_change", { detail: { language: lang } }));
 
-  // 1. Theme & Contrast
-  if (settings.theme === "oled") {
-    root.classList.add("dark");
-    root.setAttribute("data-contrast", "oled");
-    localStorage.setItem("theme", "dark");
-    localStorage.setItem("kokunime_contrast", "oled");
-  } else if (settings.theme === "dark") {
-    root.classList.add("dark");
-    root.removeAttribute("data-contrast");
-    localStorage.setItem("theme", "dark");
-    localStorage.removeItem("kokunime_contrast");
-  } else if (settings.theme === "light") {
-    root.classList.remove("dark");
-    root.removeAttribute("data-contrast");
-    localStorage.setItem("theme", "light");
-    localStorage.removeItem("kokunime_contrast");
-  } else {
-    // System
-    root.removeAttribute("data-contrast");
-    localStorage.removeItem("kokunime_contrast");
-    localStorage.removeItem("theme");
-    const isSysDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-    if (isSysDark) {
-      root.classList.add("dark");
-    } else {
-      root.classList.remove("dark");
-    }
-  }
-
-  // 2. Accent
+  // 1. Accent
   if (settings.accent === "orange") {
     root.removeAttribute("data-accent");
     localStorage.removeItem("kokunime_accent");
@@ -147,7 +110,7 @@ export const applySettingsToDom = (settings: AppSettings): void => {
     localStorage.setItem("kokunime_accent", settings.accent);
   }
 
-  // 3. Font
+  // 2. Font
   if (settings.font === "mono") {
     root.removeAttribute("data-font");
     localStorage.removeItem("kokunime_font");
@@ -156,14 +119,14 @@ export const applySettingsToDom = (settings: AppSettings): void => {
     localStorage.setItem("kokunime_font", settings.font);
   }
 
-  // 4. Font Size
+  // 3. Font Size
   if (settings.fontSize === "normal") {
     root.removeAttribute("data-font-size");
   } else {
     root.setAttribute("data-font-size", settings.fontSize);
   }
 
-  // 5. Night Shift
+  // 4. Night Shift
   if (settings.nightShift) {
     root.setAttribute("data-night-shift", "true");
     localStorage.setItem("kokunime_night_shift", "true");
@@ -172,21 +135,14 @@ export const applySettingsToDom = (settings: AppSettings): void => {
     localStorage.removeItem("kokunime_night_shift");
   }
 
-  // 6. Reduce Motion
+  // 5. Reduce Motion
   if (settings.reduceMotion) {
     root.setAttribute("data-reduce-motion", "true");
   } else {
     root.removeAttribute("data-reduce-motion");
   }
 
-  // 7. Glass Effects
-  if (!settings.glassEffects) {
-    root.setAttribute("data-glass", "false");
-  } else {
-    root.removeAttribute("data-glass");
-  }
-
-  // 8. Reading Mode
+  // 6. Reading Mode
   if (settings.readingMode === "none") {
     root.removeAttribute("data-reading-mode");
   } else {
@@ -251,9 +207,7 @@ export const calculateStorageBreakdown = (): StorageBreakdown => {
   const totalBytes = bookmarksBytes + historyBytes + searchHistoryBytes + settingsBytes;
 
   const formattedTotal =
-    totalBytes > 1024 * 1024
-      ? `${(totalBytes / (1024 * 1024)).toFixed(2)} MB`
-      : `${(totalBytes / 1024).toFixed(1)} KB`;
+    totalBytes > 1024 * 1024 ? `${(totalBytes / (1024 * 1024)).toFixed(2)} MB` : `${(totalBytes / 1024).toFixed(1)} KB`;
 
   return {
     bookmarksCount,
@@ -323,9 +277,5 @@ const subscribeSettings = (callback: () => void): (() => void) => {
 };
 
 export const useSettings = (): AppSettings => {
-  return useSyncExternalStore(
-    subscribeSettings,
-    getStoredSettings,
-    () => DEFAULT_SETTINGS
-  );
+  return useSyncExternalStore(subscribeSettings, getStoredSettings, () => DEFAULT_SETTINGS);
 };

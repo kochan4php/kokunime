@@ -73,10 +73,7 @@ const CommandPalette = (): JSX.Element => {
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       const target = e.target as HTMLElement;
-      const isInput =
-        target.tagName === "INPUT" ||
-        target.tagName === "TEXTAREA" ||
-        target.isContentEditable;
+      const isInput = target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.isContentEditable;
 
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") {
         e.preventDefault();
@@ -150,7 +147,7 @@ const CommandPalette = (): JSX.Element => {
         onClick={openPalette}
         aria-label={t("common.search")}
         title={`${t("common.search")} (Ctrl+K atau /)`}
-        className="flex h-10 w-10 items-center justify-center rounded-full border border-border bg-surface text-ink-muted transition-all duration-200 hover:border-accent hover:text-ink lg:hidden active:scale-95 cursor-pointer shrink-0"
+        className="flex h-11 w-11 items-center justify-center rounded-sm border-2 border-border bg-surface text-ink shadow-[2px_2px_0_0_var(--border)] transition-all duration-150 hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 active:shadow-none lg:hidden cursor-pointer shrink-0"
       >
         <SearchIcon />
       </button>
@@ -161,11 +158,11 @@ const CommandPalette = (): JSX.Element => {
         onClick={openPalette}
         aria-label={t("common.search")}
         title={`${t("common.search")} (Ctrl+K atau /)`}
-        className="hidden lg:flex items-center gap-2 rounded-full border border-accent/40 bg-surface px-3.5 py-2 text-sm text-ink-muted transition-all duration-200 hover:border-accent hover:text-ink hover:bg-surface-muted active:scale-95 cursor-pointer"
+        className="hidden lg:flex items-center gap-2 rounded-sm border-2 border-border bg-surface px-3.5 py-2 text-sm text-ink-muted shadow-[2px_2px_0_0_var(--border)] transition-all duration-150 hover:-translate-y-0.5 hover:shadow-[4px_4px_0_0_var(--border)] hover:text-ink active:translate-y-0 active:shadow-none cursor-pointer"
       >
         <SearchIcon />
         <span className="w-28 text-left text-xs xl:w-36 truncate">{t("nav.search_placeholder")}</span>
-        <kbd className="rounded border border-border bg-surface-solid px-1.5 py-0.5 font-mono text-[10px] text-ink-muted">
+        <kbd className="rounded-sm border border-border bg-surface-solid px-1.5 py-0.5 font-mono text-[10px] text-ink-muted">
           ⌘K
         </kbd>
       </button>
@@ -180,7 +177,7 @@ const CommandPalette = (): JSX.Element => {
         onClick={(e) => {
           if (e.target === dialogRef.current) closePalette();
         }}
-        className={`fixed inset-x-0 top-4 sm:top-[8%] mx-auto w-[94vw] sm:w-[90vw] max-w-xl max-h-[85vh] rounded-3xl border border-border bg-surface-solid/98 backdrop-blur-2xl p-0 text-ink shadow-2xl overflow-hidden backdrop:bg-black/60 backdrop:backdrop-blur-sm ${
+        className={`fixed inset-x-0 top-4 sm:top-[8%] mx-auto w-[94vw] sm:w-[90vw] max-w-xl max-h-[85vh] bg-surface-solid p-0 text-ink overflow-hidden ${
           isClosing ? "is-closing" : ""
         }`}
       >
@@ -188,7 +185,7 @@ const CommandPalette = (): JSX.Element => {
           {/* Search Bar Header */}
           <form
             onSubmit={handleFormSubmit}
-            className="relative flex items-center border-b border-border px-3.5 sm:px-4 py-3 bg-surface-solid/80"
+            className="relative flex items-center border-b-2 border-border px-3.5 sm:px-4 py-3 bg-surface-muted"
           >
             <span className="text-accent mr-2.5 sm:mr-3 shrink-0">
               <SearchIcon />
@@ -204,7 +201,9 @@ const CommandPalette = (): JSX.Element => {
                   setIsLoading(false);
                 }
               }}
-              placeholder={language === "en" ? "Type anime title and press Enter..." : "Ketik judul anime, lalu tekan Enter..."}
+              placeholder={
+                language === "en" ? "Type anime title and press Enter..." : "Ketik judul anime, lalu tekan Enter..."
+              }
               className="flex-1 bg-transparent text-base sm:text-sm text-ink outline-none placeholder:text-ink-muted min-w-0"
             />
             {isLoading && (
@@ -219,7 +218,7 @@ const CommandPalette = (): JSX.Element => {
                   setIsLoading(false);
                   inputRef.current?.focus();
                 }}
-                className="rounded-full p-1 text-ink-muted hover:text-ink hover:bg-surface-muted transition-colors mr-1 cursor-pointer"
+                className="rounded-sm p-1 text-ink-muted hover:text-ink hover:bg-surface-muted transition-colors mr-1 cursor-pointer"
                 title={t("common.clear")}
               >
                 ✕
@@ -228,7 +227,7 @@ const CommandPalette = (): JSX.Element => {
             <button
               type="button"
               onClick={closePalette}
-              className="rounded-lg border border-border bg-surface px-2 py-1 font-mono text-[10px] text-ink-muted hover:text-ink hover:border-accent transition-all cursor-pointer"
+              className="rounded-sm border-2 border-border bg-surface px-2 py-1 font-mono text-[10px] text-ink-muted hover:text-ink shadow-[2px_2px_0_0_var(--border)] transition-all cursor-pointer"
               title={t("common.close")}
             >
               Esc
@@ -241,7 +240,9 @@ const CommandPalette = (): JSX.Element => {
             {query.trim().length >= 2 && (
               <div role="region" aria-live="polite" aria-label={t("common.search")}>
                 <p className="font-mono text-[10px] uppercase tracking-wider text-ink-muted mb-2">
-                  {language === "en" ? `Instant Results (${liveResults.length})` : `Hasil Instan (${liveResults.length})`}
+                  {language === "en"
+                    ? `Instant Results (${liveResults.length})`
+                    : `Hasil Instan (${liveResults.length})`}
                 </p>
                 {liveResults.length > 0 ? (
                   <div className="space-y-1.5">
@@ -255,16 +256,20 @@ const CommandPalette = (): JSX.Element => {
                             saveRecentSearch(item.title);
                             closePalette();
                           }}
-                          className="flex items-center gap-3 rounded-2xl border border-border bg-surface p-2.5 transition-all hover:border-accent hover:bg-accent/5 active:scale-[0.99]"
+                          className="flex items-center gap-3 rounded-sm border-2 border-border bg-surface p-2.5 transition-all hover:-translate-y-0.5 hover:shadow-[2px_2px_0_0_var(--border)] active:translate-y-0 active:shadow-none"
                         >
-                          <div className="relative h-12 w-9 shrink-0 overflow-hidden rounded-lg bg-surface-muted">
+                          <div className="relative h-12 w-9 shrink-0 overflow-hidden rounded-sm border border-border bg-surface-muted">
                             {item.link.image && <AnimeImage fill sizes="36px" src={item.link.image} alt={item.title} />}
                           </div>
                           <div className="min-w-0 flex-1">
                             <h4 className="line-clamp-1 text-xs sm:text-sm font-semibold text-ink">{item.title}</h4>
-                            <p className="line-clamp-1 font-mono text-[10px] sm:text-xs text-ink-muted mt-0.5">{item.release || "Subtitle Indonesia"}</p>
+                            <p className="line-clamp-1 font-mono text-[10px] sm:text-xs text-ink-muted mt-0.5">
+                              {item.release || "Subtitle Indonesia"}
+                            </p>
                           </div>
-                          <span className="font-mono text-xs text-accent font-bold shrink-0">{t("common.detail")} →</span>
+                          <span className="font-mono text-xs text-accent font-bold shrink-0">
+                            {t("common.detail")} →
+                          </span>
                         </Link>
                       );
                     })}
@@ -273,13 +278,20 @@ const CommandPalette = (): JSX.Element => {
                   <div className="py-4 text-center">
                     <p className="text-xs sm:text-sm text-ink-muted">
                       {language === "en" ? (
-                        <>No instant results for &ldquo;<span className="text-ink font-semibold">{query}</span>&rdquo;.</>
+                        <>
+                          No instant results for &ldquo;<span className="text-ink font-semibold">{query}</span>&rdquo;.
+                        </>
                       ) : (
-                        <>Tidak ditemukan hasil instan untuk &ldquo;<span className="text-ink font-semibold">{query}</span>&rdquo;.</>
+                        <>
+                          Tidak ditemukan hasil instan untuk &ldquo;
+                          <span className="text-ink font-semibold">{query}</span>&rdquo;.
+                        </>
                       )}
                     </p>
                     <p className="font-mono text-[11px] text-accent mt-1">
-                      {language === "en" ? "Press Enter to search entire database ↵" : "Tekan Enter untuk mencari di seluruh database ↵"}
+                      {language === "en"
+                        ? "Press Enter to search entire database ↵"
+                        : "Tekan Enter untuk mencari di seluruh database ↵"}
                     </p>
                   </div>
                 ) : null}
@@ -296,7 +308,7 @@ const CommandPalette = (): JSX.Element => {
                   <button
                     type="button"
                     onClick={clearHistory}
-                    className="font-mono text-[10px] text-ink-muted hover:text-rose-400 transition-colors cursor-pointer"
+                    className="font-mono text-[10px] text-ink-muted hover:text-nb-red transition-colors cursor-pointer"
                   >
                     {language === "en" ? "Clear History" : "Hapus Riwayat"}
                   </button>
@@ -307,7 +319,7 @@ const CommandPalette = (): JSX.Element => {
                       key={item}
                       type="button"
                       onClick={() => handleSearch(item)}
-                      className="rounded-full border border-border bg-surface px-3 py-1 text-xs text-ink transition-all hover:border-accent hover:text-accent active:scale-95 cursor-pointer"
+                      className="rounded-sm border-2 border-border bg-nb-yellow px-3 py-1 text-xs text-[#0a0a0a] font-semibold shadow-[2px_2px_0_0_var(--border)] transition-all hover:-translate-y-0.5 active:translate-y-0 active:shadow-none cursor-pointer"
                     >
                       {item}
                     </button>
@@ -335,7 +347,7 @@ const CommandPalette = (): JSX.Element => {
                   <Link
                     href="/settings"
                     onClick={closePalette}
-                    className="flex items-center justify-between rounded-xl border border-accent/40 bg-accent/10 px-3 py-2 text-xs font-mono text-accent transition-all hover:bg-accent hover:text-(--accent-ink)"
+                    className="flex items-center justify-between rounded-sm border-2 border-border bg-nb-pink px-3 py-2 text-xs font-mono font-semibold text-[#0a0a0a] shadow-[2px_2px_0_0_var(--border)] transition-all hover:-translate-y-0.5 active:translate-y-0 active:shadow-none"
                   >
                     <span>⚙️ {t("nav.settings")}</span>
                     <span className="text-[10px]">🎨</span>
@@ -343,7 +355,7 @@ const CommandPalette = (): JSX.Element => {
                   <Link
                     href="/api"
                     onClick={closePalette}
-                    className="flex items-center justify-between rounded-xl border border-border bg-surface px-3 py-2 text-xs font-mono text-ink-muted transition-all hover:border-accent hover:text-accent"
+                    className="flex items-center justify-between rounded-sm border-2 border-border bg-surface px-3 py-2 text-xs font-mono text-ink-muted shadow-[2px_2px_0_0_var(--border)] transition-all hover:-translate-y-0.5 hover:text-ink active:translate-y-0 active:shadow-none"
                   >
                     <span>⚡ {t("nav.api")} Docs</span>
                     <span className="text-[10px]">📖</span>
@@ -352,7 +364,7 @@ const CommandPalette = (): JSX.Element => {
                     href="/feed.xml"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center justify-between rounded-xl border border-border bg-surface px-3 py-2 text-xs font-mono text-ink-muted transition-all hover:border-accent hover:text-accent"
+                    className="flex items-center justify-between rounded-sm border-2 border-border bg-surface px-3 py-2 text-xs font-mono text-ink-muted shadow-[2px_2px_0_0_var(--border)] transition-all hover:-translate-y-0.5 hover:text-ink active:translate-y-0 active:shadow-none"
                   >
                     <span>GET /feed.xml</span>
                     <span className="text-[10px]">📡</span>
@@ -363,7 +375,7 @@ const CommandPalette = (): JSX.Element => {
           </div>
 
           {/* Footer Controls */}
-          <div className="flex items-center justify-between border-t border-border bg-surface-solid px-4 py-2 text-[11px] text-ink-muted font-mono">
+          <div className="flex items-center justify-between border-t-2 border-border bg-surface-muted px-4 py-2 text-[11px] text-ink-muted font-mono">
             <span>{language === "en" ? "↵ Enter to search all" : "↵ Enter untuk cari penuh"}</span>
             <span>Esc</span>
           </div>

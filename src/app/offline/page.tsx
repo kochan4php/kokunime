@@ -8,7 +8,7 @@ const OfflinePage = (): JSX.Element => (
   <MainLayout>
     <section className="container px-4 py-16 text-center md:py-24">
       <div className="mx-auto max-w-md">
-        <div className="mb-6 inline-flex h-16 w-16 items-center justify-center rounded-3xl bg-amber-500/10 text-amber-500">
+        <div className="mb-6 inline-flex h-16 w-16 items-center justify-center rounded-sm border-2 border-border bg-nb-orange text-nb-ink shadow-[4px_4px_0_0_var(--border)]">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"

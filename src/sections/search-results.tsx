@@ -64,7 +64,7 @@ const SearchResults = ({ anime }: SearchResultsProps): JSX.Element => {
 
   return (
     <div className="mt-8">
-      <div className="mb-6 flex flex-col gap-4 border-b border-border pb-4">
+      <div className="mb-6 flex flex-col gap-4 border-b-2 border-border pb-4">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <span className="font-mono text-xs text-ink-muted">
             Ditemukan <strong className="text-ink">{filteredAnime.length}</strong> anime
@@ -78,10 +78,10 @@ const SearchResults = ({ anime }: SearchResultsProps): JSX.Element => {
                 <button
                   type="button"
                   onClick={() => setSortBy("default")}
-                  className={`rounded-full px-3 py-1 font-mono text-xs transition-all cursor-pointer ${
+                  className={`rounded-sm px-3 py-1 font-mono text-xs transition-all cursor-pointer ${
                     sortBy === "default"
-                      ? "bg-accent/15 font-semibold text-accent border border-accent/40"
-                      : "bg-surface text-ink-muted hover:text-ink border border-border"
+                      ? "bg-accent border-2 border-border text-(--accent-ink) font-semibold shadow-[2px_2px_0_0_var(--border)]"
+                      : "bg-surface border-2 border-border text-ink-muted hover:text-ink"
                   }`}
                 >
                   Relevansi
@@ -89,10 +89,10 @@ const SearchResults = ({ anime }: SearchResultsProps): JSX.Element => {
                 <button
                   type="button"
                   onClick={() => setSortBy("asc")}
-                  className={`rounded-full px-3 py-1 font-mono text-xs transition-all cursor-pointer ${
+                  className={`rounded-sm px-3 py-1 font-mono text-xs transition-all cursor-pointer ${
                     sortBy === "asc"
-                      ? "bg-accent/15 font-semibold text-accent border border-accent/40"
-                      : "bg-surface text-ink-muted hover:text-ink border border-border"
+                      ? "bg-accent border-2 border-border text-(--accent-ink) font-semibold shadow-[2px_2px_0_0_var(--border)]"
+                      : "bg-surface border-2 border-border text-ink-muted hover:text-ink"
                   }`}
                 >
                   A - Z
@@ -100,10 +100,10 @@ const SearchResults = ({ anime }: SearchResultsProps): JSX.Element => {
                 <button
                   type="button"
                   onClick={() => setSortBy("desc")}
-                  className={`rounded-full px-3 py-1 font-mono text-xs transition-all cursor-pointer ${
+                  className={`rounded-sm px-3 py-1 font-mono text-xs transition-all cursor-pointer ${
                     sortBy === "desc"
-                      ? "bg-accent/15 font-semibold text-accent border border-accent/40"
-                      : "bg-surface text-ink-muted hover:text-ink border border-border"
+                      ? "bg-accent border-2 border-border text-(--accent-ink) font-semibold shadow-[2px_2px_0_0_var(--border)]"
+                      : "bg-surface border-2 border-border text-ink-muted hover:text-ink"
                   }`}
                 >
                   Z - A
@@ -112,12 +112,12 @@ const SearchResults = ({ anime }: SearchResultsProps): JSX.Element => {
             )}
 
             {/* View mode toggle */}
-            <div className="flex items-center gap-1 rounded-full border border-border bg-surface p-0.5">
+            <div className="flex items-center gap-1 rounded-sm border-2 border-border bg-surface p-0.5 shadow-[2px_2px_0_0_var(--border)]">
               <button
                 type="button"
                 onClick={() => setViewMode("grid")}
                 title="Tampilan Grid Poster"
-                className={`rounded-full px-2.5 py-0.5 font-mono text-xs transition-all cursor-pointer ${
+                className={`rounded-sm px-2.5 py-0.5 font-mono text-xs transition-all cursor-pointer ${
                   viewMode === "grid" ? "bg-accent text-(--accent-ink) font-bold" : "text-ink-muted hover:text-ink"
                 }`}
               >
@@ -127,7 +127,7 @@ const SearchResults = ({ anime }: SearchResultsProps): JSX.Element => {
                 type="button"
                 onClick={() => setViewMode("list")}
                 title="Tampilan List Kompak"
-                className={`rounded-full px-2.5 py-0.5 font-mono text-xs transition-all cursor-pointer ${
+                className={`rounded-sm px-2.5 py-0.5 font-mono text-xs transition-all cursor-pointer ${
                   viewMode === "list" ? "bg-accent text-(--accent-ink) font-bold" : "text-ink-muted hover:text-ink"
                 }`}
               >
@@ -145,10 +145,10 @@ const SearchResults = ({ anime }: SearchResultsProps): JSX.Element => {
                 <button
                   type="button"
                   onClick={() => toggleGenre("all")}
-                  className={`rounded-full px-2.5 py-0.5 font-mono text-xs transition-all cursor-pointer ${
+                  className={`rounded-sm px-2.5 py-0.5 font-mono text-xs transition-all cursor-pointer ${
                     selectedGenres.length === 0
-                      ? "bg-accent/15 font-semibold text-accent border border-accent/40"
-                      : "bg-surface text-ink-muted hover:text-ink border border-border"
+                      ? "bg-accent border-2 border-border text-(--accent-ink) font-semibold shadow-[2px_2px_0_0_var(--border)]"
+                      : "bg-surface border-2 border-border text-ink-muted hover:text-ink"
                   }`}
                 >
                   Semua ({anime.length})
@@ -158,11 +158,11 @@ const SearchResults = ({ anime }: SearchResultsProps): JSX.Element => {
               {selectedGenres.length > 1 && (
                 <div className="flex items-center gap-1">
                   <span className="font-mono text-[10px] text-ink-muted">Logika:</span>
-                  <div className="flex items-center rounded-full border border-border bg-surface p-0.5">
+                  <div className="flex items-center rounded-sm border-2 border-border bg-surface p-0.5">
                     <button
                       type="button"
                       onClick={() => setGenreLogic("OR")}
-                      className={`rounded-full px-2 py-0.5 font-mono text-[10px] font-bold cursor-pointer transition-all ${
+                      className={`rounded-sm px-2 py-0.5 font-mono text-[10px] font-bold cursor-pointer transition-all ${
                         genreLogic === "OR" ? "bg-accent text-(--accent-ink)" : "text-ink-muted hover:text-ink"
                       }`}
                     >
@@ -171,7 +171,7 @@ const SearchResults = ({ anime }: SearchResultsProps): JSX.Element => {
                     <button
                       type="button"
                       onClick={() => setGenreLogic("AND")}
-                      className={`rounded-full px-2 py-0.5 font-mono text-[10px] font-bold cursor-pointer transition-all ${
+                      className={`rounded-sm px-2 py-0.5 font-mono text-[10px] font-bold cursor-pointer transition-all ${
                         genreLogic === "AND" ? "bg-accent text-(--accent-ink)" : "text-ink-muted hover:text-ink"
                       }`}
                     >
@@ -190,7 +190,7 @@ const SearchResults = ({ anime }: SearchResultsProps): JSX.Element => {
                     key={genre}
                     type="button"
                     onClick={() => toggleGenre(genre)}
-                    className={`rounded-full px-2.5 py-0.5 font-mono text-xs transition-all cursor-pointer ${
+                    className={`rounded-sm px-2.5 py-0.5 font-mono text-xs transition-all cursor-pointer ${
                       isSelected
                         ? "bg-accent/15 font-semibold text-accent border border-accent/40"
                         : "bg-surface text-ink-muted hover:text-ink border border-border"

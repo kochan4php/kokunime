@@ -68,17 +68,17 @@ const Synopsis = ({ anime }: { anime: AnimeDetail }): JSX.Element => {
                 type="button"
                 onClick={toggleTTS}
                 title={isPlaying ? "Hentikan audio sinopsis" : "Dengarkan sinopsis (Text-to-Speech)"}
-                className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 font-mono text-[11px] font-semibold transition-all cursor-pointer ${
+                className={`inline-flex items-center gap-1 rounded-sm border-2 px-2.5 py-0.5 font-mono text-[11px] font-semibold transition-all cursor-pointer ${
                   isPlaying
-                    ? "border-accent bg-accent text-(--accent-ink) animate-pulse"
-                    : "border-border bg-surface text-ink-muted hover:border-accent hover:text-ink"
+                    ? "border-border bg-accent text-(--accent-ink) font-bold shadow-[2px_2px_0_0_var(--border)] animate-pulse"
+                    : "border-border bg-surface text-ink-muted shadow-[2px_2px_0_0_var(--border)] hover:-translate-y-0.5 hover:text-ink"
                 }`}
               >
                 <span>{isPlaying ? "⏹ Hentikan" : "🔊 Dengarkan"}</span>
               </button>
 
               {/* Speed selector */}
-              <div className="flex items-center rounded-full border border-border bg-surface p-0.5 font-mono text-[10px]">
+              <div className="flex items-center rounded-sm border-2 border-border bg-surface p-0.5 font-mono text-[10px]">
                 {[0.75, 1.0, 1.25, 1.5].map((speed) => (
                   <button
                     key={speed}
@@ -91,7 +91,7 @@ const Synopsis = ({ anime }: { anime: AnimeDetail }): JSX.Element => {
                       }
                     }}
                     title={`Kecepatan suara ${speed}x`}
-                    className={`rounded-full px-1.5 py-0.2 transition-colors cursor-pointer ${
+                    className={`rounded-sm px-1.5 py-0.2 transition-colors cursor-pointer ${
                       ttsSpeed === speed ? "bg-accent font-bold text-(--accent-ink)" : "text-ink-muted hover:text-ink"
                     }`}
                   >
@@ -101,13 +101,13 @@ const Synopsis = ({ anime }: { anime: AnimeDetail }): JSX.Element => {
               </div>
 
               {/* Font size zoomer */}
-              <div className="flex items-center rounded-full border border-border bg-surface p-0.5 font-mono text-[10px]">
+              <div className="flex items-center rounded-sm border-2 border-border bg-surface p-0.5 font-mono text-[10px]">
                 <button
                   type="button"
                   onClick={() => setFontSize(fontSize === "lg" ? "base" : "sm")}
                   title="Perkecil ukuran font sinopsis"
-                  className={`rounded-full px-1.5 py-0.2 transition-colors cursor-pointer ${
-                    fontSize === "sm" ? "bg-accent/20 font-bold text-accent" : "text-ink-muted hover:text-ink"
+                  className={`rounded-sm px-1.5 py-0.2 transition-colors cursor-pointer ${
+                    fontSize === "sm" ? "bg-accent font-bold text-(--accent-ink)" : "text-ink-muted hover:text-ink"
                   }`}
                 >
                   A-
@@ -116,8 +116,8 @@ const Synopsis = ({ anime }: { anime: AnimeDetail }): JSX.Element => {
                   type="button"
                   onClick={() => setFontSize(fontSize === "sm" ? "base" : "lg")}
                   title="Perbesar ukuran font sinopsis"
-                  className={`rounded-full px-1.5 py-0.2 transition-colors cursor-pointer ${
-                    fontSize === "lg" ? "bg-accent/20 font-bold text-accent" : "text-ink-muted hover:text-ink"
+                  className={`rounded-sm px-1.5 py-0.2 transition-colors cursor-pointer ${
+                    fontSize === "lg" ? "bg-accent font-bold text-(--accent-ink)" : "text-ink-muted hover:text-ink"
                   }`}
                 >
                   A+
@@ -128,7 +128,7 @@ const Synopsis = ({ anime }: { anime: AnimeDetail }): JSX.Element => {
                 type="button"
                 onClick={copySynopsis}
                 title="Salin teks sinopsis"
-                className="rounded-full border border-border bg-surface px-2.5 py-0.5 font-mono text-[11px] font-semibold text-ink-muted transition-all hover:border-accent hover:text-ink cursor-pointer"
+                className="rounded-sm border-2 border-border bg-surface px-2.5 py-0.5 font-mono text-[11px] font-semibold text-ink-muted shadow-[2px_2px_0_0_var(--border)] transition-all hover:-translate-y-0.5 hover:text-ink active:translate-y-0 active:shadow-none cursor-pointer"
               >
                 {copied ? "✓ Tersalin" : "📋 Salin"}
               </button>

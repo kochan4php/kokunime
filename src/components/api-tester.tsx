@@ -164,29 +164,25 @@ func main() {
     <div className="card-shell overflow-hidden">
       <div className="card-core p-5 sm:p-6 space-y-4">
         {/* Header: Method, Endpoint Path, and Category */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b border-border pb-4">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b-2 border-border pb-4">
           <div className="flex flex-wrap items-center gap-2.5 min-w-0">
-            <span className="rounded-lg bg-emerald-500/15 border border-emerald-500/30 px-3 py-1 font-mono text-xs font-bold text-emerald-400 shrink-0">
+            <span className="rounded-sm border-2 border-border bg-nb-lime px-3 py-1 font-mono text-xs font-bold text-nb-ink shrink-0">
               {endpoint.method}
             </span>
-            <code className="font-mono text-xs sm:text-sm font-bold text-ink break-all">
-              {endpoint.path}
-            </code>
+            <code className="font-mono text-xs sm:text-sm font-bold text-ink break-all">{endpoint.path}</code>
           </div>
 
-          <span className="self-start sm:self-auto rounded-full bg-surface-muted px-2.5 py-0.5 font-mono text-[10px] font-bold text-ink-muted shrink-0">
+          <span className="self-start sm:self-auto rounded-sm border border-border bg-surface-muted px-2.5 py-0.5 font-mono text-[10px] font-bold text-ink-muted shrink-0">
             {endpoint.category}
           </span>
         </div>
 
         {/* Description */}
-        <p className="text-xs sm:text-sm text-ink-muted leading-relaxed">
-          {endpoint.description}
-        </p>
+        <p className="text-xs sm:text-sm text-ink-muted leading-relaxed">{endpoint.description}</p>
 
         {/* Parameter Configuration input (if available) */}
         {endpoint.defaultParam && (
-          <div className="p-3.5 rounded-2xl bg-surface/60 border border-border/80 space-y-2">
+          <div className="p-3.5 rounded-sm border-2 border-border bg-surface-solid space-y-2">
             <div className="flex items-center justify-between">
               <span className="font-mono text-[11px] font-bold text-accent">
                 ⚙️ Parameter Input: <span className="text-ink">{endpoint.defaultParam.key}</span>
@@ -201,7 +197,7 @@ func main() {
                 placeholder={endpoint.defaultParam.placeholder}
                 value={paramVal}
                 onChange={(e) => setParamVal(e.target.value)}
-                className="flex-1 rounded-xl border border-border bg-surface px-3 py-1.5 font-mono text-xs text-ink outline-none focus:border-accent"
+                className="flex-1 rounded-sm border-2 border-border bg-surface px-3 py-1.5 font-mono text-xs text-ink shadow-[2px_2px_0_0_var(--border)] outline-none focus:border-accent"
               />
               <button
                 type="button"
@@ -232,18 +228,16 @@ func main() {
         )}
 
         {/* Code Snippet Tabs */}
-        <div className="rounded-2xl border border-border bg-surface-solid overflow-hidden space-y-0">
-          <div className="flex flex-wrap items-center justify-between border-b border-border bg-surface-muted/40 px-3 py-2 gap-2">
+        <div className="rounded-sm border-2 border-border bg-surface-solid overflow-hidden space-y-0">
+          <div className="flex flex-wrap items-center justify-between border-b-2 border-border bg-surface-muted px-3 py-2 gap-2">
             <div className="flex items-center gap-1">
               {(["curl", "javascript", "python", "php", "go"] as CodeLang[]).map((lang) => (
                 <button
                   key={lang}
                   type="button"
                   onClick={() => setActiveLang(lang)}
-                  className={`rounded-lg px-2.5 py-1 font-mono text-[10px] font-bold uppercase transition-colors cursor-pointer ${
-                    activeLang === lang
-                      ? "bg-accent text-(--accent-ink) shadow-xs"
-                      : "text-ink-muted hover:text-ink"
+                  className={`rounded-sm px-2.5 py-1 font-mono text-[10px] font-bold uppercase transition-colors cursor-pointer ${
+                    activeLang === lang ? "bg-accent text-(--accent-ink)" : "text-ink-muted hover:text-ink"
                   }`}
                 >
                   {lang}
@@ -267,14 +261,12 @@ func main() {
 
         {/* Live Response Viewer (if executed) */}
         {status !== null && (
-          <div className="rounded-2xl border border-border bg-surface-solid overflow-hidden space-y-0 animate-fade-in">
-            <div className="flex items-center justify-between border-b border-border bg-surface-muted/40 px-4 py-2 text-xs font-mono">
+          <div className="rounded-sm border-2 border-border bg-surface-solid overflow-hidden space-y-0 animate-fade-in">
+            <div className="flex items-center justify-between border-b-2 border-border bg-surface-muted px-4 py-2 text-xs font-mono">
               <div className="flex items-center gap-3">
                 <span
-                  className={`font-bold px-2 py-0.5 rounded-md ${
-                    status >= 200 && status < 300
-                      ? "bg-emerald-500/20 text-emerald-400"
-                      : "bg-red-500/20 text-red-400"
+                  className={`font-bold px-2 py-0.5 rounded-sm border-2 border-border ${
+                    status >= 200 && status < 300 ? "bg-nb-lime text-nb-ink" : "bg-nb-red text-nb-ink"
                   }`}
                 >
                   {status} {status === 200 ? "OK" : status === 404 ? "Not Found" : "Status"}

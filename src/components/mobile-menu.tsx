@@ -56,7 +56,7 @@ const MobileMenu = ({ isActive }: MobileMenuProps): JSX.Element => {
         onClick={openMenu}
         aria-label={t("nav.open_menu")}
         title={t("nav.open_menu")}
-        className="flex h-10 w-10 items-center justify-center rounded-full border border-accent/50 bg-surface text-accent transition-all duration-200 hover:border-accent hover:bg-accent/10 active:scale-95 lg:hidden cursor-pointer shrink-0"
+        className="flex h-11 w-11 items-center justify-center rounded-sm border-2 border-border bg-nb-yellow text-[#0a0a0a] shadow-[2px_2px_0_0_var(--border)] transition-all duration-150 hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 active:shadow-none lg:hidden cursor-pointer shrink-0"
       >
         <span aria-hidden className="menu-icon">
           <span className="menu-line" />
@@ -75,13 +75,13 @@ const MobileMenu = ({ isActive }: MobileMenuProps): JSX.Element => {
         onClick={(e) => {
           if (e.target === dialogRef.current) closeMenu();
         }}
-        className={`fixed inset-x-0 top-4 sm:top-[8%] mx-auto w-[92vw] sm:w-[88vw] max-w-lg max-h-[85vh] rounded-3xl border border-border bg-surface-solid/98 backdrop-blur-2xl p-0 text-ink shadow-2xl overflow-hidden backdrop:bg-black/60 backdrop:backdrop-blur-sm ${
+        className={`fixed inset-x-0 top-4 sm:top-[8%] mx-auto w-[92vw] sm:w-[88vw] max-w-lg max-h-[85vh] bg-surface-solid p-0 text-ink overflow-hidden ${
           isClosing ? "is-closing" : ""
         }`}
       >
         <div className="flex flex-col max-h-[85vh]">
           {/* Header */}
-          <div className="flex items-center justify-between border-b border-border bg-surface-solid/80 px-4 py-3 sm:px-5 shrink-0">
+          <div className="flex items-center justify-between border-b-2 border-border bg-nb-cream px-4 py-3 sm:px-5 shrink-0 dark:bg-surface-muted">
             <div className="flex items-center gap-2">
               <span className="chip">
                 <span className="h-1.5 w-1.5 rounded-full bg-accent animate-pulse" />
@@ -93,7 +93,7 @@ const MobileMenu = ({ isActive }: MobileMenuProps): JSX.Element => {
               type="button"
               onClick={closeMenu}
               aria-label={t("nav.close_menu")}
-              className="flex h-8 w-8 items-center justify-center rounded-full border border-border bg-surface text-ink-muted transition-colors hover:border-accent hover:text-ink active:scale-90 cursor-pointer"
+              className="flex h-9 w-9 items-center justify-center rounded-sm border-2 border-border bg-surface font-bold text-ink shadow-[2px_2px_0_0_var(--border)] transition-all hover:-translate-y-0.5 active:translate-y-0 active:shadow-none cursor-pointer"
             >
               ✕
             </button>
@@ -114,18 +114,18 @@ const MobileMenu = ({ isActive }: MobileMenuProps): JSX.Element => {
                       href={link.href}
                       onClick={closeMenu}
                       aria-current={active ? "page" : undefined}
-                      className={`flex items-center justify-between px-3.5 py-2.5 rounded-2xl text-xs sm:text-sm font-medium transition-all duration-200 border ${
+                      className={`flex items-center justify-between px-3.5 py-3 rounded-sm text-xs sm:text-sm font-medium transition-all duration-150 border-2 ${
                         active
-                          ? "bg-accent/15 border-accent/40 text-accent font-bold"
-                          : "border-border/70 bg-surface/70 text-ink-muted hover:border-accent/60 hover:bg-surface hover:text-ink"
+                          ? "bg-accent border-border text-(--accent-ink) font-bold shadow-[2px_2px_0_0_var(--border)]"
+                          : "border-transparent bg-transparent text-ink-muted hover:border-border hover:bg-surface hover:text-ink"
                       }`}
                     >
                       <div className="flex items-center gap-2.5 min-w-0">
                         <span className="text-base shrink-0">{link.icon}</span>
-                        <span className="text-ink font-semibold truncate">{label}</span>
+                        <span className={`${active ? "" : "text-ink"} font-semibold truncate`}>{label}</span>
                       </div>
                       {link.badge ? (
-                        <span className="rounded-full bg-accent/20 px-2 py-0.5 font-mono text-[10px] font-bold text-accent shrink-0">
+                        <span className="rounded-sm border border-border bg-nb-yellow px-2 py-0.5 font-mono text-[10px] font-bold text-[#0a0a0a] shrink-0">
                           {link.badge}
                         </span>
                       ) : (
@@ -139,7 +139,7 @@ const MobileMenu = ({ isActive }: MobileMenuProps): JSX.Element => {
                 <a
                   href="/api/random"
                   onClick={closeMenu}
-                  className="flex items-center justify-between px-3.5 py-2.5 rounded-2xl text-xs sm:text-sm font-medium transition-all duration-200 border border-border/70 bg-surface/70 text-ink-muted hover:border-accent/60 hover:bg-surface hover:text-ink sm:col-span-2"
+                  className="flex items-center justify-between px-3.5 py-3 rounded-sm text-xs sm:text-sm font-medium transition-all duration-150 border-2 border-transparent bg-transparent text-ink-muted hover:border-border hover:bg-surface hover:text-ink sm:col-span-2"
                 >
                   <div className="flex items-center gap-2.5">
                     <span className="text-base">🎲</span>
@@ -155,7 +155,7 @@ const MobileMenu = ({ isActive }: MobileMenuProps): JSX.Element => {
           </div>
 
           {/* Footer Controls */}
-          <div className="flex items-center justify-between border-t border-border bg-surface-solid px-4 py-2 text-[11px] text-ink-muted font-mono">
+          <div className="flex items-center justify-between border-t-2 border-border bg-surface-muted px-4 py-2 text-[11px] text-ink-muted font-mono">
             <span>Kokunime Navigation</span>
             <span>Esc</span>
           </div>

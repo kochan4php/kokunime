@@ -1,5 +1,4 @@
 export * from "./search";
-export * from "./theme";
 export * from "./chevrons";
 export * from "./download";
 export * from "./arrow-down";

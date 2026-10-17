@@ -11,7 +11,7 @@ interface MetaItemProps {
 
 const MetaItem = ({ label, value, href }: MetaItemProps): JSX.Element => {
   return (
-    <div className="rounded-xl border border-border bg-surface px-3 py-2 sm:px-4 sm:py-2.5 min-w-0 overflow-hidden">
+    <div className="rounded-sm border-2 border-border bg-surface px-3 py-2 sm:px-4 sm:py-2.5 min-w-0 overflow-hidden shadow-[2px_2px_0_0_var(--border)]">
       <dt className="font-mono text-[9px] sm:text-[10px] uppercase tracking-wider text-ink-muted truncate">{label}</dt>
       <dd
         className="mt-0.5 text-xs sm:text-sm font-semibold text-ink truncate hover:whitespace-normal transition-all cursor-help"

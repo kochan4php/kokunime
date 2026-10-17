@@ -20,7 +20,7 @@ const NotFoundPage = (): JSX.Element => {
         </button>
         <button
           onClick={() => (window.history.length > 1 ? router.back() : router.push("/"))}
-          className="glass inline-flex h-11 items-center gap-2 rounded-full px-6 text-sm font-semibold text-ink transition-all duration-300 hover:text-accent active:scale-95"
+          className="glass inline-flex h-11 items-center gap-2 rounded-sm border-2 border-border bg-surface px-6 text-sm font-semibold text-ink shadow-[2px_2px_0_0_var(--border)] transition-all duration-150 hover:-translate-y-0.5 active:translate-y-0 active:shadow-none"
         >
           Balik ke halaman sebelumnya
         </button>

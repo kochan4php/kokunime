@@ -18,8 +18,8 @@ const PaginationButton = ({
 }: PaginationButtonProps): JSX.Element => {
   const defaultClass =
     variant === "primary"
-      ? "btn-primary inline-flex h-10 items-center gap-1.5 rounded-full px-5 text-sm"
-      : "glass inline-flex h-10 items-center gap-1.5 rounded-full px-5 text-sm font-semibold text-ink transition-all duration-300 hover:text-accent active:scale-95";
+      ? "btn-primary inline-flex h-10 items-center gap-1.5 rounded-sm px-5 text-sm"
+      : "glass inline-flex h-10 items-center gap-1.5 rounded-sm px-5 text-sm font-semibold text-ink shadow-[2px_2px_0_0_var(--border)] transition-all duration-150 hover:-translate-y-0.5 hover:shadow-[4px_4px_0_0_var(--border)] active:translate-y-0 active:shadow-none";
   const cls = className ?? defaultClass;
 
   return href ? (

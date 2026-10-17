@@ -11,7 +11,7 @@ const NewSeriesSection = ({ slug }: { slug: string }): JSX.Element => (
           <span className="h-1.5 w-1.5 rounded-full bg-accent-2" />
           Lainnya
         </span>
-        <h2 className="font-display text-2xl font-extrabold tracking-tight text-ink">Series Terbaru</h2>
+        <h2 className="font-display text-2xl font-extrabold uppercase tracking-tight text-ink">Series Terbaru</h2>
       </div>
     </Reveal>
     <Reveal>
