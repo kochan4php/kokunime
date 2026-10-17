@@ -41,6 +41,52 @@ describe("chaos: Redis down", () => {
   });
 });
 
+describe("chaos: latency injection", () => {
+  it("a hanging upstream aborts via timeout (ETIMEDOUT) instead of hanging forever", async () => {
+    const hangingFetch = (_url: string | URL | Request, init?: RequestInit) =>
+      new Promise<Response>((_, reject) => {
+        const signal = init?.signal as AbortSignal | null | undefined;
+        const abort = () => {
+          const error = new Error("aborted");
+          error.name = "TimeoutError"; // mirrors AbortSignal.timeout()
+          reject(error);
+        };
+        if (signal?.aborted) abort();
+        else signal?.addEventListener("abort", abort, { once: true });
+      });
+
+    vi.stubGlobal("fetch", hangingFetch);
+    try {
+      const upstream = (await import("@/config/upstream")).default;
+      await expect(upstream.get("/anime/some-title", { timeoutMs: 20 })).rejects.toMatchObject({
+        code: "ETIMEDOUT",
+      });
+    } finally {
+      vi.unstubAllGlobals();
+    }
+  });
+
+  it("cache eviction storm: thousands of unique keys neither throw nor corrupt windows", async () => {
+    vi.useFakeTimers();
+    try {
+      const id = `storm-${Date.now()}`;
+      const first = await checkRateLimit(id, 3, 5_000);
+      expect(first.remaining).toBe(2);
+
+      for (let i = 0; i < 500; i++) {
+        await checkRateLimit(`${id}-${i}`, 1, 5_000);
+      }
+
+      // Window expiry must reset the original key even after the storm.
+      await vi.advanceTimersByTimeAsync(6_000);
+      const reset = await checkRateLimit(id, 3, 5_000);
+      expect(reset.remaining).toBe(2);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+});
+
 describe("chaos: upstream circuit open", () => {
   beforeEach(() => {
     // Trip the breaker with enough consecutive failures to open it.

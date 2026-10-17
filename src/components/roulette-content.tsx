@@ -5,6 +5,9 @@ import AnimeImage from "@/components/cards/anime-image";
 import ViewTransitionLink from "@/components/view-transition-link";
 import { Anime } from "@/interfaces";
 import { animeSlug, endpointSlug } from "@/utils/endpoint-slug";
+import { STORAGE_KEYS } from "@/utils/storage-keys";
+import { showToast } from "@/utils/toast";
+import Link from "next/link";
 import { JSX, useCallback, useEffect, useState } from "react";
 
 interface GenreOption {
@@ -12,7 +15,39 @@ interface GenreOption {
   slug: string;
 }
 
+interface RouletteSpin {
+  slug: string;
+  title: string;
+  image?: string | undefined;
+  at: number;
+}
+
 const MIN_SPIN_MS = 650;
+const HISTORY_KEY = STORAGE_KEYS.rouletteHistory;
+const MAX_HISTORY = 8;
+
+const readSpinHistory = (): RouletteSpin[] => {
+  if (typeof window === "undefined") return [];
+  try {
+    const raw = localStorage.getItem(HISTORY_KEY);
+    const parsed: unknown = raw ? JSON.parse(raw) : [];
+    if (!Array.isArray(parsed)) return [];
+    return parsed
+      .filter(
+        (spin): spin is RouletteSpin =>
+          Boolean(spin) && typeof spin === "object" && typeof (spin as RouletteSpin).slug === "string",
+      )
+      .slice(0, MAX_HISTORY);
+  } catch {
+    return [];
+  }
+};
+
+const writeSpinHistory = (list: RouletteSpin[]): void => {
+  try {
+    localStorage.setItem(HISTORY_KEY, JSON.stringify(list.slice(0, MAX_HISTORY)));
+  } catch {}
+};
 
 const RouletteContent = (): JSX.Element => {
   const [genres, setGenres] = useState<GenreOption[]>([]);
@@ -20,8 +55,10 @@ const RouletteContent = (): JSX.Element => {
   const [spinning, setSpinning] = useState(false);
   const [result, setResult] = useState<Anime | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [history, setHistory] = useState<RouletteSpin[]>([]);
 
   useEffect(() => {
+    setHistory(readSpinHistory());
     void (async () => {
       try {
         const res = await fetch("/api/genres");
@@ -61,10 +98,23 @@ const RouletteContent = (): JSX.Element => {
       if (candidates.length === 0) throw new Error("empty pool");
       const pick = candidates[Math.floor(Math.random() * candidates.length)];
       if (!pick) throw new Error("empty pick");
+      const pickSlug = animeSlug(pick.link?.endpoint);
+      if (!pickSlug) throw new Error("empty slug");
       const remaining = Math.max(0, MIN_SPIN_MS - (Date.now() - started));
       window.setTimeout(() => {
         setResult(pick);
         setSpinning(false);
+        const entry: RouletteSpin = {
+          slug: pickSlug,
+          title: pick.title ?? pickSlug,
+          image: pick.link?.image as string | undefined,
+          at: Date.now(),
+        };
+        setHistory((prev) => {
+          const next = [entry, ...prev.filter((spinEntry) => spinEntry.slug !== entry.slug)].slice(0, MAX_HISTORY);
+          writeSpinHistory(next);
+          return next;
+        });
       }, remaining);
     } catch {
       const remaining = Math.max(0, 400 - (Date.now() - started));
@@ -76,6 +126,35 @@ const RouletteContent = (): JSX.Element => {
   }, [genre, genres, spinning]);
 
   const resultSlug = result ? animeSlug(result.link?.endpoint) : null;
+
+  const clearSpinHistory = (): void => {
+    setHistory([]);
+    try {
+      localStorage.removeItem(HISTORY_KEY);
+    } catch {}
+  };
+
+  const shareResult = async (): Promise<void> => {
+    if (!result || !resultSlug) return;
+    const url = `${window.location.origin}/anime/${resultSlug}`;
+    const nav = navigator as Navigator & {
+      share?: (data: { title?: string; text?: string; url?: string }) => Promise<void>;
+    };
+    if (nav.share) {
+      try {
+        await nav.share({ title: result.title, text: `Rekomendasi roulette: ${result.title}`, url });
+        return;
+      } catch {
+        // Share sheet dismissed or unsupported — fall back to clipboard.
+      }
+    }
+    try {
+      await navigator.clipboard.writeText(url);
+      showToast("Tautan disalin ✓");
+    } catch {
+      showToast("Gagal menyalin tautan", { durationMs: 3000 });
+    }
+  };
 
   return (
     <MainLayout>
@@ -164,6 +243,13 @@ const RouletteContent = (): JSX.Element => {
                     >
                       🎲 Putar Lagi
                     </button>
+                    <button
+                      type="button"
+                      onClick={() => void shareResult()}
+                      className="btn-secondary !px-3 !py-1 text-xs"
+                    >
+                      🔗 Bagikan
+                    </button>
                   </div>
                 </div>
               </div>
@@ -174,6 +260,35 @@ const RouletteContent = (): JSX.Element => {
             <p className="mt-6 max-w-sm text-center text-xs text-ink-muted">
               Tekan tombol putar — hasil diambil dari katalog genre pilihanmu, bukan daftar statis.
             </p>
+          )}
+
+          {history.length > 0 && (
+            <div className="mt-8 w-full max-w-md">
+              <div className="flex items-center justify-between">
+                <span className="font-mono text-[10px] uppercase tracking-wider text-ink-muted">
+                  Riwayat Putaran ({history.length})
+                </span>
+                <button
+                  type="button"
+                  onClick={clearSpinHistory}
+                  className="font-mono text-[10px] text-ink-muted transition-colors hover:text-ink cursor-pointer"
+                >
+                  Bersihkan
+                </button>
+              </div>
+              <div className="mt-2 flex flex-wrap justify-center gap-1.5">
+                {history.map((spinEntry) => (
+                  <Link
+                    key={`${spinEntry.slug}-${spinEntry.at}`}
+                    href={`/anime/${spinEntry.slug}`}
+                    title={spinEntry.title}
+                    className="max-w-[12rem] truncate rounded-sm border-2 border-border bg-surface px-2.5 py-1 text-xs font-semibold text-ink shadow-[2px_2px_0_0_var(--border)] transition-all hover:-translate-y-0.5 hover:bg-nb-yellow active:translate-y-0 active:shadow-none"
+                  >
+                    {spinEntry.title}
+                  </Link>
+                ))}
+              </div>
+            </div>
           )}
         </div>
       </section>

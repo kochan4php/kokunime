@@ -1,8 +1,8 @@
-export interface SimilarInput {
-  genres?: string[];
-  score?: number | string;
-  year?: number | string;
-  type?: string;
+interface SimilarInput {
+  genres?: string[] | undefined;
+  score?: number | string | undefined;
+  year?: number | string | undefined;
+  type?: string | undefined;
 }
 
 const genreSet = (genres?: string[]): Set<string> =>

@@ -11,9 +11,9 @@ const MIN_INDEX_FOR_SEARCH = 10;
 export interface IndexedAnime {
   slug: string;
   title: string;
-  image?: string;
-  release?: string;
-  genres?: string[];
+  image?: string | undefined;
+  release?: string | undefined;
+  genres?: string[] | undefined;
 }
 
 let snapshot: { at: number; items: Map<string, IndexedAnime> } | null = null;
@@ -58,7 +58,7 @@ export const indexAnimeItems = async (items: Anime[]): Promise<number> => {
   }
 };
 
-export const getIndexSnapshot = async (): Promise<Map<string, IndexedAnime> | null> => {
+const getIndexSnapshot = async (): Promise<Map<string, IndexedAnime> | null> => {
   if (snapshot && Date.now() - snapshot.at < SNAPSHOT_TTL_MS) return snapshot.items;
   const redis = await getRedis();
   if (!redis) return null;
@@ -146,7 +146,7 @@ export const searchLocalIndex = async (query: string, limit = 20): Promise<Anime
 export const suggestLocal = async (
   prefix: string,
   limit = 8,
-): Promise<{ slug: string; title: string; image?: string }[]> => {
+): Promise<{ slug: string; title: string; image?: string | undefined }[]> => {
   if (prefix.trim().length < 2) return [];
   const items = await getIndexSnapshot();
   if (!items || items.size === 0) return [];

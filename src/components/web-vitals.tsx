@@ -1,6 +1,7 @@
 "use client";
 
 import { useReportWebVitals } from "next/web-vitals";
+import { VITALS_THRESHOLDS, type VitalName } from "@/lib/vitals-thresholds";
 import { JSX, useState } from "react";
 
 // Report RUM for a fraction of sessions only — the endpoint stays cheap and
@@ -11,7 +12,20 @@ const WebVitals = (): JSX.Element | null => {
   const [sampled] = useState(() => Math.random() < SAMPLE_RATE);
 
   useReportWebVitals((metric) => {
-    if (!sampled || typeof window === "undefined") return;
+    if (typeof window === "undefined") return;
+
+    // Dev-only budget warning: a regression shows up in the console while it
+    // is still cheap to fix. Production stays silent (server alerts instead).
+    if (process.env.NODE_ENV !== "production") {
+      const budget = VITALS_THRESHOLDS[metric.name as VitalName];
+      if (typeof budget === "number" && metric.value > budget) {
+        console.warn(
+          `[web-vitals] ${metric.name} = ${metric.value.toFixed(1)} (budget ${budget}) di ${window.location.pathname}`,
+        );
+      }
+    }
+
+    if (!sampled) return;
 
     const payload = JSON.stringify({
       name: metric.name,

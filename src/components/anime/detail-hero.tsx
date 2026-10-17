@@ -16,11 +16,11 @@ import { VerticalJapaneseTitle } from "./vertical-japanese-title";
 
 interface DetailHeroProps {
   anime: AnimeDetail;
-  slug?: string;
+  slug?: string | undefined;
 }
 
 interface DetailHeroViewProps extends DetailHeroProps {
-  blurDataURL?: string;
+  blurDataURL?: string | undefined;
 }
 
 const DetailHeroView = ({ anime, slug, blurDataURL }: DetailHeroViewProps): JSX.Element => (
@@ -37,8 +37,7 @@ const DetailHeroView = ({ anime, slug, blurDataURL }: DetailHeroViewProps): JSX.
               fill
               priority
               fetchPriority="high"
-              placeholder={blurDataURL ? "blur" : undefined}
-              blurDataURL={blurDataURL}
+              {...(blurDataURL ? { placeholder: "blur" as const, blurDataURL } : {})}
               sizes="(max-width: 768px) 100vw, 320px"
               src={anime.image}
               alt={anime.title ?? ""}
@@ -71,6 +70,7 @@ const DetailHeroView = ({ anime, slug, blurDataURL }: DetailHeroViewProps): JSX.
                     title={anime.title ?? ""}
                     image={anime.image}
                     release={anime.release_on}
+                    genres={anime.genre?.map((genre) => genre.name)}
                     showLabel
                   />
                 )}

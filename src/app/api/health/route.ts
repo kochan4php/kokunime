@@ -2,7 +2,7 @@ import upstream from "@/config/upstream";
 import { SCRAPE_BASE_URL } from "@/services/scraper/constants";
 import { redisHealth } from "@/lib/redis";
 import { load } from "cheerio";
-import type { AxiosError } from "axios";
+import type { UpstreamErrorLike } from "@/config/upstream";
 import { NextResponse } from "next/server";
 
 export const dynamic = "force-dynamic";
@@ -12,7 +12,7 @@ export const dynamic = "force-dynamic";
 async function probe(path: string): Promise<Record<string, unknown>> {
   const started = performance.now();
   try {
-    const res = await upstream.get<string>(path);
+    const res = await upstream.get(path);
     const html = typeof res.data === "string" ? res.data : "";
     const $ = load(html);
     return {
@@ -30,7 +30,7 @@ async function probe(path: string): Promise<Record<string, unknown>> {
       server: (res.headers.server as string | undefined) ?? null,
     };
   } catch (err) {
-    const axErr = err as AxiosError;
+    const axErr = err as UpstreamErrorLike;
     const body = typeof axErr.response?.data === "string" ? axErr.response.data : "";
     return {
       path,
@@ -43,7 +43,7 @@ async function probe(path: string): Promise<Record<string, unknown>> {
         /just a moment|cf-challenge|attention required|cf-browser-verification|enable javascript and cookies/i.test(
           body,
         ),
-      cf_mitigated: (axErr.response?.headers["cf-mitigated"] as string | undefined) ?? null,
+      cf_mitigated: (axErr.response?.headers?.["cf-mitigated"] as string | undefined) ?? null,
     };
   }
 }

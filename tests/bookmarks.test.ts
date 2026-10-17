@@ -1,12 +1,11 @@
 import { describe, expect, it, beforeEach, vi } from "vitest";
+import { parseMalXml, parseAniListJson } from "@/utils/bookmark-parsers";
 import {
   getBookmarks,
   isBookmarked,
   toggleBookmark,
   removeBookmark,
   clearAllBookmarks,
-  parseMalXml,
-  parseAniListJson,
   importBookmarksJson,
 } from "@/utils/bookmarks";
 describe("bookmarks utility", () => {

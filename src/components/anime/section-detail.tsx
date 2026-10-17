@@ -72,6 +72,7 @@ const SectionDetail = ({ anime, slug }: { anime: AnimeDetail; slug: string }): J
             title={anime.title ?? ""}
             image={anime.image}
             release={anime.release_on}
+            genres={anime.genre?.map((genre) => genre.name)}
             showLabel={false}
             dropdownPlacement="top"
             className="!h-11 !w-11 rounded-sm border-2 border-border bg-surface text-ink shadow-[2px_2px_0_0_var(--border)]"

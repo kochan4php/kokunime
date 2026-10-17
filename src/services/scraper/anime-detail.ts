@@ -18,8 +18,8 @@ export async function getAnimeDetailWithMeta(slug: string): Promise<{ anime: Ani
         const fallback = extractWithFallback($);
         if (fallback.title) {
           parsed.title = fallback.title;
-          parsed.image = parsed.image || fallback.image;
-          parsed.synopsis = parsed.synopsis || fallback.synopsis;
+          if (fallback.image) parsed.image = parsed.image || fallback.image;
+          if (fallback.synopsis) parsed.synopsis = parsed.synopsis || fallback.synopsis;
         }
       }
       return parsed;

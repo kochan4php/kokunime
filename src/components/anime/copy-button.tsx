@@ -3,7 +3,7 @@
 import { JSX, useState } from "react";
 
 interface CopyButtonProps {
-  url?: string;
+  url?: string | undefined;
   text?: string;
   label?: string;
   copiedLabel?: string;

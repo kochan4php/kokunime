@@ -1,12 +1,12 @@
 import { dispatchDiscordWebhook } from "./webhook-dispatcher";
 
-export interface ErrorReport {
+interface ErrorReport {
   source: "server" | "client";
   message: string;
-  digest?: string;
-  path?: string;
-  method?: string;
-  route?: string;
+  digest?: string | undefined;
+  path?: string | undefined;
+  method?: string | undefined;
+  route?: string | undefined;
 }
 
 // Per-fingerprint throttle: a crash loop must not spam the webhook. Suppressed
@@ -18,11 +18,22 @@ const suppressed = new Map<string, number>();
 
 const truncate = (value: string, max: number): string => (value.length > max ? `${value.slice(0, max)}…` : value);
 
+// Client-origin messages can carry emails, tokens or URLs with secrets — scrub
+// before anything reaches the webhook (and before the fingerprint, so a token
+// does not split one crash loop into many fingerprints).
+export const scrubMessage = (value: string): string =>
+  value
+    .replace(/[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/g, "[email]")
+    .replace(/([?&](?:token|key|secret|password|access_token|apikey)=)[^&\s]+/gi, "$1[redacted]")
+    .replace(/Bearer\s+[A-Za-z0-9._~+/-]+=*/gi, "Bearer [redacted]")
+    .replace(/\b[a-f0-9]{32,}\b/gi, "[hash]");
+
 export async function reportError(report: ErrorReport): Promise<boolean> {
   const webhook = process.env.ERROR_WEBHOOK_URL?.trim();
   if (!webhook) return false;
 
-  const fingerprint = `${report.source}:${report.path ?? ""}:${truncate(report.message, 120)}`;
+  const safeMessage = scrubMessage(report.message);
+  const fingerprint = `${report.source}:${report.path ?? ""}:${truncate(safeMessage, 120)}`;
   const now = Date.now();
   const last = lastSent.get(fingerprint);
   if (last && now - last < THROTTLE_MS) {
@@ -47,7 +58,7 @@ export async function reportError(report: ErrorReport): Promise<boolean> {
 
   return dispatchDiscordWebhook(webhook, {
     title: "Kokunime Error",
-    description: truncate(report.message, 800),
+    description: truncate(safeMessage, 800),
     color: 0xef4444,
     fields,
   });

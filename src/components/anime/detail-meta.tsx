@@ -5,8 +5,8 @@ import { JSX } from "react";
 
 interface MetaItemProps {
   label: string;
-  value?: string;
-  href?: string;
+  value?: string | undefined;
+  href?: string | undefined;
 }
 
 const MetaItem = ({ label, value, href }: MetaItemProps): JSX.Element => {

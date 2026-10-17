@@ -10,7 +10,7 @@ import { JSX } from "react";
 
 interface HomeSectionProps {
   page: number;
-  basePath?: string;
+  basePath?: string | undefined;
 }
 
 // Split into two async sections so the hero and the catalog grid each stream

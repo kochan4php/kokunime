@@ -92,6 +92,21 @@ export async function redisRateLimit(key: string, windowMs: number): Promise<num
   }
 }
 
+// Read a counter written by redisRateLimit (same key namespace). Used by the
+// uptime rollup, which bumps daily probe/failure counters and reads them back.
+export async function redisCounterValue(key: string): Promise<number | null> {
+  const c = await getRedis();
+  if (!c) return null;
+  try {
+    const raw = await c.get(`${KEY_PREFIX}ratelimit:${key}`);
+    if (!raw) return null;
+    const value = Number(raw);
+    return Number.isFinite(value) ? value : null;
+  } catch {
+    return null;
+  }
+}
+
 export async function redisHealth(): Promise<"disabled" | "connected" | "error"> {
   if (!isRedisConfigured()) return "disabled";
   const c = await getRedis();

@@ -19,15 +19,15 @@ export const escapeXml = (unsafe: string): string =>
     }
   });
 
-export interface FeedEntry {
+interface FeedEntry {
   title: string;
   url: string;
-  image?: string;
+  image?: string | undefined;
   summary: string;
   updated: Date;
 }
 
-export interface FeedData {
+interface FeedData {
   title: string;
   description: string;
   entries: FeedEntry[];

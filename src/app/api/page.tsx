@@ -158,7 +158,7 @@ const ENDPOINTS: ApiEndpoint[] = [
       "Mengambil banyak metadata anime sekaligus (GET: ?slugs=a,b atau POST body {slugs,fields}). Mendukung fields= dan ETag/304.",
     sampleUrl: "/api/anime/bulk?slugs=naruto-batch-sub-indo,bleach-batch-sub-indo",
     defaultParam: { key: "slugs", value: "naruto-batch-sub-indo,bleach-batch-sub-indo", placeholder: "slug1,slug2..." },
-    paramsDescription: "slugs: comma separated (maks 20) · fields: title,score,download,…",
+    paramsDescription: "slugs: comma separated (maks 50) · fields: title,score,download,…",
   },
   {
     method: "GET",
@@ -188,6 +188,34 @@ const ApiDocsPage = (): JSX.Element => (
     />
 
     <section className="container px-4 pt-6 pb-12 md:pt-10 md:pb-20 space-y-10">
+      {/* Probe & health mapping — how ops consumers wire the endpoints. */}
+      <div className="card-shell">
+        <div className="card-core p-5 space-y-3">
+          <h2 className="font-display text-base font-bold text-ink">Probe &amp; Health Mapping</h2>
+          <p className="text-xs text-ink-muted leading-relaxed">
+            Setiap service compose membawa label{" "}
+            <code className="rounded-sm border border-border bg-surface-muted px-1 font-mono">com.kokunime.probe</code>:
+            app → <code className="rounded-sm border border-border bg-surface-muted px-1 font-mono">/api/health</code>,
+            redis →{" "}
+            <code className="rounded-sm border border-border bg-surface-muted px-1 font-mono">redis-cli ping</code>.
+          </p>
+          <ul className="grid grid-cols-1 gap-2 font-mono text-[11px] text-ink-muted sm:grid-cols-2">
+            <li>
+              <span className="font-bold text-ink">/api/health</span> → healthcheck compose + monitor workflow
+            </li>
+            <li>
+              <span className="font-bold text-ink">/api/ready</span> → readiness (circuit + cache)
+            </li>
+            <li>
+              <span className="font-bold text-ink">/api/status</span> → status ringkas (503 saat degraded)
+            </li>
+            <li>
+              <span className="font-bold text-ink">/api/metrics</span> → scrape Prometheus (Bearer METRICS_TOKEN)
+            </li>
+          </ul>
+        </div>
+      </div>
+
       {/* Header Banner */}
       <div className="card-shell overflow-hidden">
         <div className="card-core p-6 sm:p-8 flex flex-col md:flex-row md:items-center md:justify-between gap-6">

@@ -15,8 +15,9 @@ import { JSX, useState, useSyncExternalStore } from "react";
 interface BookmarkButtonProps {
   slug: string;
   title: string;
-  image?: string;
-  release?: string;
+  image?: string | undefined;
+  release?: string | undefined;
+  genres?: string[] | undefined;
   className?: string;
   showLabel?: boolean;
   dropdownPlacement?: "top" | "bottom";
@@ -27,6 +28,7 @@ const BookmarkButton = ({
   title,
   image,
   release,
+  genres,
   className = "",
   showLabel = false,
   dropdownPlacement = "bottom",
@@ -49,7 +51,7 @@ const BookmarkButton = ({
     e.preventDefault();
     e.stopPropagation();
     const removed = getBookmarks().find((bookmark) => bookmark.slug === slug);
-    const isNowActive = toggleBookmark({ slug, title, image, release });
+    const isNowActive = toggleBookmark({ slug, title, image, release, genres });
     if (!isNowActive && removed) {
       showToast(`"${removed.title}" dihapus dari Tersimpan`, {
         actionLabel: "Urungkan",

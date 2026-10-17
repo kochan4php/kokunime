@@ -1,5 +1,12 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { getHistograms, getMetrics, incrementMetric, observeHistogram, resetMetrics } from "@/lib/metrics";
+import {
+  getHistograms,
+  getMetrics,
+  incrementMetric,
+  observeHistogram,
+  resetMetrics,
+  getHistogramQuantile,
+} from "@/lib/metrics";
 import { safeCompare } from "@/lib/safe-compare";
 
 describe("metrics registry", () => {
@@ -33,6 +40,17 @@ describe("metrics registry", () => {
     observeHistogram("latency", 10);
     resetMetrics();
     expect(getHistograms()).toEqual({});
+  });
+
+  it("approximates p50/p95 from bucket counts", () => {
+    for (let index = 0; index < 50; index++) observeHistogram("q", 30);
+    for (let index = 0; index < 45; index++) observeHistogram("q", 400);
+    for (let index = 0; index < 5; index++) observeHistogram("q", 3000);
+
+    const state = getHistograms().q!;
+    expect(getHistogramQuantile(state, 0.5)).toBe(50); // median lands in the ≤50 bucket
+    expect(getHistogramQuantile(state, 0.95)).toBe(500); // p95 lands in the ≤500 bucket
+    expect(getHistogramQuantile({ bucketCounts: [0, 0], sum: 0, count: 0 }, 0.5)).toBe(0);
   });
 });
 

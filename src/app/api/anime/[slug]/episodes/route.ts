@@ -1,6 +1,7 @@
 import { getAnimeDetailWithMeta } from "@/services/scraper";
 import { parseEpisodeRange } from "@/services/scraper/sanitize";
 import { xCacheHeaders } from "@/services/cache";
+import { problemResponse } from "@/lib/api-error";
 import { checkEtagMatch, generateEtag } from "@/lib/etag";
 import { getRequestId } from "@/lib/request-id";
 import { normalizeSlug } from "@/utils/endpoint-slug";
@@ -8,10 +9,10 @@ import { NextRequest, NextResponse } from "next/server";
 
 interface EpisodeMirror {
   resolution: string;
-  height?: number;
+  height?: number | undefined;
   platform: string;
-  url?: string;
-  is_torrent?: boolean;
+  url?: string | undefined;
+  is_torrent?: boolean | undefined;
 }
 
 interface EpisodeGroup {
@@ -31,11 +32,21 @@ export async function GET(
   try {
     const { slug } = await params;
     if (!normalizeSlug(slug)) {
-      return NextResponse.json({ error: "Invalid slug", requestId: getRequestId(request) }, { status: 400 });
+      return problemResponse({
+        status: 400,
+        title: "Bad Request",
+        detail: "Invalid slug",
+        requestId: getRequestId(request),
+      });
     }
     const { anime: detail, tier } = await getAnimeDetailWithMeta(slug);
     if (!detail || !detail.title) {
-      return NextResponse.json({ error: "Anime not found", requestId: getRequestId(request) }, { status: 404 });
+      return problemResponse({
+        status: 404,
+        title: "Not Found",
+        detail: "Anime not found",
+        requestId: getRequestId(request),
+      });
     }
 
     const groups: EpisodeGroup[] = (detail.download ?? [])
@@ -84,9 +95,12 @@ export async function GET(
 
     return NextResponse.json(payload, { headers });
   } catch {
-    return NextResponse.json(
-      { error: "Failed to fetch anime episodes", requestId: getRequestId(request) },
-      { status: 500, headers: { ...xCacheHeaders("fallback") } },
-    );
+    return problemResponse({
+      status: 500,
+      title: "Upstream failure",
+      detail: "Failed to fetch anime episodes",
+      requestId: getRequestId(request),
+      headers: { ...xCacheHeaders("fallback") },
+    });
   }
 }

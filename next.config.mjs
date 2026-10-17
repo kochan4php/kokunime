@@ -26,10 +26,17 @@ const nextConfig = {
   reactStrictMode: true,
   compress: true,
   poweredByHeader: false,
+  // cacheComponents (PPR) trial 2026-10: 34 routes fail ("Route segment config
+  // dynamic is not compatible") — deferred until the API routes drop
+  // force-dynamic; see docs/adr/0006. Do not enable partially.
   experimental: {
     // Client router cache: revisits within 30s reuse the RSC payload instead of
     // refetching, so back/forward and repeated nav feel instant.
     staleTimes: { dynamic: 30 },
+    // Persist the Turbopack module cache to disk between runs: dev restarts
+    // and CI builds (with .next/cache restored) skip most recompilation.
+    turbopackFileSystemCacheForDev: true,
+    turbopackFileSystemCacheForBuild: true,
   },
   env: {
     // Cache-busting token for the service worker URL (see public/sw.js): a new

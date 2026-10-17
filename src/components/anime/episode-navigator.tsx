@@ -5,7 +5,7 @@ import { getProgress, nextUnwatchedEpisode, subscribeProgress } from "@/utils/pr
 import { JSX, useMemo, useSyncExternalStore } from "react";
 
 interface EpisodeNavigatorProps {
-  slug?: string;
+  slug?: string | undefined;
   episodes: number[];
 }
 

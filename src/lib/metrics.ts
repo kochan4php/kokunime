@@ -14,6 +14,8 @@ interface HistogramState {
   count: number;
 }
 
+export type { HistogramState };
+
 const histograms = new Map<string, HistogramState>();
 
 export const incrementMetric = (name: string, by = 1): void => {
@@ -39,6 +41,23 @@ export const observeHistogram = (name: string, valueMs: number): void => {
 };
 
 export const getHistograms = (): Record<string, HistogramState> => Object.fromEntries(histograms);
+
+// Bucket-approximated quantile (upper bound of the bucket the quantile lands
+// in): enough for p50/p95 gauges without an HDR-histogram dependency.
+export const getHistogramQuantile = (state: HistogramState, quantile: number): number => {
+  if (state.count === 0) return 0;
+  const target = Math.ceil(state.count * quantile);
+  let cumulative = 0;
+  for (let index = 0; index < state.bucketCounts.length; index++) {
+    cumulative += state.bucketCounts[index] ?? 0;
+    if (cumulative >= target) {
+      return index < HISTOGRAM_BUCKETS.length
+        ? (HISTOGRAM_BUCKETS[index] ?? Number.POSITIVE_INFINITY)
+        : Number.POSITIVE_INFINITY;
+    }
+  }
+  return Number.POSITIVE_INFINITY;
+};
 
 // Tests only — production code never resets metrics mid-process.
 export const resetMetrics = (): void => {

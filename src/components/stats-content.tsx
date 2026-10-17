@@ -12,6 +12,16 @@ const SERVER_EMPTY: never[] = [];
 
 const MONTHS_SHORT = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
 
+// Rough watch-time estimate: episodes are ~24 minutes on average.
+const MINUTES_PER_EPISODE = 24;
+
+const formatWatchTime = (minutes: number): string => {
+  if (minutes < 60) return `${minutes} m`;
+  const hours = minutes / 60;
+  if (hours < 100) return `${hours.toFixed(1)} jam`;
+  return `${Math.round(hours)} jam`;
+};
+
 const dayKey = (ts: number): string => {
   const date = new Date(ts);
   return `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`;
@@ -85,11 +95,24 @@ const StatsContent = (): JSX.Element => {
       cursor.setDate(cursor.getDate() - 1);
     }
 
+    const genreCounts = new Map<string, number>();
+    for (const bookmark of bookmarks) {
+      for (const genre of bookmark.genres ?? []) {
+        if (genre) genreCounts.set(genre, (genreCounts.get(genre) ?? 0) + 1);
+      }
+    }
+    const topGenres: MiniBarDatum[] = [...genreCounts.entries()]
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 8)
+      .map(([label, value]) => ({ label, value }));
+
     return {
       months,
       ratingCounts,
       topFolders,
+      topGenres,
       totalWatched,
+      watchMinutes: totalWatched * MINUTES_PER_EPISODE,
       completedSeries,
       streak,
       avgRating: ratingCount > 0 ? (ratingSum / ratingCount).toFixed(1) : "—",
@@ -109,6 +132,7 @@ const StatsContent = (): JSX.Element => {
       bg: "bg-nb-orange",
     },
     { label: "Riwayat Dilihat", value: String(history.length), icon: "🕘", bg: "bg-nb-teal" },
+    { label: "Estimasi Waktu Tonton", value: formatWatchTime(stats.watchMinutes), icon: "⏱", bg: "bg-nb-purple" },
   ];
 
   return (
@@ -195,6 +219,26 @@ const StatsContent = (): JSX.Element => {
                       barClassName="bg-nb-yellow"
                     />
                   </div>
+                </div>
+              </div>
+
+              <div className="card-shell">
+                <div className="card-core p-5">
+                  <h2 className="font-display text-base font-bold text-ink">Distribusi Genre</h2>
+                  <p className="mt-1 text-xs text-ink-muted">Genre teratas dari anime yang kamu simpan.</p>
+                  {stats.topGenres.length === 0 ? (
+                    <p className="mt-3 text-sm text-ink-muted">
+                      Belum ada data genre. Genre mulai tercatat untuk bookmark yang dibuat setelah fitur ini aktif.
+                    </p>
+                  ) : (
+                    <div className="mt-4">
+                      <MiniBarChart
+                        data={stats.topGenres}
+                        ariaLabel="Grafik distribusi genre dari anime tersimpan"
+                        barClassName="bg-nb-teal"
+                      />
+                    </div>
+                  )}
                 </div>
               </div>
 

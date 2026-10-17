@@ -1,0 +1,2 @@
+#!/bin/sh
+pnpm exec node scripts/check-commit-msg.mjs "$1"

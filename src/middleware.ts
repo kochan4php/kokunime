@@ -28,6 +28,10 @@ export function middleware(request: NextRequest): NextResponse {
   // Nothing is blocked (Report-Only): violations land in /api/report-error as
   // csp_violation, so a future enforcing pass is data-driven. Next reads the
   // nonce from the request header and stamps it onto its own scripts.
+  // Flip to enforcing once the report-only violation stream is clean:
+  // CSP_ENFORCE=1 moves the whole policy (Trusted Types included) out of
+  // Report-Only.
+  const enforceCsp = (process.env.CSP_ENFORCE ?? "").trim() === "1";
   const nonce = btoa(crypto.randomUUID());
   const csp = [
     "default-src 'self'",
@@ -52,6 +56,7 @@ export function middleware(request: NextRequest): NextResponse {
   if (Math.random() < SAMPLE_RATE) {
     const proxyStart = Number(request.headers.get("x-request-start"));
     const ageMs = Number.isFinite(proxyStart) && proxyStart > 0 ? Math.round(startedAt - proxyStart) : undefined;
+    // biome-ignore lint/suspicious/noConsoleLog: sampled access log is the intended stdout sink.
     console.log(
       JSON.stringify({
         level: "info",
@@ -67,7 +72,7 @@ export function middleware(request: NextRequest): NextResponse {
 
   const response = NextResponse.next({ request: { headers } });
   response.headers.set("x-request-id", requestId);
-  response.headers.set("Content-Security-Policy-Report-Only", csp);
+  response.headers.set(enforceCsp ? "Content-Security-Policy" : "Content-Security-Policy-Report-Only", csp);
   return response;
 }
 

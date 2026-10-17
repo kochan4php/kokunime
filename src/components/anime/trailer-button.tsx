@@ -3,7 +3,7 @@
 import { JSX, useRef, useState } from "react";
 
 interface TrailerButtonProps {
-  trailerUrl?: string;
+  trailerUrl?: string | undefined;
   title: string;
 }
 

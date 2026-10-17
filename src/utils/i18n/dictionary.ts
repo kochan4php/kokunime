@@ -111,6 +111,10 @@ export const DICTIONARY = {
     "settings.data_cleaning": "Pembersihan Data",
     "settings.clear_searches": "Hapus Pencarian",
     "settings.clear_history": "Hapus Riwayat",
+    "settings.quota_label": "Kuota browser",
+    "settings.persist_button": "📌 Simpan permanen",
+    "settings.persist_active": "✓ Penyimpanan permanen",
+    "settings.reset_all": "🚨 Hapus Semua Data Lokal",
 
     // System Info
     "settings.system_info": "Informasi Sistem",
@@ -312,6 +316,10 @@ export const DICTIONARY = {
     "settings.data_cleaning": "Data Management",
     "settings.clear_searches": "Clear Search History",
     "settings.clear_history": "Clear Watch History",
+    "settings.quota_label": "Browser quota",
+    "settings.persist_button": "📌 Make storage persistent",
+    "settings.persist_active": "✓ Persistent storage",
+    "settings.reset_all": "🚨 Erase All Local Data",
 
     // System Info
     "settings.system_info": "System Information",

@@ -3,6 +3,7 @@ import { SITE_URL } from "@/lib/site";
 import { toTitle } from "@/utils/to-title";
 import { buildSubpageBreadcrumbJsonLd, safeJsonLd } from "@/lib/seo";
 import AnimeListing from "@/sections/anime-listing";
+import Breadcrumbs from "@/components/breadcrumbs";
 import MainLayout from "@/layouts/main-layout";
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
@@ -24,7 +25,10 @@ export async function generateMetadata({
   return {
     title: `Genre ${title}`,
     description: `Daftar anime dengan genre ${title}.`,
-    alternates: { canonical: page > 1 ? `/genres/${genre}?page=${page}` : `/genres/${genre}` },
+    alternates: {
+      canonical: page > 1 ? `/genres/${genre}?page=${page}` : `/genres/${genre}`,
+      types: { "application/rss+xml": `/genres/${genre}/feed.xml` },
+    },
     openGraph: {
       title: `Genre ${title}`,
       url: `${SITE_URL}${page > 1 ? `/genres/${genre}?page=${page}` : `/genres/${genre}`}`,
@@ -65,6 +69,7 @@ const GenrePage = async ({
         }}
         suppressHydrationWarning
       />
+      <Breadcrumbs items={[{ name: "Genre", href: "/genres" }, { name: title }]} />
       <AnimeListing chip="Genre" title={title} anime={anime} pagination={pagination} eagerCount={5} />
     </MainLayout>
   );

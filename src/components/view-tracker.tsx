@@ -11,17 +11,27 @@ const ViewTracker = ({ slug }: { slug: string }): null => {
     if (nav.doNotTrack === "1") return;
 
     const payload = JSON.stringify({ slug });
+    const queueForSync = (): void => {
+      navigator.serviceWorker?.controller?.postMessage({ type: "kokunime:queue-track", body: { slug } });
+    };
     const timer = window.setTimeout(() => {
       try {
+        // Offline: hand the ping to the service worker outbox (Background
+        // Sync replays it; the online listener flushes as fallback).
+        if (!navigator.onLine) {
+          queueForSync();
+          return;
+        }
         if (navigator.sendBeacon) {
-          navigator.sendBeacon("/api/track-view", new Blob([payload], { type: "application/json" }));
+          const queued = navigator.sendBeacon("/api/track-view", new Blob([payload], { type: "application/json" }));
+          if (!queued) queueForSync();
         } else {
           void fetch("/api/track-view", {
             method: "POST",
             headers: { "content-type": "application/json" },
             body: payload,
             keepalive: true,
-          });
+          }).catch(() => queueForSync());
         }
       } catch {
         // Trending is best-effort.

@@ -4,13 +4,13 @@ import { useSyncExternalStore } from "react";
 import { STORAGE_KEYS } from "@/utils/storage-keys";
 
 export type AppLanguage = "id" | "en";
-export type AccentColor = "orange" | "emerald" | "violet" | "cyan" | "rose" | "amber";
+type AccentColor = "orange" | "emerald" | "violet" | "cyan" | "rose" | "amber";
 export type FontFamily = "sans" | "mono" | "serif";
 export type FontSize = "compact" | "normal" | "large";
 export type CardDensity = "comfortable" | "compact";
 export type ReadingMode = "none" | "sepia" | "high-contrast";
-export type DefaultViewMode = "grid" | "list";
-export type DownloadLayoutMode = "cards" | "matrix";
+type DefaultViewMode = "grid" | "list";
+type DownloadLayoutMode = "cards" | "matrix";
 
 export interface AppSettings {
   language: AppLanguage;
@@ -53,7 +53,7 @@ export const ACCENT_PRESETS: { key: AccentColor; label: string; color: string; d
   { key: "amber", label: "Golden Amber", color: "#f59e0b", desc: "Emas Hangat & Klasik" },
 ];
 
-export const SETTINGS_STORAGE_KEY = STORAGE_KEYS.userSettings;
+const SETTINGS_STORAGE_KEY = STORAGE_KEYS.userSettings;
 export const SETTINGS_CHANGE_EVENT = STORAGE_KEYS.settingsChanged;
 
 let cachedSettingsRaw: string | null = null;

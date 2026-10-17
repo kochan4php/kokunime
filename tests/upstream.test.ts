@@ -1,98 +1,152 @@
-﻿import { describe, expect, it, vi, beforeEach, afterEach } from "vitest";
+﻿import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import upstream from "@/config/upstream";
 import { resetCircuits } from "@/lib/circuit-breaker";
 
-describe("upstream axios instance", () => {
+vi.mock("@/lib/redis", () => ({
+  redisGet: vi.fn(async () => null),
+  redisSet: vi.fn(async () => {}),
+}));
+
+import { redisGet, redisSet } from "@/lib/redis";
+
+const HTML = "<html><head><title>Kusonime</title></head><body>ok</body></html>";
+
+describe("upstream fetch client", () => {
   beforeEach(() => {
-    vi.restoreAllMocks();
+    resetCircuits();
+    vi.mocked(redisGet).mockResolvedValue(null);
+    vi.mocked(redisSet).mockResolvedValue(undefined);
   });
 
   afterEach(() => {
     vi.restoreAllMocks();
+    vi.unstubAllGlobals();
+    vi.useRealTimers();
   });
 
-  it("fetches data successfully using upstream instance", async () => {
-    const mockHtml = "<html><body><h1>Kokunime</h1></body></html>";
-    vi.spyOn(upstream, "get").mockResolvedValueOnce({
-      data: mockHtml,
-      status: 200,
-      statusText: "OK",
-      headers: {},
-      config: { url: "/anime-test" } as any,
-    });
+  it("fetches html and sends the direct-scrape headers", async () => {
+    const fetchMock = vi.fn().mockResolvedValue(new Response(HTML, { status: 200 }));
+    vi.stubGlobal("fetch", fetchMock);
 
     const res = await upstream.get("/anime-test");
     expect(res.status).toBe(200);
-    expect(res.data).toBe(mockHtml);
-  });
+    expect(res.data).toContain("Kusonime");
 
-  it("has correct base URL and timeout", () => {
-    expect(upstream.defaults.baseURL).toBe("https://kusonime.com/");
-    expect(upstream.defaults.timeout).toBe(10_000);
-    expect(upstream.defaults.withCredentials).toBe(true);
-    expect(String(upstream.defaults.headers["User-Agent"])).toBe("*");
-    expect(upstream.defaults.headers["Referer"]).toBe("https://kusonime.com/");
-  });
-
-  it("rejects responses without kusonime content (challenge/block pages)", async () => {
-    vi.spyOn(upstream, "get").mockRejectedValueOnce(
-      new Error("Upstream returned non-kusonime content (5210 bytes) — likely blocked or challenged"),
-    );
-    await expect(upstream.get("/page/2/")).rejects.toThrow(/non-kusonime content/);
+    const [url, init] = fetchMock.mock.calls[0] as [string, RequestInit];
+    expect(url).toBe("https://kusonime.com/anime-test");
+    const headers = init.headers as Record<string, string>;
+    expect(headers["User-Agent"]).toBe("*");
+    expect(headers.Referer).toBe("https://kusonime.com/");
+    expect(headers["X-Requested-With"]).toBe("XMLHttpRequest");
   });
 });
 
-// Chaos drill for the retry interceptor: drives a throwaway adapter so the
-// real request/response interceptor chain (breaker gate, retries, brand check,
-// metrics) executes exactly as in production.
-describe("upstream retry chaos", () => {
-  const originalAdapter = upstream.defaults.adapter;
-
+describe("upstream failures", () => {
   beforeEach(() => {
     resetCircuits();
+    vi.mocked(redisGet).mockResolvedValue(null);
+    vi.mocked(redisSet).mockResolvedValue(undefined);
     vi.useFakeTimers();
   });
 
   afterEach(() => {
-    upstream.defaults.adapter = originalAdapter;
     vi.useRealTimers();
     vi.restoreAllMocks();
+    vi.unstubAllGlobals();
   });
 
-  const failingAdapter = (failuresBeforeSuccess: number) => {
-    let calls = 0;
-    upstream.defaults.adapter = async (config) => {
-      calls++;
-      if (calls <= failuresBeforeSuccess) {
-        const error = Object.assign(new Error("socket hang up"), { config, isAxiosError: true });
-        throw error;
-      }
-      return {
-        data: "<html><head><title>Kusonime</title></head></html>",
-        status: 200,
-        statusText: "OK",
-        headers: {},
-        config,
-      } as never;
-    };
-    return () => calls;
-  };
-
   it("retries transient network failures and succeeds on the third attempt", async () => {
-    const callCount = failingAdapter(2);
+    let calls = 0;
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () => {
+        calls++;
+        if (calls <= 2) throw new TypeError("fetch failed");
+        return new Response(HTML, { status: 200 });
+      }),
+    );
+
     const promise = upstream.get("/anime/chaos-retry");
     await vi.runAllTimersAsync();
     const response = await promise;
     expect(response.status).toBe(200);
-    expect(callCount()).toBe(3); // initial + MAX_RETRIES(2)
+    expect(calls).toBe(3); // initial + MAX_RETRIES(2)
   });
 
   it("gives up after MAX_RETRIES and records the failure once", async () => {
-    const callCount = failingAdapter(Number.POSITIVE_INFINITY);
+    let calls = 0;
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () => {
+        calls++;
+        throw new TypeError("fetch failed");
+      }),
+    );
+
     const promise = upstream.get("/anime/always-down");
-    const assertion = expect(promise).rejects.toThrow("socket hang up");
+    const assertion = expect(promise).rejects.toThrow("fetch failed");
     await vi.runAllTimersAsync();
     await assertion;
-    expect(callCount()).toBe(3); // no infinite retry loop
+    expect(calls).toBe(3); // no infinite retry loop
+  });
+
+  it("rejects responses without kusonime content (challenge/block pages)", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () => new Response("cloudflare challenge page", { status: 200 })),
+    );
+
+    const promise = upstream.get("/page/2/");
+    const assertion = expect(promise).rejects.toThrow(/non-kusonime content/);
+    await vi.runAllTimersAsync();
+    await assertion;
+  });
+});
+
+describe("upstream conditional GET", () => {
+  beforeEach(() => {
+    resetCircuits();
+    vi.mocked(redisGet).mockResolvedValue(null);
+    vi.mocked(redisSet).mockResolvedValue(undefined);
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+    vi.unstubAllGlobals();
+  });
+
+  it("sends If-None-Match from the stored validator and serves the cached body on 304", async () => {
+    vi.mocked(redisGet).mockImplementation(async (key: string) => {
+      if (key.startsWith("upstream:body:")) return "<html><body>Kusonime cached</body></html>";
+      if (key.startsWith("upstream:etag:")) return { etag: '"abc"' };
+      return null;
+    });
+    const fetchMock = vi.fn().mockResolvedValue(new Response(null, { status: 304 }));
+    vi.stubGlobal("fetch", fetchMock);
+
+    const res = await upstream.get("/cached-page");
+    expect(res.status).toBe(200);
+    expect(res.data).toContain("Kusonime cached");
+    const [, init] = fetchMock.mock.calls[0] as [string, RequestInit];
+    expect((init.headers as Record<string, string>)["If-None-Match"]).toBe('"abc"');
+  });
+
+  it("stores validator + body after a 200 carrying an ETag", async () => {
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValue(new Response("<html>Kusonime fresh</html>", { status: 200, headers: { etag: '"v2"' } }));
+    vi.stubGlobal("fetch", fetchMock);
+
+    await upstream.get("/fresh-page");
+    expect(vi.mocked(redisSet)).toHaveBeenCalledWith(
+      expect.stringMatching(/^upstream:body:/),
+      expect.stringContaining("Kusonime fresh"),
+      expect.any(Number),
+    );
+    expect(vi.mocked(redisSet)).toHaveBeenCalledWith(
+      expect.stringMatching(/^upstream:etag:/),
+      expect.objectContaining({ etag: '"v2"' }),
+      expect.any(Number),
+    );
   });
 });

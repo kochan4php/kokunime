@@ -19,6 +19,33 @@
     }
   }
 
+  /* Data-saving visitors: decorative motion is the first thing to cut. */
+  @media (prefers-reduced-data: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+
+  /* Windows High Contrast / forced-colors: keep the focus ring visible. */
+  @media (forced-colors: active) {
+    :focus-visible {
+      outline: 3px solid Highlight;
+      outline-offset: 2px;
+    }
+  }
+
+  /* Long grids: skip layout/paint work for cards far outside the viewport
+     (progressive — browsers without content-visibility ignore both lines). */
+  .cv-auto {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 320px;
+  }
+
   body {
     @apply bg-bg text-ink;
     font-family: var(--font-mono, monospace);

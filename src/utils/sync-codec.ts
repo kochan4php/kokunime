@@ -1,7 +1,7 @@
 // Share-link codec for bookmarks + progress sync: JSON → gzip → base64url when
 // CompressionStream exists (all evergreen browsers, Node ≥18), plain base64url
 // otherwise. The "g." / "j." / legacy prefixes make decode format-agnostic.
-export interface SyncPayload {
+interface SyncPayload {
   v: 1;
   b?: unknown[]; // BookmarkItem[]
   p?: unknown[]; // ProgressEntry[]

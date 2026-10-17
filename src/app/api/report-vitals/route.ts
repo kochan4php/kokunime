@@ -1,3 +1,5 @@
+import { RATE_LIMIT_WINDOW_MS, RATE_LIMITS } from "@/config/constants";
+import { isFeatureEnabled } from "@/lib/feature-flags";
 import { checkRateLimit, getRateLimitHeaders } from "@/lib/rate-limit";
 import { logJson } from "@/lib/logger";
 import { getRequestId } from "@/lib/request-id";
@@ -14,11 +16,16 @@ const VALID_NAMES = new Set<string>(Object.keys(VITALS_THRESHOLDS));
 // endpoint can never be used as an open relay into the Discord webhook.
 export async function POST(request: NextRequest): Promise<NextResponse> {
   const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "vitals-client";
-  const rate = await checkRateLimit(`report-vitals:${ip}`, 30, 60_000);
+  const rate = await checkRateLimit(`report-vitals:${ip}`, RATE_LIMITS.reportVitals, RATE_LIMIT_WINDOW_MS);
   const rateHeaders = getRateLimitHeaders(rate);
 
   if (!rate.success) {
     return NextResponse.json({ ok: false }, { status: 429, headers: rateHeaders });
+  }
+
+  // Runtime flag: sample collection can be switched off without a redeploy.
+  if (!(await isFeatureEnabled("report-vitals"))) {
+    return new NextResponse(null, { status: 204, headers: rateHeaders });
   }
 
   try {

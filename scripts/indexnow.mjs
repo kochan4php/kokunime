@@ -24,8 +24,26 @@ if (!sitemapRes.ok) {
   console.error(`Sitemap fetch failed: HTTP ${sitemapRes.status}`);
   process.exit(1);
 }
-const xml = await sitemapRes.text();
-const urls = [...xml.matchAll(/<loc>(.*?)<\/loc>/g)].map((m) => m[1].replaceAll("&amp;", "&"));
+let xml = await sitemapRes.text();
+let urls = [...xml.matchAll(/<loc>(.*?)<\/loc>/g)].map((m) => m[1].replaceAll("&amp;", "&"));
+// The site serves a sitemap index; expand its chunks into page URLs.
+if (/<sitemapindex/i.test(xml)) {
+  const chunks = urls;
+  urls = [];
+  for (const chunk of chunks) {
+    try {
+      const chunkRes = await fetch(chunk);
+      if (!chunkRes.ok) {
+        console.error(`chunk ${chunk}: HTTP ${chunkRes.status}`);
+        continue;
+      }
+      xml = await chunkRes.text();
+      urls.push(...[...xml.matchAll(/<loc>(.*?)<\/loc>/g)].map((m) => m[1].replaceAll("&amp;", "&")));
+    } catch (err) {
+      console.error(`chunk ${chunk} failed:`, err instanceof Error ? err.message : err);
+    }
+  }
+}
 console.log(`Sitemap URLs: ${urls.length}`);
 
 let failures = 0;

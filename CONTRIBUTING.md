@@ -42,21 +42,44 @@ Terima kasih telah tertarik untuk berkontribusi pada pengembangan **Kokunime**! 
 
 ## 🧪 Pengujian & Standar Kualitas
 
-Sebelum mengajukan pull request, pastikan seluruh pipeline berikut lulus:
+Sebelum mengajukan pull request, pastikan seluruh gate berikut lulus:
 
 ```bash
-# 1. Jalankan Unit Tests
-pnpm test
-
-# 2. Jalankan Linter ESLint
-pnpm lint
-
-# 3. Validasi Format Kode Prettier
-pnpm prettier:check
-
-# 4. Uji Kompilasi Produksi
-pnpm build
+pnpm format:check        # 1. Format (Biome)
+pnpm lint                # 2. Lint (Biome)
+pnpm test                # 3. Unit test (Vitest: project node + dom)
+pnpm exec tsc --noEmit   # 4. Type check (strict + exactOptionalPropertyTypes)
+pnpm build               # 5. Build produksi
+pnpm bundle:budget       # 6. Budget ukuran bundle klien
+pnpm size:budget         # 7. Budget ukuran file sumber (maks 450 baris/file)
 ```
+
+Catatan:
+
+- Test DOM (jsdom) hidup di `tests/{a11y,download-anchors,honeypot-a11y,interactions}`;
+  sisanya project `node`. Jalankan satu project: `pnpm test --project node`.
+- Budget file (`scripts/file-size-budget.mjs`) gagal bila ada file melebihi 450
+  baris — pecah mengikuti pola yang ada (komponen seksi, hook, util).
+- Export yang tidak dipakai lagi diperiksa `scripts/find-unused-exports.mjs`;
+  jangan biarkan daftar bertambah (de-export atau hapus modulnya).
+- Panduan ops (deploy, rollback, backup, incident): `RUNBOOK.md`.
+
+## 📝 Konvensi Commit
+
+Commit mengikuti [Conventional Commits](https://www.conventionalcommits.org/)
+— dipakai `scripts/version-bump.mjs` untuk tag semver otomatis:
+
+```
+feat(search): tambah filter genre
+fix(parser): jangan potong judul dengan tanda hubung
+chore(deps): bump vitest
+```
+
+- `feat` → minor, `fix`/`perf`/`refactor`/`revert` → patch,
+  `!` atau `BREAKING CHANGE` → major.
+- Hook `.husky/commit-msg` memvalidasi format (pesan non-conforming ditolak).
+- Pre-commit menjalankan lint-staged (format + lint file yang berubah). Regen
+  graphify dilewati dengan `GRAPHIFY_SKIP_HOOK=1` bila perlu.
 
 ---
 
@@ -67,7 +90,10 @@ pnpm build
 - `src/services/scraper/` — Engine scraper Cheerio dan parser ketahanan data.
 - `src/config/upstream.ts` — Modul upstream HTTP fetcher dengan retry & circuit breaker.
 - `src/utils/` — Utilitas bookmark, riwayat tontonan, slug formatter, dan history.
-- `tests/` — Test suite Vitest untuk parser, unit resilience, dan API.
+- `tests/` — Test suite Vitest dua project (node & jsdom).
+- `scripts/` — Ops & quality: deploy/canary/rollback, backup, load test, budget,
+  audit unused export, dsb.
+- `docs/` — ADR, matriks env, arsitektur, quickstart API.
 
 ---
 

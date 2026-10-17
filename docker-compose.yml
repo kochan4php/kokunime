@@ -5,6 +5,9 @@
       dockerfile: Dockerfile
     container_name: kokunime-app
     restart: unless-stopped
+    labels:
+      - "com.kokunime.role=app"
+      - "com.kokunime.probe=/api/health"
     ports:
       - "3000:3000"
     environment:
@@ -36,6 +39,9 @@
     image: redis:7-alpine
     container_name: kokunime-redis
     restart: unless-stopped
+    labels:
+      - "com.kokunime.role=cache"
+      - "com.kokunime.probe=redis-cli ping"
     command: ["redis-server", "--appendonly", "yes"]
     volumes:
       - kokunime-redis:/data

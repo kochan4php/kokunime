@@ -1,6 +1,6 @@
 import type { ReactElement } from "react";
 
-export interface OgCardOptions {
+interface OgCardOptions {
   badge: string;
   title: string;
   subtitle?: string;

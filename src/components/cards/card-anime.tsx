@@ -19,7 +19,7 @@ const CardAnime = ({
   const isCompleted = /complete|tamat/i.test(meta || "");
 
   return (
-    <ViewTransitionLink href={path} className="group block h-full select-none">
+    <ViewTransitionLink href={path} className="cv-auto group block h-full select-none">
       <div className="card-shell h-full">
         <div className="card-core flex flex-col h-full overflow-hidden">
           {/* Poster Image Container */}
@@ -43,6 +43,7 @@ const CardAnime = ({
                   title={title}
                   image={src}
                   release={meta}
+                  genres={genres}
                   className="!h-8 !w-8 rounded-sm border-2 border-border bg-surface text-ink shadow-[2px_2px_0_0_var(--border)] hover:bg-nb-yellow hover:text-nb-ink"
                 />
               </span>

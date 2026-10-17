@@ -20,16 +20,18 @@
     "docker:up": "pnpm docker:down && docker compose up -d",
     "docker:down": "docker compose down",
     "changelog": "node scripts/release-changelog.mjs",
+    "version:bump": "node scripts/version-bump.mjs",
     "backup:cache": "node scripts/backup-cache.mjs",
     "bundle:budget": "node scripts/bundle-budget.mjs",
+    "size:budget": "node scripts/file-size-budget.mjs",
     "audit:client": "node scripts/find-client-unnecessary.mjs",
     "loadtest": "node scripts/load-test.mjs",
     "e2e": "node scripts/e2e-smoke.mjs",
     "indexnow": "node scripts/indexnow.mjs",
+    "audit:meta": "node scripts/audit-meta.mjs",
     "prepare": "husky"
   },
   "dependencies": {
-    "axios": "^1.19.0",
     "cheerio": "^1.2.0",
     "husky": "^9.1.7",
     "next": "^16.3.0",
@@ -53,6 +55,6 @@
     "vitest": "^4.1.10"
   },
   "lint-staged": {
-    "**/*.{js,jsx,ts,tsx,json,css}": ["biome check --write --no-errors-on-unmatched"]
+    "**/*.{js,jsx,ts,tsx,json,css}": ["node scripts/lint-staged-chunk.mjs"]
   }
 }

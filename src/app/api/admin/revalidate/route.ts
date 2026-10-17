@@ -1,7 +1,8 @@
+import { denyAdmin } from "@/lib/admin-guard";
 import { sanitizeRevalidatePaths } from "@/lib/admin-revalidate";
+import { submitToIndexNow } from "@/lib/indexnow";
 import { logJson } from "@/lib/logger";
 import { publishCacheInvalidate } from "@/lib/redis";
-import { safeCompare } from "@/lib/safe-compare";
 import { SITE_URL } from "@/lib/site";
 import { revalidatePath } from "next/cache";
 import { NextRequest, NextResponse } from "next/server";
@@ -12,13 +13,8 @@ export const dynamic = "force-dynamic";
 // hotfix to a cached page). Disabled (404) unless ADMIN_TOKEN — or
 // METRICS_TOKEN as fallback — is configured. Body: {"paths": ["/", "/anime/x"]}.
 export async function POST(request: NextRequest): Promise<NextResponse> {
-  const token = (process.env.ADMIN_TOKEN || process.env.METRICS_TOKEN || "").trim();
-  if (!token) return new NextResponse("Not Found", { status: 404 });
-
-  const provided = request.headers.get("authorization")?.replace(/^Bearer\s+/i, "") ?? "";
-  if (!safeCompare(provided.trim(), token)) {
-    return new NextResponse("Unauthorized", { status: 401, headers: { "WWW-Authenticate": "Bearer" } });
-  }
+  const denied = await denyAdmin(request);
+  if (denied) return denied;
 
   let body: { paths?: unknown } = {};
   try {
@@ -46,9 +42,15 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     }),
   );
 
+  // IndexNow: tell search engines the fresh URLs changed. Best-effort — the
+  // helper never throws and each batch has an 8s timeout.
+  const indexnow = await submitToIndexNow(paths.map((path) => `${SITE_URL}${path === "/" ? "" : path}`));
+  logJson("info", "admin_revalidate_indexnow", { ...indexnow });
+
   return NextResponse.json({
     ok: true,
     revalidated: paths,
+    indexnow,
     warm: paths.map((path, index) => {
       const settled = warm[index];
       return {

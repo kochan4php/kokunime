@@ -10,7 +10,7 @@ interface TaxonomyItem {
   endpoint?: string;
 }
 
-export interface TaxonomyWithMeta {
+interface TaxonomyWithMeta {
   items: TaxonomyItem[];
   tier: CacheTier;
 }

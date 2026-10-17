@@ -1,12 +1,15 @@
 "use client";
 
+import AnimeSearchField from "@/components/compare/anime-search-field";
+import CompareAnimeCard from "@/components/compare/compare-anime-card";
+import CompareGenreAnalysis from "@/components/compare/compare-genre-analysis";
+import CompareSpecsTable from "@/components/compare/compare-specs-table";
+import { useAnimeSearch } from "@/hooks/use-anime-search";
 import { Anime, AnimeDetail } from "@/interfaces";
 import { animeSlug } from "@/utils/endpoint-slug";
-import AnimeImage from "@/components/cards/anime-image";
 import { useTranslation } from "@/utils/i18n";
 import { extractYear, similarityScore } from "@/utils/similar";
-import Link from "next/link";
-import { JSX, useCallback, useEffect, useRef, useState } from "react";
+import { JSX, useCallback, useState } from "react";
 
 interface CompareAnimeClientProps {
   initialAnimeA: AnimeDetail | null;
@@ -23,6 +26,8 @@ const PRESET_COMPARISONS = [
   { label: "Solo Leveling vs Mashle", queryA: "Solo Leveling", queryB: "Mashle" },
   { label: "Spy x Family vs Oshi no Ko", queryA: "Spy x Family", queryB: "Oshi no Ko" },
 ];
+
+type Side = "a" | "b";
 
 const CompareAnimeClient = ({
   initialAnimeA,
@@ -43,24 +48,10 @@ const CompareAnimeClient = ({
   const [loadingA, setLoadingA] = useState(false);
   const [loadingB, setLoadingB] = useState(false);
 
-  // Search autocomplete states
-  const [searchA, setSearchA] = useState(initialAnimeA?.title || initialSlugA || "");
-  const [resultsA, setResultsA] = useState<Anime[]>([]);
-  const [isSearchingA, setIsSearchingA] = useState(false);
-  const [showDropdownA, setShowDropdownA] = useState(false);
-
-  const [searchB, setSearchB] = useState(initialAnimeB?.title || initialSlugB || "");
-  const [resultsB, setResultsB] = useState<Anime[]>([]);
-  const [isSearchingB, setIsSearchingB] = useState(false);
-  const [showDropdownB, setShowDropdownB] = useState(false);
-
-  const selectedTitleA = useRef<string>(initialAnimeA?.title || "");
-  const selectedTitleB = useRef<string>(initialAnimeB?.title || "");
-
   const [shareCopied, setShareCopied] = useState(false);
 
-  const refA = useRef<HTMLDivElement>(null);
-  const refB = useRef<HTMLDivElement>(null);
+  const paneA = useAnimeSearch(initialAnimeA?.title || initialSlugA || "");
+  const paneB = useAnimeSearch(initialAnimeB?.title || initialSlugB || "");
 
   const updateUrl = useCallback((a: string, b: string) => {
     const params = new URLSearchParams();
@@ -79,88 +70,57 @@ const CompareAnimeClient = ({
     return await res.json();
   };
 
-  const selectAnimeA = async (item: Anime) => {
-    const slug = animeSlug(item.link.endpoint) || animeSlug(item.link.url);
-    if (!slug) return;
-    selectedTitleA.current = item.title;
-    setShowDropdownA(false);
-    setResultsA([]);
-    setSearchA(item.title);
-    setSlugA(slug);
-    updateUrl(slug, slugB);
+  const loadDetail = async (side: Side, slug: string, fallbackTitle: string) => {
+    const setLoading = side === "a" ? setLoadingA : setLoadingB;
+    const setError = side === "a" ? setErrorA : setErrorB;
+    const setAnime = side === "a" ? setAnimeA : setAnimeB;
+    const pane = side === "a" ? paneA : paneB;
 
-    setLoadingA(true);
-    setErrorA(null);
+    setLoading(true);
+    setError(null);
     try {
       const data = await fetchDetail(slug);
       if (data && data.title) {
-        setAnimeA(data);
-        selectedTitleA.current = data.title;
-        setSearchA(data.title);
+        setAnime(data);
+        pane.syncSelected(data.title);
       } else {
-        setAnimeA(null);
-        setErrorA(`Anime "${item.title}" tidak ditemukan di database.`);
+        setAnime(null);
+        setError(`Anime "${fallbackTitle}" tidak ditemukan di database.`);
       }
     } catch {
-      setAnimeA(null);
-      setErrorA("Gagal menghubungi server untuk mengambil data.");
+      setAnime(null);
+      setError("Gagal menghubungi server untuk mengambil data.");
     } finally {
-      setLoadingA(false);
+      setLoading(false);
     }
   };
 
-  const selectAnimeB = async (item: Anime) => {
+  const chooseAnime = (side: Side) => (item: Anime) => {
     const slug = animeSlug(item.link.endpoint) || animeSlug(item.link.url);
     if (!slug) return;
-    selectedTitleB.current = item.title;
-    setShowDropdownB(false);
-    setResultsB([]);
-    setSearchB(item.title);
-    setSlugB(slug);
-    updateUrl(slugA, slug);
-
-    setLoadingB(true);
-    setErrorB(null);
-    try {
-      const data = await fetchDetail(slug);
-      if (data && data.title) {
-        setAnimeB(data);
-        selectedTitleB.current = data.title;
-        setSearchB(data.title);
-      } else {
-        setAnimeB(null);
-        setErrorB(`Anime "${item.title}" tidak ditemukan di database.`);
-      }
-    } catch {
-      setAnimeB(null);
-      setErrorB("Gagal menghubungi server untuk mengambil data.");
-    } finally {
-      setLoadingB(false);
+    const pane = side === "a" ? paneA : paneB;
+    pane.select(item);
+    if (side === "a") {
+      setSlugA(slug);
+      updateUrl(slug, slugB);
+    } else {
+      setSlugB(slug);
+      updateUrl(slugA, slug);
     }
+    void loadDetail(side, slug, item.title);
   };
 
   const handleSwap = () => {
-    const newA = slugB;
-    const newB = slugA;
-    const dataA = animeB;
-    const dataB = animeA;
-    const titleA = searchB;
-    const titleB = searchA;
+    const queryA = paneA.query;
+    const queryB = paneB.query;
+    paneA.syncSelected(queryB);
+    paneB.syncSelected(queryA);
 
-    selectedTitleA.current = titleA;
-    selectedTitleB.current = titleB;
-    setShowDropdownA(false);
-    setShowDropdownB(false);
-    setResultsA([]);
-    setResultsB([]);
-
-    setSlugA(newA);
-    setSlugB(newB);
-    setAnimeA(dataA);
-    setAnimeB(dataB);
-    setSearchA(titleA);
-    setSearchB(titleB);
-    updateUrl(newA, newB);
+    setSlugA(slugB);
+    setSlugB(slugA);
+    setAnimeA(animeB);
+    setAnimeB(animeA);
+    updateUrl(slugB, slugA);
   };
 
   const handlePreset = async (queryA: string, queryB: string) => {
@@ -170,14 +130,8 @@ const CompareAnimeClient = ({
     setErrorB(null);
     setAnimeA(null);
     setAnimeB(null);
-    selectedTitleA.current = queryA;
-    selectedTitleB.current = queryB;
-    setShowDropdownA(false);
-    setShowDropdownB(false);
-    setResultsA([]);
-    setResultsB([]);
-    setSearchA(queryA);
-    setSearchB(queryB);
+    paneA.syncSelected(queryA);
+    paneB.syncSelected(queryB);
 
     try {
       const [resA, resB] = await Promise.all([
@@ -200,16 +154,14 @@ const CompareAnimeClient = ({
 
         if (detailA && detailA.title) {
           setAnimeA(detailA);
-          selectedTitleA.current = detailA.title;
-          setSearchA(detailA.title);
+          paneA.syncSelected(detailA.title);
         } else {
           setErrorA(`Gagal memuat detail untuk ${queryA}.`);
         }
 
         if (detailB && detailB.title) {
           setAnimeB(detailB);
-          selectedTitleB.current = detailB.title;
-          setSearchB(detailB.title);
+          paneB.syncSelected(detailB.title);
         } else {
           setErrorB(`Gagal memuat detail untuk ${queryB}.`);
         }
@@ -225,100 +177,6 @@ const CompareAnimeClient = ({
     }
   };
 
-  // Click outside to close dropdowns
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (refA.current && !refA.current.contains(e.target as Node)) {
-        setShowDropdownA(false);
-      }
-      if (refB.current && !refB.current.contains(e.target as Node)) {
-        setShowDropdownB(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
-  const compareSearchCache = new Map<string, Anime[]>();
-
-  // Search A debounce with instant in-memory client cache
-  useEffect(() => {
-    const trimmed = searchA.trim().toLowerCase();
-    if (!trimmed || trimmed.length < 2 || searchA === selectedTitleA.current) {
-      setResultsA([]);
-      setShowDropdownA(false);
-      return;
-    }
-
-    if (compareSearchCache.has(trimmed)) {
-      const cachedList = compareSearchCache.get(trimmed) || [];
-      if (searchA !== selectedTitleA.current) {
-        setResultsA(cachedList);
-        setShowDropdownA(cachedList.length > 0);
-      }
-      setIsSearchingA(false);
-      return;
-    }
-
-    const timer = setTimeout(async () => {
-      setIsSearchingA(true);
-      try {
-        const res = await fetch(`/api/search?q=${encodeURIComponent(trimmed)}`);
-        const data = await res.json();
-        const results = (data.results || []) as Anime[];
-        compareSearchCache.set(trimmed, results);
-        if (searchA !== selectedTitleA.current) {
-          setResultsA(results);
-          setShowDropdownA(results.length > 0);
-        }
-      } catch {
-        setResultsA([]);
-      } finally {
-        setIsSearchingA(false);
-      }
-    }, 180);
-    return () => clearTimeout(timer);
-  }, [searchA]);
-
-  // Search B debounce with instant in-memory client cache
-  useEffect(() => {
-    const trimmed = searchB.trim().toLowerCase();
-    if (!trimmed || trimmed.length < 2 || searchB === selectedTitleB.current) {
-      setResultsB([]);
-      setShowDropdownB(false);
-      return;
-    }
-
-    if (compareSearchCache.has(trimmed)) {
-      const cachedList = compareSearchCache.get(trimmed) || [];
-      if (searchB !== selectedTitleB.current) {
-        setResultsB(cachedList);
-        setShowDropdownB(cachedList.length > 0);
-      }
-      setIsSearchingB(false);
-      return;
-    }
-
-    const timer = setTimeout(async () => {
-      setIsSearchingB(true);
-      try {
-        const res = await fetch(`/api/search?q=${encodeURIComponent(trimmed)}`);
-        const data = await res.json();
-        const results = (data.results || []) as Anime[];
-        compareSearchCache.set(trimmed, results);
-        if (searchB !== selectedTitleB.current) {
-          setResultsB(results);
-          setShowDropdownB(results.length > 0);
-        }
-      } catch {
-        setResultsB([]);
-      } finally {
-        setIsSearchingB(false);
-      }
-    }, 180);
-    return () => clearTimeout(timer);
-  }, [searchB]);
-
   const handleCopyShare = () => {
     const url = window.location.href;
     navigator.clipboard.writeText(url).then(() => {
@@ -329,25 +187,22 @@ const CompareAnimeClient = ({
 
   const isOverallLoading = loadingA || loadingB;
 
-  // Metric calculations
-  const scoreA = parseFloat(animeA?.score || "0");
-  const scoreB = parseFloat(animeB?.score || "0");
-  const epA = parseInt(animeA?.total_episode || "0", 10);
-  const epB = parseInt(animeB?.total_episode || "0", 10);
-
-  // Genre overlap
-  const genresA = animeA?.genre?.map((g) => g.name) || [];
-  const genresB = animeB?.genre?.map((g) => g.name) || [];
-  const sharedGenres = genresA.filter((g) => genresB.includes(g));
-  const uniqueGenresA = genresA.filter((g) => !genresB.includes(g));
-  const uniqueGenresB = genresB.filter((g) => !genresA.includes(g));
-
   // Local-only similarity — genre overlap + year/score/type proximity.
   const similarity =
     animeA && animeB
       ? similarityScore(
-          { genres: genresA, score: animeA.score, year: extractYear(animeA.release_on), type: animeA.type },
-          { genres: genresB, score: animeB.score, year: extractYear(animeB.release_on), type: animeB.type },
+          {
+            genres: animeA.genre?.map((g) => g.name) || [],
+            score: animeA.score,
+            year: extractYear(animeA.release_on),
+            type: animeA.type,
+          },
+          {
+            genres: animeB.genre?.map((g) => g.name) || [],
+            score: animeB.score,
+            year: extractYear(animeB.release_on),
+            type: animeB.type,
+          },
         )
       : 0;
 
@@ -378,66 +233,25 @@ const CompareAnimeClient = ({
 
           {/* Search Inputs & Swap */}
           <div className="grid grid-cols-1 lg:grid-cols-11 gap-4 items-center">
-            {/* Input Anime A (5 cols) */}
-            <div ref={refA} className="relative lg:col-span-5">
-              <div className="flex items-center justify-between mb-1.5">
-                <label htmlFor="input-anime-a" className="block font-mono text-xs font-bold text-accent">
-                  🔴 {t("compare.anime_a")}
-                </label>
-                {loadingA && (
-                  <span className="font-mono text-[10px] text-accent animate-pulse font-bold">
-                    {t("common.loading")}
-                  </span>
-                )}
-              </div>
-              <div className="relative">
-                <input
-                  id="input-anime-a"
-                  type="text"
-                  placeholder={t("compare.placeholder_a")}
-                  value={searchA}
-                  onChange={(e) => {
-                    selectedTitleA.current = "";
-                    setSearchA(e.target.value);
-                  }}
-                  onFocus={() => {
-                    if (resultsA.length > 0 && searchA !== selectedTitleA.current) {
-                      setShowDropdownA(true);
-                    }
-                  }}
-                  className="w-full rounded-sm border-2 border-border bg-surface px-4 py-3 text-xs sm:text-sm text-ink shadow-[2px_2px_0_0_var(--border)] outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all"
-                />
-                {isSearchingA && (
-                  <span className="absolute right-3.5 top-1/2 -translate-y-1/2 font-mono text-xs text-ink-muted animate-spin">
-                    ⏳
-                  </span>
-                )}
-              </div>
-
-              {/* Dropdown A */}
-              {showDropdownA && resultsA.length > 0 && (
-                <div className="absolute z-50 mt-2 max-h-72 w-full overflow-y-auto rounded-sm border-2 border-border bg-surface-solid p-2 shadow-[6px_6px_0_0_var(--border)] space-y-1">
-                  {resultsA.map((item, idx) => (
-                    <button
-                      key={idx}
-                      type="button"
-                      onClick={() => selectAnimeA(item)}
-                      className="flex w-full items-center gap-3 rounded-sm p-2 text-left hover:bg-nb-yellow transition-colors cursor-pointer"
-                    >
-                      <div className="relative h-12 w-9 shrink-0 overflow-hidden rounded-sm bg-surface-muted border-2 border-border">
-                        <AnimeImage fill sizes="36px" src={item.link.image as string} alt={item.title} />
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <p className="truncate font-display text-xs font-bold text-ink">{item.title}</p>
-                        <p className="font-mono text-[10px] text-ink-muted">
-                          {item.release || "Rilis"} • {item.genres?.slice(0, 2).join(", ") || "Anime"}
-                        </p>
-                      </div>
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
+            <AnimeSearchField
+              id="input-anime-a"
+              label={`🔴 ${t("compare.anime_a")}`}
+              placeholder={t("compare.placeholder_a")}
+              query={paneA.query}
+              onQueryChange={paneA.setQuery}
+              results={paneA.results}
+              isSearching={paneA.isSearching}
+              detailLoading={loadingA}
+              showDropdown={paneA.showDropdown}
+              loadingText={t("common.loading")}
+              onFocus={() => {
+                if (paneA.results.length > 0 && paneA.query !== paneA.selectedTitle.current) {
+                  paneA.setShowDropdown(true);
+                }
+              }}
+              onSelect={chooseAnime("a")}
+              containerRef={paneA.containerRef}
+            />
 
             {/* Swap Button (1 col) */}
             <div className="flex justify-center lg:col-span-1 py-1 lg:py-0">
@@ -452,66 +266,25 @@ const CompareAnimeClient = ({
               </button>
             </div>
 
-            {/* Input Anime B (5 cols) */}
-            <div ref={refB} className="relative lg:col-span-5">
-              <div className="flex items-center justify-between mb-1.5">
-                <label htmlFor="input-anime-b" className="block font-mono text-xs font-bold text-accent">
-                  🔵 {t("compare.anime_b")}
-                </label>
-                {loadingB && (
-                  <span className="font-mono text-[10px] text-accent animate-pulse font-bold">
-                    {t("common.loading")}
-                  </span>
-                )}
-              </div>
-              <div className="relative">
-                <input
-                  id="input-anime-b"
-                  type="text"
-                  placeholder={t("compare.placeholder_b")}
-                  value={searchB}
-                  onChange={(e) => {
-                    selectedTitleB.current = "";
-                    setSearchB(e.target.value);
-                  }}
-                  onFocus={() => {
-                    if (resultsB.length > 0 && searchB !== selectedTitleB.current) {
-                      setShowDropdownB(true);
-                    }
-                  }}
-                  className="w-full rounded-sm border-2 border-border bg-surface px-4 py-3 text-xs sm:text-sm text-ink shadow-[2px_2px_0_0_var(--border)] outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all"
-                />
-                {isSearchingB && (
-                  <span className="absolute right-3.5 top-1/2 -translate-y-1/2 font-mono text-xs text-ink-muted animate-spin">
-                    ⏳
-                  </span>
-                )}
-              </div>
-
-              {/* Dropdown B */}
-              {showDropdownB && resultsB.length > 0 && (
-                <div className="absolute z-50 mt-2 max-h-72 w-full overflow-y-auto rounded-sm border-2 border-border bg-surface-solid p-2 shadow-[6px_6px_0_0_var(--border)] space-y-1">
-                  {resultsB.map((item, idx) => (
-                    <button
-                      key={idx}
-                      type="button"
-                      onClick={() => selectAnimeB(item)}
-                      className="flex w-full items-center gap-3 rounded-sm p-2 text-left hover:bg-nb-yellow transition-colors cursor-pointer"
-                    >
-                      <div className="relative h-12 w-9 shrink-0 overflow-hidden rounded-sm bg-surface-muted border-2 border-border">
-                        <AnimeImage fill sizes="36px" src={item.link.image as string} alt={item.title} />
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <p className="truncate font-display text-xs font-bold text-ink">{item.title}</p>
-                        <p className="font-mono text-[10px] text-ink-muted">
-                          {item.release || "Rilis"} • {item.genres?.slice(0, 2).join(", ") || "Anime"}
-                        </p>
-                      </div>
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
+            <AnimeSearchField
+              id="input-anime-b"
+              label={`🔵 ${t("compare.anime_b")}`}
+              placeholder={t("compare.placeholder_b")}
+              query={paneB.query}
+              onQueryChange={paneB.setQuery}
+              results={paneB.results}
+              isSearching={paneB.isSearching}
+              detailLoading={loadingB}
+              showDropdown={paneB.showDropdown}
+              loadingText={t("common.loading")}
+              onFocus={() => {
+                if (paneB.results.length > 0 && paneB.query !== paneB.selectedTitle.current) {
+                  paneB.setShowDropdown(true);
+                }
+              }}
+              onSelect={chooseAnime("b")}
+              containerRef={paneB.containerRef}
+            />
           </div>
 
           {/* Quick Presets */}
@@ -593,6 +366,14 @@ const CompareAnimeClient = ({
       {/* Full Comparison Dashboard */}
       {!isOverallLoading && animeA && animeB && (
         <div className="space-y-8 animate-fade-in">
+          {/* Sticky mini header (mobile): the A-vs-B context stays visible while
+              scrolling the long dashboard. The site navbar is h-16. */}
+          <div className="sticky top-16 z-30 -mx-4 flex items-center justify-between gap-2 border-y-2 border-border bg-surface-solid/95 px-4 py-2 backdrop-blur md:hidden">
+            <span className="truncate font-mono text-xs font-bold text-ink">🔴 {animeA.title}</span>
+            <span className="shrink-0 font-mono text-[10px] text-ink-muted">vs</span>
+            <span className="truncate text-right font-mono text-xs font-bold text-ink">🔵 {animeB.title}</span>
+          </div>
+
           {/* Client-side similarity summary (no network) */}
           <div className="rounded-sm border-2 border-border bg-surface-solid p-4 shadow-[4px_4px_0_0_var(--border)]">
             <div className="flex flex-wrap items-center justify-between gap-2">
@@ -607,260 +388,13 @@ const CompareAnimeClient = ({
 
           {/* Header Side-by-Side Cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Anime A Card */}
-            <div className="card-shell overflow-hidden">
-              <div className="card-core p-5 sm:p-6 space-y-4">
-                <div className="flex items-start gap-4">
-                  <div className="relative aspect-[3/4] w-28 sm:w-32 shrink-0 overflow-hidden rounded-sm border-2 border-border bg-surface-muted shadow-[4px_4px_0_0_var(--border)]">
-                    {animeA.image && (
-                      <AnimeImage
-                        fill
-                        sizes="(max-width: 640px) 112px, 128px"
-                        src={animeA.image}
-                        alt={animeA.title ?? ""}
-                      />
-                    )}
-                  </div>
-                  <div className="min-w-0 flex-1 space-y-2">
-                    <span className="chip text-[10px]">🔴 {t("compare.anime_a")}</span>
-                    <h3 className="font-display text-base sm:text-lg font-extrabold text-ink leading-snug line-clamp-2">
-                      {animeA.title}
-                    </h3>
-                    <div className="flex flex-wrap items-center gap-1.5 font-mono text-xs">
-                      <span className="rounded-sm border-2 border-border bg-nb-yellow px-2 py-0.5 font-bold text-nb-ink">
-                        ⭐ {animeA.score || "N/A"}
-                      </span>
-                      <span className="rounded-sm border border-border bg-surface-muted px-2 py-0.5 text-ink-muted">
-                        {animeA.status || "N/A"}
-                      </span>
-                      <span className="rounded-sm border border-border bg-surface-muted px-2 py-0.5 text-ink-muted">
-                        {animeA.total_episode || "?"} Ep
-                      </span>
-                    </div>
-                    <div className="pt-2">
-                      <Link
-                        href={`/anime/${slugA}`}
-                        className="inline-flex items-center gap-1.5 rounded-sm border-2 border-border bg-accent px-3.5 py-1.5 font-mono text-xs font-bold text-(--accent-ink) shadow-[2px_2px_0_0_var(--border)] hover:-translate-y-0.5 active:translate-y-0 active:shadow-none transition-all"
-                      >
-                        <span>{t("compare.open_detail_a")}</span>
-                      </Link>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Anime B Card */}
-            <div className="card-shell overflow-hidden">
-              <div className="card-core p-5 sm:p-6 space-y-4">
-                <div className="flex items-start gap-4">
-                  <div className="relative aspect-[3/4] w-28 sm:w-32 shrink-0 overflow-hidden rounded-sm border-2 border-border bg-surface-muted shadow-[4px_4px_0_0_var(--border)]">
-                    {animeB.image && (
-                      <AnimeImage
-                        fill
-                        sizes="(max-width: 640px) 112px, 128px"
-                        src={animeB.image}
-                        alt={animeB.title ?? ""}
-                      />
-                    )}
-                  </div>
-                  <div className="min-w-0 flex-1 space-y-2">
-                    <span className="chip text-[10px]">🔵 {t("compare.anime_b")}</span>
-                    <h3 className="font-display text-base sm:text-lg font-extrabold text-ink leading-snug line-clamp-2">
-                      {animeB.title}
-                    </h3>
-                    <div className="flex flex-wrap items-center gap-1.5 font-mono text-xs">
-                      <span className="rounded-sm border-2 border-border bg-nb-yellow px-2 py-0.5 font-bold text-nb-ink">
-                        ⭐ {animeB.score || "N/A"}
-                      </span>
-                      <span className="rounded-sm border border-border bg-surface-muted px-2 py-0.5 text-ink-muted">
-                        {animeB.status || "N/A"}
-                      </span>
-                      <span className="rounded-sm border border-border bg-surface-muted px-2 py-0.5 text-ink-muted">
-                        {animeB.total_episode || "?"} Ep
-                      </span>
-                    </div>
-                    <div className="pt-2">
-                      <Link
-                        href={`/anime/${slugB}`}
-                        className="inline-flex items-center gap-1.5 rounded-sm border-2 border-border bg-accent px-3.5 py-1.5 font-mono text-xs font-bold text-(--accent-ink) shadow-[2px_2px_0_0_var(--border)] hover:-translate-y-0.5 active:translate-y-0 active:shadow-none transition-all"
-                      >
-                        <span>{t("compare.open_detail_b")}</span>
-                      </Link>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <CompareAnimeCard anime={animeA} slug={slugA} side="a" />
+            <CompareAnimeCard anime={animeB} slug={slugB} side="b" />
           </div>
 
-          {/* Side-by-Side Specs Matrix Table */}
-          <div className="card-shell overflow-hidden">
-            <div className="card-core p-0 overflow-x-auto">
-              <table className="w-full min-w-[620px] border-collapse text-left">
-                <thead>
-                  <tr className="border-b-2 border-border bg-surface-muted font-mono text-xs uppercase tracking-wider text-ink-muted">
-                    <th className="p-4 w-1/4">{t("compare.spec_parameter")}</th>
-                    <th className="p-4 w-[37.5%] font-display text-sm font-bold text-ink">🔴 {animeA.title}</th>
-                    <th className="p-4 w-[37.5%] font-display text-sm font-bold text-ink">🔵 {animeB.title}</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y-2 divide-border text-xs sm:text-sm font-mono">
-                  {/* Rating Score */}
-                  <tr className="hover:bg-surface-muted">
-                    <td className="p-4 font-bold text-ink-muted">⭐ {t("compare.score_rating")}</td>
-                    <td className="p-4 font-bold">
-                      <span
-                        className={`inline-flex items-center gap-1 px-3 py-1 ${
-                          scoreA > scoreB && scoreA > 0
-                            ? "rounded-sm border-2 border-border bg-nb-yellow text-nb-ink font-black shadow-[2px_2px_0_0_var(--border)]"
-                            : "text-ink"
-                        }`}
-                      >
-                        ⭐ {animeA.score || "N/A"} {scoreA > scoreB && t("compare.higher_score")}
-                      </span>
-                    </td>
-                    <td className="p-4 font-bold">
-                      <span
-                        className={`inline-flex items-center gap-1 px-3 py-1 ${
-                          scoreB > scoreA && scoreB > 0
-                            ? "rounded-sm border-2 border-border bg-nb-yellow text-nb-ink font-black shadow-[2px_2px_0_0_var(--border)]"
-                            : "text-ink"
-                        }`}
-                      >
-                        ⭐ {animeB.score || "N/A"} {scoreB > scoreA && t("compare.higher_score")}
-                      </span>
-                    </td>
-                  </tr>
+          <CompareSpecsTable animeA={animeA} animeB={animeB} />
 
-                  {/* Total Episodes */}
-                  <tr className="hover:bg-surface-muted">
-                    <td className="p-4 font-bold text-ink-muted">🎬 {t("compare.total_episodes")}</td>
-                    <td className="p-4">
-                      {animeA.total_episode || "N/A"}{" "}
-                      {epA > epB && epB > 0 && (
-                        <span className="rounded-sm border border-border bg-nb-lime px-1.5 font-bold text-nb-ink">
-                          ({epA - epB} {t("compare.more_episodes")})
-                        </span>
-                      )}
-                    </td>
-                    <td className="p-4">
-                      {animeB.total_episode || "N/A"}{" "}
-                      {epB > epA && epA > 0 && (
-                        <span className="rounded-sm border border-border bg-nb-lime px-1.5 font-bold text-nb-ink">
-                          ({epB - epA} {t("compare.more_episodes")})
-                        </span>
-                      )}
-                    </td>
-                  </tr>
-
-                  {/* Duration */}
-                  <tr className="hover:bg-surface-muted">
-                    <td className="p-4 font-bold text-ink-muted">⏱️ {t("compare.duration")}</td>
-                    <td className="p-4 text-ink">{animeA.duration || "N/A"}</td>
-                    <td className="p-4 text-ink">{animeB.duration || "N/A"}</td>
-                  </tr>
-
-                  {/* Studio */}
-                  <tr className="hover:bg-surface-muted">
-                    <td className="p-4 font-bold text-ink-muted">🏢 {t("compare.studio")}</td>
-                    <td className="p-4 text-accent font-bold">{animeA.studio || animeA.producer || "N/A"}</td>
-                    <td className="p-4 text-accent font-bold">{animeB.studio || animeB.producer || "N/A"}</td>
-                  </tr>
-
-                  {/* Type */}
-                  <tr className="hover:bg-surface-muted">
-                    <td className="p-4 font-bold text-ink-muted">📺 {t("compare.type")}</td>
-                    <td className="p-4 text-ink">{animeA.type || "TV Series"}</td>
-                    <td className="p-4 text-ink">{animeB.type || "TV Series"}</td>
-                  </tr>
-
-                  {/* Release Season / Year */}
-                  <tr className="hover:bg-surface-muted">
-                    <td className="p-4 font-bold text-ink-muted">📅 {t("compare.release")}</td>
-                    <td className="p-4 text-ink">{animeA.season?.name || animeA.release_on || "N/A"}</td>
-                    <td className="p-4 text-ink">{animeB.season?.name || animeB.release_on || "N/A"}</td>
-                  </tr>
-
-                  {/* Status */}
-                  <tr className="hover:bg-surface-muted">
-                    <td className="p-4 font-bold text-ink-muted">📡 {t("compare.status")}</td>
-                    <td className="p-4 text-ink">{animeA.status || "N/A"}</td>
-                    <td className="p-4 text-ink">{animeB.status || "N/A"}</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          {/* Genre Overlap Analysis */}
-          <div className="card-shell">
-            <div className="card-core p-5 sm:p-6 space-y-4">
-              <h4 className="font-display text-sm sm:text-base font-bold text-ink">🎭 {t("compare.genre_analysis")}</h4>
-
-              {/* Shared Genres */}
-              {sharedGenres.length > 0 && (
-                <div className="space-y-1.5">
-                  <span className="font-mono text-xs font-bold text-ink block">
-                    🤝 {t("compare.shared_genres")} ({sharedGenres.length}):
-                  </span>
-                  <div className="flex flex-wrap gap-1.5">
-                    {sharedGenres.map((g) => (
-                      <span
-                        key={g}
-                        className="rounded-sm border-2 border-border bg-nb-lime px-2.5 py-1 font-mono text-xs font-bold text-nb-ink shadow-[2px_2px_0_0_var(--border)]"
-                      >
-                        ✓ {g}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Unique Genres Grid */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
-                <div className="p-3.5 rounded-sm border-2 border-border bg-surface space-y-1.5">
-                  <span className="font-mono text-xs font-bold text-accent block">
-                    🔴 {t("compare.unique_genres_a")} ({animeA.title}):
-                  </span>
-                  <div className="flex flex-wrap gap-1.5">
-                    {uniqueGenresA.length > 0 ? (
-                      uniqueGenresA.map((g) => (
-                        <span
-                          key={g}
-                          className="rounded-sm border border-border bg-accent/15 px-2 py-0.5 font-mono text-xs font-bold text-accent"
-                        >
-                          {g}
-                        </span>
-                      ))
-                    ) : (
-                      <span className="text-xs text-ink-muted italic">{t("compare.no_exclusive")}</span>
-                    )}
-                  </div>
-                </div>
-
-                <div className="p-3.5 rounded-sm border-2 border-border bg-surface space-y-1.5">
-                  <span className="font-mono text-xs font-bold text-accent block">
-                    🔵 {t("compare.unique_genres_b")} ({animeB.title}):
-                  </span>
-                  <div className="flex flex-wrap gap-1.5">
-                    {uniqueGenresB.length > 0 ? (
-                      uniqueGenresB.map((g) => (
-                        <span
-                          key={g}
-                          className="rounded-sm border border-border bg-accent/15 px-2 py-0.5 font-mono text-xs font-bold text-accent"
-                        >
-                          {g}
-                        </span>
-                      ))
-                    ) : (
-                      <span className="text-xs text-ink-muted italic">{t("compare.no_exclusive")}</span>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+          <CompareGenreAnalysis animeA={animeA} animeB={animeB} />
 
           {/* Synopses Side-by-Side */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

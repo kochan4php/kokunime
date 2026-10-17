@@ -1,0 +1,62 @@
+"use client";
+
+import AnimeImage from "@/components/cards/anime-image";
+import { AnimeDetail } from "@/interfaces";
+import { useTranslation } from "@/utils/i18n";
+import Link from "next/link";
+import { JSX } from "react";
+
+interface CompareAnimeCardProps {
+  anime: AnimeDetail;
+  slug: string;
+  side: "a" | "b";
+}
+
+// Header card for one side of the comparison dashboard.
+const CompareAnimeCard = ({ anime, slug, side }: CompareAnimeCardProps): JSX.Element => {
+  const { t } = useTranslation();
+  const dot = side === "a" ? "🔴" : "🔵";
+
+  return (
+    <div className="card-shell overflow-hidden">
+      <div className="card-core p-5 sm:p-6 space-y-4">
+        <div className="flex items-start gap-4">
+          <div className="relative aspect-[3/4] w-28 sm:w-32 shrink-0 overflow-hidden rounded-sm border-2 border-border bg-surface-muted shadow-[4px_4px_0_0_var(--border)]">
+            {anime.image && (
+              <AnimeImage fill sizes="(max-width: 640px) 112px, 128px" src={anime.image} alt={anime.title ?? ""} />
+            )}
+          </div>
+          <div className="min-w-0 flex-1 space-y-2">
+            <span className="chip text-[10px]">
+              {dot} {side === "a" ? t("compare.anime_a") : t("compare.anime_b")}
+            </span>
+            <h3 className="font-display text-base sm:text-lg font-extrabold text-ink leading-snug line-clamp-2">
+              {anime.title}
+            </h3>
+            <div className="flex flex-wrap items-center gap-1.5 font-mono text-xs">
+              <span className="rounded-sm border-2 border-border bg-nb-yellow px-2 py-0.5 font-bold text-nb-ink">
+                ⭐ {anime.score || "N/A"}
+              </span>
+              <span className="rounded-sm border border-border bg-surface-muted px-2 py-0.5 text-ink-muted">
+                {anime.status || "N/A"}
+              </span>
+              <span className="rounded-sm border border-border bg-surface-muted px-2 py-0.5 text-ink-muted">
+                {anime.total_episode || "?"} Ep
+              </span>
+            </div>
+            <div className="pt-2">
+              <Link
+                href={`/anime/${slug}`}
+                className="inline-flex items-center gap-1.5 rounded-sm border-2 border-border bg-accent px-3.5 py-1.5 font-mono text-xs font-bold text-(--accent-ink) shadow-[2px_2px_0_0_var(--border)] hover:-translate-y-0.5 active:translate-y-0 active:shadow-none transition-all"
+              >
+                <span>{side === "a" ? t("compare.open_detail_a") : t("compare.open_detail_b")}</span>
+              </Link>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default CompareAnimeCard;

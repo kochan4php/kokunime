@@ -7,9 +7,9 @@ import { useEffect } from "react";
 interface HistoryTrackerProps {
   slug: string;
   title: string;
-  image?: string;
-  release?: string;
-  total?: number;
+  image?: string | undefined;
+  release?: string | undefined;
+  total?: number | undefined;
 }
 
 const HistoryTracker = ({ slug, title, image, release, total }: HistoryTrackerProps): null => {

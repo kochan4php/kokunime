@@ -101,3 +101,19 @@ jobs:
         env:
           BASE_URL: ${{ vars.PRODUCTION_URL }}
         run: node scripts/e2e-smoke.mjs
+
+      - name: Warm cache (top 50 URL, best effort)
+        if: vars.PRODUCTION_URL != ''
+        continue-on-error: true
+        env:
+          SITE_URL: ${{ vars.PRODUCTION_URL }}
+        run: node scripts/warm-cache.mjs "$SITE_URL"
+
+      - name: Alert on deploy failure
+        if: failure()
+        continue-on-error: true
+        env:
+          ALERT_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          ALERT_SOURCE: deploy
+          TAG: ${{ needs.build-push.outputs.tag }}
+        run: node scripts/alert.mjs "Deploy gagal (tag ${TAG}) — deploy.sh sudah mencoba auto-rollback, cek log job deploy."

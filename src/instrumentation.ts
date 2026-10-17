@@ -8,6 +8,14 @@ export const register = async (): Promise<void> => {
   if (process.env.NEXT_RUNTIME === "nodejs") {
     const { registerNodeLifecycle } = await import("@/lib/lifecycle-node");
     registerNodeLifecycle();
+
+    // Boot-time env validation: warn (or error) on malformed vars without
+    // ever crashing the server. Loaded dynamically so the Edge bundle stays
+    // free of the Node-only logger import.
+    const [{ validateEnv }, { logJson }] = await Promise.all([import("@/config/env"), import("@/lib/logger")]);
+    for (const issue of validateEnv()) {
+      logJson(issue.level, "env_validation", { key: issue.key, message: issue.message });
+    }
   }
 };
 

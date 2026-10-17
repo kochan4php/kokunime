@@ -24,7 +24,7 @@ const MAX_UNREAD = 50;
 
 const getStorage = () => (typeof window !== "undefined" ? window.localStorage : null);
 
-export const getReleaseSeen = (): Record<string, string> => {
+const getReleaseSeen = (): Record<string, string> => {
   const storage = getStorage();
   if (!storage) return {};
   try {

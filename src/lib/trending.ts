@@ -6,10 +6,10 @@ import { getIndexedBySlugs } from "@/lib/search-index";
 const DAY_TTL_SECONDS = 60 * 60 * 48;
 const DAYS_BACK = 3;
 
-export interface TrendingItem {
+interface TrendingItem {
   slug: string;
   title: string;
-  image?: string;
+  image?: string | undefined;
   count: number;
 }
 

@@ -8,7 +8,7 @@ interface PageNumbersProps {
   total: number;
   prevHref: string | null;
   nextHref: string | null;
-  basePath?: string;
+  basePath?: string | undefined;
 }
 
 const navButton =

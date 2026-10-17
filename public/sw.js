@@ -10,6 +10,9 @@ const API_CACHE = `kokunime-api-${VERSION}`;
 const SAVED_CACHE = "kokunime-saved";
 const SAVED_META_URL = "/__saved-offline";
 const KEEP_CACHES = [STATIC_CACHE, PAGES_CACHE, API_CACHE, SAVED_CACHE];
+// Soft caps per cache: CacheStorage preserves insertion order, so truncating
+// the head evicts the oldest entries first (approximate LRU, good enough).
+const CACHE_CAPS = { [PAGES_CACHE]: 90, [API_CACHE]: 150, [STATIC_CACHE]: 300 };
 
 const OFFLINE_URL = "/offline";
 const PRECACHE_URLS = [OFFLINE_URL, "/manifest.webmanifest", "/icon.svg"];
@@ -100,6 +103,101 @@ const refreshSaved = async () => {
       // Still offline — keep the older copy.
     }
   }
+
+  // Keep the shell APIs warm in the SWR cache so the next offline visit has
+  // fresh data for the rails/inbox instead of whatever was cached at save time.
+  const apiCache = await caches.open(API_CACHE);
+  for (const api of SHELL_APIS) {
+    try {
+      const response = await fetch(api, { cache: "no-cache" });
+      if (response.ok) await apiCache.put(api, response);
+    } catch {
+      // Offline — the previous copy stays.
+    }
+  }
+};
+
+// Shell APIs refreshed by sync/periodicsync (see refreshSaved).
+const SHELL_APIS = ["/api/live", "/api/trending"];
+
+const pruneCache = async (name) => {
+  const maxEntries = CACHE_CAPS[name] ?? 100;
+  const cache = await caches.open(name);
+  const keys = await cache.keys();
+  const excess = keys.length - maxEntries;
+  for (let i = 0; i < excess; i++) await cache.delete(keys[i]);
+};
+
+// --- Offline action outbox (Background Sync, Chromium) -----------------------
+
+// track-view pings that failed offline queue here and replay via the
+// "kokunime-flush-queue" sync tag (fallback: an explicit flush message from
+// the page when it comes back online).
+const OUTBOX_DB = "kokunime-outbox";
+const OUTBOX_STORE = "requests";
+
+const openOutbox = () =>
+  new Promise((resolve, reject) => {
+    const request = indexedDB.open(OUTBOX_DB, 1);
+    request.onupgradeneeded = () => {
+      if (!request.result.objectStoreNames.contains(OUTBOX_STORE)) {
+        request.result.createObjectStore(OUTBOX_STORE, { autoIncrement: true });
+      }
+    };
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = () => reject(request.error);
+  });
+
+const enqueueRequest = async (item) => {
+  const db = await openOutbox();
+  try {
+    await new Promise((resolve, reject) => {
+      const tx = db.transaction(OUTBOX_STORE, "readwrite");
+      tx.objectStore(OUTBOX_STORE).add(item);
+      tx.oncomplete = () => resolve();
+      tx.onerror = () => reject(tx.error);
+    });
+  } finally {
+    db.close();
+  }
+};
+
+const flushOutbox = async () => {
+  const db = await openOutbox();
+  try {
+    const items = await new Promise((resolve, reject) => {
+      const store = db.transaction(OUTBOX_STORE, "readonly").objectStore(OUTBOX_STORE);
+      const values = store.getAll();
+      const keys = store.getAllKeys();
+      values.transaction.oncomplete = () =>
+        resolve(values.result.map((value, index) => ({ key: keys.result[index], value })));
+      values.transaction.onerror = () => reject(values.transaction.error);
+    });
+
+    let flushed = 0;
+    for (const item of items) {
+      try {
+        const response = await fetch(item.value.url, {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify(item.value.body),
+        });
+        if (!response.ok) continue;
+      } catch {
+        break; // Still offline — keep the rest for the next sync.
+      }
+      await new Promise((resolve) => {
+        const tx = db.transaction(OUTBOX_STORE, "readwrite");
+        tx.objectStore(OUTBOX_STORE).delete(item.key);
+        tx.oncomplete = resolve;
+        tx.onerror = resolve;
+      });
+      flushed++;
+    }
+    return flushed;
+  } finally {
+    db.close();
+  }
 };
 
 // --- Lifecycle --------------------------------------------------------------
@@ -118,6 +216,7 @@ self.addEventListener("activate", (event) => {
     caches
       .keys()
       .then((keys) => Promise.all(keys.filter((key) => !KEEP_CACHES.includes(key)).map((key) => caches.delete(key))))
+      .then(() => Promise.all(Object.keys(CACHE_CAPS).map((name) => pruneCache(name))))
       .then(() => self.clients.claim()),
   );
 });
@@ -145,12 +244,27 @@ self.addEventListener("message", (event) => {
         broadcast({ type: "kokunime:offline-list-changed" });
       }),
     );
+  } else if (data.type === "kokunime:queue-track") {
+    event.waitUntil(
+      enqueueRequest({ url: "/api/track-view", body: data.body, at: Date.now() }).then(() => {
+        const sync = self.registration.sync;
+        if (sync) sync.register("kokunime-flush-queue").catch(() => {});
+      }),
+    );
+  } else if (data.type === "kokunime:flush-queue") {
+    event.waitUntil(flushOutbox().then(() => {}));
   }
 });
 
 self.addEventListener("sync", (event) => {
   if (event.tag === "kokunime-refresh-saved") {
     event.waitUntil(refreshSaved().then(() => broadcast({ type: "kokunime:offline-list-changed" })));
+  } else if (event.tag === "kokunime-flush-queue") {
+    event.waitUntil(
+      flushOutbox().then((count) => {
+        if (count > 0) broadcast({ type: "kokunime:outbox-flushed", count });
+      }),
+    );
   }
 });
 

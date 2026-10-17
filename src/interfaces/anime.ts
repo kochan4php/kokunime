@@ -6,9 +6,9 @@ export interface Anime {
   release: string;
   genres: string[];
   link: {
-    endpoint?: string;
-    url?: string;
-    image?: string;
+    endpoint?: string | undefined;
+    url?: string | undefined;
+    image?: string | undefined;
   };
 }
 
@@ -36,7 +36,7 @@ export interface AnimeDetail {
   subtitle?: string;
   audio?: string;
   genre: Genre[];
-  season?: { name?: string; url?: string; endpoint?: string };
+  season?: { name?: string | undefined; url?: string | undefined; endpoint?: string | undefined };
   trailer?: string;
   download: DownloadOption[];
 }

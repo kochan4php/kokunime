@@ -13,7 +13,7 @@ function normalizeSeasonName(raw: string): string {
 }
 
 export function parseSeason($: CheerioAPI) {
-  let seasonData: { name?: string; url?: string; endpoint?: string } | undefined;
+  let seasonData: { name?: string | undefined; url?: string | undefined; endpoint?: string | undefined } | undefined;
 
   $(".venser .lexot .info > p").each((_, p) => {
     const text = $(p).text();

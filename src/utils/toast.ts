@@ -1,6 +1,6 @@
-export interface ToastOptions {
-  actionLabel?: string;
-  onAction?: () => void;
+interface ToastOptions {
+  actionLabel?: string | undefined;
+  onAction?: (() => void) | undefined;
   // 0 keeps the toast until dismissed manually (used by tests).
   durationMs?: number;
 }
@@ -8,8 +8,8 @@ export interface ToastOptions {
 export interface ToastItem {
   id: number;
   message: string;
-  actionLabel?: string;
-  onAction?: () => void;
+  actionLabel?: string | undefined;
+  onAction?: (() => void) | undefined;
   durationMs: number;
 }
 

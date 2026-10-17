@@ -1,4 +1,5 @@
 import { getAnimeDetail } from "@/services/scraper";
+import { problemResponse } from "@/lib/api-error";
 import { checkEtagMatch, generateEtag } from "@/lib/etag";
 import { normalizeSlug } from "@/utils/endpoint-slug";
 import { NextRequest, NextResponse } from "next/server";
@@ -10,15 +11,15 @@ export async function GET(
   try {
     const { slug } = await params;
     if (!slug) {
-      return NextResponse.json({ error: "Slug is required" }, { status: 400 });
+      return problemResponse({ status: 400, title: "Bad Request", detail: "Slug is required" });
     }
     if (!normalizeSlug(slug)) {
-      return NextResponse.json({ error: "Invalid slug" }, { status: 400 });
+      return problemResponse({ status: 400, title: "Bad Request", detail: "Invalid slug" });
     }
 
     const detail = await getAnimeDetail(slug);
     if (!detail || !detail.title) {
-      return NextResponse.json({ error: "Anime not found" }, { status: 404 });
+      return problemResponse({ status: 404, title: "Not Found", detail: "Anime not found" });
     }
 
     const { searchParams } = new URL(request.url);
@@ -55,6 +56,6 @@ export async function GET(
 
     return NextResponse.json(payload, { headers });
   } catch {
-    return NextResponse.json({ error: "Failed to fetch download links" }, { status: 500 });
+    return problemResponse({ status: 500, title: "Upstream failure", detail: "Failed to fetch download links" });
   }
 }

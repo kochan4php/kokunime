@@ -48,6 +48,16 @@ export const buildAnimeJsonLd = (anime: AnimeDetail, slug: string): Record<strin
 
   if (!isMovie && !isNaN(episodesNum) && episodesNum > 0) {
     jsonLd.numberOfEpisodes = episodesNum;
+    // TVEpisode entries: capped at 50 so a long-running series doesn't balloon
+    // the JSON-LD payload. Episodes share the detail-page URL (no per-episode
+    // routes).
+    jsonLd.hasPart = Array.from({ length: Math.min(episodesNum, 50) }, (_, index) => ({
+      "@type": "TVEpisode",
+      episodeNumber: index + 1,
+      name: `Episode ${index + 1}`,
+      url: `${SITE_URL}/anime/${slug}`,
+      partOfSeries: { "@type": "TVSeries", name: anime.title, url: `${SITE_URL}/anime/${slug}` },
+    }));
   }
 
   const actions: Record<string, unknown>[] = [

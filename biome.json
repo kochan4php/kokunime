@@ -33,6 +33,18 @@
   "organizeImports": {
     "enabled": false
   },
+  "overrides": [
+    {
+      "include": ["scripts/**", "tests/**"],
+      "linter": {
+        "rules": {
+          "suspicious": {
+            "noConsoleLog": "off"
+          }
+        }
+      }
+    }
+  ],
   "linter": {
     "enabled": true,
     "rules": {
@@ -71,6 +83,7 @@
         "noDangerouslySetInnerHtml": "off"
       },
       "suspicious": {
+        "noConsoleLog": "error",
         "noArrayIndexKey": "off",
         "noAssignInExpressions": "off",
         "noControlCharactersInRegex": "off",

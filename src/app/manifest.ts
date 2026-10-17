@@ -4,6 +4,7 @@ export default function manifest(): MetadataRoute.Manifest {
   return {
     name: "Kokunime",
     short_name: "Kokunime",
+    id: "/",
     description: "Download anime batch dan episode dengan subtitle Indonesia.",
     lang: "id",
     dir: "ltr",
@@ -20,6 +21,22 @@ export default function manifest(): MetadataRoute.Manifest {
     icons: [
       { src: "/icons/icon-192.png", sizes: "192x192", type: "image/png" },
       { src: "/icons/icon-512.png", sizes: "512x512", type: "image/png", purpose: "maskable" },
+    ],
+    screenshots: [
+      {
+        src: "/screenshots/home-narrow.png",
+        sizes: "1080x1920",
+        type: "image/png",
+        form_factor: "narrow",
+        label: "Katalog dan update anime terbaru",
+      },
+      {
+        src: "/screenshots/detail-wide.png",
+        sizes: "1920x1080",
+        type: "image/png",
+        form_factor: "wide",
+        label: "Halaman detail dengan link download",
+      },
     ],
     share_target: {
       action: "/share",

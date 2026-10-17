@@ -1,6 +1,7 @@
 "use client";
 
-import { HistoryItem, getHistory, clearAllHistory, subscribeHistory } from "@/utils/history";
+import { HistoryItem, getHistory, clearAllHistory, restoreHistory, subscribeHistory } from "@/utils/history";
+import { showToast } from "@/utils/toast";
 import { ProgressEntry, getProgressList, subscribeProgress } from "@/utils/progress";
 import AnimeImage from "@/components/cards/anime-image";
 import Link from "next/link";
@@ -45,7 +46,16 @@ const HomeHistoryStrip = (): JSX.Element | null => {
             </div>
             <button
               type="button"
-              onClick={() => clearAllHistory()}
+              onClick={() => {
+                const snapshot = getHistory();
+                clearAllHistory();
+                if (snapshot.length > 0) {
+                  showToast(`${snapshot.length} riwayat dihapus`, {
+                    actionLabel: "Urungkan",
+                    onAction: () => restoreHistory(snapshot),
+                  });
+                }
+              }}
               className="font-mono text-[11px] text-ink-muted hover:text-ink transition-colors cursor-pointer"
             >
               Hapus Riwayat

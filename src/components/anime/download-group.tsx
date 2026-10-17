@@ -12,10 +12,10 @@ import { JSX, useMemo, useState } from "react";
 
 interface DownloadGroupProps {
   group: DownloadOption;
-  animeTitle?: string;
-  slug?: string;
-  animeTotal?: number;
-  anchorId?: string;
+  animeTitle?: string | undefined;
+  slug?: string | undefined;
+  animeTotal?: number | undefined;
+  anchorId?: string | undefined;
 }
 
 const renderResolutionBadge = (res: DownloadResolution): JSX.Element => {

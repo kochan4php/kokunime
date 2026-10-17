@@ -1,8 +1,8 @@
 export interface Recommendation {
-  title?: string;
-  endpoint?: string;
-  image?: string;
-  url?: string;
+  title?: string | undefined;
+  endpoint?: string | undefined;
+  image?: string | undefined;
+  url?: string | undefined;
 }
 
 export interface Genre {

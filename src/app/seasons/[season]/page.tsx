@@ -1,8 +1,10 @@
 import { getAnimeBySeasons } from "@/services/scraper";
 import { SITE_URL } from "@/lib/site";
 import { toTitle } from "@/utils/to-title";
+import { getSeasonWindow } from "@/utils/season-window";
 import { buildSubpageBreadcrumbJsonLd, safeJsonLd } from "@/lib/seo";
 import AnimeListing from "@/sections/anime-listing";
+import Breadcrumbs from "@/components/breadcrumbs";
 import MainLayout from "@/layouts/main-layout";
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
@@ -49,6 +51,7 @@ const SeasonPage = async ({
   }
 
   const title = toTitle(season);
+  const seasonWindow = getSeasonWindow(season);
 
   return (
     <MainLayout>
@@ -65,6 +68,16 @@ const SeasonPage = async ({
         }}
         suppressHydrationWarning
       />
+      <Breadcrumbs items={[{ name: "Musim", href: "/seasons" }, { name: title }]} />
+      {seasonWindow && seasonWindow.state !== "ended" ? (
+        <section className="container px-4 pt-4">
+          <p className="inline-flex items-center gap-2 rounded-sm border-2 border-border bg-surface px-3 py-1.5 font-mono text-xs font-semibold text-ink shadow-[2px_2px_0_0_var(--border)]">
+            {seasonWindow.state === "airing"
+              ? `🟢 Sedang tayang · sisa ${seasonWindow.daysUntilEnd} hari`
+              : `⏳ Mulai dalam ${seasonWindow.daysUntilStart} hari`}
+          </p>
+        </section>
+      ) : null}
       <AnimeListing chip="Season" title={title} anime={anime} pagination={pagination} eagerCount={5} />
     </MainLayout>
   );

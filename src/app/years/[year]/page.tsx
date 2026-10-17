@@ -3,6 +3,7 @@ import { SITE_URL } from "@/lib/site";
 import { endpointSlug } from "@/utils/endpoint-slug";
 import { buildSubpageBreadcrumbJsonLd, safeJsonLd } from "@/lib/seo";
 import AnimeListing from "@/sections/anime-listing";
+import Breadcrumbs from "@/components/breadcrumbs";
 import MainLayout from "@/layouts/main-layout";
 import { Anime } from "@/interfaces";
 import { Metadata } from "next";
@@ -80,6 +81,7 @@ const YearPage = async ({ params }: { params: Promise<{ year: string }> }): Prom
         }}
         suppressHydrationWarning
       />
+      <Breadcrumbs items={[{ name: "Musim", href: "/seasons" }, { name: `Anime ${year}` }]} />
       <AnimeListing chip="Tahun" title={`Anime ${year}`} anime={anime} eagerCount={5} />
     </MainLayout>
   );

@@ -5,8 +5,8 @@ import { STORAGE_KEYS } from "@/utils/storage-keys";
 
 export type AppLanguage = "id" | "en";
 
-export const LANG_STORAGE_KEY = STORAGE_KEYS.lang;
-export const LANG_CHANGE_EVENT = "kokunime:lang_change";
+const LANG_STORAGE_KEY = STORAGE_KEYS.lang;
+const LANG_CHANGE_EVENT = "kokunime:lang_change";
 
 import { DICTIONARY } from "@/utils/i18n/dictionary";
 
@@ -14,7 +14,7 @@ export { DICTIONARY } from "@/utils/i18n/dictionary";
 
 export type TranslationKey = keyof typeof DICTIONARY.id;
 
-export function getStoredLanguage(): AppLanguage {
+function getStoredLanguage(): AppLanguage {
   if (typeof window === "undefined") return "id";
   try {
     const direct = localStorage.getItem(LANG_STORAGE_KEY) as AppLanguage;
@@ -29,7 +29,7 @@ export function getStoredLanguage(): AppLanguage {
   return "id";
 }
 
-export function setStoredLanguage(lang: AppLanguage): void {
+function setStoredLanguage(lang: AppLanguage): void {
   if (typeof window === "undefined") return;
   try {
     localStorage.setItem(LANG_STORAGE_KEY, lang);

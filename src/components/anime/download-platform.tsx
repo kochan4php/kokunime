@@ -22,7 +22,7 @@ const requiresLogin = (name: string): boolean => {
   return /acefile|krakenfiles|hxfile/i.test(name);
 };
 
-const DownloadPlatform = ({ name, url }: { name: string; url?: string }): JSX.Element => {
+const DownloadPlatform = ({ name, url }: { name: string; url?: string | undefined }): JSX.Element => {
   const styleClass = getPlatformStyle(name);
   const needLogin = requiresLogin(name);
 

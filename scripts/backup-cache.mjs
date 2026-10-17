@@ -1,10 +1,23 @@
-﻿import fs from "fs";
+﻿import crypto from "crypto";
+import fs from "fs";
 import path from "path";
+import zlib from "zlib";
 import { createClient } from "redis";
 
 const backupDir = () => path.resolve(process.cwd(), "backups");
 const REDIS_URL = process.env.REDIS_URL?.trim();
 const MAX_KEYS = 10_000; // shortcut: whole-keyspace JSON dump; switch to RDB snapshots if the cache outgrows this
+const RETENTION = 14; // newest N backups kept; older ones pruned after each run
+const isDryRun = process.argv.includes("--dry-run");
+
+const sha256 = (buffer) => crypto.createHash("sha256").update(buffer).digest("hex");
+
+// Backup names embed an ISO timestamp, so lexical sort == chronological.
+const listBackups = (dir) =>
+  fs
+    .readdirSync(dir)
+    .filter((name) => /^cache-backup-.*\.json(\.gz)?$/.test(name))
+    .sort();
 
 async function exportRedis() {
   if (!REDIS_URL) return { redis: "skipped" };
@@ -35,34 +48,68 @@ async function exportRedis() {
   }
 }
 
+// Keep only the RETENTION newest backups (plus their checksum sidecars).
+function pruneOldBackups(dir) {
+  const backups = listBackups(dir);
+  const stale = backups.slice(0, Math.max(0, backups.length - RETENTION));
+  for (const name of stale) {
+    if (isDryRun) {
+      console.log(`[dry-run] would delete ${name} (+ .sha256)`);
+      continue;
+    }
+    fs.rmSync(path.join(dir, name), { force: true });
+    fs.rmSync(path.join(dir, `${name}.sha256`), { force: true });
+  }
+  return { kept: backups.length - stale.length, removed: stale.length };
+}
+
 async function backupCache() {
   const dir = backupDir();
   if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir, { recursive: true });
+    if (isDryRun) {
+      console.log(`[dry-run] would create ${dir}`);
+    } else {
+      fs.mkdirSync(dir, { recursive: true });
+    }
   }
 
   const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
-  const targetFile = path.join(dir, `cache-backup-${timestamp}.json`);
+  const targetFile = path.join(dir, `cache-backup-${timestamp}.json.gz`);
+
+  if (isDryRun) {
+    console.log(`[dry-run] Redis: ${REDIS_URL ? "would export kokunime:* keys" : "not configured — metadata only"}`);
+    console.log(`[dry-run] would write ${path.basename(targetFile)} + .sha256 sidecar`);
+    if (fs.existsSync(dir)) pruneOldBackups(dir);
+    return;
+  }
 
   const redisPatch = await exportRedis();
 
   const snapshot = {
     timestamp: new Date().toISOString(),
-    version: "1.1.0",
+    version: "1.2.0",
     description: "Kokunime offline snapshot and metadata backup",
     ...redisPatch,
   };
 
-  fs.writeFileSync(targetFile, JSON.stringify(snapshot, null, 2), "utf8");
+  const gz = zlib.gzipSync(Buffer.from(JSON.stringify(snapshot), "utf8"));
+  fs.writeFileSync(targetFile, gz);
+  const hash = sha256(gz);
+  fs.writeFileSync(`${targetFile}.sha256`, `${hash}  ${path.basename(targetFile)}\n`);
+
   console.log(
-    `✓ Backup successfully created at: ${targetFile} (${
-      redisPatch.redis === "exported" ? `${redisPatch.keys} Redis key(s)` : "Redis not configured — metadata only"
-    })`,
+    `✓ Backup created: ${targetFile} (${(gz.length / 1024).toFixed(0)} KB, sha256 ${hash.slice(0, 12)}…) — ${
+      redisPatch.redis === "exported" ? `${redisPatch.keys} Redis key(s)` : "Redis not configured, metadata only"
+    }`,
   );
+
+  const pruned = pruneOldBackups(dir);
+  console.log(`retention: kept ${pruned.kept}, removed ${pruned.removed} (max ${RETENTION})`);
 }
 
 // Weekly drill companion: fail (exit 1) when the newest snapshot is missing,
-// corrupt, or older than 7 days — i.e. when the backup job silently broke.
+// corrupt, fails its checksum, or older than 7 days — i.e. when the backup
+// job silently broke.
 function verifyBackups() {
   const dir = backupDir();
   if (!fs.existsSync(dir)) {
@@ -70,23 +117,40 @@ function verifyBackups() {
     return 1;
   }
 
-  const files = fs
-    .readdirSync(dir)
-    .filter((name) => name.endsWith(".json"))
-    .sort();
+  const files = listBackups(dir);
   if (files.length === 0) {
     console.error(`✗ No backup files in ${dir}`);
     return 1;
   }
 
   const latest = files[files.length - 1];
+  const latestPath = path.join(dir, latest);
   try {
-    const data = JSON.parse(fs.readFileSync(path.join(dir, latest), "utf8"));
+    let raw;
+    let checksumNote = "legacy uncompressed backup (no checksum)";
+    if (latest.endsWith(".gz")) {
+      const gz = fs.readFileSync(latestPath);
+      const sidecar = `${latestPath}.sha256`;
+      if (!fs.existsSync(sidecar)) throw new Error("missing .sha256 checksum sidecar");
+      const expected = fs.readFileSync(sidecar, "utf8").trim().split(/\s+/)[0];
+      const actual = sha256(gz);
+      if (expected !== actual) {
+        throw new Error(`checksum mismatch (expected ${expected.slice(0, 12)}…, got ${actual.slice(0, 12)}…)`);
+      }
+      raw = zlib.gunzipSync(gz).toString("utf8");
+      checksumNote = "checksum verified";
+    } else {
+      raw = fs.readFileSync(latestPath, "utf8");
+    }
+
+    const data = JSON.parse(raw);
     if (!data.timestamp || !data.version) {
       throw new Error("missing timestamp/version fields");
     }
     const ageDays = (Date.now() - Date.parse(data.timestamp)) / 86_400_000;
-    console.log(`✓ Latest backup OK: ${latest} (${ageDays.toFixed(1)} days old, ${files.length} file(s) total)`);
+    console.log(
+      `✓ Latest backup OK: ${latest} (${checksumNote}, ${ageDays.toFixed(1)} days old, ${files.length} file(s) total)`,
+    );
     if (!Number.isFinite(ageDays) || ageDays > 7) {
       console.error("✗ Latest backup is older than 7 days — the backup job may be broken");
       return 1;
@@ -106,13 +170,7 @@ async function restoreBackup(file) {
     return 1;
   }
   const dir = backupDir();
-  const target =
-    file ||
-    fs
-      .readdirSync(dir)
-      .filter((name) => name.endsWith(".json"))
-      .sort()
-      .pop();
+  const target = file || listBackups(dir).pop();
   if (!target) {
     console.error("✗ No backup file to restore");
     return 1;
@@ -121,7 +179,9 @@ async function restoreBackup(file) {
 
   let snapshot;
   try {
-    snapshot = JSON.parse(fs.readFileSync(targetPath, "utf8"));
+    const contents = fs.readFileSync(targetPath);
+    const raw = targetPath.endsWith(".gz") ? zlib.gunzipSync(contents).toString("utf8") : contents.toString("utf8");
+    snapshot = JSON.parse(raw);
   } catch (error) {
     console.error(`✗ Cannot read ${targetPath}: ${error.message}`);
     return 1;

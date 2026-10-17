@@ -1,6 +1,7 @@
 import { reportError } from "@/lib/error-reporter";
 import { logJson } from "@/lib/logger";
 import { incrementMetric } from "@/lib/metrics";
+import { RATE_LIMIT_WINDOW_MS, RATE_LIMITS } from "@/config/constants";
 import { checkRateLimit, getRateLimitHeaders } from "@/lib/rate-limit";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -12,7 +13,7 @@ const MAX_BODY_BYTES = 8 * 1024;
 // (application/reports+json). Enforce-nothing: count + log only. Browsers
 // expect 204 for reports, and a flood must be silently dropped, never 4xx/5xx.
 const handleCspReport = async (request: NextRequest, ip: string): Promise<NextResponse> => {
-  const rate = await checkRateLimit(`csp:${ip}`, 30, 60_000);
+  const rate = await checkRateLimit(`csp:${ip}`, RATE_LIMITS.cspReport, RATE_LIMIT_WINDOW_MS);
   if (!rate.success) return new NextResponse(null, { status: 204 });
 
   try {
@@ -42,7 +43,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     return handleCspReport(request, ip);
   }
 
-  const rate = await checkRateLimit(`report-error:${ip}`, 10, 60_000);
+  const rate = await checkRateLimit(`report-error:${ip}`, RATE_LIMITS.reportError, RATE_LIMIT_WINDOW_MS);
   const rateHeaders = getRateLimitHeaders(rate);
 
   if (!rate.success) {
@@ -55,6 +56,14 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     const message = typeof body.message === "string" ? body.message.trim() : "";
     if (!message) {
       return NextResponse.json({ ok: false }, { status: 400, headers: rateHeaders });
+    }
+
+    // Sampling (ERROR_REPORT_SAMPLE=0..1, default 1): drop a fraction of client
+    // reports to keep the webhook quiet under error storms. Clients still get
+    // ok so they stop retrying.
+    const sample = Number(process.env.ERROR_REPORT_SAMPLE ?? "1");
+    if (Number.isFinite(sample) && sample >= 0 && sample < 1 && Math.random() >= sample) {
+      return NextResponse.json({ ok: true, sampled: true }, { headers: rateHeaders });
     }
 
     await reportError({

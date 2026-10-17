@@ -25,14 +25,29 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      # Incremental build cache: PRs reuse the module graph from main.
+      - name: Cache Next.js build cache
+        uses: actions/cache@v4
+        with:
+          path: .next/cache
+          key: next-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}-${{ hashFiles('src/**/*', 'next.config.mjs', 'tsconfig.json') }}
+          restore-keys: |
+            next-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}-
+
       - name: Format check (biome)
         run: pnpm format:check
 
       - name: Lint (biome)
         run: pnpm lint
 
-      - name: Unit tests (vitest)
-        run: pnpm test
+      - name: Secret scan
+        run: node scripts/scan-secrets.mjs
+
+      - name: Dependency audit (prod)
+        run: pnpm audit --prod --audit-level high
+
+      - name: License check
+        run: node scripts/check-licenses.mjs
 
       - name: Production build
         run: pnpm build
@@ -40,11 +55,42 @@ jobs:
       - name: Bundle budget
         run: node scripts/bundle-budget.mjs
 
+      - name: File-size budget
+        run: node scripts/file-size-budget.mjs
+
+      - name: Build artifact assertions
+        run: node scripts/assert-artifact.mjs
+
       - name: Client-component audit (report only)
         run: node scripts/find-client-unnecessary.mjs
 
       - name: Unused-export audit (report only)
         run: node scripts/find-unused-exports.mjs
+
+      - name: Untested-module audit (report only)
+        run: node scripts/find-untested.mjs
+
+  unit-tests:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Unit tests (shard ${{ matrix.shard }}/2)
+        run: pnpm vitest run --shard=${{ matrix.shard }}/2
 
   container-smoke:
     runs-on: ubuntu-latest

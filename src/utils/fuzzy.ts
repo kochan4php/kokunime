@@ -22,7 +22,7 @@ export const fuzzyScore = (query: string, text: string): number => {
   return Math.min(59, score);
 };
 
-export interface HighlightSegment {
+interface HighlightSegment {
   text: string;
   match: boolean;
 }

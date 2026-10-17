@@ -1,8 +1,8 @@
 import { STORAGE_KEYS } from "@/utils/storage-keys";
 export interface ProgressEntry {
   slug: string;
-  title?: string;
-  total?: number;
+  title?: string | undefined;
+  total?: number | undefined;
   watched: number[];
   updatedAt: number;
 }
@@ -91,7 +91,7 @@ export const getWatchedCount = (slug: string): number => getProgress(slug)?.watc
 const upsert = (
   slug: string,
   mutate: (entry: ProgressEntry) => ProgressEntry,
-  meta?: { title?: string; total?: number },
+  meta?: { title?: string | undefined; total?: number | undefined },
 ): void => {
   const list = [...getProgressList()];
   const index = list.findIndex((e) => e.slug === slug);
@@ -116,7 +116,7 @@ const upsert = (
 export const toggleEpisodeWatched = (
   slug: string,
   episode: number,
-  meta?: { title?: string; total?: number },
+  meta?: { title?: string | undefined; total?: number | undefined },
 ): boolean => {
   if (!slug || !Number.isFinite(episode) || episode <= 0) return false;
   const ep = Math.floor(episode);
@@ -139,7 +139,10 @@ export const toggleEpisodeWatched = (
 
 // Store series meta (title/total episodes) without toggling anything. Only
 // writes when something changed, so detail-page mounts can't cause loops.
-export const syncProgressMeta = (slug: string, meta: { title?: string; total?: number }): void => {
+export const syncProgressMeta = (
+  slug: string,
+  meta: { title?: string | undefined; total?: number | undefined },
+): void => {
   if (!slug) return;
   const entry = getProgress(slug);
   if (!entry) {
@@ -151,11 +154,6 @@ export const syncProgressMeta = (slug: string, meta: { title?: string; total?: n
   const totalChanged = Boolean(meta.total) && meta.total !== entry.total;
   if (!titleChanged && !totalChanged) return;
   upsert(slug, (e) => e, meta);
-};
-
-export const removeProgress = (slug: string): void => {
-  if (!slug) return;
-  writeList(getProgressList().filter((e) => e.slug !== slug));
 };
 
 export const clearAllProgress = (): void => {

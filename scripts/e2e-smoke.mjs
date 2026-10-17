@@ -10,7 +10,7 @@ const routes = [
   { path: "/compare", status: 200 },
   { path: "/offline", status: 200 },
   { path: "/robots.txt", status: 200, contains: "Sitemap" },
-  { path: "/sitemap.xml", status: 200, contains: "<urlset" },
+  { path: "/sitemap.xml", status: 200, contains: "<sitemapindex" },
   { path: "/manifest.webmanifest", status: 200, contains: '"name"' },
   { path: "/feed.xml", status: 200, contains: "<rss" },
   { path: "/feed.json", status: 200 },

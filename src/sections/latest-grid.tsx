@@ -10,7 +10,7 @@ import { JSX, useMemo, useState } from "react";
 interface LatestGridProps {
   anime: Anime[];
   pagination: PaginationInfo | null;
-  basePath?: string;
+  basePath?: string | undefined;
 }
 
 const LatestGrid = ({ anime, pagination, basePath }: LatestGridProps): JSX.Element => {

@@ -1,8 +1,8 @@
 import { UPSTREAM_CIRCUIT_KEY } from "@/config/upstream";
+import { denyAdmin } from "@/lib/admin-guard";
 import { getCircuitState } from "@/lib/circuit-breaker";
-import { HISTOGRAM_BUCKETS, getEventLoopLagMs, getHistograms, getMetrics } from "@/lib/metrics";
+import { HISTOGRAM_BUCKETS, getEventLoopLagMs, getHistogramQuantile, getHistograms, getMetrics } from "@/lib/metrics";
 import { redisHealth } from "@/lib/redis";
-import { safeCompare } from "@/lib/safe-compare";
 import { NextRequest } from "next/server";
 
 export const dynamic = "force-dynamic";
@@ -12,17 +12,8 @@ const CIRCUIT_VALUE = { closed: 0, "half-open": 1, open: 2 } as const;
 // Prometheus text format, hand-rolled (no client library). Disabled unless
 // METRICS_TOKEN is set — scraping requires `Authorization: Bearer <token>`.
 export async function GET(request: NextRequest): Promise<Response> {
-  const token = process.env.METRICS_TOKEN?.trim();
-  if (!token) return new Response("Not Found", { status: 404 });
-
-  const provided =
-    request.headers
-      .get("authorization")
-      ?.replace(/^Bearer\s+/i, "")
-      .trim() ?? "";
-  if (!safeCompare(provided, token)) {
-    return new Response("Unauthorized", { status: 401, headers: { "WWW-Authenticate": "Bearer" } });
-  }
+  const denied = await denyAdmin(request);
+  if (denied) return denied;
 
   const counters = getMetrics();
   const histograms = getHistograms();
@@ -45,6 +36,17 @@ export async function GET(request: NextRequest): Promise<Response> {
     );
   }
 
+  const quantileLines: string[] = [];
+  for (const [metric, state] of Object.entries(histograms)) {
+    if (state.count === 0) continue;
+    const p50 = getHistogramQuantile(state, 0.5);
+    const p95 = getHistogramQuantile(state, 0.95);
+    quantileLines.push(
+      `kokunime_histogram_p50_milliseconds{metric="${metric}"} ${Number.isFinite(p50) ? p50 : "+Inf"}`,
+      `kokunime_histogram_p95_milliseconds{metric="${metric}"} ${Number.isFinite(p95) ? p95 : "+Inf"}`,
+    );
+  }
+
   const lines: string[] = [
     "# HELP kokunime_events_total Process-local event counters (one series per key).",
     "# TYPE kokunime_events_total counter",
@@ -52,6 +54,9 @@ export async function GET(request: NextRequest): Promise<Response> {
     "# HELP kokunime_histogram_milliseconds Process-local latency histograms in milliseconds.",
     "# TYPE kokunime_histogram_milliseconds histogram",
     ...histogramLines,
+    "# HELP kokunime_histogram_quantiles_milliseconds Bucket-approximated p50/p95 per histogram.",
+    "# TYPE kokunime_histogram_quantiles_milliseconds gauge",
+    ...quantileLines,
     "# HELP kokunime_uptime_seconds Process uptime.",
     "# TYPE kokunime_uptime_seconds gauge",
     `kokunime_uptime_seconds ${process.uptime().toFixed(1)}`,

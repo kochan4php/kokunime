@@ -12,6 +12,8 @@ const SCAN_DIRS = ["src", "tests", "scripts"];
 
 const SKIP_EXPORTS = new Set([
   "default",
+  // Next.js instrumentation entry point (framework calls it by convention).
+  "onRequestError",
   "GET",
   "POST",
   "PUT",

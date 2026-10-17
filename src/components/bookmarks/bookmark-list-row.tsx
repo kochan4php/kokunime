@@ -11,7 +11,7 @@ interface BookmarkListRowProps {
   isBookmarkTab: boolean;
   selectMode: boolean;
   selected: boolean;
-  nextEpisode?: number;
+  nextEpisode?: number | undefined;
   onToggleSelected: (slug: string) => void;
   onRemove: (item: BookmarkItem | HistoryItem) => void;
   onEditMeta: (slug: string) => void;

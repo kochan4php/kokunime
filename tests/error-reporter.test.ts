@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { reportError } from "@/lib/error-reporter";
+import { reportError, scrubMessage } from "@/lib/error-reporter";
 
 describe("error reporter", () => {
   afterEach(() => {
@@ -47,5 +47,12 @@ describe("error reporter", () => {
     } finally {
       vi.useRealTimers();
     }
+  });
+
+  it("scrubs emails, query tokens, bearer tokens and long hashes", () => {
+    expect(scrubMessage("mail user@example.com?token=abc123&x=1")).toContain("[email]");
+    expect(scrubMessage("?token=abc123&x=1")).toContain("token=[redacted]");
+    expect(scrubMessage("Bearer abc.def.ghi")).toBe("Bearer [redacted]");
+    expect(scrubMessage("id 0123456789abcdef0123456789abcdef ok")).toContain("[hash]");
   });
 });

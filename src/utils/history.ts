@@ -2,8 +2,8 @@ import { STORAGE_KEYS } from "@/utils/storage-keys";
 export interface HistoryItem {
   slug: string;
   title: string;
-  image?: string;
-  release?: string;
+  image?: string | undefined;
+  release?: string | undefined;
   viewedAt: number;
 }
 
@@ -33,7 +33,12 @@ export const getHistory = (): HistoryItem[] => {
   }
 };
 
-export const recordHistory = (item: { slug: string; title: string; image?: string; release?: string }): void => {
+export const recordHistory = (item: {
+  slug: string;
+  title: string;
+  image?: string | undefined;
+  release?: string | undefined;
+}): void => {
   const storage = getStorage();
   if (!storage || !item.slug) return;
   const list = getHistory().filter((i) => i.slug !== item.slug);

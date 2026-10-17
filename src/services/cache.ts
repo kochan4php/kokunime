@@ -1,5 +1,8 @@
+import { CACHE_TTL_SECONDS } from "@/config/constants";
 import { incrementMetric, observeHistogram } from "@/lib/metrics";
 import { onCacheInvalidate, publishCacheInvalidate, redisGet, redisSet } from "@/lib/redis";
+import { currentRequestId } from "@/lib/request-context";
+import { recordSlowRequest, SLOW_REQUEST_MS } from "@/lib/slow-log";
 import { unstable_cache } from "next/cache";
 
 const timed = async <T>(fn: () => Promise<T>): Promise<T> => {
@@ -7,25 +10,30 @@ const timed = async <T>(fn: () => Promise<T>): Promise<T> => {
   try {
     return await fn();
   } finally {
-    observeHistogram("cache_compute_duration_ms", Date.now() - startedAt);
+    const durationMs = Date.now() - startedAt;
+    observeHistogram("cache_compute_duration_ms", durationMs);
+    // The upstream fetch dominates slow requests; the ring buffer gets the
+    // request-id from the handler context when present.
+    if (durationMs >= SLOW_REQUEST_MS) {
+      recordSlowRequest({
+        at: new Date().toISOString(),
+        event: "cache_compute",
+        durationMs,
+        requestId: currentRequestId(),
+      });
+    }
   }
 };
 
-export const TTL = {
-  home: 10 * 60, // 10 minutes
-  list: 10 * 60, // 10 minutes
-  detail: 30 * 60, // 30 minutes
-  genres: 2 * 60 * 60, // 2 hours
-  seasons: 2 * 60 * 60, // 2 hours
-  search: 5 * 60, // 5 minutes
-  recommendations: 30 * 60, // 30 minutes
-};
+// Values live in src/config/constants.ts; re-exported under the old name so
+// existing consumers keep reading TTL.detail etc.
+export const TTL = CACHE_TTL_SECONDS;
 
 // Which cache path served a value — surfaced as X-Cache headers by API routes
 // and counted in /api/metrics.
 export type CacheTier = "memory" | "redis" | "next" | "miss" | "stale" | "fallback";
 
-export interface CachedResult<T> {
+interface CachedResult<T> {
   value: T;
   tier: CacheTier;
 }
@@ -78,7 +86,7 @@ const ensureInvalidation = (): void => {
   });
 };
 
-export const getFromMemoryCache = <T>(key: string): T | null => {
+const getFromMemoryCache = <T>(key: string): T | null => {
   const entry = memoryCache.get(key);
   if (!entry) return null;
   if (Date.now() > entry.expiresAt) {
@@ -88,7 +96,7 @@ export const getFromMemoryCache = <T>(key: string): T | null => {
   return entry.value as T;
 };
 
-export const setMemoryCache = <T>(key: string, value: T, ttlSeconds: number): void => {
+const setMemoryCache = <T>(key: string, value: T, ttlSeconds: number): void => {
   if (memoryCache.size >= MAX_MEMORY_ENTRIES) {
     const firstKey = memoryCache.keys().next().value;
     if (firstKey) memoryCache.delete(firstKey);

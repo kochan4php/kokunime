@@ -1,10 +1,10 @@
 ﻿import { CheerioAPI } from "cheerio";
 import { cleanText } from "./sanitize";
 
-export interface FallbackExtractResult {
-  title?: string;
-  image?: string;
-  synopsis?: string;
+interface FallbackExtractResult {
+  title?: string | undefined;
+  image?: string | undefined;
+  synopsis?: string | undefined;
 }
 
 export function extractWithFallback($: CheerioAPI): FallbackExtractResult {

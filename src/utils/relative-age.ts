@@ -1,6 +1,6 @@
 export type AgeBucket = "today" | "yesterday" | "recent" | "older" | "unknown";
 
-export interface RelativeAge {
+interface RelativeAge {
   minutesAgo?: number;
   bucket: AgeBucket;
 }

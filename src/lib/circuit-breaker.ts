@@ -1,6 +1,6 @@
 import { incrementMetric } from "./metrics";
 
-export type CircuitState = "closed" | "open" | "half-open";
+type CircuitState = "closed" | "open" | "half-open";
 
 const FAILURE_THRESHOLD = 5;
 const BASE_COOLDOWN_MS = 30_000;

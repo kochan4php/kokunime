@@ -21,7 +21,7 @@ if (typeof setInterval !== "undefined") {
   }, 300_000);
 }
 
-export interface RateLimitResult {
+interface RateLimitResult {
   success: boolean;
   limit: number;
   remaining: number;

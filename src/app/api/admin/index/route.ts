@@ -1,6 +1,6 @@
+import { denyAdmin } from "@/lib/admin-guard";
 import { getIndexSize, indexAnimeItems } from "@/lib/search-index";
 import { isRedisConfigured } from "@/lib/redis";
-import { safeCompare } from "@/lib/safe-compare";
 import { getAnimeByGenres, getAnimePerPage, getGenresWithMeta } from "@/services/scraper";
 import { endpointSlug } from "@/utils/endpoint-slug";
 import { NextRequest, NextResponse } from "next/server";
@@ -9,13 +9,8 @@ export const dynamic = "force-dynamic";
 
 // Index status for the /admin dashboard.
 export async function GET(request: NextRequest): Promise<NextResponse> {
-  const token = (process.env.ADMIN_TOKEN || process.env.METRICS_TOKEN || "").trim();
-  if (!token) return new NextResponse("Not Found", { status: 404 });
-
-  const provided = request.headers.get("authorization")?.replace(/^Bearer\s+/i, "") ?? "";
-  if (!safeCompare(provided.trim(), token)) {
-    return new NextResponse("Unauthorized", { status: 401, headers: { "WWW-Authenticate": "Bearer" } });
-  }
+  const denied = await denyAdmin(request);
+  if (denied) return denied;
 
   return NextResponse.json({ size: await getIndexSize(), redis: isRedisConfigured() });
 }
@@ -24,13 +19,8 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
 // first page of the top genres and stores every parsed item. Same auth as the
 // revalidate hook (disabled/404 without ADMIN_TOKEN or METRICS_TOKEN).
 export async function POST(request: NextRequest): Promise<NextResponse> {
-  const token = (process.env.ADMIN_TOKEN || process.env.METRICS_TOKEN || "").trim();
-  if (!token) return new NextResponse("Not Found", { status: 404 });
-
-  const provided = request.headers.get("authorization")?.replace(/^Bearer\s+/i, "") ?? "";
-  if (!safeCompare(provided.trim(), token)) {
-    return new NextResponse("Unauthorized", { status: 401, headers: { "WWW-Authenticate": "Bearer" } });
-  }
+  const denied = await denyAdmin(request);
+  if (denied) return denied;
 
   let body: { pages?: unknown; genres?: unknown } = {};
   try {

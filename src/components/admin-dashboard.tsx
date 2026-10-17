@@ -1,88 +1,50 @@
 "use client";
 
-import { JSX, useEffect, useState } from "react";
-import { STORAGE_KEYS } from "@/utils/storage-keys";
+import { adminRequest, useAdminConsole } from "@/hooks/use-admin-console";
+import { JSX, useState } from "react";
 
-const TOKEN_KEY = STORAGE_KEYS.adminToken;
 const PRESET_PATHS = ["/", "/update", "/genres", "/years", "/roulette"];
 
-interface LogEntry {
-  at: string;
-  text: string;
-  ok: boolean;
+interface FeatureFlagView {
+  key: string;
+  label: string;
+  description: string;
+  enabled: boolean;
 }
 
-const request = async (
-  url: string,
-  token: string,
-  init?: RequestInit,
-): Promise<{ ok: boolean; status: number; body: unknown; text: string }> => {
-  const res = await fetch(url, {
-    ...init,
-    headers: { authorization: `Bearer ${token}`, ...(init?.headers ?? {}) },
-  });
-  const text = await res.text();
-  let body: unknown = text;
-  try {
-    body = JSON.parse(text) as unknown;
-  } catch {
-    // Prometheus text or plain error message — keep raw.
-  }
-  return { ok: res.ok, status: res.status, body, text };
-};
-
-// Ops console for the token-gated admin endpoints. The token lives only in
-// sessionStorage on this device; every call carries it as a Bearer header.
+// Ops console for the token-gated admin endpoints.
 const AdminDashboard = (): JSX.Element => {
-  const [token, setToken] = useState("");
-  const [logs, setLogs] = useState<LogEntry[]>([]);
-  const [busy, setBusy] = useState(false);
-
-  useEffect(() => {
-    try {
-      const saved = window.sessionStorage.getItem(TOKEN_KEY);
-      if (saved) setToken(saved);
-    } catch {
-      // Storage blocked — token typed per session.
-    }
-  }, []);
-
-  const saveToken = (value: string): void => {
-    setToken(value);
-    try {
-      window.sessionStorage.setItem(TOKEN_KEY, value);
-    } catch {
-      // Ignore.
-    }
-  };
-
-  const log = (text: string, ok: boolean): void => {
-    setLogs((prev) => [{ at: new Date().toLocaleTimeString(), text, ok }, ...prev].slice(0, 12));
-  };
-
-  const run = async (
-    label: string,
-    fn: () => Promise<{ ok: boolean; status: number; body: unknown; text: string }>,
-  ) => {
-    if (!token.trim()) {
-      log(`${label}: isi token dulu`, false);
-      return;
-    }
-    setBusy(true);
-    try {
-      const result = await fn();
-      const summary =
-        typeof result.body === "string" ? result.body.slice(0, 1200) : JSON.stringify(result.body).slice(0, 1200);
-      log(`${label} → HTTP ${result.status}\n${summary}`, result.ok);
-    } catch {
-      log(`${label}: gagal terhubung`, false);
-    } finally {
-      setBusy(false);
-    }
-  };
+  const { token, logs, busy, saveToken, run } = useAdminConsole();
+  const [flags, setFlags] = useState<FeatureFlagView[]>([]);
 
   const buttonClass =
     "inline-flex h-10 items-center rounded-sm border-2 border-border bg-surface px-4 font-mono text-xs font-bold uppercase tracking-wide text-ink shadow-[2px_2px_0_0_var(--border)] transition-all hover:-translate-y-0.5 active:translate-y-0 active:shadow-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed";
+
+  const applyFlags = (body: unknown): void => {
+    if (body && typeof body === "object" && Array.isArray((body as { flags?: unknown }).flags)) {
+      setFlags((body as { flags: FeatureFlagView[] }).flags);
+    }
+  };
+
+  const loadFlags = async (): Promise<void> => {
+    await run("Feature flags", async () => {
+      const result = await adminRequest("/api/admin/flags", token.trim(), { method: "GET" });
+      applyFlags(result.body);
+      return result;
+    });
+  };
+
+  const toggleFlag = (flag: FeatureFlagView): void => {
+    void run(`${flag.enabled ? "Matikan" : "Nyalakan"} flag ${flag.key}`, async () => {
+      const result = await adminRequest("/api/admin/flags", token.trim(), {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ key: flag.key, enabled: !flag.enabled }),
+      });
+      if (result.ok) applyFlags(result.body);
+      return result;
+    });
+  };
 
   return (
     <div className="mx-auto max-w-3xl">
@@ -110,7 +72,9 @@ const AdminDashboard = (): JSX.Element => {
           type="button"
           disabled={busy}
           className={buttonClass}
-          onClick={() => void run("Index status", () => request("/api/admin/index", token.trim(), { method: "GET" }))}
+          onClick={() =>
+            void run("Index status", () => adminRequest("/api/admin/index", token.trim(), { method: "GET" }))
+          }
         >
           Index status
         </button>
@@ -120,7 +84,7 @@ const AdminDashboard = (): JSX.Element => {
           className={buttonClass}
           onClick={() =>
             void run("Warm index (5 pages / 6 genres)", () =>
-              request("/api/admin/index", token.trim(), {
+              adminRequest("/api/admin/index", token.trim(), {
                 method: "POST",
                 headers: { "content-type": "application/json" },
                 body: JSON.stringify({ pages: 5, genres: 6 }),
@@ -136,7 +100,7 @@ const AdminDashboard = (): JSX.Element => {
           className={buttonClass}
           onClick={() =>
             void run(`Revalidate ${PRESET_PATHS.join(", ")}`, () =>
-              request("/api/admin/revalidate", token.trim(), {
+              adminRequest("/api/admin/revalidate", token.trim(), {
                 method: "POST",
                 headers: { "content-type": "application/json" },
                 body: JSON.stringify({ paths: PRESET_PATHS }),
@@ -150,11 +114,67 @@ const AdminDashboard = (): JSX.Element => {
           type="button"
           disabled={busy}
           className={buttonClass}
-          onClick={() => void run("Metrics", () => request("/api/metrics", token.trim(), { method: "GET" }))}
+          onClick={() => void run("Metrics", () => adminRequest("/api/metrics", token.trim(), { method: "GET" }))}
         >
           Metrics
         </button>
+        <button
+          type="button"
+          disabled={busy}
+          className={buttonClass}
+          onClick={() =>
+            void run("Vitals p75", () => adminRequest("/api/admin/vitals", token.trim(), { method: "GET" }))
+          }
+        >
+          Vitals p75
+        </button>
+        <button
+          type="button"
+          disabled={busy}
+          className={buttonClass}
+          onClick={() =>
+            void run("Uptime rollup + error budget", () =>
+              adminRequest("/api/admin/uptime", token.trim(), { method: "GET" }),
+            )
+          }
+        >
+          Uptime &amp; SLO
+        </button>
+        <button
+          type="button"
+          disabled={busy}
+          className={buttonClass}
+          onClick={() =>
+            void run("Slow requests", () => adminRequest("/api/admin/slow", token.trim(), { method: "GET" }))
+          }
+        >
+          Slow requests
+        </button>
+        <button type="button" disabled={busy} className={buttonClass} onClick={() => void loadFlags()}>
+          Feature flags
+        </button>
       </div>
+
+      {flags.length > 0 && (
+        <div className="mt-3 flex flex-wrap items-center gap-2">
+          <span className="font-mono text-[10px] uppercase tracking-wide text-ink-muted">Toggle flag:</span>
+          {flags.map((flag) => (
+            <button
+              key={flag.key}
+              type="button"
+              disabled={busy}
+              aria-pressed={flag.enabled}
+              title={flag.description}
+              onClick={() => toggleFlag(flag)}
+              className={`inline-flex h-8 items-center rounded-sm border-2 border-border px-3 font-mono text-xs font-bold shadow-[2px_2px_0_0_var(--border)] transition-all cursor-pointer disabled:opacity-50 ${
+                flag.enabled ? "bg-nb-lime text-nb-ink" : "bg-surface text-ink-muted"
+              }`}
+            >
+              {flag.enabled ? "✓" : "✕"} {flag.label}
+            </button>
+          ))}
+        </div>
+      )}
 
       <p className="mt-3 font-mono text-[10px] text-ink-muted">
         Metrics butuh METRICS_TOKEN; endpoint admin menerima ADMIN_TOKEN atau METRICS_TOKEN. Tanpa token terkonfigurasi,

@@ -1,0 +1,145 @@
+name: Nightly cache integrity
+
+on:
+  schedule:
+    # 02:23 UTC daily — validates the live cache/upstream wiring before peak hours.
+    - cron: "23 2 * * *"
+  workflow_dispatch:
+
+jobs:
+  integrity:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Validate live cache integrity
+        if: vars.PRODUCTION_URL != ''
+        env:
+          BASE: ${{ vars.PRODUCTION_URL }}
+        run: node scripts/validate-cache.mjs
+
+      # Release gate: production must absorb a quick burst inside budget.
+      - name: Load gate (quick burst)
+        if: vars.PRODUCTION_URL != ''
+        env:
+          BASE: ${{ vars.PRODUCTION_URL }}
+        run: node scripts/load-test.mjs --mode=quick "$BASE/api/live"
+
+      # Informational: finds where the budget starts breaking, never fails.
+      - name: Load probe (breakpoint, informational)
+        if: vars.PRODUCTION_URL != ''
+        continue-on-error: true
+        env:
+          BASE: ${{ vars.PRODUCTION_URL }}
+        run: node scripts/load-test.mjs --mode=breakpoint "$BASE/api/live"
+
+      - name: Skip notice
+        if: vars.PRODUCTION_URL == ''
+        run: echo "::notice::PRODUCTION_URL belum diisi — job integritas cache dilewati."
+
+      - name: Alert (optional webhook)
+        if: failure()
+        continue-on-error: true
+        env:
+          ALERT_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          ALERT_SOURCE: nightly
+        run: node scripts/alert.mjs "Nightly gagal — cek integritas cache / load gate."
+
+  staging-smoke:
+    # Scheduled smoke on a locally built production stack: compose up + e2e full.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build and start the compose stack
+        env:
+          NEXT_PUBLIC_SITE_URL: http://localhost:3000
+        run: docker compose up -d --build
+
+      - name: Wait for app health
+        run: |
+          for i in $(seq 1 40); do
+            if curl -fsS --max-time 5 http://localhost:3000/api/live >/dev/null 2>&1; then
+              echo "stack up after $((i * 5))s"
+              exit 0
+            fi
+            sleep 5
+          done
+          echo "::error::stack did not become healthy in time"
+          docker compose logs --tail=120
+          exit 1
+
+      - name: E2E smoke (full)
+        env:
+          BASE_URL: http://localhost:3000
+        run: node scripts/e2e-smoke.mjs
+
+      - name: Compose logs on failure
+        if: failure()
+        run: docker compose logs --tail=200
+
+      - name: Tear down
+        if: always()
+        run: docker compose down -v
+
+      - name: Alert (optional webhook)
+        if: failure()
+        continue-on-error: true
+        env:
+          ALERT_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          ALERT_SOURCE: staging-smoke
+        run: node scripts/alert.mjs "Staging smoke gagal — compose stack atau e2e full tidak lulus."
+
+  docker-image:
+    # Image size budget + hardening assertions on the production image.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build production image
+        run: docker build -t kokunime:ci --build-arg NEXT_PUBLIC_SITE_URL=https://example.com .
+
+      - name: Image size + hardening gate
+        run: |
+          SIZE_MB=$(( $(docker image inspect kokunime:ci --format '{{.Size}}') / 1024 / 1024 ))
+          echo "image size: ${SIZE_MB} MB"
+          if [ "$SIZE_MB" -gt 400 ]; then
+            echo "::error::image size ${SIZE_MB} MB exceeds the 400 MB budget"
+            exit 1
+          fi
+
+          USER_NAME=$(docker image inspect kokunime:ci --format '{{.Config.User}}')
+          if [ "$USER_NAME" = "root" ] || [ -z "$USER_NAME" ]; then
+            echo "::error::image runs as root (USER='${USER_NAME}')"
+            exit 1
+          fi
+
+          if ! docker image inspect kokunime:ci --format '{{json .Config.Healthcheck}}' | grep -q "api/live"; then
+            echo "::error::image has no /api/live healthcheck"
+            exit 1
+          fi
+
+          docker image inspect kokunime:ci --format '{{json .Config.Env}}' | grep -q "NODE_ENV=production" || {
+            echo "::error::NODE_ENV=production missing from image env"
+            exit 1
+          }
+
+          echo "✓ size ${SIZE_MB} MB, non-root user '${USER_NAME}', healthcheck + NODE_ENV present"
+
+      - name: Container smoke
+        run: |
+          docker run -d --name kokunime-ci -p 3000:3000 kokunime:ci
+          for i in $(seq 1 20); do
+            if curl -fsS --max-time 5 http://localhost:3000/api/live >/dev/null 2>&1; then
+              echo "container healthy after $((i * 3))s"
+              break
+            fi
+            sleep 3
+          done
+          curl -fsS --max-time 5 http://localhost:3000/api/live >/dev/null
+          docker exec kokunime-ci id | grep -qv "uid=0" || { echo "::error::container process is root"; exit 1; }
+          docker rm -f kokunime-ci

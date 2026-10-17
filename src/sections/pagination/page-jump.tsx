@@ -5,7 +5,11 @@ import { useRouter } from "next/navigation";
 import { FormEvent, JSX, useState } from "react";
 
 // Jump straight to a page in the 500+ page catalog.
-const PageJump = ({ current, total, basePath }: { current: number; total: number; basePath?: string }): JSX.Element => {
+const PageJump = ({
+  current,
+  total,
+  basePath,
+}: { current: number; total: number; basePath?: string | undefined }): JSX.Element => {
   const router = useRouter();
   const [value, setValue] = useState("");
 

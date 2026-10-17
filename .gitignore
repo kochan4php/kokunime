@@ -40,5 +40,8 @@ graphify-out/*root
 # local setup notes (never commit)
 /SETUP.local.md
 
+# local planning docs (never commit)
+/docs/roadmap-wave2.md
+
 # local backup snapshots
 /backups/

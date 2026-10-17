@@ -60,6 +60,14 @@ export async function GET(request: NextRequest): Promise<NextResponse | Response
               schema: { type: "string" },
               description: "Search keyword (minimum 2 characters)",
             },
+            {
+              name: "fields",
+              in: "query",
+              required: false,
+              schema: { type: "string" },
+              description: "Projection over result items (title, release, genres, link).",
+              example: "title,release",
+            },
           ],
           responses: {
             "200": {
@@ -156,6 +164,14 @@ export async function GET(request: NextRequest): Promise<NextResponse | Response
               required: true,
               schema: { type: "string" },
             },
+            {
+              name: "fields",
+              in: "query",
+              required: false,
+              schema: { type: "string" },
+              description: "Comma-separated projection over the detail payload.",
+              example: "title,score,genre",
+            },
           ],
           responses: {
             "200": {
@@ -168,17 +184,24 @@ export async function GET(request: NextRequest): Promise<NextResponse | Response
         get: {
           summary: "Bulk anime details (GET)",
           description:
-            "Comma-separated `slugs` up to 20, with optional `fields=title,score,…` projection. Cacheable and supports conditional GET via ETag.",
+            "Comma-separated `slugs` up to 50, with optional `fields=title,score,…` projection. Cacheable and supports conditional GET via ETag.",
           parameters: [
             { name: "slugs", in: "query", required: true, schema: { type: "string" } },
-            { name: "fields", in: "query", required: false, schema: { type: "string" } },
+            {
+              name: "fields",
+              in: "query",
+              required: false,
+              schema: { type: "string" },
+              example: "title,score,genre",
+            },
           ],
           responses: { "200": { description: "Per-slug results" }, "304": { description: "Not modified" } },
         },
         post: {
           summary: "Resolve multiple anime details in bulk",
+          deprecated: true,
           description:
-            "Accepts an array of anime slugs (up to 20) and returns detailed metadata for each in a single request.",
+            "Deprecated — use GET /api/anime/bulk?slugs=… (cacheable, ETag/304). This route answers with Deprecation and Sunset headers. Accepts an array of anime slugs (up to 50).",
           requestBody: {
             required: true,
             content: {

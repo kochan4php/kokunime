@@ -6,8 +6,8 @@ import { paginationHref } from "@/utils/pagination";
 import { JSX } from "react";
 
 interface PaginationProps {
-  pagination?: PaginationInfo | null;
-  basePath?: string;
+  pagination?: PaginationInfo | null | undefined;
+  basePath?: string | undefined;
 }
 
 const Pagination = ({ pagination, basePath }: PaginationProps): JSX.Element => {

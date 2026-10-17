@@ -1,10 +1,10 @@
-// Constant-time-ish compare for bearer tokens. Scans the full length of the
-// longer input so mismatched lengths do not shortcut the loop.
+// Constant-time compare for bearer tokens. Both sides are SHA-256 hashed
+// first: timingSafeEqual throws on length mismatch, and hashing keeps the
+// configured token length out of the timing side channel too.
+import { createHash, timingSafeEqual } from "node:crypto";
+
 export function safeCompare(a: string, b: string): boolean {
-  const len = Math.max(a.length, b.length);
-  let diff = a.length ^ b.length;
-  for (let i = 0; i < len; i++) {
-    diff |= (a.charCodeAt(i) || 0) ^ (b.charCodeAt(i) || 0);
-  }
-  return diff === 0;
+  const hashA = createHash("sha256").update(a).digest();
+  const hashB = createHash("sha256").update(b).digest();
+  return timingSafeEqual(hashA, hashB);
 }

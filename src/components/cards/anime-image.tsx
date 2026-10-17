@@ -1,6 +1,6 @@
 "use client";
 
-import { JSX, useState } from "react";
+import { JSX, useState, type SyntheticEvent } from "react";
 import Image, { ImageProps } from "next/image";
 import isGif from "@/utils/is-gif";
 
@@ -49,26 +49,30 @@ const AnimeImage = ({
     );
   }
 
+  // Built as one object and cast: exactOptionalPropertyTypes refuses spreading
+  // optional props that may carry explicit undefined straight into ImageProps.
+  const imageProps = {
+    src,
+    alt: alt ?? "",
+    priority,
+    loading,
+    unoptimized: isGif(typeof src === "string" ? src : undefined),
+    onLoad: (e: SyntheticEvent<HTMLImageElement>) => {
+      setLoaded(true);
+      onLoad?.(e);
+    },
+    onError: (e: SyntheticEvent<HTMLImageElement>) => {
+      setHasError(true);
+      setLoaded(true);
+      onError?.(e);
+    },
+    className: `h-full w-full object-cover transition-opacity duration-500 ${loaded ? "opacity-100" : "opacity-0"} ${className}`,
+    ...props,
+  } as ImageProps;
+
   return (
     <div className={`relative h-full w-full overflow-hidden bg-surface-muted ${containerClassName}`}>
-      <Image
-        src={src}
-        alt={alt ?? ""}
-        priority={priority}
-        loading={loading}
-        unoptimized={isGif(typeof src === "string" ? src : undefined)}
-        onLoad={(e) => {
-          setLoaded(true);
-          onLoad?.(e);
-        }}
-        onError={(e) => {
-          setHasError(true);
-          setLoaded(true);
-          onError?.(e);
-        }}
-        className={`h-full w-full object-cover transition-opacity duration-500 ${loaded ? "opacity-100" : "opacity-0"} ${className}`}
-        {...props}
-      />
+      <Image {...imageProps} />
       <div
         className={`skeleton absolute inset-0 transition-opacity duration-500 ${loaded ? "opacity-0" : "opacity-100"}`}
       />

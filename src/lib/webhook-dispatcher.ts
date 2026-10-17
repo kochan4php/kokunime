@@ -1,4 +1,6 @@
-﻿export interface WebhookPayload {
+﻿import { fetchWithRedirectGuard } from "@/lib/url-guard";
+
+interface WebhookPayload {
   title: string;
   description: string;
   url?: string;
@@ -12,7 +14,9 @@ export async function dispatchDiscordWebhook(webhookUrl: string, payload: Webhoo
   }
 
   try {
-    const res = await fetch(webhookUrl, {
+    // Redirects are followed manually so a 302 cannot smuggle this request
+    // into a private network (SSRF).
+    const res = await fetchWithRedirectGuard(webhookUrl, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({

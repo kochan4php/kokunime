@@ -1,4 +1,4 @@
-export interface SiteLink {
+interface SiteLink {
   label: string;
   href: string;
   icon: string;

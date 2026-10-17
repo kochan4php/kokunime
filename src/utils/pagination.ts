@@ -1,6 +1,6 @@
 import { PaginationInfo } from "@/interfaces";
 
-export type PageItem = number | "…";
+type PageItem = number | "…";
 
 export const getPages = (current: number, total: number): PageItem[] => {
   if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1);

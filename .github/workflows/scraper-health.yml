@@ -29,3 +29,9 @@ jobs:
 
       - name: Run Test Suites
         run: pnpm test
+
+      - name: Ping IndexNow with live sitemap
+        run: node scripts/indexnow.mjs
+        continue-on-error: true
+        env:
+          SITE_URL: https://kokunime.netlify.app

@@ -1,12 +1,23 @@
 import { getAnimeDetail } from "@/services/scraper";
 import { parseFieldsParam, projectRecord } from "@/lib/api-projection";
+import { problemResponse } from "@/lib/api-error";
 import { checkEtagMatch, generateEtag } from "@/lib/etag";
+import { RATE_LIMIT_WINDOW_MS, RATE_LIMITS } from "@/config/constants";
 import { checkRateLimit, getRateLimitHeaders } from "@/lib/rate-limit";
+import { stripDangerousKeys } from "@/lib/safe-json";
 import { isSafeSlug } from "@/utils/endpoint-slug";
 import { NextRequest, NextResponse } from "next/server";
 
 const BLOCKED_USER_AGENTS = /scrapy|sqlmap|masscan|nikto|zgrab|acunetix|petalbot|censys/i;
-const MAX_SLUGS = 20;
+const MAX_SLUGS = 50;
+
+// The POST form is superseded by GET ?slugs=… (cacheable + conditional GET);
+// it answers with Deprecation/Sunset headers per the docs' deprecation policy.
+const POST_DEPRECATION_HEADERS = {
+  Deprecation: "true",
+  Sunset: "Fri, 16 Apr 2027 00:00:00 GMT",
+  Link: '</api/anime/bulk?slugs=slug-a,slug-b>; rel="successor-version"',
+} as const;
 
 // Whitelist for fields= — mirrors the AnimeDetail interface.
 const DETAIL_FIELDS = [
@@ -64,22 +75,26 @@ const guardRequest = async (
   limit: number,
 ): Promise<{ rateHeaders: Record<string, string> } | NextResponse> => {
   const ip = request.headers.get("x-forwarded-for") || "bulk-client";
-  const rate = await checkRateLimit(ip, limit, 60_000);
+  const rate = await checkRateLimit(ip, limit, RATE_LIMIT_WINDOW_MS);
   const rateHeaders = getRateLimitHeaders(rate);
 
   if (!rate.success) {
-    return NextResponse.json(
-      { error: "Too many bulk requests. Please slow down." },
-      { status: 429, headers: rateHeaders },
-    );
+    return problemResponse({
+      status: 429,
+      title: "Too Many Requests",
+      detail: "Too many bulk requests. Please slow down.",
+      headers: rateHeaders,
+    });
   }
 
   const ua = request.headers.get("user-agent") || "";
   if (BLOCKED_USER_AGENTS.test(ua)) {
-    return NextResponse.json(
-      { error: "Access Denied: Malicious Crawler Blocked" },
-      { status: 403, headers: rateHeaders },
-    );
+    return problemResponse({
+      status: 403,
+      title: "Forbidden",
+      detail: "Access Denied: Malicious Crawler Blocked",
+      headers: rateHeaders,
+    });
   }
 
   return { rateHeaders };
@@ -97,7 +112,7 @@ const cleanSlugs = (raw: unknown): string[] => {
 // GET /api/anime/bulk?slugs=a,b&fields=title,score — cacheable + conditional GET.
 export async function GET(request: NextRequest): Promise<NextResponse | Response> {
   const started = performance.now();
-  const guard = await guardRequest(request, 30);
+  const guard = await guardRequest(request, RATE_LIMITS.animeBulk);
   if (guard instanceof NextResponse) return guard;
 
   const { searchParams } = new URL(request.url);
@@ -125,33 +140,48 @@ export async function GET(request: NextRequest): Promise<NextResponse | Response
 }
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
-  const guard = await guardRequest(request, 30);
+  const guard = await guardRequest(request, RATE_LIMITS.animeBulk);
   if (guard instanceof NextResponse) return guard;
 
   try {
-    const body = await request.json().catch(() => null);
+    // JSON bodies are attacker-controlled: strip prototype-polluting keys
+    // before the payload reaches any merge/spread.
+    const body = stripDangerousKeys(await request.json().catch(() => null)) as {
+      slugs?: unknown;
+      fields?: unknown;
+    } | null;
     const slugs: unknown = body?.slugs ?? body;
 
     if (!Array.isArray(slugs)) {
-      return NextResponse.json(
-        { error: "Invalid request payload. Expected { slugs: string[] } or string[]" },
-        { status: 400, headers: guard.rateHeaders },
-      );
+      return problemResponse({
+        status: 400,
+        title: "Bad Request",
+        detail: "Invalid request payload. Expected { slugs: string[] } or string[]",
+        headers: { ...guard.rateHeaders, ...POST_DEPRECATION_HEADERS },
+      });
     }
 
     const requested = cleanSlugs(slugs);
     if (requested.length === 0) {
-      return NextResponse.json({ total: 0, results: [] });
+      return NextResponse.json({ total: 0, results: [] }, { headers: POST_DEPRECATION_HEADERS });
     }
 
     const fields = parseFieldsParam(typeof body?.fields === "string" ? body.fields : null, DETAIL_FIELDS);
     const results = await resolveBulk(requested, fields);
 
-    return NextResponse.json({
-      total: results.length,
-      results,
-    });
+    return NextResponse.json(
+      {
+        total: results.length,
+        results,
+      },
+      { headers: POST_DEPRECATION_HEADERS },
+    );
   } catch {
-    return NextResponse.json({ error: "Failed to process bulk request" }, { status: 500 });
+    return problemResponse({
+      status: 500,
+      title: "Internal error",
+      detail: "Failed to process bulk request",
+      headers: POST_DEPRECATION_HEADERS,
+    });
   }
 }

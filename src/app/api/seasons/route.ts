@@ -1,6 +1,7 @@
 import { getSeasonsWithMeta } from "@/services/scraper";
 import { xCacheHeaders } from "@/services/cache";
 import { checkEtagMatch, generateEtag } from "@/lib/etag";
+import { problemResponse } from "@/lib/api-error";
 import { getRequestId } from "@/lib/request-id";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -69,9 +70,12 @@ export async function GET(request: NextRequest): Promise<Response> {
       },
     });
   } catch {
-    return NextResponse.json(
-      { error: "Failed to fetch seasons", requestId: getRequestId(request) },
-      { status: 500, headers: { ...xCacheHeaders("fallback") } },
-    );
+    return problemResponse({
+      status: 500,
+      title: "Upstream failure",
+      detail: "Failed to fetch seasons",
+      requestId: getRequestId(request),
+      headers: { ...xCacheHeaders("fallback") },
+    });
   }
 }

@@ -8,9 +8,9 @@ import { animeSlug } from "@/utils/endpoint-slug";
 import { JSX, useEffect, useState } from "react";
 
 interface FeaturedHeroProps {
-  featured?: Anime;
-  items?: Anime[];
-  blurDataURL?: string;
+  featured?: Anime | undefined;
+  items?: Anime[] | undefined;
+  blurDataURL?: string | undefined;
 }
 
 const FeaturedHero = ({ featured, items = [], blurDataURL }: FeaturedHeroProps): JSX.Element => {
@@ -38,9 +38,8 @@ const FeaturedHero = ({ featured, items = [], blurDataURL }: FeaturedHeroProps):
                 key={current.title}
                 fill
                 priority={activeIndex === 0}
-                fetchPriority={activeIndex === 0 ? "high" : undefined}
-                placeholder={activeIndex === 0 && blurDataURL ? "blur" : undefined}
-                blurDataURL={activeIndex === 0 ? blurDataURL : undefined}
+                {...(activeIndex === 0 ? { fetchPriority: "high" as const } : {})}
+                {...(activeIndex === 0 && blurDataURL ? { placeholder: "blur" as const, blurDataURL } : {})}
                 sizes="(max-width: 768px) 100vw, 50vw"
                 src={current.link.image}
                 alt={current.title}

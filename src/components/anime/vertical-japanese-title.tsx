@@ -3,7 +3,7 @@ import { JSX } from "react";
 const HAS_CJK = /[\u3040-\u30ff\u3400-\u4dbf\u4e00-\u9fff]/;
 
 interface VerticalJapaneseTitleProps {
-  japanese?: string;
+  japanese?: string | undefined;
 }
 
 export const VerticalJapaneseTitle = ({ japanese }: VerticalJapaneseTitleProps): JSX.Element | null => {

@@ -1,11 +1,20 @@
 import { getAnimePerPage, getGenres, getSeasons } from "@/services/scraper";
 import { SITE_URL } from "@/lib/site";
 import { animeSlug, endpointSlug } from "@/utils/endpoint-slug";
-import { MetadataRoute } from "next";
+import type { MetadataRoute } from "next";
 
-export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+// Chunk size stays well under the 50k protocol cap so every file remains small
+// enough for crawlers to fetch quickly.
+export const SITEMAP_CHUNK_SIZE = 5000;
+
+type SitemapEntry = MetadataRoute.Sitemap[number];
+
+// Deterministic builder shared by the index route (/sitemap.xml) and the chunk
+// routes (/sitemaps/[id].xml): chunk N always contains the same slice while
+// the upstream catalog is stable, because ordering only depends on the crawl.
+export const getSitemapEntries = async (): Promise<SitemapEntry[]> => {
   const now = new Date();
-  const entries: MetadataRoute.Sitemap = [
+  const entries: SitemapEntry[] = [
     { url: SITE_URL, lastModified: now, changeFrequency: "daily", priority: 1 },
     { url: `${SITE_URL}/update`, lastModified: now, changeFrequency: "daily", priority: 0.8 },
     { url: `${SITE_URL}/genres`, lastModified: now, changeFrequency: "weekly", priority: 0.6 },
@@ -113,4 +122,4 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }
 
   return entries;
-}
+};

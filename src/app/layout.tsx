@@ -2,6 +2,7 @@ import { ChildrenProps } from "@/interfaces";
 import ServiceWorkerRegister from "@/components/sw-register";
 import SpeculationRules from "@/components/speculation-rules";
 import RouteProgressBar from "@/components/route-progress-bar";
+import RouteAnnouncer from "@/components/route-announcer";
 import WebVitals from "@/components/web-vitals";
 import Toaster from "@/components/toaster";
 import { JetBrains_Mono, Plus_Jakarta_Sans } from "next/font/google";
@@ -77,6 +78,7 @@ const RootLayout = ({ children }: ChildrenProps): JSX.Element => (
       <ServiceWorkerRegister />
       <SpeculationRules />
       <WebVitals />
+      <RouteAnnouncer />
       <Toaster />
       <Suspense fallback={null}>
         <RouteProgressBar />

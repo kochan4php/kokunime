@@ -15,6 +15,12 @@ jobs:
     if: github.event_name == 'workflow_dispatch' || github.event.schedule == '*/15 * * * *'
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
       - name: Probe production health
         if: vars.PRODUCTION_URL != ''
         env:
@@ -73,16 +79,14 @@ jobs:
         if: vars.PRODUCTION_URL == ''
         run: echo "PRODUCTION_URL repository variable not set - skipping uptime probe."
 
-      - name: Alert Discord
+      - name: Alert (optional webhook)
         if: failure()
+        continue-on-error: true
         env:
-          WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          ALERT_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          ALERT_SOURCE: monitor-uptime
           BASE: ${{ vars.PRODUCTION_URL }}
-        run: |
-          [ -z "$WEBHOOK" ] && { echo "no DISCORD_WEBHOOK_URL secret"; exit 0; }
-          curl -sf -X POST -H "Content-Type: application/json" \
-            --data "{\"content\":\"Kokunime probe gagal di $BASE - cek step summary (liveness/health/tls/rute kritis).\"}" \
-            "$WEBHOOK" || true
+        run: node scripts/alert.mjs "Probe gagal di ${BASE} — cek step summary (liveness/health/tls/rute kritis)."
 
   canary:
     if: github.event_name == 'workflow_dispatch' || github.event.schedule == '0 */6 * * *'
@@ -104,12 +108,10 @@ jobs:
         if: vars.PRODUCTION_URL == ''
         run: echo "PRODUCTION_URL repository variable not set - skipping canary."
 
-      - name: Alert Discord
+      - name: Alert (optional webhook)
         if: failure()
+        continue-on-error: true
         env:
-          WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_URL }}
-        run: |
-          [ -z "$WEBHOOK" ] && { echo "no DISCORD_WEBHOOK_URL secret"; exit 0; }
-          curl -sf -X POST -H "Content-Type: application/json" \
-            --data '{"content":"Kokunime canary gagal - e2e smoke test ke production tidak lulus. Cek scraper/upstream."}' \
-            "$WEBHOOK" || true
+          ALERT_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          ALERT_SOURCE: monitor-canary
+        run: node scripts/alert.mjs "Canary e2e smoke gagal ke production — cek scraper/upstream."

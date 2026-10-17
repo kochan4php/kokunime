@@ -1,4 +1,5 @@
 import { recordTrendingView } from "@/lib/trending";
+import { RATE_LIMIT_WINDOW_MS, RATE_LIMITS } from "@/config/constants";
 import { checkRateLimit, getRateLimitHeaders } from "@/lib/rate-limit";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -8,7 +9,7 @@ export const dynamic = "force-dynamic";
 // Best-effort: without Redis it is a silent no-op.
 export async function POST(request: NextRequest): Promise<NextResponse> {
   const ip = request.headers.get("x-forwarded-for") || "view-client";
-  const rate = await checkRateLimit(ip, 120, 60_000);
+  const rate = await checkRateLimit(ip, RATE_LIMITS.trackView, RATE_LIMIT_WINDOW_MS);
   const rateHeaders = getRateLimitHeaders(rate);
 
   if (!rate.success) {

@@ -1,6 +1,8 @@
 import { getAnimeDetail, getAnimePerPage } from "@/services/scraper";
 import { cachedWithMeta, TTL, xCacheHeaders } from "@/services/cache";
+import { problemResponse } from "@/lib/api-error";
 import { checkEtagMatch, generateEtag } from "@/lib/etag";
+import { RATE_LIMIT_WINDOW_MS, RATE_LIMITS } from "@/config/constants";
 import { checkRateLimit, getRateLimitHeaders } from "@/lib/rate-limit";
 import { getRequestId } from "@/lib/request-id";
 import { scoreRecommendations, type RecommendationPayload } from "@/lib/recommend";
@@ -19,14 +21,17 @@ const EMPTY: RecommendationPayload = { topGenre: null, items: [] };
 export async function GET(request: NextRequest): Promise<NextResponse | Response> {
   const started = performance.now();
   const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "recommend-client";
-  const rate = await checkRateLimit(`recommend:${ip}`, 30, 60_000);
+  const rate = await checkRateLimit(`recommend:${ip}`, RATE_LIMITS.recommend, RATE_LIMIT_WINDOW_MS);
   const rateHeaders = getRateLimitHeaders(rate);
 
   if (!rate.success) {
-    return NextResponse.json(
-      { error: "Too many requests. Please slow down.", requestId: getRequestId(request) },
-      { status: 429, headers: rateHeaders },
-    );
+    return problemResponse({
+      status: 429,
+      title: "Too Many Requests",
+      detail: "Too many requests. Please slow down.",
+      requestId: getRequestId(request),
+      headers: rateHeaders,
+    });
   }
 
   const raw = request.nextUrl.searchParams.get("slugs") ?? "";

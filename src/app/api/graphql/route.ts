@@ -1,5 +1,7 @@
 import { getAnimeDetail, getGenres } from "@/services/scraper";
 import { redisGet, redisSet } from "@/lib/redis";
+import { analyzeQuery, GRAPHQL_MAX_COMPLEXITY, GRAPHQL_MAX_DEPTH } from "@/lib/graphql-guard";
+import { RATE_LIMIT_WINDOW_MS, RATE_LIMITS } from "@/config/constants";
 import { checkRateLimit, getRateLimitHeaders } from "@/lib/rate-limit";
 import { createHash } from "node:crypto";
 import { NextRequest, NextResponse } from "next/server";
@@ -11,7 +13,7 @@ const sha256 = (value: string): string => createHash("sha256").update(value).dig
 export async function POST(request: NextRequest): Promise<NextResponse> {
   try {
     const ip = request.headers.get("x-forwarded-for") || "graphql-client";
-    const rate = await checkRateLimit(ip, 60, 60_000);
+    const rate = await checkRateLimit(ip, RATE_LIMITS.graphql, RATE_LIMIT_WINDOW_MS);
     const rateHeaders = getRateLimitHeaders(rate);
 
     if (!rate.success) {
@@ -68,6 +70,23 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       return NextResponse.json(
         { errors: [{ message: "Query payload too large (max 2000 chars)" }] },
         { status: 413, headers: rateHeaders },
+      );
+    }
+
+    // Depth/complexity budget: the route parses with regexes, so pathological
+    // nesting or field bombs are rejected before matching.
+    const analysis = analyzeQuery(query);
+    if (analysis.depth > GRAPHQL_MAX_DEPTH || analysis.complexity > GRAPHQL_MAX_COMPLEXITY) {
+      return NextResponse.json(
+        {
+          errors: [
+            {
+              message: `Query too complex (depth ${analysis.depth}/${GRAPHQL_MAX_DEPTH}, fields ${analysis.complexity}/${GRAPHQL_MAX_COMPLEXITY})`,
+              extensions: { code: "QUERY_TOO_COMPLEX" },
+            },
+          ],
+        },
+        { status: 400, headers: rateHeaders },
       );
     }
 

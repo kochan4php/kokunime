@@ -1,10 +1,10 @@
 import { Anime } from "@/interfaces";
 
-export interface RecommendationItem {
+interface RecommendationItem {
   slug: string;
   title: string;
-  image?: string;
-  release?: string;
+  image?: string | undefined;
+  release?: string | undefined;
   genres: string[];
   score: number;
 }

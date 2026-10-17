@@ -8,6 +8,7 @@ import { AgeBucket, parseRelativeAge } from "@/utils/relative-age";
 import { animeSlug } from "@/utils/endpoint-slug";
 import { SITE_URL } from "@/lib/site";
 import { buildSubpageBreadcrumbJsonLd, safeJsonLd } from "@/lib/seo";
+import Breadcrumbs from "@/components/breadcrumbs";
 import { Metadata } from "next";
 import { JSX } from "react";
 
@@ -62,6 +63,7 @@ const UpdatePage = async (): Promise<JSX.Element> => {
           }}
           suppressHydrationWarning
         />
+        <Breadcrumbs items={[{ name: "Update" }]} />
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
             <span className="chip">
@@ -85,6 +87,22 @@ const UpdatePage = async (): Promise<JSX.Element> => {
             .filter((item) => Boolean(item.slug))}
         />
 
+        <nav aria-label="Lompat ke kelompok update" className="mt-6 flex flex-wrap gap-1.5">
+          {BUCKET_META.map(({ key, label }) => {
+            const count = groups.get(key)?.length ?? 0;
+            if (count === 0) return null;
+            return (
+              <a
+                key={key}
+                href={`#update-${key}`}
+                className="rounded-sm border-2 border-border bg-surface px-3 py-1 font-mono text-[11px] font-semibold text-ink-muted shadow-[2px_2px_0_0_var(--border)] transition-all hover:-translate-y-0.5 hover:bg-nb-yellow hover:text-nb-ink active:translate-y-0 active:shadow-none"
+              >
+                {label} · {count}
+              </a>
+            );
+          })}
+        </nav>
+
         {anime.length === 0 ? (
           <div className="card-shell mt-10">
             <div className="card-core p-10 text-center">
@@ -97,7 +115,7 @@ const UpdatePage = async (): Promise<JSX.Element> => {
             const items = groups.get(key) ?? [];
             if (items.length === 0) return null;
             return (
-              <div key={key} className="mt-10">
+              <div key={key} id={`update-${key}`} className="mt-10 scroll-mt-24">
                 <div className="flex flex-wrap items-baseline gap-2">
                   <h2 className="font-display text-xl font-extrabold tracking-tight text-ink md:text-2xl">{label}</h2>
                   <span className="font-mono text-xs text-ink-muted">

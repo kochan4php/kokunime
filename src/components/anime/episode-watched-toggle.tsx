@@ -7,8 +7,8 @@ import { JSX, useSyncExternalStore } from "react";
 interface EpisodeWatchedToggleProps {
   slug: string;
   episode: number;
-  title?: string;
-  total?: number;
+  title?: string | undefined;
+  total?: number | undefined;
 }
 
 // Per-episode watched marker stored in localStorage. Local state only — this
