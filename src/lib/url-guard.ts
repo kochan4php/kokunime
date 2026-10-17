@@ -1,8 +1,16 @@
-import { isIP } from "node:net";
-
 // SSRF guard for outbound fetches whose URL comes from config: only public
 // http(s) hosts, and redirects are followed manually so every hop is
 // validated (a public URL must not 302 into 127.0.0.1 or cloud metadata).
+
+// Edge-safe literal-IP detector (node:net's isIP is Node-only; this module is
+// reachable from the Edge instrumentation via error-reporter).
+const detectIpFamily = (host: string): 0 | 4 | 6 => {
+  if (/^\d{1,3}(\.\d{1,3}){3}$/.test(host)) {
+    return host.split(".").every((part) => Number(part) <= 255) ? 4 : 0;
+  }
+  return host.includes(":") ? 6 : 0;
+};
+
 const PRIVATE_V4 = [
   /^0\./,
   /^10\./,
@@ -25,7 +33,7 @@ export const isPublicHttpUrl = (raw: string): boolean => {
     if (host === "localhost" || host.endsWith(".localhost") || host.endsWith(".internal") || host.endsWith(".local")) {
       return false;
     }
-    const family = isIP(host);
+    const family = detectIpFamily(host);
     if (family === 4) return !PRIVATE_V4.some((pattern) => pattern.test(host));
     if (family === 6) return !PRIVATE_V6.test(host);
     // DNS name — resolution-level pinning needs a custom resolver; the
