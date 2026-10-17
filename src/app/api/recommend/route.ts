@@ -1,5 +1,6 @@
 import { getAnimeDetail, getAnimePerPage } from "@/services/scraper";
 import { cachedWithMeta, TTL, xCacheHeaders } from "@/services/cache";
+import { checkEtagMatch, generateEtag } from "@/lib/etag";
 import { checkRateLimit, getRateLimitHeaders } from "@/lib/rate-limit";
 import { getRequestId } from "@/lib/request-id";
 import { scoreRecommendations, type RecommendationPayload } from "@/lib/recommend";
@@ -15,7 +16,7 @@ const EMPTY: RecommendationPayload = { topGenre: null, items: [] };
 
 // Personal recommendations from the user's saved titles. The client sends
 // bookmark slugs; we score cached listing items against their genres.
-export async function GET(request: NextRequest): Promise<NextResponse> {
+export async function GET(request: NextRequest): Promise<NextResponse | Response> {
   const started = performance.now();
   const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "recommend-client";
   const rate = await checkRateLimit(`recommend:${ip}`, 30, 60_000);
@@ -76,11 +77,16 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     EMPTY,
   );
 
-  return NextResponse.json(payload, {
-    headers: {
-      ...xCacheHeaders(tier),
-      "Server-Timing": `app;dur=${(performance.now() - started).toFixed(1)}`,
-      ...rateHeaders,
-    },
-  });
+  const etag = generateEtag(JSON.stringify(payload));
+  const headers = {
+    ETag: etag,
+    ...xCacheHeaders(tier),
+    "Server-Timing": `app;dur=${(performance.now() - started).toFixed(1)}`,
+    ...rateHeaders,
+  };
+  if (checkEtagMatch(request, etag)) {
+    return new Response(null, { status: 304, headers });
+  }
+
+  return NextResponse.json(payload, { headers });
 }

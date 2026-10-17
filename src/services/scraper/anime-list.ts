@@ -1,5 +1,6 @@
 import upstream from "@/config/upstream";
 import { AnimePage, PaginationInfo } from "@/interfaces";
+import { indexAnimeItems } from "@/lib/search-index";
 import { load } from "cheerio";
 import { formatAnimeData } from "./parse";
 import { parsePagination } from "./parse-pagination";
@@ -33,6 +34,9 @@ export async function getAnimePerPage(page: number): Promise<AnimePage> {
   const [res1, res2, res3] = await Promise.all([fetchSinglePage(p1), fetchSinglePage(p2), fetchSinglePage(p3)]);
 
   const combinedAnime = [...res1.anime, ...res2.anime, ...res3.anime];
+  // Opportunistic index growth: every listing we parse feeds the local search
+  // index (no-op without Redis).
+  void indexAnimeItems(combinedAnime);
   const upstreamTotal = res1.pagination?.total_page ?? res2.pagination?.total_page ?? res3.pagination?.total_page ?? 1;
   const total_page = Math.max(1, Math.ceil(upstreamTotal / 3));
 

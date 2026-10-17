@@ -14,27 +14,6 @@ const securityHeaders = [
   // form-exfiltration without touching script-src (full CSP is theater for
   // Next.js: inline theme script + RSC payloads force unsafe-inline).
   { key: "Content-Security-Policy", value: "base-uri 'none'; form-action 'self'; object-src 'none'" },
-  // Report-only full CSP: enforces nothing, but violations land in
-  // /api/report-error (counted as csp_violation) so a future enforcing pass
-  // is driven by real data instead of guesses.
-  {
-    key: "Content-Security-Policy-Report-Only",
-    value: [
-      "default-src 'self'",
-      "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
-      "style-src 'self' 'unsafe-inline'",
-      "img-src 'self' data: blob: https:",
-      "font-src 'self' data:",
-      "connect-src 'self'",
-      "frame-src https://www.youtube.com https://www.youtube-nocookie.com",
-      "media-src 'self' https:",
-      "object-src 'none'",
-      "base-uri 'none'",
-      "form-action 'self'",
-      "frame-ancestors 'none'",
-      "report-uri /api/report-error",
-    ].join("; "),
-  },
 ];
 
 const immutableCacheControl = {
@@ -47,6 +26,11 @@ const nextConfig = {
   reactStrictMode: true,
   compress: true,
   poweredByHeader: false,
+  experimental: {
+    // Client router cache: revisits within 30s reuse the RSC payload instead of
+    // refetching, so back/forward and repeated nav feel instant.
+    staleTimes: { dynamic: 30 },
+  },
   env: {
     // Cache-busting token for the service worker URL (see public/sw.js): a new
     // build → new SW script URL → fresh cache namespace, no manual bumping.
@@ -55,11 +39,24 @@ const nextConfig = {
   },
   async redirects() {
     // /page/1 duplicates "/" (the route 404s on page < 2) — consolidate.
-    return [{ source: "/page/1", destination: "/", permanent: true }];
+    return [
+      { source: "/page/1", destination: "/", permanent: true },
+      { source: "/home", destination: "/", permanent: true },
+      { source: "/index", destination: "/", permanent: true },
+      { source: "/feed", destination: "/feed.xml", permanent: true },
+    ];
   },
   async headers() {
+    const feedCache = {
+      key: "Cache-Control",
+      value: "public, s-maxage=3600, stale-while-revalidate=86400",
+    };
+    // Generated documents (feeds, sitemap, opensearch, robots): near-static —
+    // cache hard at the CDN and serve stale while revalidating.
+    const documentSources = ["/feed.xml", "/feed.json", "/feed.atom", "/sitemap.xml", "/opensearch.xml", "/robots.txt"];
     return [
       { source: "/:path*", headers: securityHeaders },
+      ...documentSources.map((source) => ({ source, headers: [feedCache] })),
       { source: "/icon.svg", headers: [immutableCacheControl] },
       { source: "/manifest.webmanifest", headers: [immutableCacheControl] },
       {

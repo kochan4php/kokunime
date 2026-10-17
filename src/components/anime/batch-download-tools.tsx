@@ -17,7 +17,8 @@ const BatchDownloadTools = ({ group, animeTitle }: BatchDownloadToolsProps): JSX
   const isLargeBatch = useMemo(() => {
     const text = `${group.title} ${group.link_download.map((r) => r.resolusi).join(" ")}`;
     const gbMatch = text.match(/(\d+(?:\.\d+)?)\s*gb/i);
-    if (gbMatch && parseFloat(gbMatch[1]) >= 10) return true;
+    const gbValue = gbMatch?.[1];
+    if (gbValue && parseFloat(gbValue) >= 10) return true;
     return false;
   }, [group]);
 

@@ -21,7 +21,7 @@ describe("metrics registry", () => {
     observeHistogram("latency", -1); // ignored
     observeHistogram("latency", Number.NaN); // ignored
 
-    const state = getHistograms().latency;
+    const state = getHistograms().latency!;
     expect(state.count).toBe(4);
     expect(state.sum).toBe(10 + 50 + 60 + 99_999);
     expect(state.bucketCounts[0]).toBe(2); // ≤50

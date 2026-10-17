@@ -30,7 +30,7 @@ export const parseRelativeAge = (raw?: string | null): RelativeAge => {
   if (/kemarin|yesterday/.test(text)) return { bucket: "yesterday" };
 
   const match = text.match(/(\d[\d.,]*|[a-z]+)\s*(menit|minute|jam|hour|hari|day|minggu|week|bulan|month|tahun|year)/);
-  if (!match) return { bucket: "unknown" };
+  if (!match?.[1] || !match[2]) return { bucket: "unknown" };
 
   const value = Number(match[1]) || NUMBER_WORDS[match[1]] || 0;
   const unit = match[2];

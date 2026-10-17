@@ -1,6 +1,6 @@
 "use client";
 
-import { ToastItem, dismissToast, getToasts, subscribeToasts } from "@/utils/toast";
+import { ToastItem, dismissToast, getToasts, setToastsPaused, subscribeToasts } from "@/utils/toast";
 import { JSX, useSyncExternalStore } from "react";
 
 const EMPTY_TOASTS: ToastItem[] = [];
@@ -15,6 +15,10 @@ const Toaster = (): JSX.Element | null => {
     <div
       role="status"
       aria-live="polite"
+      onMouseEnter={() => setToastsPaused(true)}
+      onMouseLeave={() => setToastsPaused(false)}
+      onFocusCapture={() => setToastsPaused(true)}
+      onBlurCapture={() => setToastsPaused(false)}
       className="pointer-events-none fixed bottom-24 left-1/2 z-[70] flex w-[min(92vw,26rem)] -translate-x-1/2 flex-col gap-2 lg:bottom-6"
     >
       {toasts.map((toast) => (

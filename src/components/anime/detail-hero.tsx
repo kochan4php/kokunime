@@ -2,11 +2,13 @@ import AnimeImage from "@/components/cards/anime-image";
 import DetailMeta from "./detail-meta";
 import GenreTags from "./genre-tags";
 import BookmarkButton from "./bookmark-button";
+import SaveOfflineButton from "./save-offline-button";
 import ShareButton from "./share-button";
 import TrailerButton from "./trailer-button";
 import CopyButton from "./copy-button";
 import ContinueWatching from "./continue-watching";
 import { AnimeDetail } from "@/interfaces";
+import { getBlurDataUrl } from "@/lib/blur";
 import Link from "next/link";
 import { JSX } from "react";
 
@@ -17,7 +19,11 @@ interface DetailHeroProps {
   slug?: string;
 }
 
-const DetailHero = ({ anime, slug }: DetailHeroProps): JSX.Element => (
+interface DetailHeroViewProps extends DetailHeroProps {
+  blurDataURL?: string;
+}
+
+const DetailHeroView = ({ anime, slug, blurDataURL }: DetailHeroViewProps): JSX.Element => (
   <div className="relative overflow-hidden sm:overflow-visible">
     <div
       aria-hidden="true"
@@ -31,6 +37,8 @@ const DetailHero = ({ anime, slug }: DetailHeroProps): JSX.Element => (
               fill
               priority
               fetchPriority="high"
+              placeholder={blurDataURL ? "blur" : undefined}
+              blurDataURL={blurDataURL}
               sizes="(max-width: 768px) 100vw, 320px"
               src={anime.image}
               alt={anime.title ?? ""}
@@ -77,6 +85,7 @@ const DetailHero = ({ anime, slug }: DetailHeroProps): JSX.Element => (
                     <span>⚖ Banding</span>
                   </Link>
                 )}
+                {slug && <SaveOfflineButton slug={slug} title={anime.title ?? ""} />}
               </div>
             </div>
             <div className="mt-3 flex flex-col sm:flex-row sm:items-baseline gap-2 min-w-0">
@@ -162,5 +171,11 @@ const DetailHero = ({ anime, slug }: DetailHeroProps): JSX.Element => (
     </div>
   </div>
 );
+
+// Server wrapper: resolves the (cached) blur placeholder before rendering.
+const DetailHero = async ({ anime, slug }: DetailHeroProps): Promise<JSX.Element> => {
+  const blurDataURL = await getBlurDataUrl(anime.image);
+  return <DetailHeroView anime={anime} slug={slug} blurDataURL={blurDataURL} />;
+};
 
 export default DetailHero;

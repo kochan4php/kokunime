@@ -1,6 +1,6 @@
 import { UPSTREAM_CIRCUIT_KEY } from "@/config/upstream";
 import { getCircuitState } from "@/lib/circuit-breaker";
-import { HISTOGRAM_BUCKETS, getHistograms, getMetrics } from "@/lib/metrics";
+import { HISTOGRAM_BUCKETS, getEventLoopLagMs, getHistograms, getMetrics } from "@/lib/metrics";
 import { redisHealth } from "@/lib/redis";
 import { safeCompare } from "@/lib/safe-compare";
 import { NextRequest } from "next/server";
@@ -29,6 +29,7 @@ export async function GET(request: NextRequest): Promise<Response> {
   const redis = await redisHealth();
   const circuit = getCircuitState(UPSTREAM_CIRCUIT_KEY);
   const mem = process.memoryUsage();
+  const loopLag = getEventLoopLagMs();
 
   const histogramLines: string[] = [];
   for (const [metric, state] of Object.entries(histograms)) {
@@ -57,6 +58,14 @@ export async function GET(request: NextRequest): Promise<Response> {
     "# HELP kokunime_memory_rss_bytes Resident set size.",
     "# TYPE kokunime_memory_rss_bytes gauge",
     `kokunime_memory_rss_bytes ${mem.rss}`,
+    ...(loopLag
+      ? [
+          "# HELP kokunime_eventloop_lag_ms Event-loop delay (CPU saturation signal).",
+          "# TYPE kokunime_eventloop_lag_ms gauge",
+          `kokunime_eventloop_lag_ms{quantile="mean"} ${loopLag.mean.toFixed(2)}`,
+          `kokunime_eventloop_lag_ms{quantile="p99"} ${loopLag.p99.toFixed(2)}`,
+        ]
+      : []),
     "# HELP kokunime_redis_up 1 unless REDIS_URL is set and unreachable (disabled counts as up).",
     "# TYPE kokunime_redis_up gauge",
     `kokunime_redis_up ${redis === "error" ? 0 : 1}`,

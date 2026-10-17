@@ -1,14 +1,19 @@
 import { getAnimeDetail } from "@/services/scraper";
+import { checkEtagMatch, generateEtag } from "@/lib/etag";
+import { normalizeSlug } from "@/utils/endpoint-slug";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ slug: string }> },
-): Promise<NextResponse> {
+): Promise<NextResponse | Response> {
   try {
     const { slug } = await params;
     if (!slug) {
       return NextResponse.json({ error: "Slug is required" }, { status: 400 });
+    }
+    if (!normalizeSlug(slug)) {
+      return NextResponse.json({ error: "Invalid slug" }, { status: 400 });
     }
 
     const detail = await getAnimeDetail(slug);
@@ -30,24 +35,25 @@ export async function GET(
         .filter((group) => group.link_download.length > 0);
     }
 
-    return NextResponse.json(
-      {
-        slug,
-        title: detail.title,
-        japanese: detail.japanese,
-        score: detail.score,
-        status: detail.status,
-        type: detail.type,
-        total_episode: detail.total_episode,
-        trailer: detail.trailer,
-        download: downloadGroups,
-      },
-      {
-        headers: {
-          "Cache-Control": "public, s-maxage=900, stale-while-revalidate=60",
-        },
-      },
-    );
+    const payload = {
+      slug,
+      title: detail.title,
+      japanese: detail.japanese,
+      score: detail.score,
+      status: detail.status,
+      type: detail.type,
+      total_episode: detail.total_episode,
+      trailer: detail.trailer,
+      download: downloadGroups,
+    };
+
+    const etag = generateEtag(JSON.stringify(payload));
+    const headers = { "Cache-Control": "public, s-maxage=900, stale-while-revalidate=60", ETag: etag };
+    if (checkEtagMatch(request, etag)) {
+      return new Response(null, { status: 304, headers });
+    }
+
+    return NextResponse.json(payload, { headers });
   } catch {
     return NextResponse.json({ error: "Failed to fetch download links" }, { status: 500 });
   }

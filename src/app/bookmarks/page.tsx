@@ -2,6 +2,8 @@
 
 import MainLayout from "@/layouts/main-layout";
 import CardAnime from "@/components/cards/card-anime";
+import BookmarkMetaDialog from "@/components/bookmark-meta-dialog";
+import BookmarkListRow from "@/components/bookmarks/bookmark-list-row";
 import {
   BookmarkItem,
   BookmarkStatus,
@@ -11,11 +13,19 @@ import {
   getBookmarks,
   getStorageUsageStats,
   importBookmarksJson,
+  removeBookmark,
   restoreBookmarks,
   subscribeBookmarks,
   updateBookmarkUserMeta,
 } from "@/utils/bookmarks";
-import { HistoryItem, clearAllHistory, getHistory, subscribeHistory } from "@/utils/history";
+import {
+  HistoryItem,
+  clearAllHistory,
+  getHistory,
+  removeHistory,
+  restoreHistory,
+  subscribeHistory,
+} from "@/utils/history";
 import {
   ProgressEntry,
   getProgressList,
@@ -26,7 +36,7 @@ import {
 import { decodeSyncPayload, encodeSyncPayload } from "@/utils/sync-codec";
 import { showToast } from "@/utils/toast";
 import Link from "next/link";
-import { JSX, useEffect, useMemo, useState, useSyncExternalStore } from "react";
+import { JSX, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 
 const SERVER_BOOKMARKS: BookmarkItem[] = [];
 const SERVER_HISTORY: HistoryItem[] = [];
@@ -42,6 +52,13 @@ const BookmarksPage = (): JSX.Element => {
   const [filterQuery, setFilterQuery] = useState("");
   const [sortBy, setSortBy] = useState<"recent" | "oldest" | "title" | "rating">("recent");
   const [shareCopied, setShareCopied] = useState(false);
+  const [metaDialogSlug, setMetaDialogSlug] = useState<string | null>(null);
+  const [selectMode, setSelectMode] = useState(false);
+  const [selectedSlugs, setSelectedSlugs] = useState<string[]>([]);
+  const [dragOverFolder, setDragOverFolder] = useState<string | null>(null);
+  const [bulkFolderChoice, setBulkFolderChoice] = useState("");
+  const [bulkNewFolder, setBulkNewFolder] = useState<string | null>(null);
+  const touchStartRef = useRef<{ x: number; y: number } | null>(null);
 
   // Share-link import: gzip-compressed bookmark + progress payload appended as
   // #sync=.... Merge is confirm-gated and additive (undo-safe), replacing the
@@ -141,6 +158,18 @@ const BookmarksPage = (): JSX.Element => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [bookmarks, history]);
 
+  const metaDialogItem = useMemo(
+    () => (metaDialogSlug ? (bookmarks.find((b) => b.slug === metaDialogSlug) ?? null) : null),
+    [bookmarks, metaDialogSlug],
+  );
+
+  const switchTab = (tab: "bookmarks" | "history") => {
+    setActiveTab(tab);
+    setFilterQuery("");
+    setSelectMode(false);
+    setSelectedSlugs([]);
+  };
+
   const handleClear = () => {
     if (activeTab === "bookmarks") {
       if (window.confirm("Hapus semua anime tersimpan?")) {
@@ -155,9 +184,91 @@ const BookmarksPage = (): JSX.Element => {
       }
     } else {
       if (window.confirm("Hapus semua riwayat terakhir?")) {
+        const snapshot = getHistory();
         clearAllHistory();
+        if (snapshot.length > 0) {
+          showToast(`${snapshot.length} riwayat dihapus`, {
+            actionLabel: "Urungkan",
+            onAction: () => restoreHistory(snapshot),
+          });
+        }
       }
     }
+  };
+
+  const handleRemoveItem = (item: BookmarkItem | HistoryItem) => {
+    if (activeTab === "bookmarks") {
+      const snapshot = getBookmarks().find((b) => b.slug === item.slug);
+      removeBookmark(item.slug);
+      if (snapshot) {
+        showToast(`${item.title} dihapus`, {
+          actionLabel: "Urungkan",
+          onAction: () => restoreBookmarks([snapshot]),
+        });
+      }
+    } else {
+      const snapshot = getHistory().filter((h) => h.slug === item.slug);
+      removeHistory(item.slug);
+      showToast(`${item.title} dihapus dari riwayat`, {
+        actionLabel: "Urungkan",
+        onAction: () => restoreHistory(snapshot),
+      });
+    }
+  };
+
+  // Folder assignment (drag & drop, bulk bar). Keeps a snapshot of the previous
+  // folder per slug so the toast's undo restores exactly what changed.
+  const assignFolder = (folder: string | undefined, slugs: string[]) => {
+    if (slugs.length === 0) return;
+    const previous = getBookmarks()
+      .filter((b) => slugs.includes(b.slug))
+      .map((b) => ({ slug: b.slug, folder: b.folder ?? null }));
+    for (const slug of slugs) updateBookmarkUserMeta(slug, { folder: folder ?? null });
+    showToast(folder ? `${slugs.length} anime dipindah ke 📁 ${folder}` : `Folder dihapus dari ${slugs.length} anime`, {
+      actionLabel: "Urungkan",
+      onAction: () => {
+        for (const entry of previous) updateBookmarkUserMeta(entry.slug, { folder: entry.folder });
+      },
+    });
+  };
+
+  const removeSelected = () => {
+    const snapshot = getBookmarks().filter((b) => selectedSlugs.includes(b.slug));
+    if (snapshot.length === 0) return;
+    if (!window.confirm(`Hapus ${snapshot.length} anime terpilih?`)) return;
+    const remaining = getBookmarks().filter((b) => !selectedSlugs.includes(b.slug));
+    clearAllBookmarks();
+    restoreBookmarks(remaining);
+    showToast(`${snapshot.length} anime dihapus`, {
+      actionLabel: "Urungkan",
+      onAction: () => restoreBookmarks(snapshot),
+    });
+    setSelectedSlugs([]);
+  };
+
+  const toggleSelected = (slug: string) => {
+    setSelectedSlugs((prev) => (prev.includes(slug) ? prev.filter((s) => s !== slug) : [...prev, slug]));
+  };
+
+  const copyMarkdown = (source: BookmarkItem[]) => {
+    void (async () => {
+      if (source.length === 0) return;
+      const origin = window.location.origin;
+      const lines = source.map((b) => {
+        const bits = [
+          b.rating ? ` ⭐ ${b.rating}/10` : "",
+          b.folder ? ` 📁 ${b.folder}` : "",
+          b.status ? ` (${b.status})` : "",
+        ].join("");
+        return `- [${b.title}](${origin}/anime/${b.slug})${bits}`;
+      });
+      try {
+        await navigator.clipboard.writeText(lines.join("\n"));
+        showToast(`${lines.length} judul disalin sebagai Markdown`);
+      } catch {
+        showToast("Gagal menyalin ke clipboard");
+      }
+    })();
   };
 
   const handleImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -168,18 +279,51 @@ const BookmarksPage = (): JSX.Element => {
     e.target.value = "";
   };
 
+  const onTouchStart = (e: React.TouchEvent<HTMLElement>) => {
+    const target = e.target as HTMLElement;
+    if (target.closest("input,textarea,select,dialog,button")) {
+      touchStartRef.current = null;
+      return;
+    }
+    const touch = e.touches[0];
+    if (!touch) return;
+    touchStartRef.current = { x: touch.clientX, y: touch.clientY };
+  };
+
+  const onTouchEnd = (e: React.TouchEvent<HTMLElement>) => {
+    const start = touchStartRef.current;
+    touchStartRef.current = null;
+    const touch = e.changedTouches[0];
+    if (!start || !touch) return;
+    const dx = touch.clientX - start.x;
+    const dy = touch.clientY - start.y;
+    if (Math.abs(dx) < 70 || Math.abs(dy) > 60) return;
+    switchTab(dx < 0 ? "history" : "bookmarks");
+  };
+
   return (
     <MainLayout>
-      <section className="container px-4 pt-6 pb-8 md:pt-10 md:pb-16">
-        <div className="flex flex-wrap items-center justify-between gap-4">
+      <section
+        className="container px-4 pt-6 pb-8 md:pt-10 md:pb-16"
+        onTouchStart={onTouchStart}
+        onTouchEnd={onTouchEnd}
+      >
+        {/* Print-only header: the interactive chrome is hidden when printing. */}
+        <div className="hidden print:block">
+          <h1 className="font-display text-2xl font-extrabold">
+            Kokunime — {activeTab === "bookmarks" ? "Anime Tersimpan" : "Riwayat Tontonan"}
+          </h1>
+          <p className="mt-1 text-sm">
+            {sortedItems.length} judul • dicetak {new Date().toLocaleDateString("id-ID")}
+          </p>
+        </div>
+
+        <div className="flex flex-wrap items-center justify-between gap-4 print:hidden">
           <div>
             <div className="flex items-center gap-2">
               <button
                 type="button"
-                onClick={() => {
-                  setActiveTab("bookmarks");
-                  setFilterQuery("");
-                }}
+                onClick={() => switchTab("bookmarks")}
                 className={`rounded-sm border-2 border-border px-4 py-1.5 font-display text-sm font-bold tracking-tight transition-all duration-150 cursor-pointer ${
                   activeTab === "bookmarks"
                     ? "bg-accent text-(--accent-ink) shadow-[2px_2px_0_0_var(--border)]"
@@ -190,10 +334,7 @@ const BookmarksPage = (): JSX.Element => {
               </button>
               <button
                 type="button"
-                onClick={() => {
-                  setActiveTab("history");
-                  setFilterQuery("");
-                }}
+                onClick={() => switchTab("history")}
                 className={`rounded-sm border-2 border-border px-4 py-1.5 font-display text-sm font-bold tracking-tight transition-all duration-150 cursor-pointer ${
                   activeTab === "history"
                     ? "bg-accent text-(--accent-ink) shadow-[2px_2px_0_0_var(--border)]"
@@ -268,7 +409,9 @@ const BookmarksPage = (): JSX.Element => {
             )}
             {activeTab === "bookmarks" && (folders.length > 0 || bookmarks.length > 0) && (
               <div className="mt-2 flex flex-wrap items-center gap-1.5">
-                <span className="font-mono text-[10px] text-ink-muted">Folder:</span>
+                <span className="font-mono text-[10px] text-ink-muted">
+                  {dragOverFolder !== null ? "Lepaskan ke folder tujuan ↓" : "Folder:"}
+                </span>
                 <button
                   type="button"
                   onClick={() => setFolderFilter("all")}
@@ -285,10 +428,24 @@ const BookmarksPage = (): JSX.Element => {
                     key={f}
                     type="button"
                     onClick={() => setFolderFilter(f)}
+                    onDragOver={(e) => {
+                      e.preventDefault();
+                      setDragOverFolder(f);
+                    }}
+                    onDragLeave={() => setDragOverFolder((prev) => (prev === f ? null : prev))}
+                    onDrop={(e) => {
+                      e.preventDefault();
+                      const slug = e.dataTransfer.getData("text/plain");
+                      setDragOverFolder(null);
+                      if (slug) assignFolder(f, [slug]);
+                    }}
+                    title={`Filter folder ${f} — lepaskan kartu ke sini untuk memindahkan`}
                     className={`rounded-sm border-2 px-2.5 py-0.5 font-mono text-[10px] transition-all cursor-pointer ${
-                      folderFilter === f
-                        ? "border-border bg-accent text-(--accent-ink) font-bold shadow-[2px_2px_0_0_var(--border)]"
-                        : "border-border bg-surface text-ink-muted hover:text-ink"
+                      dragOverFolder === f
+                        ? "border-border bg-nb-lime font-bold text-nb-ink shadow-[2px_2px_0_0_var(--border)]"
+                        : folderFilter === f
+                          ? "border-border bg-accent text-(--accent-ink) font-bold shadow-[2px_2px_0_0_var(--border)]"
+                          : "border-border bg-surface text-ink-muted hover:text-ink"
                     }`}
                   >
                     📁 {f}
@@ -358,11 +515,41 @@ const BookmarksPage = (): JSX.Element => {
                 </span>
                 <button
                   type="button"
+                  onClick={() => {
+                    setSelectMode((prev) => !prev);
+                    setSelectedSlugs([]);
+                  }}
+                  aria-pressed={selectMode}
+                  title="Pilih beberapa anime untuk aksi massal"
+                  className={`rounded-sm border-2 border-border px-3 py-1.5 font-mono text-xs font-semibold shadow-[2px_2px_0_0_var(--border)] transition-all hover:-translate-y-0.5 active:translate-y-0 active:shadow-none cursor-pointer ${
+                    selectMode ? "bg-accent text-(--accent-ink) font-bold" : "bg-surface text-ink-muted hover:text-ink"
+                  }`}
+                >
+                  ☑ Pilih
+                </button>
+                <button
+                  type="button"
                   onClick={copySyncLink}
                   title="Salin tautan sinkronisasi (bookmark + progres menonton) untuk perangkat lain"
                   className="rounded-sm border-2 border-border bg-surface px-3 py-1.5 font-mono text-xs font-semibold text-ink-muted shadow-[2px_2px_0_0_var(--border)] transition-all hover:-translate-y-0.5 hover:text-ink active:translate-y-0 active:shadow-none cursor-pointer"
                 >
                   {shareCopied ? "✓ Link Disalin" : "☁️ Sync Cloud"}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => copyMarkdown(bookmarks)}
+                  title="Salin seluruh daftar tersimpan sebagai Markdown"
+                  className="rounded-sm border-2 border-border bg-surface px-3 py-1.5 font-mono text-xs font-semibold text-ink-muted shadow-[2px_2px_0_0_var(--border)] transition-all hover:-translate-y-0.5 hover:text-ink active:translate-y-0 active:shadow-none cursor-pointer"
+                >
+                  Salin MD
+                </button>
+                <button
+                  type="button"
+                  onClick={() => window.print()}
+                  title="Cetak daftar tontonan"
+                  className="rounded-sm border-2 border-border bg-surface px-3 py-1.5 font-mono text-xs font-semibold text-ink-muted shadow-[2px_2px_0_0_var(--border)] transition-all hover:-translate-y-0.5 hover:text-ink active:translate-y-0 active:shadow-none cursor-pointer"
+                >
+                  Cetak 🖨
                 </button>
                 <button
                   type="button"
@@ -408,86 +595,35 @@ const BookmarksPage = (): JSX.Element => {
         {sortedItems.length > 0 ? (
           viewMode === "list" ? (
             <div className="mt-8 flex flex-col gap-2">
-              {sortedItems.map((item) => {
-                const bookmark = activeTab === "bookmarks" ? (item as BookmarkItem) : null;
-                return (
-                  <div
-                    key={item.slug}
-                    className="group relative flex items-center justify-between gap-2.5 sm:gap-3.5 rounded-sm border-2 border-border bg-surface-solid p-2 sm:p-2.5 transition-all duration-150 hover:-translate-y-0.5 hover:shadow-[3px_3px_0_0_var(--border)]"
-                  >
-                    <Link href={`/anime/${item.slug}`} className="flex items-center gap-2.5 sm:gap-3 flex-1 min-w-0">
-                      <div className="relative h-13 w-10 sm:h-16 sm:w-12 shrink-0 overflow-hidden rounded-sm bg-surface-muted border-2 border-border">
-                        {item.image && (
-                          <img
-                            src={item.image}
-                            alt={item.title}
-                            className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-                          />
-                        )}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <h3 className="line-clamp-1 font-display text-xs sm:text-[13px] font-bold text-ink transition-colors group-hover:text-accent">
-                          {item.title}
-                        </h3>
-                        <div className="mt-0.5 flex flex-wrap items-center gap-1.5 font-mono text-[9px] sm:text-[10px] text-ink-muted">
-                          {activeTab === "bookmarks" ? (
-                            <>
-                              {bookmark?.status === "watching" && (
-                                <span className="rounded-sm border border-border bg-nb-teal px-1.5 font-bold text-nb-ink">
-                                  📺 Nonton
-                                </span>
-                              )}
-                              {bookmark?.status === "plan" && (
-                                <span className="rounded-sm border border-border bg-nb-yellow px-1.5 font-bold text-nb-ink">
-                                  📌 Rencana
-                                </span>
-                              )}
-                              {bookmark?.status === "completed" && (
-                                <span className="rounded-sm border border-border bg-nb-lime px-1.5 font-bold text-nb-ink">
-                                  ✓ Selesai
-                                </span>
-                              )}
-                              {bookmark?.status === "dropped" && (
-                                <span className="rounded-sm border border-border bg-nb-red px-1.5 font-bold text-nb-ink">
-                                  ⛔ Drop
-                                </span>
-                              )}
-                              {bookmark?.rating && <span>• ⭐ {bookmark.rating}/10</span>}
-                              {bookmark?.folder && <span>• 📁 {bookmark.folder}</span>}
-                            </>
-                          ) : (
-                            <span>{item.release || "Dilihat"}</span>
-                          )}
-                        </div>
-                      </div>
-                    </Link>
-                    <div className="flex items-center gap-2 shrink-0">
-                      {nextEpisodes.has(item.slug) && (
-                        <Link
-                          href={`/anime/${item.slug}#ep-${nextEpisodes.get(item.slug)}`}
-                          title={`Lanjut menonton episode ${nextEpisodes.get(item.slug)}`}
-                          className="rounded-sm border-2 border-border bg-nb-lime px-2.5 py-1 font-mono text-[11px] font-bold text-nb-ink shadow-[2px_2px_0_0_var(--border)] transition-all hover:-translate-y-0.5 active:translate-y-0 active:shadow-none"
-                        >
-                          ▶ Eps {nextEpisodes.get(item.slug)}
-                        </Link>
-                      )}
-                      <Link
-                        href={`/anime/${item.slug}`}
-                        className="rounded-sm border-2 border-border bg-accent px-2.5 py-1 font-mono text-[11px] font-bold text-(--accent-ink) shadow-[2px_2px_0_0_var(--border)] transition-all group-hover:-translate-y-0.5 group-hover:shadow-[4px_4px_0_0_var(--border)]"
-                      >
-                        Buka →
-                      </Link>
-                    </div>
-                  </div>
-                );
-              })}
+              {sortedItems.map((item) => (
+                <BookmarkListRow
+                  key={item.slug}
+                  item={item}
+                  bookmark={activeTab === "bookmarks" ? (item as BookmarkItem) : null}
+                  isBookmarkTab={activeTab === "bookmarks"}
+                  selectMode={selectMode}
+                  selected={selectedSlugs.includes(item.slug)}
+                  nextEpisode={nextEpisodes.get(item.slug)}
+                  onToggleSelected={toggleSelected}
+                  onRemove={handleRemoveItem}
+                  onEditMeta={setMetaDialogSlug}
+                />
+              ))}
             </div>
           ) : (
             <div className="nb-cycle mt-8 grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-2.5 md:grid-cols-5 md:gap-3 lg:grid-cols-5 lg:gap-3.5 xl:grid-cols-6 2xl:grid-cols-6">
               {sortedItems.map((item, index) => {
                 const bookmark = activeTab === "bookmarks" ? (item as BookmarkItem) : null;
                 return (
-                  <div key={item.slug} className="group relative flex flex-col">
+                  <div
+                    key={item.slug}
+                    draggable={activeTab === "bookmarks"}
+                    onDragStart={(e) => {
+                      e.dataTransfer.setData("text/plain", item.slug);
+                      e.dataTransfer.effectAllowed = "move";
+                    }}
+                    className="group relative flex flex-col"
+                  >
                     {nextEpisodes.has(item.slug) && (
                       <Link
                         href={`/anime/${item.slug}#ep-${nextEpisodes.get(item.slug)}`}
@@ -496,6 +632,17 @@ const BookmarksPage = (): JSX.Element => {
                       >
                         ▶ {nextEpisodes.get(item.slug)}
                       </Link>
+                    )}
+                    {selectMode && activeTab === "bookmarks" && (
+                      <label className="absolute right-1.5 top-1.5 z-10 flex h-6 w-6 cursor-pointer items-center justify-center rounded-sm border-2 border-border bg-surface-solid shadow-[2px_2px_0_0_var(--border)]">
+                        <input
+                          type="checkbox"
+                          checked={selectedSlugs.includes(item.slug)}
+                          onChange={() => toggleSelected(item.slug)}
+                          aria-label={`Pilih ${item.title}`}
+                          className="h-3.5 w-3.5 cursor-pointer accent-(--accent)"
+                        />
+                      </label>
                     )}
                     <CardAnime
                       path={`/anime/${item.slug}`}
@@ -520,57 +667,39 @@ const BookmarksPage = (): JSX.Element => {
                       priority={index === 0}
                     />
                     {activeTab === "bookmarks" && bookmark && (
-                      <div className="mt-1.5 flex flex-wrap items-center justify-between gap-1 px-1 text-[11px] text-ink-muted">
-                        <button
-                          type="button"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            const rate = prompt(
-                              `Beri rating (1-10) untuk ${item.title}:`,
-                              bookmark.rating?.toString() || "",
-                            );
-                            if (rate !== null) {
-                              const num = parseInt(rate, 10);
-                              if (!isNaN(num) && num >= 1 && num <= 10) {
-                                updateBookmarkUserMeta(item.slug, { rating: num });
-                              } else if (rate === "") {
-                                updateBookmarkUserMeta(item.slug, { rating: undefined });
-                              }
-                            }
-                          }}
-                          className="hover:text-accent font-mono transition-colors cursor-pointer"
-                          title="Beri rating personal (1-10)"
+                      <div className="mt-1.5 flex flex-wrap items-center justify-between gap-1 px-1 text-[11px] text-ink-muted print:hidden">
+                        <span
+                          className="min-w-0 truncate"
+                          title={bookmark.notes ? `Catatan: ${bookmark.notes}` : undefined}
                         >
-                          {bookmark.rating ? `⭐ ${bookmark.rating}/10` : "☆ Nilai"}
-                        </button>
-                        <button
-                          type="button"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            const fName = prompt(`Nama folder/kategori untuk ${item.title}:`, bookmark.folder || "");
-                            if (fName !== null) {
-                              updateBookmarkUserMeta(item.slug, { folder: fName.trim() || undefined });
-                            }
-                          }}
-                          className="hover:text-accent font-mono transition-colors cursor-pointer truncate max-w-[80px]"
-                          title={bookmark.folder ? `Folder: ${bookmark.folder}` : "Atur folder"}
-                        >
-                          {bookmark.folder ? `📁 ${bookmark.folder}` : "+ Folder"}
-                        </button>
-                        <button
-                          type="button"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            const note = prompt(`Catatan pribadi untuk ${item.title}:`, bookmark.notes || "");
-                            if (note !== null) {
-                              updateBookmarkUserMeta(item.slug, { notes: note.trim() });
-                            }
-                          }}
-                          className="hover:text-accent font-mono transition-colors cursor-pointer truncate max-w-[70px]"
-                          title={bookmark.notes ? `Catatan: ${bookmark.notes}` : "Tambah catatan pribadi"}
-                        >
-                          {bookmark.notes ? `📝 ${bookmark.notes}` : "+ Note"}
-                        </button>
+                          {bookmark.notes ? `📝 ${bookmark.notes}` : bookmark.folder ? `📁 ${bookmark.folder}` : ""}
+                        </span>
+                        <span className="flex shrink-0 items-center gap-1">
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              setMetaDialogSlug(item.slug);
+                            }}
+                            className="hover:text-accent font-mono transition-colors cursor-pointer"
+                            title="Edit rating, folder & catatan"
+                            aria-label={`Edit detail ${item.title}`}
+                          >
+                            ✎ Atur
+                          </button>
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              handleRemoveItem(item);
+                            }}
+                            className="hover:text-accent font-mono transition-colors cursor-pointer"
+                            title="Hapus dari Tersimpan"
+                            aria-label={`Hapus ${item.title}`}
+                          >
+                            ✕
+                          </button>
+                        </span>
                       </div>
                     )}
                   </div>
@@ -611,6 +740,87 @@ const BookmarksPage = (): JSX.Element => {
             </div>
           </div>
         )}
+
+        {/* Bulk action bar (selection mode) */}
+        {selectMode && activeTab === "bookmarks" && selectedSlugs.length > 0 && (
+          <div className="fixed bottom-4 left-1/2 z-[60] flex w-[min(94vw,42rem)] -translate-x-1/2 flex-wrap items-center justify-center gap-2 rounded-sm border-2 border-border bg-surface-solid px-3 py-2 shadow-[4px_4px_0_0_var(--border)] print:hidden">
+            <span className="font-mono text-xs font-bold text-ink">{selectedSlugs.length} dipilih</span>
+            <select
+              value={bulkFolderChoice}
+              onChange={(e) => {
+                const value = e.target.value;
+                if (value === "__new__") {
+                  setBulkNewFolder("");
+                  return;
+                }
+                setBulkNewFolder(null);
+                setBulkFolderChoice("");
+                if (value === "__none__") assignFolder(undefined, selectedSlugs);
+                else if (value) assignFolder(value, selectedSlugs);
+              }}
+              aria-label="Pindahkan item terpilih ke folder"
+              className="h-8 cursor-pointer rounded-sm border-2 border-border bg-surface px-2 font-mono text-xs text-ink outline-none focus:border-accent"
+            >
+              <option value="">Pindah ke folder…</option>
+              <option value="__none__">— Tanpa folder —</option>
+              {folders.map((f) => (
+                <option key={f} value={f}>
+                  📁 {f}
+                </option>
+              ))}
+              <option value="__new__">＋ Folder baru…</option>
+            </select>
+            {bulkNewFolder !== null && (
+              <span className="flex items-center gap-1">
+                <input
+                  type="text"
+                  value={bulkNewFolder}
+                  onChange={(e) => setBulkNewFolder(e.target.value)}
+                  placeholder="Nama folder"
+                  aria-label="Nama folder baru"
+                  className="h-8 w-32 rounded-sm border-2 border-border bg-surface px-2 font-mono text-xs text-ink outline-none focus:border-accent"
+                />
+                <button
+                  type="button"
+                  disabled={!bulkNewFolder.trim()}
+                  onClick={() => {
+                    assignFolder(bulkNewFolder.trim(), selectedSlugs);
+                    setBulkNewFolder(null);
+                  }}
+                  className="h-8 rounded-sm border-2 border-border bg-accent px-2 font-mono text-xs font-bold text-(--accent-ink) shadow-[2px_2px_0_0_var(--border)] disabled:opacity-50 cursor-pointer"
+                >
+                  OK
+                </button>
+              </span>
+            )}
+            <button
+              type="button"
+              onClick={() => copyMarkdown(bookmarks.filter((b) => selectedSlugs.includes(b.slug)))}
+              className="h-8 rounded-sm border-2 border-border bg-surface px-2.5 font-mono text-xs font-semibold text-ink-muted transition-all hover:text-ink cursor-pointer"
+            >
+              Salin MD
+            </button>
+            <button
+              type="button"
+              onClick={removeSelected}
+              className="h-8 rounded-sm border-2 border-border bg-surface px-2.5 font-mono text-xs font-semibold text-ink-muted transition-all hover:bg-nb-red hover:text-nb-ink cursor-pointer"
+            >
+              Hapus
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setSelectMode(false);
+                setSelectedSlugs([]);
+              }}
+              className="h-8 rounded-sm border-2 border-border bg-surface px-2.5 font-mono text-xs font-semibold text-ink-muted transition-all hover:text-ink cursor-pointer"
+            >
+              Batal
+            </button>
+          </div>
+        )}
+
+        <BookmarkMetaDialog item={metaDialogItem} folders={folders} onClose={() => setMetaDialogSlug(null)} />
       </section>
     </MainLayout>
   );

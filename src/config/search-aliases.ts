@@ -1,8 +1,9 @@
 import type { Anime } from "@/interfaces";
 
-// Tiny hand-maintained alias map for popular abbreviations/short titles.
-// shortcut: extend the list as users report misses; fuzzy matching would need
-// a local anime index, which this scraper-first app deliberately avoids.
+// Tiny hand-maintained alias map for popular abbreviations/short titles and
+// EN→canonical renames; the local search index (lib/search-index.ts) covers the
+// long-tail fuzzy matching.
+// shortcut: extend the list as users report misses.
 const SEARCH_ALIASES: Record<string, string> = {
   aot: "shingeki no kyojin",
   snk: "shingeki no kyojin",
@@ -10,15 +11,25 @@ const SEARCH_ALIASES: Record<string, string> = {
   jjk: "jujutsu kaisen",
   mha: "boku no hero academia",
   bnha: "boku no hero academia",
+  "hero aca": "boku no hero academia",
   hxh: "hunter x hunter",
   fmab: "fullmetal alchemist brotherhood",
+  fma: "fullmetal alchemist brotherhood",
   sao: "sword art online",
   csm: "chainsaw man",
   kny: "kimetsu no yaiba",
+  kimetsu: "kimetsu no yaiba",
   "demon slayer": "kimetsu no yaiba",
   "re zero": "re:zero kara hajimeru",
   rezero: "re:zero kara hajimeru",
   tensura: "tensei shitara slime datta ken",
+  slime: "tensei shitara slime datta ken",
+  danmachi: "dungeon ni deai wo motomeru",
+  frieren: "sousou no frieren",
+  kaguya: "kaguya sama wa kokurasetai",
+  haikyu: "haikyuu",
+  opm: "one punch man",
+  sxf: "spy x family",
   "bunny girl senpai": "seishun buta yarou",
   oregairu: "yahari ore no seishun",
   "a silent voice": "koe no katachi",

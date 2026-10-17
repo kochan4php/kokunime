@@ -1,6 +1,7 @@
 import MainLayout from "@/layouts/main-layout";
 import AnimeGrid from "@/components/cards/anime-grid";
 import UpdateIcsButton from "@/components/update-ics-button";
+import ReleaseWatcher from "@/components/release-watcher";
 import { getAnimePerPage } from "@/services/scraper";
 import { Anime } from "@/interfaces";
 import { AgeBucket, parseRelativeAge } from "@/utils/relative-age";
@@ -77,6 +78,12 @@ const UpdatePage = async (): Promise<JSX.Element> => {
           </div>
           <UpdateIcsButton events={calendarEvents} />
         </div>
+
+        <ReleaseWatcher
+          items={anime
+            .map((item) => ({ slug: animeSlug(item?.link?.endpoint), title: item.title ?? "", release: item.release }))
+            .filter((item) => Boolean(item.slug))}
+        />
 
         {anime.length === 0 ? (
           <div className="card-shell mt-10">

@@ -1,13 +1,15 @@
-import { NextResponse } from "next/server";
+import { checkEtagMatch, generateEtag } from "@/lib/etag";
+import { NextRequest, NextResponse } from "next/server";
 
-export async function GET(): Promise<NextResponse> {
+export async function GET(request: NextRequest): Promise<NextResponse | Response> {
   const spec = {
     openapi: "3.0.3",
     info: {
       title: "Kokunime Public REST API",
-      version: "1.0.0",
+      version: "1.1.0",
       description:
-        "Official Kokunime Public REST API for querying anime batches, streaming links, cloud mirrors, genres, and release seasons.",
+        "Official Kokunime Public REST API for querying anime batches, streaming links, cloud mirrors, genres, and release seasons. Deprecation policy: endpoints are never removed without at least one minor version of overlap — deprecated endpoints answer with `Deprecation` and `Sunset` headers pointing at the replacement.",
+      "x-deprecation-policy": "deprecation-header",
       contact: {
         name: "Kokunime Team",
         url: "https://kokunime.netlify.app",
@@ -79,6 +81,7 @@ export async function GET(): Promise<NextResponse> {
       "/api/genres/{genre}": {
         get: {
           summary: "Get anime catalog by genre",
+          description: "Pageable via `page` or opaque `cursor`; the response carries `next_cursor`.",
           parameters: [
             {
               name: "genre",
@@ -92,10 +95,19 @@ export async function GET(): Promise<NextResponse> {
               required: false,
               schema: { type: "integer", default: 1 },
             },
+            {
+              name: "cursor",
+              in: "query",
+              required: false,
+              schema: { type: "string" },
+            },
           ],
           responses: {
             "200": {
               description: "Paginated anime list for the genre",
+            },
+            "304": {
+              description: "Not modified",
             },
           },
         },
@@ -153,6 +165,16 @@ export async function GET(): Promise<NextResponse> {
         },
       },
       "/api/anime/bulk": {
+        get: {
+          summary: "Bulk anime details (GET)",
+          description:
+            "Comma-separated `slugs` up to 20, with optional `fields=title,score,…` projection. Cacheable and supports conditional GET via ETag.",
+          parameters: [
+            { name: "slugs", in: "query", required: true, schema: { type: "string" } },
+            { name: "fields", in: "query", required: false, schema: { type: "string" } },
+          ],
+          responses: { "200": { description: "Per-slug results" }, "304": { description: "Not modified" } },
+        },
         post: {
           summary: "Resolve multiple anime details in bulk",
           description:
@@ -168,6 +190,10 @@ export async function GET(): Promise<NextResponse> {
                       type: "array",
                       items: { type: "string" },
                       example: ["naruto-batch", "bleach-batch"],
+                    },
+                    fields: {
+                      type: "string",
+                      example: "title,score,download",
                     },
                   },
                 },
@@ -310,13 +336,58 @@ export async function GET(): Promise<NextResponse> {
           },
         },
       },
+      "/api/anime/{slug}/episodes": {
+        get: {
+          summary: "Structured episode + mirror list",
+          description:
+            "Flattens the download groups into per-episode mirror lists (resolution, platform, url, torrent flag).",
+          parameters: [{ name: "slug", in: "path", required: true, schema: { type: "string" } }],
+          responses: {
+            "200": { description: "Episode groups" },
+            "304": { description: "Not modified" },
+            "404": { description: "Anime not found" },
+          },
+        },
+      },
+      "/api/suggest": {
+        get: {
+          summary: "Search autocomplete",
+          description: "Up to 8 title suggestions from the local catalog index (empty when the index is cold).",
+          parameters: [{ name: "q", in: "query", required: true, schema: { type: "string" } }],
+          responses: { "200": { description: "Suggestions" }, "304": { description: "Not modified" } },
+        },
+      },
+      "/api/trending": {
+        get: {
+          summary: "Trending titles",
+          description: "Most viewed titles over the last few days, hydrated from the local index.",
+          responses: { "200": { description: "Trending list" }, "304": { description: "Not modified" } },
+        },
+      },
+      "/api/admin/index": {
+        get: {
+          summary: "Search index status (admin)",
+          description: "Requires a Bearer ADMIN_TOKEN or METRICS_TOKEN; 404 without one configured.",
+          responses: { "200": { description: "Index size + Redis status" } },
+        },
+        post: {
+          summary: "Warm up the search index (admin)",
+          description: 'Crawls newest listing pages + top genres. Body: `{ "pages": 5, "genres": 6 }`.',
+          responses: { "200": { description: "Indexed count" } },
+        },
+      },
     },
   };
 
-  return NextResponse.json(spec, {
-    headers: {
-      "Content-Type": "application/json",
-      "Cache-Control": "public, s-maxage=86400, stale-while-revalidate=3600",
-    },
-  });
+  const etag = generateEtag(JSON.stringify(spec));
+  const headers = {
+    "Content-Type": "application/json",
+    "Cache-Control": "public, s-maxage=86400, stale-while-revalidate=3600",
+    ETag: etag,
+  };
+  if (checkEtagMatch(request, etag)) {
+    return new Response(null, { status: 304, headers });
+  }
+
+  return NextResponse.json(spec, { headers });
 }

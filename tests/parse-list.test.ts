@@ -24,15 +24,15 @@ describe("formatAnimeData", () => {
   it("parses anime items from HTML", () => {
     const anime = formatAnimeData(load(html));
     expect(anime).toHaveLength(1);
-    expect(anime[0].title).toBe("Anime Foo");
-    expect(anime[0].link.endpoint).toBe("anime-foo/");
-    expect(anime[0].release).toBe("3:54 pm");
-    expect(anime[0].genres).toEqual(["Action", "Adventure"]);
+    expect(anime[0]!.title).toBe("Anime Foo");
+    expect(anime[0]!.link.endpoint).toBe("anime-foo/");
+    expect(anime[0]!.release).toBe("3:54 pm");
+    expect(anime[0]!.genres).toEqual(["Action", "Adventure"]);
   });
 
   it("picks the largest srcset variant for the card image", () => {
     const anime = formatAnimeData(load(html));
-    expect(anime[0].link.image).toBe("https://example.com/foo.jpg");
+    expect(anime[0]!.link.image).toBe("https://example.com/foo.jpg");
   });
 
   it("falls back to src when srcset is absent", () => {
@@ -41,7 +41,7 @@ describe("formatAnimeData", () => {
       <div class="content"><h2><a href="${UPSTREAM_URL}anime-foo/">Anime Foo</a></h2><p>Posted by Admin</p></div>
     </div></ul></div></div>`;
     const anime = formatAnimeData(load(sparse));
-    expect(anime[0].link.image).toBe("https://example.com/foo.jpg");
+    expect(anime[0]!.link.image).toBe("https://example.com/foo.jpg");
   });
 
   it("does not crash when a paragraph is missing", () => {
@@ -51,8 +51,8 @@ describe("formatAnimeData", () => {
     </div></ul></div></div>`;
     const anime = formatAnimeData(load(sparse));
     expect(anime).toHaveLength(1);
-    expect(anime[0].release).toBe("");
-    expect(anime[0].genres).toEqual([]);
+    expect(anime[0]!.release).toBe("");
+    expect(anime[0]!.genres).toEqual([]);
   });
 
   it("returns an empty list when nothing matches", () => {

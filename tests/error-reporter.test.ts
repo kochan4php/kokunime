@@ -23,7 +23,7 @@ describe("error reporter", () => {
 
     const [, options] = fetchMock.mock.calls[0] as [string, RequestInit];
     const body = JSON.parse(String(options.body)) as { embeds: { title: string }[] };
-    expect(body.embeds[0].title).toBe("Kokunime Error");
+    expect(body.embeds[0]!.title).toBe("Kokunime Error");
   });
 
   it("attaches the suppressed count to the next report for the same fingerprint", async () => {
@@ -42,7 +42,7 @@ describe("error reporter", () => {
 
       const [, options] = fetchMock.mock.calls[1] as [string, RequestInit];
       const body = JSON.parse(String(options.body)) as { embeds: { fields: { name: string; value: string }[] }[] };
-      const suppressedField = body.embeds[0].fields.find((field) => field.name === "Suppressed");
+      const suppressedField = body.embeds[0]!.fields.find((field) => field.name === "Suppressed");
       expect(suppressedField?.value).toContain("2x");
     } finally {
       vi.useRealTimers();

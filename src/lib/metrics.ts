@@ -1,5 +1,7 @@
 // Process-local counters + histograms backing /api/metrics. Per-instance by
 // design: Prometheus-style scraping sums matching series across instances.
+import { monitorEventLoopDelay } from "node:perf_hooks";
+
 const counters = new Map<string, number>();
 
 // Prometheus-style latency buckets in milliseconds (last bucket = +Inf).
@@ -42,4 +44,19 @@ export const getHistograms = (): Record<string, HistogramState> => Object.fromEn
 export const resetMetrics = (): void => {
   counters.clear();
   histograms.clear();
+};
+
+// Event-loop saturation gauge for /api/metrics: mean + p99 delay in ms.
+// The monitor starts on first read, so importing this module stays cheap.
+let loopMonitor: ReturnType<typeof monitorEventLoopDelay> | null = null;
+
+export const getEventLoopLagMs = (): { mean: number; p99: number } | null => {
+  try {
+    loopMonitor ??= monitorEventLoopDelay({ resolution: 20 });
+    loopMonitor.enable();
+    if (!Number.isFinite(loopMonitor.mean)) return null;
+    return { mean: loopMonitor.mean / 1e6, p99: loopMonitor.percentile(99) / 1e6 };
+  } catch {
+    return null;
+  }
 };

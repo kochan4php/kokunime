@@ -64,6 +64,10 @@ const AnimeListing = ({ chip, title, anime, pagination, eagerCount = 0 }: AnimeL
           <h1 className="mt-3 font-display text-2xl font-extrabold uppercase tracking-tight text-ink md:text-4xl">
             {title}
           </h1>
+          <p className="mt-2 max-w-xl text-xs leading-relaxed text-ink-muted">
+            Daftar anime {title} lengkap dengan link download batch &amp; episode subtitle Indonesia — update tiap hari
+            di Kokunime.
+          </p>
         </div>
 
         <div className="flex flex-wrap items-center gap-3">

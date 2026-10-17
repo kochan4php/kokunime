@@ -14,7 +14,7 @@ const normalizeUrl = (raw?: string): string | undefined => {
 
 const parseBytes = (raw: string): { bytes?: number; formatted?: string } => {
   const match = raw.match(/(\d+(?:\.\d+)?)\s*(gb|mb|kb|tb)\b/i);
-  if (!match) return {};
+  if (!match?.[1] || !match[2]) return {};
   const num = parseFloat(match[1]);
   const unit = match[2].toUpperCase();
   let multiplier = 1024 * 1024;
@@ -59,7 +59,7 @@ export function getDownloadLinks(
 
           const resolusi = cleanText($(groupEl).find("strong").text());
           const heightMatch = resolusi.match(/\b(360|480|720|1080|1440|2160)p?\b/i);
-          const height = heightMatch ? parseInt(heightMatch[1], 10) : undefined;
+          const height = heightMatch?.[1] ? parseInt(heightMatch[1], 10) : undefined;
           const codec = /hevc|x265|h\.?265/i.test(resolusi)
             ? "hevc"
             : /x264|h\.?264|avc/i.test(resolusi)

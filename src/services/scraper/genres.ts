@@ -1,6 +1,8 @@
 import upstream from "@/config/upstream";
 import { AnimePage, Genre } from "@/interfaces";
+import { indexAnimeItems } from "@/lib/search-index";
 import { cached, TTL, type CacheTier } from "@/services/cache";
+import { normalizeSlug } from "@/utils/endpoint-slug";
 import { load } from "cheerio";
 import { formatAnimeData } from "./parse";
 import { parseSimplePagination } from "./parse-simple-pagination";
@@ -41,7 +43,11 @@ async function fetchSingleGenrePage(cleanGenre: string, pageNum: number): Promis
 }
 
 export async function getAnimeByGenres(genre: string, page: number | string): Promise<AnimePage> {
-  const cleanGenre = decodeURIComponent(genre).trim().toLowerCase();
+  // Untrusted route segment → upstream path; reject anything that is not one
+  // plain slug instead of fetching a mangled URL.
+  const cleanGenre = normalizeSlug(genre);
+  if (!cleanGenre) return { anime: [], pagination: null };
+
   const requestedPage = Math.max(1, Number(page) || 1);
 
   return cached(
@@ -63,6 +69,8 @@ export async function getAnimeByGenres(genre: string, page: number | string): Pr
       }
 
       const combinedAnime = [...res1.anime, ...res2.anime, ...res3.anime];
+      // Feed the local search index (no-op without Redis).
+      void indexAnimeItems(combinedAnime);
       const hasNextPage = Boolean(
         res3.pagination?.next_page_endpoint ||
           res2.pagination?.next_page_endpoint ||

@@ -1,3 +1,4 @@
+import { STORAGE_KEYS } from "@/utils/storage-keys";
 export interface HistoryItem {
   slug: string;
   title: string;
@@ -6,7 +7,7 @@ export interface HistoryItem {
   viewedAt: number;
 }
 
-const STORAGE_KEY = "kokunime_history";
+const STORAGE_KEY = STORAGE_KEYS.history;
 const EVENT_NAME = "kokunime:history";
 const MAX_HISTORY = 30;
 
@@ -63,6 +64,27 @@ export const removeHistory = (slug: string): void => {
     storage.setItem(STORAGE_KEY, serialized);
     lastRawData = serialized;
     cachedList = list;
+    window.dispatchEvent(new CustomEvent(EVENT_NAME));
+  } catch {}
+};
+
+// Undo helper: merges removed entries back in, keeping the newest first.
+export const restoreHistory = (items: HistoryItem[]): void => {
+  const storage = getStorage();
+  if (!storage || items.length === 0) return;
+  const bySlug = new Map(getHistory().map((item) => [item.slug, item]));
+  for (const item of items) {
+    const existing = bySlug.get(item.slug);
+    if (!existing || item.viewedAt > existing.viewedAt) bySlug.set(item.slug, item);
+  }
+  const merged = Array.from(bySlug.values())
+    .sort((a, b) => b.viewedAt - a.viewedAt)
+    .slice(0, MAX_HISTORY);
+  try {
+    const serialized = JSON.stringify(merged);
+    storage.setItem(STORAGE_KEY, serialized);
+    lastRawData = serialized;
+    cachedList = merged;
     window.dispatchEvent(new CustomEvent(EVENT_NAME));
   } catch {}
 };

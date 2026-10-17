@@ -23,7 +23,7 @@ describe("scoreRecommendations", () => {
 
     expect(topGenre).toBe("action");
     expect(items.map((item) => item.slug)).toEqual(["b-sub-indo", "a-sub-indo", "c-sub-indo"]);
-    expect(items[0].score).toBe(3);
+    expect(items[0]!.score).toBe(3);
     expect(items.every((item) => item.slug !== "saved-sub-indo")).toBe(true);
     expect(items.every((item) => item.slug !== "d-sub-indo")).toBe(true);
   });

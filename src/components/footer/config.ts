@@ -7,8 +7,11 @@ export const footerNavLinks = [
   { label: "Daftar Musim", href: "/seasons" },
   { label: "Koleksi Bookmark", href: "/bookmarks" },
   { label: "Komparasi Anime", href: "/compare" },
+  { label: "Statistik Saya 📊", href: "/stats" },
+  { label: "Wrapped Tahunan 🎁", href: "/wrapped" },
+  { label: "Roulette Anime 🎡", href: "/roulette" },
   { label: "Pengaturan & Tema ⚙️", href: "/settings" },
-  { label: "Anime Acak 🎲", href: "/api/random" },
+  { label: "Kebijakan Privasi", href: "/privacy" },
 ];
 
 export const footerDevLinks = [

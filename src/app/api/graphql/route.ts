@@ -1,6 +1,12 @@
 import { getAnimeDetail, getGenres } from "@/services/scraper";
+import { redisGet, redisSet } from "@/lib/redis";
 import { checkRateLimit, getRateLimitHeaders } from "@/lib/rate-limit";
+import { createHash } from "node:crypto";
 import { NextRequest, NextResponse } from "next/server";
+
+const APQ_TTL_SECONDS = 60 * 60 * 24 * 7;
+const apqMemory = new Map<string, string>();
+const sha256 = (value: string): string => createHash("sha256").update(value).digest("hex");
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
   try {
@@ -16,7 +22,39 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     }
 
     const body = await request.json().catch(() => ({}));
-    const query = typeof body?.query === "string" ? body.query : "";
+    let query = typeof body?.query === "string" ? body.query : "";
+
+    // APQ (Automatic Persisted Queries): a hash-only request resolves from the
+    // in-process map (Redis-backed when configured). The first request carrying
+    // the full document registers it so repeat callers can drop the payload.
+    const extensions = body?.extensions as { persistedQuery?: { version?: number; sha256Hash?: string } } | undefined;
+    const hash =
+      typeof extensions?.persistedQuery?.sha256Hash === "string"
+        ? extensions.persistedQuery.sha256Hash.toLowerCase()
+        : "";
+
+    if (hash) {
+      if (query) {
+        if (sha256(query) !== hash) {
+          return NextResponse.json(
+            { errors: [{ message: "Provided sha256Hash does not match the query" }] },
+            { status: 400, headers: rateHeaders },
+          );
+        }
+        apqMemory.set(hash, query);
+        void redisSet(`apq:${hash}`, query, APQ_TTL_SECONDS);
+      } else {
+        const cached = apqMemory.get(hash) ?? (await redisGet(`apq:${hash}`));
+        if (typeof cached !== "string" || !cached) {
+          return NextResponse.json(
+            { errors: [{ message: "PersistedQueryNotFound", extensions: { code: "PERSISTED_QUERY_NOT_FOUND" } }] },
+            { headers: rateHeaders },
+          );
+        }
+        query = cached;
+        apqMemory.set(hash, cached);
+      }
+    }
 
     if (!query) {
       return NextResponse.json(

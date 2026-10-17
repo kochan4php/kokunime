@@ -69,8 +69,27 @@
     filter: sepia(0.2) contrast(0.96);
   }
 
+  /* High-contrast reading mode: bolder ink, pure black borders, slightly
+     stronger overall contrast and heavier focus rings (see :focus-visible). */
   html[data-reading-mode="high-contrast"] {
-    filter: contrast(1.15);
+    filter: contrast(1.12);
+    --border: #000000;
+    --ink: #000000;
+    --ink-muted: #352f2a;
+    --grid-ink: rgba(0, 0, 0, 0.12);
+  }
+
+  html[data-reading-mode="high-contrast"] :focus-visible {
+    outline-width: 4px;
+  }
+
+  /* Compact density: tighter catalog grids, rails and list rows. */
+  html[data-density="compact"] .nb-cycle {
+    gap: 0.5rem;
+  }
+
+  html[data-density="compact"] .density-row {
+    padding: 0.375rem;
   }
 
   html[data-night-shift="true"]::before {
@@ -193,4 +212,18 @@ dialog.is-closing {
 dialog.is-closing::backdrop {
   opacity: 0 !important;
   transition: opacity 180ms ease-in !important;
+}
+
+/* Print: keep only the content (see bookmarks "print:" chrome hiding). */
+@media print {
+  .navbar,
+  footer,
+  .toaster,
+  [data-print-hide] {
+    display: none !important;
+  }
+
+  body {
+    background: #ffffff;
+  }
 }

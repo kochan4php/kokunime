@@ -65,7 +65,7 @@ jobs:
           chmod 600 ~/.ssh/deploy_key
           ssh-keyscan -H "$HOST" >> ~/.ssh/known_hosts 2>/dev/null
 
-      - name: Ship compose file + deploy script
+      - name: Ship compose files + ops scripts
         env:
           HOST: ${{ vars.DEPLOY_HOST }}
           USER: ${{ vars.DEPLOY_USER }}
@@ -74,7 +74,9 @@ jobs:
           USER="${USER:-root}"
           DIR="${DIR:-/opt/kokunime}"
           ssh -i ~/.ssh/deploy_key "$USER@$HOST" "mkdir -p '$DIR'"
-          scp -i ~/.ssh/deploy_key docker-compose.prod.yml scripts/deploy.sh "$USER@$HOST:$DIR/"
+          scp -i ~/.ssh/deploy_key docker-compose.prod.yml docker-compose.canary.yml scripts/deploy.sh scripts/canary.sh "$USER@$HOST:$DIR/"
+          # Seed for the canary nginx conf — never overwrites live state.
+          scp -i ~/.ssh/deploy_key deploy/nginx/canary.conf "$USER@$HOST:$DIR/nginx-canary-seed.conf"
 
       - name: Run deploy (health-gated, auto-rollback)
         env:
@@ -85,7 +87,7 @@ jobs:
         run: |
           USER="${USER:-root}"
           DIR="${DIR:-/opt/kokunime}"
-          ssh -i ~/.ssh/deploy_key "$USER@$HOST" "cd '$DIR' && chmod +x deploy.sh && ./deploy.sh '$TAG'"
+          ssh -i ~/.ssh/deploy_key "$USER@$HOST" "cd '$DIR' && [ -f nginx-canary.conf ] || cp nginx-canary-seed.conf nginx-canary.conf; chmod +x deploy.sh canary.sh && ./deploy.sh '$TAG'"
 
       - name: Ping IndexNow (best effort)
         if: vars.PRODUCTION_URL != ''

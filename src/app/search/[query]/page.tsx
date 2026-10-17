@@ -1,4 +1,5 @@
 import SearchResults from "@/sections/search-results";
+import SearchHistoryChips from "@/components/search-history-chips";
 import { searchAnime } from "@/services/scraper";
 import { sanitizeQuery } from "@/services/scraper/sanitize";
 import { buildSearchMetadata, decodeQuery } from "@/lib/search-metadata";
@@ -29,6 +30,7 @@ const SearchAnime = async ({ params }: { params: Promise<{ query: string }> }): 
             “{query.split("+").join(" ")}”
           </span>
         </h1>
+        <SearchHistoryChips query={decoded} />
         <SearchResults anime={anime} />
       </section>
     </MainLayout>

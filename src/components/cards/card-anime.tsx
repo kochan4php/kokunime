@@ -1,7 +1,7 @@
 import AnimeImage from "@/components/cards/anime-image";
 import BookmarkButton from "@/components/anime/bookmark-button";
+import ViewTransitionLink from "@/components/view-transition-link";
 import { AnimeCardProps } from "@/interfaces";
-import Link from "next/link";
 import { JSX } from "react";
 
 const CardAnime = ({
@@ -19,7 +19,7 @@ const CardAnime = ({
   const isCompleted = /complete|tamat/i.test(meta || "");
 
   return (
-    <Link href={path} className="group block h-full select-none">
+    <ViewTransitionLink href={path} className="group block h-full select-none">
       <div className="card-shell h-full">
         <div className="card-core flex flex-col h-full overflow-hidden">
           {/* Poster Image Container */}
@@ -88,7 +88,7 @@ const CardAnime = ({
           </div>
         </div>
       </div>
-    </Link>
+    </ViewTransitionLink>
   );
 };
 

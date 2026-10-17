@@ -23,9 +23,9 @@ describe("genres and seasons scraper", () => {
 
     const genres = await getGenres();
     expect(genres).toHaveLength(2);
-    expect(genres[0].name).toBe("Action");
-    expect(genres[0].endpoint).toBe("genres/action/");
-    expect(genres[1].name).toBe("Adventure");
+    expect(genres[0]!.name).toBe("Action");
+    expect(genres[0]!.endpoint).toBe("genres/action/");
+    expect(genres[1]!.name).toBe("Adventure");
   });
 
   it("parses anime by genre correctly", async () => {
@@ -64,7 +64,7 @@ describe("genres and seasons scraper", () => {
 
     const result = await getAnimeByGenres("action", 1);
     expect(result.anime).toHaveLength(1);
-    expect(result.anime[0].title).toBe("Naruto Batch Sub Indo");
+    expect(result.anime[0]!.title).toBe("Naruto Batch Sub Indo");
   });
 
   it("handles redirected / invalid genre gracefully", async () => {

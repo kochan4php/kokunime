@@ -1,11 +1,13 @@
 "use client";
 
 import { useSyncExternalStore } from "react";
+import { STORAGE_KEYS } from "@/utils/storage-keys";
 
 export type AppLanguage = "id" | "en";
 export type AccentColor = "orange" | "emerald" | "violet" | "cyan" | "rose" | "amber";
 export type FontFamily = "sans" | "mono" | "serif";
 export type FontSize = "compact" | "normal" | "large";
+export type CardDensity = "comfortable" | "compact";
 export type ReadingMode = "none" | "sepia" | "high-contrast";
 export type DefaultViewMode = "grid" | "list";
 export type DownloadLayoutMode = "cards" | "matrix";
@@ -15,6 +17,7 @@ export interface AppSettings {
   accent: AccentColor;
   font: FontFamily;
   fontSize: FontSize;
+  density: CardDensity;
   nightShift: boolean;
   reduceMotion: boolean;
   readingMode: ReadingMode;
@@ -30,6 +33,7 @@ export const DEFAULT_SETTINGS: AppSettings = {
   accent: "orange",
   font: "mono",
   fontSize: "normal",
+  density: "comfortable",
   nightShift: false,
   reduceMotion: true,
   readingMode: "none",
@@ -49,8 +53,8 @@ export const ACCENT_PRESETS: { key: AccentColor; label: string; color: string; d
   { key: "amber", label: "Golden Amber", color: "#f59e0b", desc: "Emas Hangat & Klasik" },
 ];
 
-export const SETTINGS_STORAGE_KEY = "kokunime_user_settings";
-export const SETTINGS_CHANGE_EVENT = "kokunime_settings_changed";
+export const SETTINGS_STORAGE_KEY = STORAGE_KEYS.userSettings;
+export const SETTINGS_CHANGE_EVENT = STORAGE_KEYS.settingsChanged;
 
 let cachedSettingsRaw: string | null = null;
 let cachedSettingsObject: AppSettings = DEFAULT_SETTINGS;
@@ -60,10 +64,10 @@ export const getStoredSettings = (): AppSettings => {
   try {
     const raw = localStorage.getItem(SETTINGS_STORAGE_KEY);
     if (!raw) {
-      const legacyLang = localStorage.getItem("kokunime_lang") as AppLanguage;
-      const legacyAccent = localStorage.getItem("kokunime_accent") as AccentColor;
-      const legacyFont = localStorage.getItem("kokunime_font") as FontFamily;
-      const legacyNightShift = localStorage.getItem("kokunime_night_shift") === "true";
+      const legacyLang = localStorage.getItem(STORAGE_KEYS.lang) as AppLanguage;
+      const legacyAccent = localStorage.getItem(STORAGE_KEYS.accent) as AccentColor;
+      const legacyFont = localStorage.getItem(STORAGE_KEYS.font) as FontFamily;
+      const legacyNightShift = localStorage.getItem(STORAGE_KEYS.nightShift) === "true";
 
       const legacyFingerprint = `legacy:${legacyLang}_${legacyAccent}_${legacyFont}_${legacyNightShift}`;
       if (cachedSettingsRaw === legacyFingerprint) {
@@ -100,25 +104,25 @@ export const applySettingsToDom = (settings: AppSettings): void => {
   // 0. Language
   const lang = settings.language || "id";
   root.lang = lang;
-  localStorage.setItem("kokunime_lang", lang);
+  localStorage.setItem(STORAGE_KEYS.lang, lang);
   window.dispatchEvent(new CustomEvent("kokunime:lang_change", { detail: { language: lang } }));
 
   // 1. Accent
   if (settings.accent === "orange") {
     root.removeAttribute("data-accent");
-    localStorage.removeItem("kokunime_accent");
+    localStorage.removeItem(STORAGE_KEYS.accent);
   } else {
     root.setAttribute("data-accent", settings.accent);
-    localStorage.setItem("kokunime_accent", settings.accent);
+    localStorage.setItem(STORAGE_KEYS.accent, settings.accent);
   }
 
   // 2. Font
   if (settings.font === "mono") {
     root.removeAttribute("data-font");
-    localStorage.removeItem("kokunime_font");
+    localStorage.removeItem(STORAGE_KEYS.font);
   } else {
     root.setAttribute("data-font", settings.font);
-    localStorage.setItem("kokunime_font", settings.font);
+    localStorage.setItem(STORAGE_KEYS.font, settings.font);
   }
 
   // 3. Font Size
@@ -128,13 +132,20 @@ export const applySettingsToDom = (settings: AppSettings): void => {
     root.setAttribute("data-font-size", settings.fontSize);
   }
 
+  // 3b. Card density (compact tightens catalog grids & list rows)
+  if (settings.density === "compact") {
+    root.setAttribute("data-density", "compact");
+  } else {
+    root.removeAttribute("data-density");
+  }
+
   // 4. Night Shift
   if (settings.nightShift) {
     root.setAttribute("data-night-shift", "true");
-    localStorage.setItem("kokunime_night_shift", "true");
+    localStorage.setItem(STORAGE_KEYS.nightShift, "true");
   } else {
     root.removeAttribute("data-night-shift");
-    localStorage.removeItem("kokunime_night_shift");
+    localStorage.removeItem(STORAGE_KEYS.nightShift);
   }
 
   // 5. Reduce Motion
@@ -193,9 +204,9 @@ export const calculateStorageBreakdown = (): StorageBreakdown => {
     };
   }
 
-  const rawBookmarks = localStorage.getItem("kokunime_bookmarks") || "[]";
-  const rawHistory = localStorage.getItem("kokunime_watch_history") || "[]";
-  const rawSearches = localStorage.getItem("kokunime_recent_searches") || "[]";
+  const rawBookmarks = localStorage.getItem(STORAGE_KEYS.bookmarks) || "[]";
+  const rawHistory = localStorage.getItem(STORAGE_KEYS.watchHistory) || "[]";
+  const rawSearches = localStorage.getItem(STORAGE_KEYS.recentSearches) || "[]";
   const rawSettings = localStorage.getItem(SETTINGS_STORAGE_KEY) || "{}";
 
   const bookmarksCount = (JSON.parse(rawBookmarks) || []).length;
@@ -231,9 +242,9 @@ export const exportAllAppData = (): string => {
     version: "1.0.0",
     exportedAt: new Date().toISOString(),
     settings: getStoredSettings(),
-    bookmarks: JSON.parse(localStorage.getItem("kokunime_bookmarks") || "[]"),
-    history: JSON.parse(localStorage.getItem("kokunime_watch_history") || "[]"),
-    searches: JSON.parse(localStorage.getItem("kokunime_recent_searches") || "[]"),
+    bookmarks: JSON.parse(localStorage.getItem(STORAGE_KEYS.bookmarks) || "[]"),
+    history: JSON.parse(localStorage.getItem(STORAGE_KEYS.watchHistory) || "[]"),
+    searches: JSON.parse(localStorage.getItem(STORAGE_KEYS.recentSearches) || "[]"),
   };
   return JSON.stringify(data, null, 2);
 };
@@ -248,13 +259,13 @@ export const importAllAppData = (jsonString: string): boolean => {
       saveSettings({ ...DEFAULT_SETTINGS, ...parsed.settings });
     }
     if (Array.isArray(parsed.bookmarks)) {
-      localStorage.setItem("kokunime_bookmarks", JSON.stringify(parsed.bookmarks));
+      localStorage.setItem(STORAGE_KEYS.bookmarks, JSON.stringify(parsed.bookmarks));
     }
     if (Array.isArray(parsed.history)) {
-      localStorage.setItem("kokunime_watch_history", JSON.stringify(parsed.history));
+      localStorage.setItem(STORAGE_KEYS.watchHistory, JSON.stringify(parsed.history));
     }
     if (Array.isArray(parsed.searches)) {
-      localStorage.setItem("kokunime_recent_searches", JSON.stringify(parsed.searches));
+      localStorage.setItem(STORAGE_KEYS.recentSearches, JSON.stringify(parsed.searches));
     }
 
     window.dispatchEvent(new Event("storage"));

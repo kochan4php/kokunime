@@ -28,6 +28,8 @@ export const DownloadGuideModal = (): JSX.Element => {
       tip: "Jika subtitle tidak muncul di pemutar default HP, unduh VLC for Android / iOS gratis.",
     },
   ];
+  // activeStep is always in range, but the index signature needs a fallback.
+  const activeStepData = steps[activeStep] ?? steps[0] ?? { title: "", desc: "", tip: "" };
 
   return (
     <>
@@ -74,10 +76,10 @@ export const DownloadGuideModal = (): JSX.Element => {
               </div>
 
               <div className="min-h-[140px]">
-                <h4 className="font-display text-base font-bold text-ink mb-2">{steps[activeStep].title}</h4>
-                <p className="text-sm text-ink-muted leading-relaxed mb-3">{steps[activeStep].desc}</p>
+                <h4 className="font-display text-base font-bold text-ink mb-2">{activeStepData.title}</h4>
+                <p className="text-sm text-ink-muted leading-relaxed mb-3">{activeStepData.desc}</p>
                 <div className="rounded-sm border-2 border-border bg-nb-yellow p-3 font-mono text-xs text-nb-ink">
-                  <strong>Tips: </strong> {steps[activeStep].tip}
+                  <strong>Tips: </strong> {activeStepData.tip}
                 </div>
               </div>
             </div>

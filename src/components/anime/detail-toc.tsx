@@ -25,9 +25,11 @@ const DetailToc = (): JSX.Element | null => {
 
       const scrollPos = window.scrollY + 200;
       for (let i = SECTIONS.length - 1; i >= 0; i--) {
-        const el = document.getElementById(SECTIONS[i].id);
+        const section = SECTIONS[i];
+        if (!section) continue;
+        const el = document.getElementById(section.id);
         if (el && el.offsetTop <= scrollPos) {
-          setActiveId(SECTIONS[i].id);
+          setActiveId(section.id);
           break;
         }
       }

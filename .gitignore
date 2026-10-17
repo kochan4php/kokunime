@@ -39,3 +39,6 @@ graphify-out/*root
 
 # local setup notes (never commit)
 /SETUP.local.md
+
+# local backup snapshots
+/backups/

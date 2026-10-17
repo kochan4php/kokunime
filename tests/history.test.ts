@@ -33,8 +33,8 @@ describe("history utility", () => {
 
     const list = getHistory();
     expect(list).toHaveLength(2);
-    expect(list[0].slug).toBe("anime-2");
-    expect(list[1].slug).toBe("anime-1");
+    expect(list[0]!.slug).toBe("anime-2");
+    expect(list[1]!.slug).toBe("anime-1");
   });
 
   it("deduplicates already viewed items to top", () => {
@@ -44,7 +44,7 @@ describe("history utility", () => {
 
     const list = getHistory();
     expect(list).toHaveLength(2);
-    expect(list[0].slug).toBe("anime-1");
+    expect(list[0]!.slug).toBe("anime-1");
   });
 
   it("removes history item by slug", () => {
@@ -54,7 +54,7 @@ describe("history utility", () => {
     removeHistory("anime-1");
     const list = getHistory();
     expect(list).toHaveLength(1);
-    expect(list[0].slug).toBe("anime-2");
+    expect(list[0]!.slug).toBe("anime-2");
   });
 
   it("clears all history items", () => {

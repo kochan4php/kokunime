@@ -205,6 +205,7 @@ export const SeasonsExplorer = ({ groups, years }: SeasonsExplorerProps): JSX.El
                       if (!slug) return null;
 
                       const meta = getSeasonInfo(season.name);
+                      if (!meta) return null;
 
                       return (
                         <Link

@@ -56,7 +56,7 @@ export const highlightSegments = (text: string, query: string): HighlightSegment
     const index = lower.indexOf(ch, cursor);
     if (index === -1) continue;
     push(segments, text.slice(cursor, index), false);
-    push(segments, text[index], true);
+    push(segments, text[index] ?? "", true);
     cursor = index + 1;
   }
   push(segments, text.slice(cursor), false);

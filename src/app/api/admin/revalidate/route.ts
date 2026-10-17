@@ -49,9 +49,12 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   return NextResponse.json({
     ok: true,
     revalidated: paths,
-    warm: paths.map((path, index) => ({
-      path,
-      status: warm[index].status === "fulfilled" ? warm[index].value : 0,
-    })),
+    warm: paths.map((path, index) => {
+      const settled = warm[index];
+      return {
+        path,
+        status: settled && settled.status === "fulfilled" ? settled.value : 0,
+      };
+    }),
   });
 }

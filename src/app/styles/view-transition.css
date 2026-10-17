@@ -1,0 +1,23 @@
+/* Native view transitions for SPA navigations (ViewTransitionLink) and
+   cross-document loads. Kept short; reduced-motion users keep the instant swap. */
+@media (prefers-reduced-motion: no-preference) {
+  ::view-transition-old(root) {
+    animation: kokunime-vt-out 160ms ease-out both;
+  }
+
+  ::view-transition-new(root) {
+    animation: kokunime-vt-in 220ms ease-out both;
+  }
+}
+
+@keyframes kokunime-vt-out {
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes kokunime-vt-in {
+  from {
+    opacity: 0;
+  }
+}

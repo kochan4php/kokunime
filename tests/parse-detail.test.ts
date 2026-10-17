@@ -44,7 +44,7 @@ describe("parseAnimeDetail", () => {
     expect(detail.score).toBe("8.10");
     expect(detail.duration).toBe("24 min.");
     expect(detail.release_on).toBe("Oct 03, 2024");
-    expect(detail.genre[0].name).toBe("Action");
+    expect(detail.genre[0]!.name).toBe("Action");
     expect(detail.season?.name).toBe("Fall 2024");
   });
 

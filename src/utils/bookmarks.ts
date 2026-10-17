@@ -1,3 +1,4 @@
+import { STORAGE_KEYS } from "@/utils/storage-keys";
 export type BookmarkStatus = "watching" | "plan" | "completed" | "dropped";
 
 export interface BookmarkItem {
@@ -12,7 +13,7 @@ export interface BookmarkItem {
   addedAt: number;
 }
 
-const STORAGE_KEY = "kokunime_bookmarks";
+const STORAGE_KEY = STORAGE_KEYS.bookmarks;
 const EVENT_NAME = "kokunime:bookmarks";
 
 const getStorage = () => (typeof window !== "undefined" ? window.localStorage : null);
@@ -129,7 +130,7 @@ export const updateBookmarkStatus = (slug: string, status?: BookmarkStatus): voi
 
 export const updateBookmarkUserMeta = (
   slug: string,
-  meta: { rating?: number; notes?: string; folder?: string },
+  meta: { rating?: number | null; notes?: string | null; folder?: string | null },
 ): void => {
   const storage = getStorage();
   if (!storage || !slug) return;
@@ -137,9 +138,10 @@ export const updateBookmarkUserMeta = (
     if (item.slug === slug) {
       return {
         ...item,
-        ...(meta.rating !== undefined ? { rating: meta.rating } : {}),
-        ...(meta.notes !== undefined ? { notes: meta.notes } : {}),
-        ...(meta.folder !== undefined ? { folder: meta.folder } : {}),
+        // null clears the field (undefined keeps it untouched).
+        ...(meta.rating !== undefined ? { rating: meta.rating ?? undefined } : {}),
+        ...(meta.notes !== undefined ? { notes: meta.notes ?? undefined } : {}),
+        ...(meta.folder !== undefined ? { folder: meta.folder ?? undefined } : {}),
       };
     }
     return item;
@@ -267,17 +269,17 @@ export function parseMalXml(xmlText: string): BookmarkItem[] {
     const statusMatch = block.match(/<my_status>(.*?)<\/my_status>/i);
     const scoreMatch = block.match(/<my_score>(.*?)<\/my_score>/i);
 
-    const title = titleMatch ? titleMatch[1].trim() : "";
+    const title = titleMatch?.[1]?.trim() ?? "";
     if (!title) continue;
 
     let status: BookmarkStatus = "plan";
-    const statusStr = (statusMatch ? statusMatch[1].trim() : "").toLowerCase();
+    const statusStr = (statusMatch?.[1]?.trim() ?? "").toLowerCase();
     if (statusStr === "watching" || statusStr === "1") status = "watching";
     else if (statusStr === "completed" || statusStr === "2") status = "completed";
     else if (statusStr === "dropped" || statusStr === "4") status = "dropped";
     else if (statusStr === "plan to watch" || statusStr === "6") status = "plan";
 
-    const rawScore = parseInt(scoreMatch ? scoreMatch[1].trim() : "0", 10);
+    const rawScore = parseInt(scoreMatch?.[1]?.trim() ?? "0", 10);
     const rating = rawScore >= 1 && rawScore <= 10 ? rawScore : undefined;
 
     items.push({

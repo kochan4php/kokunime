@@ -1,0 +1,19 @@
+{
+  "generatedAt": "2026-10-17T13:38:05.741Z",
+  "routes": {
+    "/api": 693638,
+    "/bookmarks": 739203,
+    "/genres": 693025,
+    "/offline": 699054,
+    "/roulette": 698674,
+    "/seasons": 693942,
+    "/settings": 719283,
+    "/share": 696053,
+    "/stats": 709329,
+    "/update": 699879,
+    "/wrapped": 709944,
+    "/_global-error": 567218,
+    "/_not-found": 677952
+  },
+  "totalClientJs": 1213066
+}

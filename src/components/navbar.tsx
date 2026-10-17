@@ -1,6 +1,7 @@
 "use client";
 
 import CommandPalette from "./command-palette";
+import InboxBell from "./inbox-bell";
 import MobileMenu from "./mobile-menu";
 import { siteLinks } from "@/components/site-config";
 import { useTranslation, TranslationKey } from "@/utils/i18n";
@@ -55,7 +56,8 @@ const Navbar = (): JSX.Element => {
 
           <nav aria-label="Utama" className="hidden lg:flex items-center gap-1.5">
             {siteLinks.map((link) => {
-              const label = NAV_KEY_MAP[link.href] ? t(NAV_KEY_MAP[link.href]) : link.label;
+              const navKey = NAV_KEY_MAP[link.href];
+              const label = navKey ? t(navKey) : link.label;
               return (
                 <Link
                   key={link.href}
@@ -89,6 +91,7 @@ const Navbar = (): JSX.Element => {
             <span>🎲 {t("nav.random")}</span>
           </a>
           <CommandPalette />
+          <InboxBell />
           <MobileMenu isActive={isActive} />
         </div>
       </div>

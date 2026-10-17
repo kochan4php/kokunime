@@ -52,7 +52,7 @@ export function parseEpisodeRange(title?: string | null): {
 
   const rangeMatch =
     cleaned.match(/episode\s*(\d{1,4})\s*[-–—~]\s*(\d{1,4})/i) || cleaned.match(/\b(\d{1,4})\s*[-–—~]\s*(\d{1,4})\b/);
-  if (rangeMatch) {
+  if (rangeMatch?.[1] && rangeMatch[2]) {
     const start = parseInt(rangeMatch[1], 10);
     const end = parseInt(rangeMatch[2], 10);
     const total = Math.max(0, end - start + 1);
@@ -60,7 +60,7 @@ export function parseEpisodeRange(title?: string | null): {
   }
 
   const singleMatch = cleaned.match(/episode\s*(\d{1,4})/i);
-  if (singleMatch) {
+  if (singleMatch?.[1]) {
     const ep = parseInt(singleMatch[1], 10);
     return { start: ep, end: ep, isEnd, total: 1 };
   }

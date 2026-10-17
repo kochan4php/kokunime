@@ -13,6 +13,8 @@ const SHORTCUTS = [
   { key: "D", desc: "Lompat ke bagian Download (Detail Anime)" },
   { key: "T", desc: "Putar Trailer YouTube (Detail Anime)" },
   { key: "R", desc: "Buka Anime Acak / Randomizer" },
+  { key: "/", desc: "Buka Pencarian Cepat (Command Palette)" },
+  { key: "Ctrl+K", desc: "Buka / Tutup Command Palette" },
   { key: "?", desc: "Buka Panduan Pintasan Keyboard" },
   { key: "Esc", desc: "Tutup Modal / Popup Aktif" },
 ];

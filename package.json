@@ -21,6 +21,8 @@
     "docker:down": "docker compose down",
     "changelog": "node scripts/release-changelog.mjs",
     "backup:cache": "node scripts/backup-cache.mjs",
+    "bundle:budget": "node scripts/bundle-budget.mjs",
+    "audit:client": "node scripts/find-client-unnecessary.mjs",
     "loadtest": "node scripts/load-test.mjs",
     "e2e": "node scripts/e2e-smoke.mjs",
     "indexnow": "node scripts/indexnow.mjs",

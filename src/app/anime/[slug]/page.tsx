@@ -1,5 +1,7 @@
 import SectionDetail from "@/components/anime/section-detail";
+import ViewTracker from "@/components/view-tracker";
 import RecommendationSection from "@/sections/recommendation-section";
+import SimilarAnime from "@/sections/similar-anime";
 import { getAnimeDetail } from "@/services/scraper";
 import { buildAnimeJsonLd, buildBreadcrumbJsonLd, buildFaqJsonLd, safeJsonLd } from "@/lib/seo";
 import { buildDetailMetadata } from "@/lib/detail-metadata";
@@ -58,7 +60,9 @@ const Anime = async ({ params }: { params: Promise<{ slug: string }> }): Promise
         dangerouslySetInnerHTML={{ __html: safeJsonLd(buildFaqJsonLd(anime)) }}
         suppressHydrationWarning
       />
+      <ViewTracker slug={slug} />
       <SectionDetail anime={anime} slug={slug} />
+      <SimilarAnime slug={slug} title={anime.title ?? ""} />
       <div className="mt-8 border-t border-border pt-12">
         <RecommendationSection />
       </div>

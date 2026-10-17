@@ -1,13 +1,14 @@
 ﻿"use client";
 
 import { JSX, useEffect, useState } from "react";
+import { STORAGE_KEYS } from "@/utils/storage-keys";
 
 interface BeforeInstallPromptEvent extends Event {
   prompt: () => Promise<void>;
   userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
 }
 
-const PWA_DISMISSED_KEY = "kokunime_pwa_dismissed";
+const PWA_DISMISSED_KEY = STORAGE_KEYS.pwaDismissed;
 
 export const PwaInstallBanner = (): JSX.Element | null => {
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);

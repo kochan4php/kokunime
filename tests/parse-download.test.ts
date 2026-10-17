@@ -22,11 +22,11 @@ describe("getDownloadLinks", () => {
   it("parses download groups, resolutions and platforms", () => {
     const download = getDownloadLinks(load(html), ".smokeddl", ".smokeurl", ".smokettl");
     expect(download).toHaveLength(1);
-    expect(download[0].title).toBe("Batch");
-    expect(download[0].link_download).toHaveLength(2);
-    expect(download[0].link_download[0].resolusi).toBe("360p");
-    expect(download[0].link_download[0].link).toHaveLength(2);
-    expect(download[0].link_download[0].link[0].platform).toBe("Mega");
+    expect(download[0]!.title).toBe("Batch");
+    expect(download[0]!.link_download).toHaveLength(2);
+    expect(download[0]!.link_download[0]!.resolusi).toBe("360p");
+    expect(download[0]!.link_download[0]!.link).toHaveLength(2);
+    expect(download[0]!.link_download[0]!.link[0]!.platform).toBe("Mega");
   });
 
   it("drops non-http(s) hrefs (javascript: XSS guard)", () => {
@@ -38,7 +38,7 @@ describe("getDownloadLinks", () => {
       </div></div></div>`,
     );
     const download = getDownloadLinks(evil, ".smokeddl", ".smokeurl", ".smokettl");
-    expect(download[0].link_download[0].link).toEqual([
+    expect(download[0]!.link_download[0]!.link).toEqual([
       { platform: "Aman", url: "https://example.com/ok.mp4", is_torrent: false },
     ]);
   });
@@ -53,7 +53,7 @@ describe("getDownloadLinks", () => {
     );
     const download = getDownloadLinks(redirect, ".smokeddlrh", ".smokeurlrh", ".smokettlrh");
     expect(download).toHaveLength(1);
-    expect(download[0].link_download[0].link).toEqual([
+    expect(download[0]!.link_download[0]!.link).toEqual([
       {
         platform: "Gabriel DropOut BD Batch",
         url: "https://kusonime.com/gabriel-do-batch-sub-indo/",
@@ -77,17 +77,17 @@ describe("getDownloadLinks", () => {
       </div></div>`,
     );
     const download = getDownloadLinks(rich, ".smokeddl", ".smokeurl", ".smokettl");
-    const [res1080, res720] = download[0].link_download;
+    const [res1080, res720] = download[0]!.link_download;
 
-    expect(res1080.height).toBe(1080);
-    expect(res1080.codec).toBe("hevc");
-    expect(res1080.container).toBe("mkv");
-    expect(res1080.size_bytes).toBe(1610612736); // 1.5 * 1024^3
-    expect(res1080.size_formatted).toBe("1.5 GB");
+    expect(res1080!.height).toBe(1080);
+    expect(res1080!.codec).toBe("hevc");
+    expect(res1080!.container).toBe("mkv");
+    expect(res1080!.size_bytes).toBe(1610612736); // 1.5 * 1024^3
+    expect(res1080!.size_formatted).toBe("1.5 GB");
 
-    expect(res720.height).toBe(720);
-    expect(res720.container).toBe("mp4");
-    expect(res720.size_bytes).toBe(367001600); // 350 * 1024^2
-    expect(res720.size_formatted).toBe("350 MB");
+    expect(res720!.height).toBe(720);
+    expect(res720!.container).toBe("mp4");
+    expect(res720!.size_bytes).toBe(367001600); // 350 * 1024^2
+    expect(res720!.size_formatted).toBe("350 MB");
   });
 });

@@ -6,6 +6,7 @@
 @import "./styles/navbar.css";
 @import "./styles/reveal.css";
 @import "./styles/skeleton.css";
+@import "./styles/view-transition.css";
 
 @utility container {
   margin-inline: auto;

@@ -1,18 +1,19 @@
 "use client";
 
 import AnimeImage from "@/components/cards/anime-image";
+import ViewTransitionLink from "@/components/view-transition-link";
 import { DownloadIcon } from "@/components/icons";
 import { Anime } from "@/interfaces";
 import { animeSlug } from "@/utils/endpoint-slug";
-import Link from "next/link";
 import { JSX, useEffect, useState } from "react";
 
 interface FeaturedHeroProps {
   featured?: Anime;
   items?: Anime[];
+  blurDataURL?: string;
 }
 
-const FeaturedHero = ({ featured, items = [] }: FeaturedHeroProps): JSX.Element => {
+const FeaturedHero = ({ featured, items = [], blurDataURL }: FeaturedHeroProps): JSX.Element => {
   const list = items.length > 0 ? items.slice(0, 5) : featured ? [featured] : [];
   const [activeIndex, setActiveIndex] = useState(0);
 
@@ -38,6 +39,8 @@ const FeaturedHero = ({ featured, items = [] }: FeaturedHeroProps): JSX.Element 
                 fill
                 priority={activeIndex === 0}
                 fetchPriority={activeIndex === 0 ? "high" : undefined}
+                placeholder={activeIndex === 0 && blurDataURL ? "blur" : undefined}
+                blurDataURL={activeIndex === 0 ? blurDataURL : undefined}
                 sizes="(max-width: 768px) 100vw, 50vw"
                 src={current.link.image}
                 alt={current.title}
@@ -81,15 +84,18 @@ const FeaturedHero = ({ featured, items = [] }: FeaturedHeroProps): JSX.Element 
             </p>
             {slug && (
               <div className="mt-2 flex flex-wrap items-center gap-3">
-                <Link href={`/anime/${slug}#download`} className="btn-primary w-full sm:w-max justify-center">
+                <ViewTransitionLink
+                  href={`/anime/${slug}#download`}
+                  className="btn-primary w-full sm:w-max justify-center"
+                >
                   Download Anime
                   <span className="inline-flex h-7 w-7 items-center justify-center rounded-sm border-2 border-nb-ink bg-nb-ink text-nb-cream transition-transform duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:translate-y-0.5">
                     <DownloadIcon className="h-3.5 w-3.5" />
                   </span>
-                </Link>
-                <Link href={`/anime/${slug}`} className="btn-secondary w-full sm:w-max justify-center">
+                </ViewTransitionLink>
+                <ViewTransitionLink href={`/anime/${slug}`} className="btn-secondary w-full sm:w-max justify-center">
                   Lihat Detail →
-                </Link>
+                </ViewTransitionLink>
                 {list.length > 1 && (
                   <div className="flex items-center gap-2">
                     <button

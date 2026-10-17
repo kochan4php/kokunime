@@ -6,6 +6,7 @@ import { formatAnimeData } from "./parse";
 import { parseSimplePagination } from "./parse-simple-pagination";
 import { parseTaxonomyWithMeta } from "./parse-taxonomy";
 import { stripHtmlNoise } from "./sanitize";
+import { normalizeSlug } from "@/utils/endpoint-slug";
 
 export const getSeasons = async (): Promise<Season[]> => (await getSeasonsWithMeta()).seasons;
 
@@ -41,7 +42,11 @@ async function fetchSingleSeasonPage(cleanSeason: string, pageNum: number): Prom
 }
 
 export async function getAnimeBySeasons(season: string, page: number | string): Promise<AnimePage> {
-  const cleanSeason = decodeURIComponent(season).trim().toLowerCase();
+  // Untrusted route segment → upstream path; reject anything that is not one
+  // plain slug instead of fetching a mangled URL.
+  const cleanSeason = normalizeSlug(season);
+  if (!cleanSeason) return { anime: [], pagination: null };
+
   const requestedPage = Math.max(1, Number(page) || 1);
 
   return cached(

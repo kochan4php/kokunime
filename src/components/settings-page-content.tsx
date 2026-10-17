@@ -5,6 +5,7 @@ import {
   AppSettings,
   AccentColor,
   AppLanguage,
+  CardDensity,
   FontFamily,
   FontSize,
   ReadingMode,
@@ -17,6 +18,7 @@ import {
   SETTINGS_CHANGE_EVENT,
   StorageBreakdown,
 } from "@/utils/settings";
+import { STORAGE_KEYS } from "@/utils/storage-keys";
 import { useTranslation, TranslationKey } from "@/utils/i18n";
 import Link from "next/link";
 import { JSX, useEffect, useState } from "react";
@@ -113,7 +115,7 @@ const SettingsPageContent = (): JSX.Element => {
   const handleClearSearches = () => {
     const msg = language === "en" ? "Clear all recent search history?" : "Hapus semua riwayat pencarian terakhir?";
     if (confirm(msg)) {
-      localStorage.removeItem("kokunime_recent_searches");
+      localStorage.removeItem(STORAGE_KEYS.recentSearches);
       setStorage(calculateStorageBreakdown());
       window.dispatchEvent(new Event("storage"));
     }
@@ -122,7 +124,7 @@ const SettingsPageContent = (): JSX.Element => {
   const handleClearHistory = () => {
     const msg = language === "en" ? "Clear all watched anime history?" : "Hapus semua riwayat tontonan anime?";
     if (confirm(msg)) {
-      localStorage.removeItem("kokunime_watch_history");
+      localStorage.removeItem(STORAGE_KEYS.watchHistory);
       setStorage(calculateStorageBreakdown());
       window.dispatchEvent(new Event("storage"));
     }
@@ -199,8 +201,8 @@ const SettingsPageContent = (): JSX.Element => {
                 </div>
                 <span className="rounded-sm border-2 border-border bg-surface-muted px-3 py-1 font-mono text-xs font-bold text-ink-muted">
                   {language === "en"
-                    ? `Accent: ${mounted ? currentAccent.label : "Sunset Orange"}`
-                    : `Aksen: ${mounted ? currentAccent.label : "Sunset Orange"}`}
+                    ? `Accent: ${mounted ? (currentAccent?.label ?? "Sunset Orange") : "Sunset Orange"}`
+                    : `Aksen: ${mounted ? (currentAccent?.label ?? "Sunset Orange") : "Sunset Orange"}`}
                 </span>
               </div>
 
@@ -428,7 +430,7 @@ const SettingsPageContent = (): JSX.Element => {
               </div>
 
               {/* Font Scale & Reading Filter */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-1">
                 <div className="p-4 rounded-sm border-2 border-border bg-surface-solid space-y-2">
                   <span className="font-mono text-xs font-bold uppercase tracking-wider text-ink-muted">
                     {t("settings.text_scale")}
@@ -476,6 +478,31 @@ const SettingsPageContent = (): JSX.Element => {
                         }`}
                       >
                         {m.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="p-4 rounded-sm border-2 border-border bg-surface-solid space-y-2">
+                  <span className="font-mono text-xs font-bold uppercase tracking-wider text-ink-muted">
+                    {t("settings.density")}
+                  </span>
+                  <div className="flex items-center gap-2 pt-1">
+                    {[
+                      { key: "comfortable", label: t("settings.density_comfort") },
+                      { key: "compact", label: t("settings.density_compact") },
+                    ].map((d) => (
+                      <button
+                        key={d.key}
+                        type="button"
+                        onClick={() => updateSetting("density", d.key as CardDensity)}
+                        className={`flex-1 rounded-sm py-2 font-mono text-xs font-bold transition-all cursor-pointer ${
+                          mounted && settings.density === d.key
+                            ? "border-2 border-border bg-accent text-(--accent-ink) shadow-[2px_2px_0_0_var(--border)]"
+                            : "border-border bg-surface text-ink-muted hover:text-ink"
+                        }`}
+                      >
+                        {d.label}
                       </button>
                     ))}
                   </div>

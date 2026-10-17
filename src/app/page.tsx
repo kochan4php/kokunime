@@ -1,6 +1,9 @@
-import HomeContent from "@/sections/home-content";
 import HomeSkeleton from "@/sections/home-skeleton";
+import ListingSkeleton from "@/sections/listing-skeleton";
+import { HomeHeroSection, HomeLatestSection } from "@/sections/home-content";
+import RecommendationSection from "@/sections/recommendation-section";
 import RecommendForYou from "@/components/recommend-for-you";
+import TrendingRail from "@/components/trending-rail";
 import MainLayout from "@/layouts/main-layout";
 import { Metadata } from "next";
 import { JSX, Suspense } from "react";
@@ -21,9 +24,16 @@ export async function generateMetadata(): Promise<Metadata> {
 const Home = async (): Promise<JSX.Element> => {
   return (
     <MainLayout>
+      {/* Per-section Suspense: hero streams first, the catalog grid and the
+          recommendation rails fill in as their data resolves. */}
       <Suspense fallback={<HomeSkeleton />}>
-        <HomeContent page={1} basePath="/page" />
+        <HomeHeroSection />
       </Suspense>
+      <TrendingRail />
+      <Suspense fallback={<ListingSkeleton />}>
+        <HomeLatestSection page={1} basePath="/page" />
+      </Suspense>
+      <RecommendationSection />
       <RecommendForYou />
     </MainLayout>
   );

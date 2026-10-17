@@ -1,3 +1,4 @@
+import { STORAGE_KEYS } from "@/utils/storage-keys";
 export interface ProgressEntry {
   slug: string;
   title?: string;
@@ -6,7 +7,7 @@ export interface ProgressEntry {
   updatedAt: number;
 }
 
-const STORAGE_KEY = "kokunime_progress";
+const STORAGE_KEY = STORAGE_KEYS.progress;
 const EVENT_NAME = "kokunime:progress";
 const MAX_ENTRIES = 200;
 const MAX_EPISODES = 3000;
@@ -94,7 +95,11 @@ const upsert = (
 ): void => {
   const list = [...getProgressList()];
   const index = list.findIndex((e) => e.slug === slug);
-  const existing: ProgressEntry = index >= 0 ? list[index] : { slug, watched: [], updatedAt: Date.now() };
+  const existing: ProgressEntry = (index >= 0 ? list[index] : undefined) ?? {
+    slug,
+    watched: [],
+    updatedAt: Date.now(),
+  };
 
   const merged: ProgressEntry = { ...existing, slug };
   if (meta?.title) merged.title = meta.title;
@@ -216,6 +221,7 @@ export const mergeProgressEntries = (entries: ProgressEntry[]): number => {
       continue;
     }
     const current = list[index];
+    if (!current) continue;
     list[index] = {
       slug: entry.slug,
       watched: [...new Set([...current.watched, ...entry.watched])].sort((a, b) => a - b),

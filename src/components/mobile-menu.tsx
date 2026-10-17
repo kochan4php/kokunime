@@ -107,7 +107,8 @@ const MobileMenu = ({ isActive }: MobileMenuProps): JSX.Element => {
               <nav aria-label="Menu Dialog" className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 {siteLinks.map((link) => {
                   const active = isActive(link.href);
-                  const label = NAV_KEY_MAP[link.href] ? t(NAV_KEY_MAP[link.href]) : link.label;
+                  const navKey = NAV_KEY_MAP[link.href];
+                  const label = navKey ? t(navKey) : link.label;
                   return (
                     <Link
                       key={link.href}

@@ -9,8 +9,9 @@ import { useTranslation } from "@/utils/i18n";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { JSX, useEffect, useRef, useState } from "react";
+import { STORAGE_KEYS } from "@/utils/storage-keys";
 
-const RECENT_KEY = "kokunime_recent_searches";
+const RECENT_KEY = STORAGE_KEYS.recentSearches;
 
 const getRecentSearches = (): string[] => {
   if (typeof window === "undefined") return [];

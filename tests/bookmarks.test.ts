@@ -87,12 +87,12 @@ describe("bookmarks utility", () => {
 
     const parsed = parseMalXml(malXml);
     expect(parsed).toHaveLength(2);
-    expect(parsed[0].title).toBe("Frieren: Beyond Journey's End");
-    expect(parsed[0].status).toBe("watching");
-    expect(parsed[0].rating).toBe(10);
-    expect(parsed[1].title).toBe("Demon Slayer Season 4");
-    expect(parsed[1].status).toBe("completed");
-    expect(parsed[1].rating).toBe(8);
+    expect(parsed[0]!.title).toBe("Frieren: Beyond Journey's End");
+    expect(parsed[0]!.status).toBe("watching");
+    expect(parsed[0]!.rating).toBe(10);
+    expect(parsed[1]!.title).toBe("Demon Slayer Season 4");
+    expect(parsed[1]!.status).toBe("completed");
+    expect(parsed[1]!.rating).toBe(8);
   });
 
   it("parses AniList JSON export format correctly", () => {
@@ -109,10 +109,10 @@ describe("bookmarks utility", () => {
 
     const parsed = parseAniListJson(anilistJson);
     expect(parsed).toHaveLength(1);
-    expect(parsed[0].title).toBe("Solo Leveling");
-    expect(parsed[0].status).toBe("watching");
-    expect(parsed[0].rating).toBe(9);
-    expect(parsed[0].image).toBe("https://example.com/solo.jpg");
+    expect(parsed[0]!.title).toBe("Solo Leveling");
+    expect(parsed[0]!.status).toBe("watching");
+    expect(parsed[0]!.rating).toBe(9);
+    expect(parsed[0]!.image).toBe("https://example.com/solo.jpg");
   });
 
   it("maps Dropped/DROPPED statuses from MAL and AniList exports", () => {
@@ -125,7 +125,7 @@ describe("bookmarks utility", () => {
       </myanimelist>
     `;
     const parsedMal = parseMalXml(malXml);
-    expect(parsedMal[0].status).toBe("dropped");
+    expect(parsedMal[0]!.status).toBe("dropped");
 
     const anilistJson = JSON.stringify([
       {
@@ -134,7 +134,7 @@ describe("bookmarks utility", () => {
       },
     ]);
     const parsedAniList = parseAniListJson(anilistJson);
-    expect(parsedAniList[0].status).toBe("dropped");
+    expect(parsedAniList[0]!.status).toBe("dropped");
   });
 
   it("imports MAL XML file into localStorage bookmarks cleanly", async () => {
@@ -156,6 +156,6 @@ describe("bookmarks utility", () => {
     const count = await importBookmarksJson(file);
     expect(count).toBe(1);
     expect(getBookmarks()).toHaveLength(1);
-    expect(getBookmarks()[0].title).toBe("Jujutsu Kaisen");
+    expect(getBookmarks()[0]!.title).toBe("Jujutsu Kaisen");
   });
 });

@@ -1,5 +1,6 @@
 import { ChildrenProps } from "@/interfaces";
 import ServiceWorkerRegister from "@/components/sw-register";
+import SpeculationRules from "@/components/speculation-rules";
 import RouteProgressBar from "@/components/route-progress-bar";
 import WebVitals from "@/components/web-vitals";
 import Toaster from "@/components/toaster";
@@ -8,6 +9,7 @@ import { JSX, Suspense } from "react";
 import { Viewport } from "next";
 import { buildWebSiteJsonLd, safeJsonLd } from "@/lib/seo";
 import "./globals.css";
+import { STORAGE_KEYS } from "@/utils/storage-keys";
 
 export { metadata } from "@/lib/metadata";
 
@@ -30,7 +32,7 @@ const jetBrainsMono = JetBrains_Mono({
   variable: "--font-mono",
 });
 
-const themeScript = `(function(){try{var s={};try{s=JSON.parse(localStorage.getItem("kokunime_user_settings"))||{};}catch(e){}var a=s.accent||localStorage.getItem("kokunime_accent");if(a&&a!=="orange")document.documentElement.setAttribute("data-accent",a);var f=s.font||localStorage.getItem("kokunime_font");if(f&&f!=="mono")document.documentElement.setAttribute("data-font",f);var fs=s.fontSize;if(fs&&fs!=="normal")document.documentElement.setAttribute("data-font-size",fs);var rm=s.reduceMotion!==undefined?s.reduceMotion:true;if(rm)document.documentElement.setAttribute("data-reduce-motion","true");if(s.readingMode&&s.readingMode!=="none")document.documentElement.setAttribute("data-reading-mode",s.readingMode);var n=s.nightShift||localStorage.getItem("kokunime_night_shift")==="true";if(n)document.documentElement.setAttribute("data-night-shift","true");}catch(e){}})();`;
+const themeScript = `(function(){try{var s={};try{s=JSON.parse(localStorage.getItem(STORAGE_KEYS.userSettings))||{};}catch(e){}var a=s.accent||localStorage.getItem(STORAGE_KEYS.accent);if(a&&a!=="orange")document.documentElement.setAttribute("data-accent",a);var f=s.font||localStorage.getItem(STORAGE_KEYS.font);if(f&&f!=="mono")document.documentElement.setAttribute("data-font",f);var fs=s.fontSize;if(fs&&fs!=="normal")document.documentElement.setAttribute("data-font-size",fs);if(s.density==="compact")document.documentElement.setAttribute("data-density","compact");var rm=s.reduceMotion!==undefined?s.reduceMotion:true;if(rm)document.documentElement.setAttribute("data-reduce-motion","true");if(s.readingMode&&s.readingMode!=="none")document.documentElement.setAttribute("data-reading-mode",s.readingMode);var n=s.nightShift||localStorage.getItem(STORAGE_KEYS.nightShift)==="true";if(n)document.documentElement.setAttribute("data-night-shift","true");}catch(e){}})();`;
 
 const criticalCss = `body{background-color:var(--color-bg,#fdf5eb);color:var(--color-ink,#0a0a0a);}`;
 
@@ -73,6 +75,7 @@ const RootLayout = ({ children }: ChildrenProps): JSX.Element => (
         <div className="absolute bottom-8 right-10 h-14 w-14 rotate-6 border-[3px] border-border bg-nb-orange shadow-[6px_6px_0_0_var(--border)]" />
       </div>
       <ServiceWorkerRegister />
+      <SpeculationRules />
       <WebVitals />
       <Toaster />
       <Suspense fallback={null}>

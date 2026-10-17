@@ -30,6 +30,32 @@ const ENDPOINTS: ApiEndpoint[] = [
   },
   {
     method: "GET",
+    path: "/api/status",
+    category: "General",
+    description:
+      "Snapshot ringkas tanpa auth: status ok/degraded (503 saat degraded), uptime, memori, event-loop lag, circuit upstream, Redis.",
+    sampleUrl: "/api/status",
+  },
+  {
+    method: "GET",
+    path: "/api/admin/index",
+    category: "General",
+    description:
+      "Status local search index (size, Redis) dengan Bearer ADMIN_TOKEN/METRICS_TOKEN. Warm-up via POST {pages,genres}. Tanpa token terkonfigurasi → 404.",
+    sampleUrl: "/api/admin/index",
+    paramsDescription: "Authorization: Bearer <ADMIN_TOKEN|METRICS_TOKEN>",
+  },
+  {
+    method: "GET",
+    path: "/api/metrics",
+    category: "General",
+    description:
+      "Snapshot Prometheus text (counter, histogram latensi, status circuit upstream, Redis). Hanya aktif bila METRICS_TOKEN diisi.",
+    sampleUrl: "/api/metrics",
+    paramsDescription: "Authorization: Bearer <METRICS_TOKEN>",
+  },
+  {
+    method: "GET",
     path: "/api/random",
     category: "General",
     description: "Mendapatkan dan mengarahkan (307 redirect) secara acak ke salah satu anime di katalog.",
@@ -39,9 +65,20 @@ const ENDPOINTS: ApiEndpoint[] = [
     method: "GET",
     path: "/api/search?q={query}",
     category: "Catalog",
-    description: "Pencarian anime secara real-time langsung ke upstream scraper tanpa delay cache.",
+    description:
+      "Pencarian anime real-time ke upstream scraper, ditambah local catalog index (fuzzy) dan query syntax: `genre:action,adventure`, `-kata` untuk exclude, `fields=title,link` untuk proyeksi atribut.",
     sampleUrl: "/api/search?q=naruto",
     defaultParam: { key: "q", value: "naruto", placeholder: "kata kunci pencarian..." },
+    paramsDescription: "q: string (min 2 karakter) · fields: title,release,genres,link",
+  },
+  {
+    method: "GET",
+    path: "/api/suggest?q={query}",
+    category: "Catalog",
+    description:
+      "Autocomplete hingga 8 judul dari local catalog index — tanpa upstream call. Kosong saat index belum di-warm-up.",
+    sampleUrl: "/api/suggest?q=naruto",
+    defaultParam: { key: "q", value: "naruto", placeholder: "kata kunci..." },
     paramsDescription: "q: string (min 2 karakter)",
   },
   {
@@ -71,10 +108,18 @@ const ENDPOINTS: ApiEndpoint[] = [
     method: "GET",
     path: "/api/seasons/{season}",
     category: "Catalog",
-    description: "Mengambil daftar anime berdasarkan musim rilis tertentu dengan paginasi.",
+    description: "Mengambil daftar anime berdasarkan musim rilis tertentu dengan paginasi (?page= atau ?cursor=).",
     sampleUrl: "/api/seasons/winter-2024",
     defaultParam: { key: "season", value: "winter-2024", placeholder: "slug musim (misal: winter-2024)" },
-    paramsDescription: "season: string slug",
+    paramsDescription: "season: string slug · cursor: dari next_cursor response",
+  },
+  {
+    method: "GET",
+    path: "/api/trending",
+    category: "Catalog",
+    description:
+      "Judul paling banyak dilihat beberapa hari terakhir (view tracker sendBeacon, menghormati DNT). Kosong = belum ada data.",
+    sampleUrl: "/api/trending",
   },
   {
     method: "GET",
@@ -97,12 +142,23 @@ const ENDPOINTS: ApiEndpoint[] = [
   },
   {
     method: "GET",
+    path: "/api/anime/{slug}/episodes",
+    category: "Detail",
+    description:
+      "Daftar episode terstruktur: mirror per resolusi/platform sudah dipisah dari judul batch, plus flag is_torrent.",
+    sampleUrl: "/api/anime/naruto-batch-sub-indo/episodes",
+    defaultParam: { key: "slug", value: "naruto-batch-sub-indo", placeholder: "slug anime..." },
+    paramsDescription: "slug: string identifier",
+  },
+  {
+    method: "GET",
     path: "/api/anime/bulk",
     category: "Detail",
-    description: "Mengambil banyak metadata anime sekaligus dalam satu panggilan API (bulk batch query).",
+    description:
+      "Mengambil banyak metadata anime sekaligus (GET: ?slugs=a,b atau POST body {slugs,fields}). Mendukung fields= dan ETag/304.",
     sampleUrl: "/api/anime/bulk?slugs=naruto-batch-sub-indo,bleach-batch-sub-indo",
     defaultParam: { key: "slugs", value: "naruto-batch-sub-indo,bleach-batch-sub-indo", placeholder: "slug1,slug2..." },
-    paramsDescription: "slugs: comma separated",
+    paramsDescription: "slugs: comma separated (maks 20) · fields: title,score,download,…",
   },
   {
     method: "GET",
@@ -213,6 +269,40 @@ const ApiDocsPage = (): JSX.Element => (
           {ENDPOINTS.map((ep) => (
             <ApiTester key={ep.path} endpoint={ep} />
           ))}
+        </div>
+      </div>
+
+      {/* Deprecation policy */}
+      <div className="space-y-4">
+        <div className="flex items-center gap-2 border-b-2 border-border pb-3">
+          <span className="flex h-7 w-7 items-center justify-center rounded-sm border-2 border-border bg-nb-yellow text-sm text-nb-ink">
+            📌
+          </span>
+          <h2 className="font-display text-lg font-bold text-ink">Kebijakan Deprecation & Versioning</h2>
+        </div>
+        <div className="rounded-sm border-2 border-border bg-surface-solid p-4 shadow-[2px_2px_0_0_var(--border)]">
+          <ul className="space-y-2 text-xs text-ink-muted leading-relaxed">
+            <li>
+              <strong className="text-ink">Versi:</strong> API memakai semver yang tercermin di{" "}
+              <a href="/api/openapi.json" className="underline decoration-dotted hover:text-ink">
+                info.version OpenAPI
+              </a>{" "}
+              (saat ini 1.1.0). Perubahan breaking hanya di rilis major.
+            </li>
+            <li>
+              <strong className="text-ink">Soft deprecation:</strong> endpoint yang akan digantikan tetap melayani
+              request minimal satu minor version dan membawa header <code>Deprecation: true</code> plus{" "}
+              <code>Sunset: &lt;tanggal RFC 1123&gt;</code> yang menunjuk ke endpoint pengganti.
+            </li>
+            <li>
+              <strong className="text-ink">Removal:</strong> penghapusan hanya setelah periode Sunset lewat, diumumkan
+              lewat changelog OpenAPI, dan tidak pernah dalam patch release.
+            </li>
+            <li>
+              <strong className="text-ink">Field baru</strong> bersifat additive — klien lama tetap valid; gunakan{" "}
+              <code>fields=</code> bila ingin payload minimal.
+            </li>
+          </ul>
         </div>
       </div>
     </section>
