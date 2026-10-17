@@ -11,9 +11,36 @@
       - NODE_ENV=production
       - PORT=3000
       - HOSTNAME=0.0.0.0
+      - NEXT_PUBLIC_SITE_URL=${NEXT_PUBLIC_SITE_URL:-}
+      - ERROR_WEBHOOK_URL=${ERROR_WEBHOOK_URL:-}
+      - REDIS_URL=${REDIS_URL:-}
     healthcheck:
       test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/api/health"]
       interval: 30s
       timeout: 5s
       retries: 3
       start_period: 10s
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # Optional shared cache + rate-limit store:
+  # docker compose --profile cache up -d
+  redis:
+    image: redis:7-alpine
+    container_name: kokunime-redis
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - kokunime-redis:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    profiles: ["cache"]
+
+volumes:
+  kokunime-redis:

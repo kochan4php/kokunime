@@ -66,7 +66,9 @@ const BookmarkButton = ({
         ? "📌 Rencana Nonton"
         : currentItem?.status === "completed"
           ? "✓ Selesai Nonton"
-          : "Tersimpan";
+          : currentItem?.status === "dropped"
+            ? "⛔ Drop"
+            : "Tersimpan";
 
   return (
     <div className="relative inline-flex items-center">
@@ -139,6 +141,14 @@ const BookmarkButton = ({
           >
             <span>✓</span>
             <span>Selesai Nonton</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => handleSelectStatus("dropped")}
+            className="flex items-center gap-2 rounded-sm px-3 py-1.5 text-xs text-ink hover:bg-nb-red hover:text-nb-ink transition-colors text-left cursor-pointer"
+          >
+            <span>⛔</span>
+            <span>Drop</span>
           </button>
         </div>
       )}

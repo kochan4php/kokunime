@@ -1,0 +1,50 @@
+# Production compose — used on the deploy server by scripts/deploy.sh.
+# The image is built and pushed to GHCR by .github/workflows/deploy.yml.
+# Enable the shared cache with: docker compose -f docker-compose.prod.yml --profile cache up -d
+services:
+  kokunime:
+    image: ghcr.io/kochan4php/kokunime:${KOKUNIME_TAG:-latest}
+    container_name: kokunime-app
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - HOSTNAME=0.0.0.0
+      - NEXT_PUBLIC_SITE_URL=${NEXT_PUBLIC_SITE_URL:-}
+      - ERROR_WEBHOOK_URL=${ERROR_WEBHOOK_URL:-}
+      - REDIS_URL=${REDIS_URL:-}
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  redis:
+    image: redis:7-alpine
+    container_name: kokunime-redis
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - kokunime-redis:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+    profiles: ["cache"]
+
+volumes:
+  kokunime-redis:

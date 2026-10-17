@@ -1,3 +1,4 @@
+import { redisGet, redisSet } from "@/lib/redis";
 import { unstable_cache } from "next/cache";
 
 export const TTL = {
@@ -47,6 +48,14 @@ export const cached = async <T>(key: string, ttlSeconds: number, fn: () => Promi
     return memCached;
   }
 
+  // 1.5 Tier: Shared Redis cache (survives restarts, spans instances). No-op
+  // unless REDIS_URL is configured.
+  const redisCached = await redisGet(key);
+  if (redisCached !== null) {
+    setMemoryCache(key, redisCached as T, ttlSeconds);
+    return redisCached as T;
+  }
+
   // 2. Tier 2: Check Next.js unstable_cache (when in Next.js runtime)
   // Failures must propagate OUTSIDE unstable_cache: a fallback returned inside
   // the callback would be persisted as if it were valid data (cache poisoning).
@@ -67,6 +76,7 @@ export const cached = async <T>(key: string, ttlSeconds: number, fn: () => Promi
       const result = await cachedFn();
       if (result !== null && result !== undefined) {
         setMemoryCache(key, result, ttlSeconds);
+        await redisSet(key, result, ttlSeconds);
       }
       return result;
     } catch (err) {
@@ -83,6 +93,7 @@ export const cached = async <T>(key: string, ttlSeconds: number, fn: () => Promi
     const result = await fn();
     if (result !== null && result !== undefined) {
       setMemoryCache(key, result, ttlSeconds);
+      await redisSet(key, result, ttlSeconds);
     }
     return result;
   } catch {

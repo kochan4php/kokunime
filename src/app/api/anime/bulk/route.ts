@@ -6,7 +6,7 @@ const BLOCKED_USER_AGENTS = /scrapy|sqlmap|masscan|nikto|zgrab|acunetix|petalbot
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
   const ip = request.headers.get("x-forwarded-for") || "bulk-client";
-  const rate = checkRateLimit(ip, 30, 60_000);
+  const rate = await checkRateLimit(ip, 30, 60_000);
   const rateHeaders = getRateLimitHeaders(rate);
 
   if (!rate.success) {

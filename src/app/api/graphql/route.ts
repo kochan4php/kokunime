@@ -5,7 +5,7 @@ import { NextRequest, NextResponse } from "next/server";
 export async function POST(request: NextRequest): Promise<NextResponse> {
   try {
     const ip = request.headers.get("x-forwarded-for") || "graphql-client";
-    const rate = checkRateLimit(ip, 60, 60_000);
+    const rate = await checkRateLimit(ip, 60, 60_000);
     const rateHeaders = getRateLimitHeaders(rate);
 
     if (!rate.success) {

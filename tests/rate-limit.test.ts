@@ -2,23 +2,23 @@ import { describe, expect, it } from "vitest";
 import { checkRateLimit, getRateLimitHeaders } from "@/lib/rate-limit";
 
 describe("Rate Limiter", () => {
-  it("allows requests under the limit", () => {
+  it("allows requests under the limit", async () => {
     const id = `client-${Date.now()}-1`;
-    const res1 = checkRateLimit(id, 5, 10_000);
+    const res1 = await checkRateLimit(id, 5, 10_000);
     expect(res1.success).toBe(true);
     expect(res1.remaining).toBe(4);
 
-    const res2 = checkRateLimit(id, 5, 10_000);
+    const res2 = await checkRateLimit(id, 5, 10_000);
     expect(res2.success).toBe(true);
     expect(res2.remaining).toBe(3);
   });
 
-  it("blocks requests over the limit and generates correct headers", () => {
+  it("blocks requests over the limit and generates correct headers", async () => {
     const id = `client-${Date.now()}-2`;
     for (let i = 0; i < 3; i++) {
-      checkRateLimit(id, 3, 10_000);
+      await checkRateLimit(id, 3, 10_000);
     }
-    const blockedRes = checkRateLimit(id, 3, 10_000);
+    const blockedRes = await checkRateLimit(id, 3, 10_000);
     expect(blockedRes.success).toBe(false);
     expect(blockedRes.remaining).toBe(0);
 

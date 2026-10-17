@@ -1,4 +1,4 @@
-export type BookmarkStatus = "watching" | "plan" | "completed";
+export type BookmarkStatus = "watching" | "plan" | "completed" | "dropped";
 
 export interface BookmarkItem {
   slug: string;
@@ -184,7 +184,13 @@ export const exportBookmarksMalXml = (): void => {
   const entries = list
     .map((item) => {
       const malStatus =
-        item.status === "watching" ? "Watching" : item.status === "completed" ? "Completed" : "Plan to Watch";
+        item.status === "watching"
+          ? "Watching"
+          : item.status === "completed"
+            ? "Completed"
+            : item.status === "dropped"
+              ? "Dropped"
+              : "Plan to Watch";
       const malScore = item.rating || 0;
       const malComments = item.notes ? `<![CDATA[${item.notes}]]>` : "";
 
@@ -247,6 +253,7 @@ export function parseMalXml(xmlText: string): BookmarkItem[] {
     const statusStr = (statusMatch ? statusMatch[1].trim() : "").toLowerCase();
     if (statusStr === "watching" || statusStr === "1") status = "watching";
     else if (statusStr === "completed" || statusStr === "2") status = "completed";
+    else if (statusStr === "dropped" || statusStr === "4") status = "dropped";
     else if (statusStr === "plan to watch" || statusStr === "6") status = "plan";
 
     const rawScore = parseInt(scoreMatch ? scoreMatch[1].trim() : "0", 10);
@@ -284,6 +291,7 @@ export function parseAniListJson(jsonText: string): BookmarkItem[] {
       const s = String(entry.status || "").toUpperCase();
       if (s === "CURRENT") status = "watching";
       else if (s === "COMPLETED") status = "completed";
+      else if (s === "DROPPED") status = "dropped";
       else if (s === "PLANNING") status = "plan";
 
       const score =

@@ -1,0 +1,78 @@
+name: Monitor
+
+on:
+  schedule:
+    - cron: "*/15 * * * *" # uptime probe
+    - cron: "0 */6 * * *" # e2e canary (also runs the uptime probe)
+  workflow_dispatch:
+
+concurrency:
+  group: monitor
+  cancel-in-progress: false
+
+jobs:
+  uptime:
+    if: github.event_name == 'workflow_dispatch' || github.event.schedule == '*/15 * * * *'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Probe production health
+        if: vars.PRODUCTION_URL != ''
+        env:
+          BASE: ${{ vars.PRODUCTION_URL }}
+        run: |
+          for attempt in 1 2 3; do
+            code=$(curl -s -o /tmp/health.json -w "%{http_code}" --max-time 20 "$BASE/api/health" || true)
+            if [ "$code" = "200" ]; then
+              echo "healthy (attempt $attempt)"
+              exit 0
+            fi
+            echo "unhealthy: HTTP $code (attempt $attempt)"
+            sleep 20
+          done
+          echo "DOWN after 3 attempts"
+          exit 1
+
+      - name: Skip notice
+        if: vars.PRODUCTION_URL == ''
+        run: echo "PRODUCTION_URL repository variable not set - skipping uptime probe."
+
+      - name: Alert Discord
+        if: failure()
+        env:
+          WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          BASE: ${{ vars.PRODUCTION_URL }}
+        run: |
+          [ -z "$WEBHOOK" ] && { echo "no DISCORD_WEBHOOK_URL secret"; exit 0; }
+          curl -sf -X POST -H "Content-Type: application/json" \
+            --data "{\"content\":\"Kokunime DOWN - $BASE/api/health gagal 3x berturut-turut.\"}" \
+            "$WEBHOOK" || true
+
+  canary:
+    if: github.event_name == 'workflow_dispatch' || github.event.schedule == '0 */6 * * *'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Run smoke tests against production
+        if: vars.PRODUCTION_URL != ''
+        env:
+          BASE_URL: ${{ vars.PRODUCTION_URL }}
+        run: node scripts/e2e-smoke.mjs
+
+      - name: Skip notice
+        if: vars.PRODUCTION_URL == ''
+        run: echo "PRODUCTION_URL repository variable not set - skipping canary."
+
+      - name: Alert Discord
+        if: failure()
+        env:
+          WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        run: |
+          [ -z "$WEBHOOK" ] && { echo "no DISCORD_WEBHOOK_URL secret"; exit 0; }
+          curl -sf -X POST -H "Content-Type: application/json" \
+            --data '{"content":"Kokunime canary gagal - e2e smoke test ke production tidak lulus. Cek scraper/upstream."}' \
+            "$WEBHOOK" || true

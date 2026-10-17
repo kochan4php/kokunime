@@ -1,5 +1,6 @@
 import upstream from "@/config/upstream";
 import { SCRAPE_BASE_URL } from "@/services/scraper/constants";
+import { redisHealth } from "@/lib/redis";
 import { load } from "cheerio";
 import type { AxiosError } from "axios";
 import { NextResponse } from "next/server";
@@ -53,6 +54,7 @@ function cleanFirstTitle($: ReturnType<typeof load>): string {
 
 export async function GET(): Promise<NextResponse> {
   const start = performance.now();
+  const redis = await redisHealth();
   const mem = typeof process !== "undefined" && process.memoryUsage ? process.memoryUsage() : null;
   const memoryMb = mem
     ? {
@@ -74,6 +76,7 @@ export async function GET(): Promise<NextResponse> {
       latency_ms: latency,
       probes: [await probe("/page/2/")],
       memory: memoryMb,
+      redis,
       environment: process.env.NODE_ENV || "production",
       timestamp: new Date().toISOString(),
     });
@@ -88,6 +91,7 @@ export async function GET(): Promise<NextResponse> {
         latency_ms: latency,
         probes: [await probe("/page/2/")],
         memory: memoryMb,
+        redis,
         environment: process.env.NODE_ENV || "production",
         timestamp: new Date().toISOString(),
       },

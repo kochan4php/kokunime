@@ -9,7 +9,6 @@ import {
   parseAniListJson,
   importBookmarksJson,
 } from "@/utils/bookmarks";
-
 describe("bookmarks utility", () => {
   let store: Record<string, string> = {};
 
@@ -114,6 +113,28 @@ describe("bookmarks utility", () => {
     expect(parsed[0].status).toBe("watching");
     expect(parsed[0].rating).toBe(9);
     expect(parsed[0].image).toBe("https://example.com/solo.jpg");
+  });
+
+  it("maps Dropped/DROPPED statuses from MAL and AniList exports", () => {
+    const malXml = `
+      <myanimelist>
+        <anime>
+          <series_title>Tokyo Revengers</series_title>
+          <my_status>Dropped</my_status>
+        </anime>
+      </myanimelist>
+    `;
+    const parsedMal = parseMalXml(malXml);
+    expect(parsedMal[0].status).toBe("dropped");
+
+    const anilistJson = JSON.stringify([
+      {
+        media: { title: { english: "Boruto" } },
+        status: "DROPPED",
+      },
+    ]);
+    const parsedAniList = parseAniListJson(anilistJson);
+    expect(parsedAniList[0].status).toBe("dropped");
   });
 
   it("imports MAL XML file into localStorage bookmarks cleanly", async () => {

@@ -1,3 +1,5 @@
+import { redisRateLimit } from "@/lib/redis";
+
 interface RateLimitRecord {
   count: number;
   resetTime: number;
@@ -24,7 +26,7 @@ export interface RateLimitResult {
   reset: number;
 }
 
-export function checkRateLimit(identifier: string, limit = 60, windowMs = 60_000): RateLimitResult {
+function checkInMemory(identifier: string, limit: number, windowMs: number): RateLimitResult {
   const now = Date.now();
   const record = rateLimitStore.get(identifier);
 
@@ -52,6 +54,21 @@ export function checkRateLimit(identifier: string, limit = 60, windowMs = 60_000
     remaining,
     reset: Math.ceil(record.resetTime / 1000),
   };
+}
+
+export async function checkRateLimit(identifier: string, limit = 60, windowMs = 60_000): Promise<RateLimitResult> {
+  // Shared counter when REDIS_URL is set — accurate across instances/restarts.
+  const redisCount = await redisRateLimit(identifier, windowMs);
+  if (redisCount !== null) {
+    return {
+      success: redisCount <= limit,
+      limit,
+      remaining: Math.max(0, limit - redisCount),
+      reset: Math.ceil((Date.now() + windowMs) / 1000),
+    };
+  }
+
+  return checkInMemory(identifier, limit, windowMs);
 }
 
 export function getRateLimitHeaders(result: RateLimitResult): Record<string, string> {

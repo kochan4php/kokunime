@@ -31,6 +31,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         lastModified: now,
         changeFrequency: "daily",
         priority: 0.7,
+        images: item.link?.image ? [item.link.image] : undefined,
       });
     }
 
@@ -58,6 +59,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
             lastModified: now,
             changeFrequency: "daily",
             priority: 0.7,
+            images: item.link?.image ? [item.link.image] : undefined,
           });
         }
       }
@@ -79,11 +81,22 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }
 
     if (seasonsRes.status === "fulfilled") {
+      const years = new Set<string>();
       for (const season of seasonsRes.value) {
         const slug = endpointSlug(season.endpoint, "seasons");
         if (!slug) continue;
         entries.push({
           url: `${SITE_URL}/seasons/${slug}`,
+          lastModified: now,
+          changeFrequency: "weekly",
+          priority: 0.4,
+        });
+        const year = slug.match(/-(19|20)\d{2}$/)?.[0]?.slice(1);
+        if (year) years.add(year);
+      }
+      for (const year of years) {
+        entries.push({
+          url: `${SITE_URL}/years/${year}`,
           lastModified: now,
           changeFrequency: "weekly",
           priority: 0.4,

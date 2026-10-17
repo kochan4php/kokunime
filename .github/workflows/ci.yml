@@ -1,40 +1,38 @@
-﻿name: CI / CD Quality Pipeline
+﻿name: CI
 
 on:
   push:
-    branches: [ "master", "main" ]
+    branches: [main]
   pull_request:
-    branches: [ "master", "main" ]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  validate:
-    name: Lint, Test & Build
+  verify:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Setup Node.js 20
-        uses: actions/setup-node@v4
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
         with:
-          node-version: 20
-          cache: "npm"
+          node-version: 22
+          cache: pnpm
 
-      - name: Install Dependencies
-        run: npm ci
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
 
-      - name: Run ESLint
-        run: npm run lint
+      - name: Format check (biome)
+        run: pnpm format:check
 
-      - name: Check Code Formatting
-        run: npm run prettier:check
+      - name: Lint (biome)
+        run: pnpm lint
 
-      - name: Run Vitest Unit Tests
-        run: npm run test
+      - name: Unit tests (vitest)
+        run: pnpm test
 
-      - name: Build Next.js Production App
-        run: npm run build
-        env:
-          NEXT_TELEMETRY_DISABLED: 1
-          NODE_ENV: production
+      - name: Production build
+        run: pnpm build

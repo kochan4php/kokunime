@@ -189,6 +189,14 @@ export const SeasonsExplorer = ({ groups, years }: SeasonsExplorerProps): JSX.El
                         {seasonsInYear.length} Musim Rilis
                       </span>
                     </div>
+                    {/^\d{4}$/.test(year) && (
+                      <Link
+                        href={`/years/${year}`}
+                        className="font-mono text-xs font-bold text-accent underline decoration-2 underline-offset-4 transition-colors hover:text-ink"
+                      >
+                        Semua anime {year} →
+                      </Link>
+                    )}
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">

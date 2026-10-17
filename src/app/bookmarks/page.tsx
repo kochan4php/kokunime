@@ -21,12 +21,15 @@ import { JSX, useEffect, useMemo, useState, useSyncExternalStore } from "react";
 const SERVER_BOOKMARKS: BookmarkItem[] = [];
 const SERVER_HISTORY: HistoryItem[] = [];
 
+const itemTime = (item: BookmarkItem | HistoryItem): number => ("addedAt" in item ? item.addedAt : item.viewedAt);
+
 const BookmarksPage = (): JSX.Element => {
   const [activeTab, setActiveTab] = useState<"bookmarks" | "history">("bookmarks");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [statusFilter, setStatusFilter] = useState<"all" | BookmarkStatus>("all");
   const [folderFilter, setFolderFilter] = useState<string>("all");
   const [filterQuery, setFilterQuery] = useState("");
+  const [sortBy, setSortBy] = useState<"recent" | "oldest" | "title" | "rating">("recent");
   const [shareCopied, setShareCopied] = useState(false);
 
   useEffect(() => {
@@ -89,6 +92,16 @@ const BookmarksPage = (): JSX.Element => {
       `${item.title} ${(item as { notes?: string }).notes || ""} ${(item as { folder?: string }).folder || ""} ${item.slug}`.toLowerCase();
     return searchTerms.every((term) => searchableText.includes(term));
   });
+
+  const sortedItems = useMemo(() => {
+    const list = [...items];
+    if (sortBy === "title") list.sort((a, b) => a.title.localeCompare(b.title, "id"));
+    else if (sortBy === "rating")
+      list.sort((a, b) => ((b as BookmarkItem).rating ?? 0) - ((a as BookmarkItem).rating ?? 0));
+    else if (sortBy === "oldest") list.sort((a, b) => itemTime(a) - itemTime(b));
+    else list.sort((a, b) => itemTime(b) - itemTime(a));
+    return list;
+  }, [items, sortBy]);
 
   const storageStats = useMemo(() => {
     if (typeof window === "undefined") return { bytesUsed: 0, formattedUsed: "0 B", percentage: 0 };
@@ -201,6 +214,17 @@ const BookmarksPage = (): JSX.Element => {
                 >
                   ✓ Selesai ({bookmarks.filter((b) => b.status === "completed").length})
                 </button>
+                <button
+                  type="button"
+                  onClick={() => setStatusFilter("dropped")}
+                  className={`rounded-sm border-2 px-3 py-1 font-mono text-xs transition-all cursor-pointer ${
+                    statusFilter === "dropped"
+                      ? "border-border bg-accent font-bold text-(--accent-ink) shadow-[2px_2px_0_0_var(--border)]"
+                      : "border-border bg-surface text-ink-muted hover:text-ink"
+                  }`}
+                >
+                  ⛔ Drop ({bookmarks.filter((b) => b.status === "dropped").length})
+                </button>
               </div>
             )}
             {activeTab === "bookmarks" && (folders.length > 0 || bookmarks.length > 0) && (
@@ -271,6 +295,20 @@ const BookmarksPage = (): JSX.Element => {
                 className="h-8 rounded-sm border-2 border-border bg-surface px-3 text-xs text-ink outline-none transition-all placeholder:text-ink-muted focus:border-accent"
               />
             )}
+            {activeTab === "bookmarks" && bookmarks.length > 1 && (
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
+                aria-label="Urutkan daftar tersimpan"
+                title="Urutkan daftar tersimpan"
+                className="h-8 cursor-pointer rounded-sm border-2 border-border bg-surface px-2 font-mono text-xs text-ink-muted outline-none transition-all focus:border-accent"
+              >
+                <option value="recent">Terbaru</option>
+                <option value="oldest">Terlama</option>
+                <option value="title">Judul A-Z</option>
+                <option value="rating">Rating Tertinggi</option>
+              </select>
+            )}
             {activeTab === "bookmarks" && (
               <>
                 <span
@@ -324,10 +362,10 @@ const BookmarksPage = (): JSX.Element => {
           </div>
         </div>
 
-        {items.length > 0 ? (
+        {sortedItems.length > 0 ? (
           viewMode === "list" ? (
             <div className="mt-8 flex flex-col gap-2">
-              {items.map((item) => {
+              {sortedItems.map((item) => {
                 const bookmark = activeTab === "bookmarks" ? (item as BookmarkItem) : null;
                 return (
                   <div
@@ -366,6 +404,11 @@ const BookmarksPage = (): JSX.Element => {
                                   ✓ Selesai
                                 </span>
                               )}
+                              {bookmark?.status === "dropped" && (
+                                <span className="rounded-sm border border-border bg-nb-red px-1.5 font-bold text-nb-ink">
+                                  ⛔ Drop
+                                </span>
+                              )}
                               {bookmark?.rating && <span>• ⭐ {bookmark.rating}/10</span>}
                               {bookmark?.folder && <span>• 📁 {bookmark.folder}</span>}
                             </>
@@ -389,7 +432,7 @@ const BookmarksPage = (): JSX.Element => {
             </div>
           ) : (
             <div className="nb-cycle mt-8 grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-2.5 md:grid-cols-5 md:gap-3 lg:grid-cols-5 lg:gap-3.5 xl:grid-cols-6 2xl:grid-cols-6">
-              {items.map((item, index) => {
+              {sortedItems.map((item, index) => {
                 const bookmark = activeTab === "bookmarks" ? (item as BookmarkItem) : null;
                 return (
                   <div key={item.slug} className="group relative flex flex-col">
@@ -406,7 +449,9 @@ const BookmarksPage = (): JSX.Element => {
                                 ? "📺 Sedang Nonton"
                                 : bookmark?.status === "completed"
                                   ? "✓ Selesai"
-                                  : "📌 Tersimpan"
+                                  : bookmark?.status === "dropped"
+                                    ? "⛔ Drop"
+                                    : "📌 Tersimpan"
                             }`
                           : item.release || "Dilihat"
                       }

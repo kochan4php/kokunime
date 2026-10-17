@@ -36,3 +36,6 @@ yarn-error.log*
 next-env.d.ts
 graphify-out/cache
 graphify-out/*root
+
+# local setup notes (never commit)
+/SETUP.local.md

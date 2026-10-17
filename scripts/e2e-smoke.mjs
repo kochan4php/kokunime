@@ -27,6 +27,11 @@ async function runSmokeTests() {
   }
 
   console.log(`\n📊 Smoke Test Summary: ${passed}/${routes.length} passed.`);
+
+  // Non-zero exit when anything fails, so CI canary jobs can detect it.
+  if (passed !== routes.length) {
+    process.exitCode = 1;
+  }
 }
 
 runSmokeTests();

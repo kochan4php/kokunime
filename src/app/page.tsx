@@ -1,5 +1,6 @@
 import HomeContent from "@/sections/home-content";
 import HomeSkeleton from "@/sections/home-skeleton";
+import RecommendForYou from "@/components/recommend-for-you";
 import MainLayout from "@/layouts/main-layout";
 import { Metadata } from "next";
 import { JSX, Suspense } from "react";
@@ -23,6 +24,7 @@ const Home = async (): Promise<JSX.Element> => {
       <Suspense fallback={<HomeSkeleton />}>
         <HomeContent page={1} basePath="/page" />
       </Suspense>
+      <RecommendForYou />
     </MainLayout>
   );
 };
