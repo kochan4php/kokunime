@@ -85,6 +85,36 @@ const writeSavedMeta = async (list) => {
   await cache.put(SAVED_META_URL, new Response(JSON.stringify(list), { headers: { "content-type": "application/json" } }));
 };
 
+const MAX_SAVED = 60;
+
+// Newest-first list. Pins survive the cap; when only unpinned entries remain
+// to evict and none are left, the oldest unpinned go first.
+const capSavedEntries = async (cache, list) => {
+  if (list.length <= MAX_SAVED) return list;
+  const pinnedCount = list.filter((item) => item.pinned).length;
+  const budget = Math.max(0, MAX_SAVED - pinnedCount);
+  let keptUnpinned = 0;
+  const keep = [];
+  const evicted = [];
+  for (const item of list) {
+    if (item.pinned) {
+      keep.push(item);
+    } else if (keptUnpinned < budget) {
+      keep.push(item);
+      keptUnpinned += 1;
+    } else {
+      evicted.push(item);
+    }
+  }
+  for (const item of evicted) {
+    await cache.delete(item.url);
+    for (const target of item.apiUrls ?? []) await cache.delete(target);
+    for (const target of item.imageUrls ?? []) await cache.delete(target);
+  }
+  if (evicted.length > 0) broadcast({ type: "kokunime:offline-evicted", count: evicted.length });
+  return keep;
+};
+
 const saveOffline = async ({ url, title, apiUrls = [], imageUrls = [] }) => {
   const cache = await caches.open(SAVED_CACHE);
   const targets = [url, ...apiUrls, ...imageUrls];
@@ -109,8 +139,8 @@ const saveOffline = async ({ url, title, apiUrls = [], imageUrls = [] }) => {
   const next = [
     { url, title, addedAt: Date.now(), apiUrls, imageUrls },
     ...meta.filter((item) => item.url !== url),
-  ].slice(0, 60);
-  await writeSavedMeta(next);
+  ];
+  await writeSavedMeta(await capSavedEntries(cache, next));
   return true;
 };
 
@@ -146,15 +176,22 @@ const refreshEntry = async (cache, item) => {
 // Background refresh (Sync / Periodic Sync, Chromium): re-fetch every saved
 // page so return visits get fresh copies before going offline again.
 const refreshSaved = async () => {
+  // Metered connections: skip all background fetching — the user can still
+  // refresh explicitly. (Network Information API is Chromium-only.)
+  try {
+    if (self.navigator?.connection?.saveData) return;
+  } catch {
+    // Unsupported — proceed.
+  }
+
   const meta = await readSavedMeta();
-  if (meta.length === 0) return;
-  const cache = await caches.open(SAVED_CACHE);
+  const cache = meta.length > 0 ? await caches.open(SAVED_CACHE) : null;
   const refreshed = [];
   for (const item of meta) {
     if (await refreshEntry(cache, item)) refreshed.push({ ...item, refreshedAt: Date.now() });
     else refreshed.push(item);
   }
-  await writeSavedMeta(refreshed);
+  if (refreshed.length > 0) await writeSavedMeta(refreshed);
 
   // Keep the shell APIs warm in the SWR cache so the next offline visit has
   // fresh data for the rails/inbox instead of whatever was cached at save time.
@@ -167,10 +204,23 @@ const refreshSaved = async () => {
       // Offline — the previous copy stays.
     }
   }
+
+  // "/update" feeds the release inbox scan, "/" carries the current-season
+  // rail; cached as documents so the next offline visit still shows them.
+  const pagesCache = await caches.open(PAGES_CACHE);
+  for (const page of SHELL_PAGES) {
+    try {
+      const response = await fetch(page, { cache: "no-cache", headers: { accept: "text/html" } });
+      if (response.ok) await pagesCache.put(page, response);
+    } catch {
+      // Offline — the previous copy stays.
+    }
+  }
 };
 
 // Shell APIs refreshed by sync/periodicsync (see refreshSaved).
-const SHELL_APIS = ["/api/live", "/api/trending"];
+const SHELL_APIS = ["/api/live", "/api/trending", "/api/seasons"];
+const SHELL_PAGES = ["/", "/update"];
 
 const pruneCache = async (name) => {
   const maxEntries = CACHE_CAPS[name] ?? 100;
@@ -319,6 +369,20 @@ self.addEventListener("message", (event) => {
         if (refreshed > 0) broadcast({ type: "kokunime:offline-list-changed" });
       })(),
     );
+  } else if (data.type === "kokunime:pin-offline") {
+    event.waitUntil(
+      (async () => {
+        const meta = await readSavedMeta();
+        const next = meta.map((item) => (item.url === data.url ? { ...item, pinned: data.pinned === true } : item));
+        await writeSavedMeta(next);
+        reply({ type: "kokunime:pin-result", ok: true, url: data.url });
+        broadcast({ type: "kokunime:offline-list-changed" });
+      })(),
+    );
+  } else if (data.type === "kokunime:skip-waiting") {
+    // "Perbarui sekarang" from settings: activate this worker immediately. The
+    // page reloads on controllerchange.
+    event.waitUntil(self.skipWaiting());
   } else if (data.type === "kokunime:queue-track") {
     event.waitUntil(
       enqueueRequest({ url: "/api/track-view", body: data.body, at: Date.now() }).then(() => {

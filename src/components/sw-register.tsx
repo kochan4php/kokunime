@@ -4,6 +4,27 @@ import { recordDiagnostic } from "@/utils/diagnostics";
 import { showToast } from "@/utils/toast";
 import { useEffect } from "react";
 
+// Periodic background sync (Chromium + installed PWA): lets the worker refresh
+// saved pages and the inbox/season feeds while the app is closed. Installation-
+// gated, so unsupported or denied browsers silently keep the online-visit path.
+const registerPeriodicSync = (registration: ServiceWorkerRegistration): void => {
+  const periodic = (
+    registration as ServiceWorkerRegistration & {
+      periodicSync?: { register: (tag: string, options: { minInterval: number }) => Promise<void> };
+    }
+  ).periodicSync;
+  if (!periodic?.register) return;
+  navigator.permissions
+    ?.query({ name: "periodic-background-sync" as PermissionName })
+    .then((status) => {
+      if (status.state !== "granted") return;
+      return periodic.register("kokunime-refresh-saved", { minInterval: 12 * 60 * 60 * 1000 });
+    })
+    .catch(() => {
+      // Unsupported or denied — the online-visit refresh still runs.
+    });
+};
+
 const ServiceWorkerRegister = (): null => {
   useEffect(() => {
     if (typeof window === "undefined" || !("serviceWorker" in navigator)) return;
@@ -54,6 +75,7 @@ const ServiceWorkerRegister = (): null => {
         .register(`/sw.js?v=${buildId}`)
         .then((reg) => {
           recordDiagnostic("sw", `Terdaftar build=${buildId}`);
+          registerPeriodicSync(reg);
           reg.update().catch(() => {});
         })
         .catch(() => {});

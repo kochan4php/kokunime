@@ -2,13 +2,20 @@
 
 import MainLayout from "@/layouts/main-layout";
 import Link from "next/link";
-import { JSX, useCallback, useEffect, useState } from "react";
+import { JSX, useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "@/utils/i18n";
+import { searchLocalCatalog } from "@/utils/local-catalog";
 import {
+  clearRollingCache,
+  estimateOfflineBatch,
+  isQuotaTight,
   listSavedOffline,
   refreshOfflineSaved,
   removeOfflineEntry,
+  saveOfflineBatch,
+  setOfflinePinned,
   subscribeOfflineSaved,
+  type RollingCacheKind,
   type SavedOfflineEntry,
 } from "@/utils/offline-saved";
 import { showToast } from "@/utils/toast";
@@ -29,6 +36,9 @@ const OfflinePage = (): JSX.Element => {
   const [online, setOnline] = useState(true);
   const [busy, setBusy] = useState<string | null>(null);
   const [storageText, setStorageText] = useState("");
+  const [query, setQuery] = useState("");
+  const [saving, setSaving] = useState<{ done: number; total: number } | null>(null);
+  const [quotaWarning, setQuotaWarning] = useState(false);
 
   useEffect(() => {
     let active = true;
@@ -36,6 +46,16 @@ const OfflinePage = (): JSX.Element => {
     const refresh = async () => {
       const list = await listSavedOffline();
       if (active) setEntries(list);
+      navigator.storage
+        ?.estimate?.()
+        .then((estimate) => {
+          if (!active || !estimate?.quota) return;
+          setQuotaWarning(isQuotaTight(estimate.usage ?? 0, estimate.quota));
+          if (estimate.usage) setStorageText(`${(estimate.usage / 1024 / 1024).toFixed(1)} MB`);
+        })
+        .catch(() => {
+          // Estimate unsupported — the line simply stays hidden.
+        });
     };
     refresh();
     const unsubscribe = subscribeOfflineSaved(refresh);
@@ -45,16 +65,6 @@ const OfflinePage = (): JSX.Element => {
     window.addEventListener("online", updateOnline);
     window.addEventListener("offline", updateOnline);
 
-    navigator.storage
-      ?.estimate?.()
-      .then((estimate) => {
-        if (!active || !estimate?.usage) return;
-        setStorageText(`${(estimate.usage / 1024 / 1024).toFixed(1)} MB`);
-      })
-      .catch(() => {
-        // Estimate unsupported — the line simply stays hidden.
-      });
-
     return () => {
       active = false;
       unsubscribe();
@@ -63,9 +73,45 @@ const OfflinePage = (): JSX.Element => {
     };
   }, []);
 
+  const results = useMemo(() => {
+    const trimmed = query.trim();
+    return trimmed ? searchLocalCatalog(trimmed, 8).items : [];
+  }, [query]);
+  const savedUrls = useMemo(() => new Set(entries.map((entry) => entry.url)), [entries]);
+
   const remove = async (url: string): Promise<void> => {
     await removeOfflineEntry(url);
     setEntries((prev) => prev.filter((entry) => entry.url !== url));
+  };
+
+  const togglePin = async (entry: SavedOfflineEntry): Promise<void> => {
+    const ok = await setOfflinePinned(entry.url, !entry.pinned);
+    if (!ok) return;
+    setEntries((prev) => prev.map((item) => (item.url === entry.url ? { ...item, pinned: !entry.pinned } : item)));
+  };
+
+  const saveResults = async (): Promise<void> => {
+    if (saving || results.length === 0) return;
+    const estimate = await estimateOfflineBatch(results.length);
+    const targets = results.slice(0, estimate.affordable);
+    if (targets.length === 0) {
+      showToast(t("offline.quota_full"));
+      return;
+    }
+    setSaving({ done: 0, total: targets.length });
+    try {
+      const saved = await saveOfflineBatch(targets, (done, total) => setSaving({ done, total }));
+      setEntries(await listSavedOffline());
+      showToast(saved > 0 ? t("offline.save_all_done") : t("offline.failed_toast"));
+      if (targets.length < results.length || saved < targets.length) showToast(t("offline.save_all_limited"));
+    } finally {
+      setSaving(null);
+    }
+  };
+
+  const clearCache = async (kind: RollingCacheKind): Promise<void> => {
+    const cleared = await clearRollingCache(kind);
+    showToast(cleared > 0 ? t("offline.cache_cleared") : t("offline.cache_already_clear"));
   };
 
   const refreshEntries = useCallback(
@@ -128,6 +174,69 @@ const OfflinePage = (): JSX.Element => {
         </div>
 
         <div className="mx-auto mt-12 max-w-2xl">
+          <h2 className="font-display text-lg font-extrabold uppercase tracking-tight text-ink">
+            {t("offline.search_title")}
+          </h2>
+          <p className="mt-1 mb-3 text-xs leading-relaxed text-ink-muted">{t("offline.search_hint")}</p>
+          <label htmlFor="offline-search" className="sr-only">
+            {t("offline.search_title")}
+          </label>
+          <div className="flex flex-col gap-2 sm:flex-row">
+            <input
+              id="offline-search"
+              type="search"
+              value={query}
+              onChange={(event) => setQuery(event.target.value)}
+              placeholder={t("offline.search_placeholder")}
+              autoComplete="off"
+              className="min-w-0 flex-1 rounded-sm border-2 border-border bg-surface px-3 py-2 font-mono text-xs text-ink placeholder:text-ink-muted focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-text"
+            />
+            <button
+              type="button"
+              onClick={() => void saveResults()}
+              disabled={!online || results.length === 0 || saving !== null}
+              className="inline-flex min-h-9 items-center justify-center rounded-sm border-2 border-border bg-nb-lime px-3 font-mono text-[11px] font-bold text-nb-ink shadow-[2px_2px_0_0_var(--border)] transition-all motion-safe:hover:-translate-y-0.5 active:translate-y-0 active:shadow-none disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              {saving
+                ? `${t("offline.saving")} ${saving.done}/${saving.total}`
+                : `${t("offline.save_all")} (${results.length})`}
+            </button>
+          </div>
+          {query.trim() !== "" && results.length === 0 && (
+            <p className="mt-3 rounded-sm border-2 border-border bg-surface px-3 py-2 text-xs text-ink-muted">
+              {t("offline.search_empty")}
+            </p>
+          )}
+          {results.length > 0 && (
+            <ul className="mt-3 space-y-1.5">
+              {results.map((item) => {
+                const url = `/anime/${item.slug}`;
+                return (
+                  <li
+                    key={item.slug}
+                    className="flex items-center justify-between gap-2 rounded-sm border-2 border-border bg-surface px-2.5 py-1.5"
+                  >
+                    <Link
+                      href={url}
+                      className="min-w-0 truncate text-xs font-bold text-ink transition-colors hover:text-accent-text"
+                    >
+                      {item.title}
+                    </Link>
+                    {savedUrls.has(url) ? (
+                      <span className="shrink-0 rounded-sm border border-border bg-nb-lime px-1.5 font-mono text-[10px] font-bold text-nb-ink">
+                        {t("offline.saved_badge")}
+                      </span>
+                    ) : (
+                      <span className="shrink-0 font-mono text-[10px] text-ink-muted">{item.release}</span>
+                    )}
+                  </li>
+                );
+              })}
+            </ul>
+          )}
+        </div>
+
+        <div className="mx-auto mt-12 max-w-2xl">
           <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
             <h2 className="font-display text-lg font-extrabold uppercase tracking-tight text-ink">
               {t("offline.saved_title")}
@@ -144,8 +253,30 @@ const OfflinePage = (): JSX.Element => {
             )}
           </div>
           {storageText && (
-            <p className="mb-3 font-mono text-[11px] text-ink-muted">
+            <p className="mb-2 font-mono text-[11px] text-ink-muted">
               {t("offline.storage_used")} · {storageText}
+            </p>
+          )}
+          <div className="mb-3 flex flex-wrap items-center gap-2 font-mono text-[10px]">
+            <span className="text-ink-muted">{t("offline.clear_cache")}:</span>
+            <button
+              type="button"
+              onClick={() => void clearCache("pages")}
+              className="inline-flex min-h-6 items-center rounded-sm border border-border bg-surface px-1.5 font-bold text-ink-muted transition-colors hover:bg-nb-yellow hover:text-nb-ink"
+            >
+              {t("offline.clear_pages")}
+            </button>
+            <button
+              type="button"
+              onClick={() => void clearCache("api")}
+              className="inline-flex min-h-6 items-center rounded-sm border border-border bg-surface px-1.5 font-bold text-ink-muted transition-colors hover:bg-nb-yellow hover:text-nb-ink"
+            >
+              {t("offline.clear_api")}
+            </button>
+          </div>
+          {quotaWarning && (
+            <p className="mb-3 rounded-sm border-2 border-border bg-nb-orange px-3 py-2 text-xs font-bold text-nb-ink">
+              {t("offline.quota_warning")}
             </p>
           )}
           {entries.length === 0 ? (
@@ -173,6 +304,14 @@ const OfflinePage = (): JSX.Element => {
                   <div className="mt-2 flex flex-wrap gap-2">
                     <button
                       type="button"
+                      onClick={() => void togglePin(entry)}
+                      aria-pressed={Boolean(entry.pinned)}
+                      className="inline-flex min-h-6 items-center rounded-sm border-2 border-border bg-surface px-2 font-mono text-[11px] font-bold text-ink transition-colors hover:bg-nb-lime hover:text-nb-ink"
+                    >
+                      {entry.pinned ? t("offline.unpin") : t("offline.pin")}
+                    </button>
+                    <button
+                      type="button"
                       onClick={() => refreshEntries(entry.url)}
                       disabled={!online || busy === entry.url}
                       className="inline-flex min-h-6 items-center rounded-sm border-2 border-border bg-surface px-2 font-mono text-[11px] font-bold text-ink transition-colors hover:bg-nb-lime hover:text-nb-ink disabled:opacity-60"
@@ -190,6 +329,9 @@ const OfflinePage = (): JSX.Element => {
                 </li>
               ))}
             </ul>
+          )}
+          {entries.length > 0 && (
+            <p className="mt-3 font-mono text-[10px] leading-relaxed text-ink-muted">{t("offline.eviction_note")}</p>
           )}
         </div>
       </section>

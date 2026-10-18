@@ -134,6 +134,9 @@ export const DICTIONARY_ID = {
   "settings.check_update": "Periksa pembaruan",
   "settings.update_checked": "Pembaruan diperiksa — bila ada versi baru, tawaran muat ulang akan muncul.",
   "settings.update_unavailable": "Pemeriksaan pembaruan hanya tersedia di build produksi.",
+  "settings.update_now": "Perbarui sekarang",
+  "settings.update_now_applying": "Menerapkan versi baru — halaman akan dimuat ulang.",
+  "settings.update_now_none": "Tidak ada pembaruan baru — versi terbaru sudah aktif.",
   "settings.render_engine": "Engine Render",
   "settings.offline_app": "Aplikasi Offline",
   "settings.pwa_ready": "PWA Ready (SW Active)",
@@ -228,6 +231,28 @@ export const DICTIONARY_ID = {
   "offline.storage_used": "Penyimpanan terpakai",
   "offline.online": "Online",
   "offline.offline": "Mode Offline",
+  "offline.search_title": "Cari & Simpan",
+  "offline.search_placeholder": "Cari judul di katalog lokal…",
+  "offline.search_hint":
+    "Katalog lokal terbentuk dari halaman yang pernah Anda buka. Pencarian tetap jalan tanpa internet.",
+  "offline.search_empty":
+    "Belum ada judul yang cocok di katalog lokal. Buka beranda atau pencarian sekali saat online.",
+  "offline.save_all": "Simpan",
+  "offline.saving": "Menyimpan…",
+  "offline.save_all_done": "Hasil terpilih sudah disimpan untuk offline.",
+  "offline.save_all_limited": "Sebagian dilewati karena ruang penyimpanan hampir penuh.",
+  "offline.quota_full": "Ruang penyimpanan tidak cukup untuk menyimpan hasil ini.",
+  "offline.saved_badge": "Tersimpan",
+  "offline.pin": "Sematkan",
+  "offline.unpin": "Lepas sematan",
+  "offline.eviction_note": "Maksimal 60 halaman tersimpan. Simpanan terlama dihapus otomatis, kecuali yang disematkan.",
+  "offline.clear_cache": "Bersihkan cache",
+  "offline.clear_pages": "Halaman",
+  "offline.clear_api": "API",
+  "offline.cache_cleared": "Cache dibersihkan.",
+  "offline.cache_already_clear": "Cache sudah kosong.",
+  "offline.quota_warning":
+    "Penyimpanan hampir penuh. Hapus simpanan atau cache agar pembaruan offline berikutnya tetap muat.",
 
   // Print / QR (detail page)
   "print_qr.title": "Cetak & Pindai",

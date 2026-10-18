@@ -9,6 +9,7 @@ import { JSX, useState } from "react";
 const SettingsAboutSection = (): JSX.Element => {
   const { t } = useTranslation();
   const [checking, setChecking] = useState(false);
+  const [updating, setUpdating] = useState(false);
   const buildId = process.env.NEXT_PUBLIC_BUILD_ID ?? "dev";
 
   // Honest update check: ask the browser to re-fetch /sw.js. When a new worker
@@ -32,6 +33,46 @@ const SettingsAboutSection = (): JSX.Element => {
       showToast(t("settings.update_unavailable"));
     } finally {
       setChecking(false);
+    }
+  };
+
+  // Applies the update instead of only checking: the worker activates at once
+  // (skipWaiting) and the page reloads on controllerchange. When no new worker
+  // arrives within a short window the browser is already on the latest build.
+  const updateNow = async (): Promise<void> => {
+    if (typeof navigator === "undefined" || !("serviceWorker" in navigator)) {
+      showToast(t("settings.update_unavailable"));
+      return;
+    }
+    setUpdating(true);
+    try {
+      const registration = await navigator.serviceWorker.getRegistration();
+      if (!registration) {
+        showToast(t("settings.update_unavailable"));
+        return;
+      }
+      if (registration.waiting) {
+        showToast(t("settings.update_now_applying"));
+        registration.waiting.postMessage({ type: "kokunime:skip-waiting" });
+        return;
+      }
+      let applied = false;
+      const onControllerChange = (): void => {
+        applied = true;
+        showToast(t("settings.update_now_applying"));
+        window.location.reload();
+      };
+      navigator.serviceWorker.addEventListener("controllerchange", onControllerChange, { once: true });
+      await registration.update();
+      // skipWaiting makes activation quick; give it a moment before concluding
+      // that this build is already the latest.
+      await new Promise((resolve) => window.setTimeout(resolve, 3_000));
+      navigator.serviceWorker.removeEventListener("controllerchange", onControllerChange);
+      if (!applied) showToast(t("settings.update_now_none"));
+    } catch {
+      showToast(t("settings.update_unavailable"));
+    } finally {
+      setUpdating(false);
     }
   };
 
@@ -64,6 +105,14 @@ const SettingsAboutSection = (): JSX.Element => {
               </button>
             </span>
           </div>
+          <button
+            type="button"
+            onClick={() => void updateNow()}
+            disabled={updating}
+            className="w-full rounded-sm border-2 border-border bg-nb-yellow px-2 py-1 text-center font-bold text-nb-ink transition-colors hover:bg-nb-orange disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {updating ? t("settings.update_now_applying") : t("settings.update_now")}
+          </button>
           <div className="flex items-center justify-between p-2 rounded-sm bg-surface border-2 border-border">
             <span className="text-ink-muted">{t("settings.render_engine")}</span>
             <span className="font-bold text-ink">React 19 Server Components</span>

@@ -5,13 +5,41 @@ export interface SavedOfflineEntry {
   title: string;
   addedAt: number;
   refreshedAt?: number;
+  pinned?: boolean;
   apiUrls?: string[];
   imageUrls?: string[];
 }
 
 const SAVED_CACHE = "kokunime-saved";
 const SAVED_META_URL = "/__saved-offline";
+const MAX_SAVED_OFFLINE = 60;
 const OFFLINE_LIST_EVENT = "kokunime:offline-list-changed";
+
+// CacheStorage insertion order is the LRU stand-in: callers pass entries
+// newest-first. Pins are never evicted, even beyond the cap — the UI shows the
+// storage warning instead of silently dropping a deliberate save.
+export const evictSavedEntries = (
+  list: SavedOfflineEntry[],
+  cap = MAX_SAVED_OFFLINE,
+): { keep: SavedOfflineEntry[]; evicted: SavedOfflineEntry[] } => {
+  if (list.length <= cap) return { keep: list, evicted: [] };
+  const pinnedCount = list.filter((entry) => entry.pinned).length;
+  const budget = Math.max(0, cap - pinnedCount);
+  let unpinnedKept = 0;
+  const keep: SavedOfflineEntry[] = [];
+  const evicted: SavedOfflineEntry[] = [];
+  for (const entry of list) {
+    if (entry.pinned) {
+      keep.push(entry);
+    } else if (unpinnedKept < budget) {
+      keep.push(entry);
+      unpinnedKept += 1;
+    } else {
+      evicted.push(entry);
+    }
+  }
+  return { keep, evicted };
+};
 
 type SwMessage = { type?: string } & Record<string, unknown>;
 
@@ -94,9 +122,16 @@ export const saveOfflineEntry = async (entry: {
     }
     if (saved === 0) return false;
     const meta = await readMetaDirect();
-    await writeMetaDirect(
-      [{ ...entry, addedAt: Date.now() }, ...meta.filter((item) => item.url !== entry.url)].slice(0, 60),
-    );
+    const { keep, evicted } = evictSavedEntries([
+      { ...entry, addedAt: Date.now() },
+      ...meta.filter((item) => item.url !== entry.url),
+    ]);
+    await writeMetaDirect(keep);
+    for (const removed of evicted) {
+      await cache.delete(removed.url);
+      for (const target of removed.apiUrls ?? []) await cache.delete(target);
+      for (const target of removed.imageUrls ?? []) await cache.delete(target);
+    }
     return true;
   } catch {
     return false;
@@ -163,6 +198,99 @@ export const refreshOfflineSaved = async (url?: string): Promise<boolean> => {
   } catch {
     return false;
   }
+};
+
+export const setOfflinePinned = async (url: string, pinned: boolean): Promise<boolean> => {
+  if (!("caches" in window)) return false;
+  const viaWorker = await askServiceWorker({ type: "kokunime:pin-offline", url, pinned }, "kokunime:pin-result", 3_000);
+  if (viaWorker) return viaWorker.ok === true;
+
+  try {
+    const meta = await readMetaDirect();
+    await writeMetaDirect(meta.map((item) => (item.url === url ? { ...item, pinned } : item)));
+    return true;
+  } catch {
+    return false;
+  }
+};
+
+interface OfflineBatchEstimate {
+  estimatedBytes: number;
+  remainingBytes: number;
+  affordable: number;
+}
+
+// Quota warning threshold shared by the hub: 80% of the origin quota.
+export const isQuotaTight = (usage: number, quota: number): boolean => quota > 0 && usage / quota >= 0.8;
+
+// Rough per-entry cost: the page shell plus two API payloads. Posters are only
+// cached when they are same-origin optimizer URLs, so they are left out.
+const PER_ENTRY_BYTES = 180 * 1024;
+
+export const estimateOfflineBatch = async (count: number): Promise<OfflineBatchEstimate> => {
+  let quota = 0;
+  let usage = 0;
+  try {
+    const estimate = await navigator.storage?.estimate?.();
+    quota = estimate?.quota ?? 0;
+    usage = estimate?.usage ?? 0;
+  } catch {
+    // Estimate unsupported — treat the whole batch as affordable.
+  }
+  const remainingBytes = quota > 0 ? Math.max(0, quota - usage) : Number.POSITIVE_INFINITY;
+  const affordable = quota > 0 ? Math.min(count, Math.floor(remainingBytes / PER_ENTRY_BYTES)) : count;
+  return { estimatedBytes: count * PER_ENTRY_BYTES, remainingBytes, affordable };
+};
+
+const waitForIdle = (): Promise<void> =>
+  new Promise((resolve) => {
+    const ric = (
+      window as Window & {
+        requestIdleCallback?: (callback: () => void, options?: { timeout: number }) => number;
+      }
+    ).requestIdleCallback;
+    if (ric) ric(() => resolve(), { timeout: 2_000 });
+    else window.setTimeout(resolve, 0);
+  });
+
+interface OfflineBatchItem {
+  slug: string;
+  title: string;
+}
+
+// One entry per idle slice so a bulk save never blocks scrolling; stops when
+// the connection drops (the remaining entries can be retried later).
+export const saveOfflineBatch = async (
+  items: OfflineBatchItem[],
+  onProgress?: (done: number, total: number) => void,
+): Promise<number> => {
+  let saved = 0;
+  for (const [index, item] of items.entries()) {
+    if (!navigator.onLine) break;
+    const ok = await saveOfflineEntry({
+      url: `/anime/${item.slug}`,
+      title: item.title,
+      apiUrls: [`/api/anime/${item.slug}`, `/api/anime/${item.slug}/download`],
+    });
+    if (ok) saved += 1;
+    onProgress?.(index + 1, items.length);
+    await waitForIdle();
+  }
+  return saved;
+};
+
+export type RollingCacheKind = "pages" | "api";
+
+// Clears the rolling navigation/API caches only — never the explicit saves.
+export const clearRollingCache = async (kind: RollingCacheKind): Promise<number> => {
+  if (!("caches" in window)) return 0;
+  const prefix = `kokunime-${kind}-`;
+  const keys = await caches.keys();
+  let cleared = 0;
+  for (const key of keys) {
+    if (key.startsWith(prefix) && (await caches.delete(key))) cleared += 1;
+  }
+  return cleared;
 };
 
 export const subscribeOfflineSaved = (listener: () => void): (() => void) => {
