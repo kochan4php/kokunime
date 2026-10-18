@@ -30,7 +30,7 @@ const Home = async (): Promise<JSX.Element> => {
         <HomeHeroSection />
       </Suspense>
       <TrendingRail />
-      <Suspense fallback={<ListingSkeleton />}>
+      <Suspense fallback={<ListingSkeleton className="py-16 md:py-24" />}>
         <HomeLatestSection page={1} basePath="/page" />
       </Suspense>
       <RecommendationSection />

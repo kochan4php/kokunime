@@ -5,9 +5,10 @@ import { JSX } from "react";
 export default function Loading(): JSX.Element {
   return (
     <MainLayout>
-      <section className="container px-4 pt-6 pb-8 md:pt-10 md:pb-16">
-        <ListingSkeleton />
-      </section>
+      <div className="container px-4 pt-4">
+        <div className="skeleton h-4 w-40 rounded-sm" />
+      </div>
+      <ListingSkeleton />
     </MainLayout>
   );
 }

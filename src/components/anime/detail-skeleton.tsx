@@ -4,6 +4,7 @@ import { JSX } from "react";
 
 const DetailSkeleton = (): JSX.Element => (
   <>
+    <div className="skeleton mb-6 h-4 w-44 max-w-[70vw] rounded-sm" />
     <DetailHeroSkeleton />
     <div className="mt-8 grid gap-6 lg:grid-cols-[1fr_360px]">
       <div className="card-shell">
