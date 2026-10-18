@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { recordDiagnostic } from "@/utils/diagnostics";
 import { JSX, useSyncExternalStore } from "react";
 
 const subscribeOnline = (callback: () => void) => {
@@ -23,6 +24,7 @@ const subscribeCacheServed = (callback: () => void) => {
   const onMessage = (event: MessageEvent) => {
     if ((event.data as { type?: string } | null)?.type === "kokunime:served-from-cache") {
       servedFromCache = true;
+      recordDiagnostic("cache", "Halaman dilayani dari cache offline");
       callback();
     }
   };

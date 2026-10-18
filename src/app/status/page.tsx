@@ -1,4 +1,5 @@
 import MainLayout from "@/layouts/main-layout";
+import DeviceDiagnostics from "@/components/device-diagnostics";
 import SectionHeader from "@/components/section-header";
 import { getErrorBudget, getUptimeRollup } from "@/lib/uptime";
 import { SITE_URL } from "@/lib/site";
@@ -151,6 +152,10 @@ const StatusPage = async (): Promise<JSX.Element> => {
             Belum ada data probe — Redis tidak dikonfigurasi di lingkungan ini, atau probe baru dipasang.
           </p>
         )}
+
+        <div className="mt-8">
+          <DeviceDiagnostics />
+        </div>
       </section>
     </MainLayout>
   );

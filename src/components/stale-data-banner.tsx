@@ -1,5 +1,6 @@
 "use client";
 
+import { recordDiagnostic } from "@/utils/diagnostics";
 import { JSX, useEffect, useState } from "react";
 
 // The service worker reports when a fetch could not be refreshed (or came back
@@ -16,6 +17,7 @@ const StaleDataBanner = (): JSX.Element | null => {
       if (data?.type === "kokunime:data-stale") {
         setAt(data.at ?? new Date().toISOString());
         setDismissed(false);
+        recordDiagnostic("cache", "Service worker melaporkan data mungkin basi");
       } else if (data?.type === "kokunime:data-fresh") {
         setAt(null);
       }

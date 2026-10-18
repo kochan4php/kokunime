@@ -1,5 +1,6 @@
 "use client";
 
+import { recordDiagnostic } from "@/utils/diagnostics";
 import { showToast } from "@/utils/toast";
 import { useEffect } from "react";
 
@@ -39,6 +40,7 @@ const ServiceWorkerRegister = (): null => {
       const onControllerChange = (): void => {
         if (!hadController || refreshOffered) return;
         refreshOffered = true;
+        recordDiagnostic("sw", "Versi baru menguasai halaman");
         showToast("Versi baru Kokunime siap.", {
           actionLabel: "Muat ulang",
           onAction: () => window.location.reload(),
@@ -51,6 +53,7 @@ const ServiceWorkerRegister = (): null => {
       navigator.serviceWorker
         .register(`/sw.js?v=${buildId}`)
         .then((reg) => {
+          recordDiagnostic("sw", `Terdaftar build=${buildId}`);
           reg.update().catch(() => {});
         })
         .catch(() => {});

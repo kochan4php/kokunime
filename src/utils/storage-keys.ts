@@ -11,6 +11,7 @@ export const STORAGE_KEYS = {
   watchHistory: "kokunime_watch_history",
   recentSearches: "kokunime_recent_searches",
   settingsChanged: "kokunime_settings_changed",
+  diagnostics: "kokunime_diagnostics",
   releaseUnread: "kokunime_release_unread",
   releaseSeen: "kokunime_release_seen",
   pwaDismissed: "kokunime_pwa_dismissed",

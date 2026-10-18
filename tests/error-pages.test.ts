@@ -21,9 +21,12 @@ describe("error pages never leak internals", () => {
     }
   });
 
-  it("route error reports only the digest + message to the logger endpoint", () => {
+  it("route error reports only the digest + message (+ scrubbed local diagnostics)", () => {
     const source = read("src/components/route-error.tsx");
     expect(source).toContain("digest: error?.digest");
     expect(source).toContain('message: error?.message || "Unknown client error"');
+    // The local ring buffer rides along — it is scrubbed in utils/diagnostics
+    // and capped, and the endpoint truncates it before it reaches the webhook.
+    expect(source).toContain("context: formatDiagnostics()");
   });
 });

@@ -1,6 +1,7 @@
 "use client";
 
 import { useReportWebVitals } from "next/web-vitals";
+import { recordDiagnostic } from "@/utils/diagnostics";
 import { VITALS_THRESHOLDS, type VitalName } from "@/lib/vitals-thresholds";
 import { JSX, useState } from "react";
 
@@ -13,6 +14,13 @@ const WebVitals = (): JSX.Element | null => {
 
   useReportWebVitals((metric) => {
     if (typeof window === "undefined") return;
+
+    // The device-local ring buffer keeps the three budgeted vitals per page —
+    // that is what "Salin diagnostik" and error reports carry.
+    if (metric.name === "LCP" || metric.name === "CLS" || metric.name === "INP") {
+      const rounded = metric.name === "CLS" ? metric.value.toFixed(3) : `${Math.round(metric.value)}ms`;
+      recordDiagnostic("vital", `${metric.name}=${rounded} di ${window.location.pathname}`);
+    }
 
     // Dev-only budget warning: a regression shows up in the console while it
     // is still cheap to fix. Production stays silent (server alerts instead).

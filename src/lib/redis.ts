@@ -1,4 +1,5 @@
 import { incrementMetric } from "./metrics";
+import { decodeCacheValue, encodeCacheValue } from "./cache-codec";
 import { createClient } from "redis";
 
 // Optional shared Redis layer. Everything is env-gated on REDIS_URL:
@@ -61,7 +62,7 @@ export async function redisGet(key: string): Promise<unknown | null> {
   if (!c) return null;
   try {
     const raw = await c.get(`${KEY_PREFIX}cache:${key}`);
-    return raw ? (JSON.parse(raw) as unknown) : null;
+    return raw ? await decodeCacheValue(raw) : null;
   } catch {
     return null;
   }
@@ -71,7 +72,9 @@ export async function redisSet(key: string, value: unknown, ttlSeconds: number):
   const c = await getRedis();
   if (!c) return;
   try {
-    await c.set(`${KEY_PREFIX}cache:${key}`, JSON.stringify(value), { EX: Math.max(1, Math.floor(ttlSeconds)) });
+    await c.set(`${KEY_PREFIX}cache:${key}`, await encodeCacheValue(value), {
+      EX: Math.max(1, Math.floor(ttlSeconds)),
+    });
   } catch {}
 }
 

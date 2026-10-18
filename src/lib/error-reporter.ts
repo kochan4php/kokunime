@@ -7,6 +7,7 @@ interface ErrorReport {
   path?: string | undefined;
   method?: string | undefined;
   route?: string | undefined;
+  context?: string | undefined;
 }
 
 // Per-fingerprint throttle: a crash loop must not spam the webhook. Suppressed
@@ -51,6 +52,7 @@ export async function reportError(report: ErrorReport): Promise<boolean> {
     ...(report.route ? [{ name: "Route", value: truncate(report.route, 150), inline: true }] : []),
     ...(report.path ? [{ name: "Path", value: truncate(report.path, 200), inline: true }] : []),
     ...(report.digest ? [{ name: "Digest", value: truncate(report.digest, 100), inline: true }] : []),
+    ...(report.context ? [{ name: "Diagnostik perangkat", value: truncate(report.context, 900) }] : []),
     ...(suppressedCount > 0
       ? [{ name: "Suppressed", value: `${suppressedCount}x dalam 10 menit terakhir`, inline: true }]
       : []),

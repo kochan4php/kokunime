@@ -6,7 +6,6 @@ import RouteAnnouncer from "@/components/route-announcer";
 import WebVitals from "@/components/web-vitals";
 import ThemeSync from "@/components/theme-sync";
 import Toaster from "@/components/toaster";
-import { JetBrains_Mono, Plus_Jakarta_Sans } from "next/font/google";
 import { JSX, Suspense } from "react";
 import { Viewport } from "next";
 import { buildWebSiteJsonLd, safeJsonLd } from "@/lib/seo";
@@ -25,33 +24,20 @@ export const viewport: Viewport = {
   ],
 };
 
-const plusJakartaSans = Plus_Jakarta_Sans({
-  subsets: ["latin"],
-  display: "swap",
-  variable: "--font-sans",
-});
-
-const jetBrainsMono = JetBrains_Mono({
-  subsets: ["latin"],
-  display: "swap",
-  variable: "--font-mono",
-});
-
 const themeScript = `(function(){try{var s={};try{s=JSON.parse(localStorage.getItem(STORAGE_KEYS.userSettings))||{};}catch(e){}var t=s.theme||"system";if(t==="dark"||(t==="system"&&window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches))document.documentElement.setAttribute("data-theme","dark");var a=s.accent||localStorage.getItem(STORAGE_KEYS.accent);if(a&&a!=="orange")document.documentElement.setAttribute("data-accent",a);var f=s.font||localStorage.getItem(STORAGE_KEYS.font);if(f&&f!=="mono")document.documentElement.setAttribute("data-font",f);var fs=s.fontSize;if(fs&&fs!=="normal")document.documentElement.setAttribute("data-font-size",fs);if(s.density==="compact")document.documentElement.setAttribute("data-density","compact");var rm=s.reduceMotion!==undefined?s.reduceMotion:true;if(rm)document.documentElement.setAttribute("data-reduce-motion","true");if(s.readingMode&&s.readingMode!=="none")document.documentElement.setAttribute("data-reading-mode",s.readingMode);var n=s.nightShift||localStorage.getItem(STORAGE_KEYS.nightShift)==="true";if(n)document.documentElement.setAttribute("data-night-shift","true");}catch(e){}})();`;
 
 const criticalCss = `body{background-color:var(--color-bg,#fdf5eb);color:var(--color-ink,#0a0a0a);}`;
 
 const RootLayout = ({ children }: ChildrenProps): JSX.Element => (
-  <html
-    lang="id"
-    data-scroll-behavior="smooth"
-    className={`${plusJakartaSans.variable} ${jetBrainsMono.variable}`}
-    suppressHydrationWarning
-  >
+  <html lang="id" data-scroll-behavior="smooth" suppressHydrationWarning>
     <head>
       {/* Pre-paint: theme/accent/font attributes must land before first paint. */}
       <script id="theme-script" dangerouslySetInnerHTML={{ __html: themeScript }} />
       <style dangerouslySetInnerHTML={{ __html: criticalCss }} />
+      {/* Self-hosted fonts: preload the two latin subsets (the only ones the
+          first paint needs), everything else streams in on demand. */}
+      <link rel="preload" href="/fonts/pjs-latin.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
+      <link rel="preload" href="/fonts/jbm-latin.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
       <link rel="search" type="application/opensearchdescription+xml" title="Kokunime" href="/opensearch.xml" />
       <link rel="preconnect" href="https://kusonime.com" />
       <link rel="dns-prefetch" href="https://kusonime.com" />
