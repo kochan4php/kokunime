@@ -7,14 +7,14 @@ const InfoSide = ({ anime }: { anime: AnimeDetail }): JSX.Element => (
     <div className="card-core flex flex-col justify-between gap-6 p-5 sm:p-7 md:p-8">
       <div>
         <span className="chip">Info</span>
-        <ul className="mt-5 space-y-3 text-sm">
+        <ul className="mt-5 divide-y-2 divide-border border-y-2 border-border text-sm">
           {[
             { label: "Tipe", value: anime.type },
             { label: "Status", value: anime.status },
             { label: "Durasi", value: anime.duration },
             { label: "Produser", value: anime.producer },
           ].map((item, index) => (
-            <li key={index} className="flex items-start justify-between gap-3 min-w-0">
+            <li key={index} className="flex items-start justify-between gap-3 py-2.5 min-w-0">
               <span className="text-ink-muted shrink-0">{item.label}</span>
               <span
                 className="text-right font-semibold text-ink truncate max-w-[65%] hover:whitespace-normal transition-all cursor-help"

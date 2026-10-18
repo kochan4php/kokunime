@@ -4,6 +4,7 @@ import DownloadGroup from "./download-group";
 import EpisodeNavigator from "./episode-navigator";
 import { DownloadGuideModal } from "./download-guide-modal";
 import Reveal from "@/components/reveal";
+import SectionHeader from "@/components/section-header";
 import { AnimeDetail, DownloadOption } from "@/interfaces";
 import { parseEpisodeRange } from "@/services/scraper/sanitize";
 import { listEpisodeNumbers } from "@/utils/episodes";
@@ -61,89 +62,87 @@ const DownloadSection = ({ anime, slug }: { anime: AnimeDetail; slug?: string })
       className="mt-16 scroll-mt-28"
     >
       <Reveal>
-        <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
-            <span className="chip">
-              <span className="h-1.5 w-1.5 rounded-full bg-accent" />
-              Download
-            </span>
-            <h2 className="font-display text-2xl font-extrabold uppercase tracking-tight text-ink">Pilih Kualitas</h2>
-            <DownloadGuideModal />
-          </div>
-
-          <div className="flex flex-wrap items-center gap-2.5 sm:gap-3">
-            {showTypeFilter && (
-              <div className="flex items-center gap-1">
-                <button
-                  type="button"
-                  onClick={() => setTypeFilter("all")}
-                  className={`rounded-sm border-2 px-2.5 py-0.5 font-mono text-xs transition-all cursor-pointer ${
-                    typeFilter === "all"
-                      ? "border-border bg-accent font-bold text-(--accent-ink) shadow-[2px_2px_0_0_var(--border)]"
-                      : "border-border bg-surface text-ink-muted hover:text-ink"
-                  }`}
-                >
-                  Semua
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setTypeFilter("batch")}
-                  className={`rounded-sm border-2 px-2.5 py-0.5 font-mono text-xs transition-all cursor-pointer ${
-                    typeFilter === "batch"
-                      ? "border-border bg-accent font-bold text-(--accent-ink) shadow-[2px_2px_0_0_var(--border)]"
-                      : "border-border bg-surface text-ink-muted hover:text-ink"
-                  }`}
-                >
-                  📦 Batch
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setTypeFilter("episode")}
-                  className={`rounded-sm border-2 px-2.5 py-0.5 font-mono text-xs transition-all cursor-pointer ${
-                    typeFilter === "episode"
-                      ? "border-border bg-accent font-bold text-(--accent-ink) shadow-[2px_2px_0_0_var(--border)]"
-                      : "border-border bg-surface text-ink-muted hover:text-ink"
-                  }`}
-                >
-                  🎬 Satuan
-                </button>
-              </div>
-            )}
-
-            {availableResolutions.length > 1 && (
-              <div className="flex items-center gap-1.5 overflow-x-auto [scrollbar-width:none] max-w-full">
-                <span className="font-mono text-[11px] uppercase tracking-wider text-ink-muted shrink-0">
-                  Resolusi:
-                </span>
-                <button
-                  type="button"
-                  onClick={() => setSelectedRes("all")}
-                  className={`rounded-sm border-2 px-3 py-1 font-mono text-xs transition-all shrink-0 cursor-pointer ${
-                    selectedRes === "all"
-                      ? "border-border bg-accent font-bold text-(--accent-ink) shadow-[2px_2px_0_0_var(--border)]"
-                      : "border-border bg-surface text-ink-muted hover:text-ink"
-                  }`}
-                >
-                  Semua
-                </button>
-                {availableResolutions.map((res) => (
+        <SectionHeader
+          kicker="Download"
+          title="Pilih Kualitas"
+          tone="lime"
+          className="mb-6"
+          aside={
+            <>
+              <DownloadGuideModal />
+              {showTypeFilter && (
+                <div className="flex items-center gap-1">
                   <button
-                    key={res}
                     type="button"
-                    onClick={() => setSelectedRes(res)}
-                    className={`rounded-sm border-2 px-3 py-1 font-mono text-xs transition-all shrink-0 cursor-pointer ${
-                      selectedRes === res
+                    onClick={() => setTypeFilter("all")}
+                    className={`rounded-sm border-2 px-2.5 py-0.5 font-mono text-xs transition-all cursor-pointer ${
+                      typeFilter === "all"
                         ? "border-border bg-accent font-bold text-(--accent-ink) shadow-[2px_2px_0_0_var(--border)]"
                         : "border-border bg-surface text-ink-muted hover:text-ink"
                     }`}
                   >
-                    {res}
+                    Semua
                   </button>
-                ))}
-              </div>
-            )}
-          </div>
-        </div>
+                  <button
+                    type="button"
+                    onClick={() => setTypeFilter("batch")}
+                    className={`rounded-sm border-2 px-2.5 py-0.5 font-mono text-xs transition-all cursor-pointer ${
+                      typeFilter === "batch"
+                        ? "border-border bg-accent font-bold text-(--accent-ink) shadow-[2px_2px_0_0_var(--border)]"
+                        : "border-border bg-surface text-ink-muted hover:text-ink"
+                    }`}
+                  >
+                    📦 Batch
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setTypeFilter("episode")}
+                    className={`rounded-sm border-2 px-2.5 py-0.5 font-mono text-xs transition-all cursor-pointer ${
+                      typeFilter === "episode"
+                        ? "border-border bg-accent font-bold text-(--accent-ink) shadow-[2px_2px_0_0_var(--border)]"
+                        : "border-border bg-surface text-ink-muted hover:text-ink"
+                    }`}
+                  >
+                    🎬 Satuan
+                  </button>
+                </div>
+              )}
+
+              {availableResolutions.length > 1 && (
+                <div className="flex items-center gap-1.5 overflow-x-auto [scrollbar-width:none] max-w-full">
+                  <span className="font-mono text-[11px] uppercase tracking-wider text-ink-muted shrink-0">
+                    Resolusi:
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => setSelectedRes("all")}
+                    className={`rounded-sm border-2 px-3 py-1 font-mono text-xs transition-all shrink-0 cursor-pointer ${
+                      selectedRes === "all"
+                        ? "border-border bg-accent font-bold text-(--accent-ink) shadow-[2px_2px_0_0_var(--border)]"
+                        : "border-border bg-surface text-ink-muted hover:text-ink"
+                    }`}
+                  >
+                    Semua
+                  </button>
+                  {availableResolutions.map((res) => (
+                    <button
+                      key={res}
+                      type="button"
+                      onClick={() => setSelectedRes(res)}
+                      className={`rounded-sm border-2 px-3 py-1 font-mono text-xs transition-all shrink-0 cursor-pointer ${
+                        selectedRes === res
+                          ? "border-border bg-accent font-bold text-(--accent-ink) shadow-[2px_2px_0_0_var(--border)]"
+                          : "border-border bg-surface text-ink-muted hover:text-ink"
+                      }`}
+                    >
+                      {res}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </>
+          }
+        />
       </Reveal>
       <EpisodeNavigator slug={slug} episodes={episodeNumbers} />
       <div className="nb-cycle grid gap-6 min-w-0 max-w-full overflow-hidden">

@@ -7,7 +7,7 @@ import { siteLinks } from "@/components/site-config";
 import { useTranslation, TranslationKey } from "@/utils/i18n";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { JSX, useEffect, useState } from "react";
+import { JSX } from "react";
 
 const NAV_KEY_MAP: Record<string, TranslationKey> = {
   "/": "nav.home",
@@ -27,16 +27,12 @@ const TICKER_ITEMS = [
   "🎲 Tombol dadu untuk anime acak",
 ];
 
+// Ink masthead: ticker and navigation share one black band, always-on (no
+// scroll state) so the chrome never flashes. The footer closes every page
+// with the same ink band; content in between stays paper.
 const Navbar = (): JSX.Element => {
-  const [scrolled, setScrolled] = useState(false);
   const pathname = usePathname();
   const { t } = useTranslation();
-
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 10);
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
 
   const isActive = (href: string) => {
     if (href === "/") return pathname === "/";
@@ -44,11 +40,7 @@ const Navbar = (): JSX.Element => {
   };
 
   return (
-    <header
-      className={`navbar sticky top-0 z-50 transition-colors duration-300 ${
-        scrolled ? "bg-surface-solid" : "bg-surface-solid sm:bg-transparent"
-      }`}
-    >
+    <header className="navbar sticky top-0 z-50 bg-ink">
       <div className="nb-ticker">
         <div className="nb-ticker-track">
           <div className="nb-ticker-group">
@@ -68,7 +60,7 @@ const Navbar = (): JSX.Element => {
         <div className="flex items-center gap-8 min-w-0">
           <Link
             href="/"
-            className="font-display text-2xl font-black tracking-tight text-ink transition-transform duration-200 hover:-rotate-1 shrink-0"
+            className="font-display text-2xl font-black tracking-tight text-nb-cream transition-transform duration-200 hover:-rotate-1 shrink-0"
           >
             <span className="inline-block -rotate-2 border-2 border-border bg-nb-yellow px-1.5 text-[#0a0a0a] shadow-[2px_2px_0_0_var(--border)]">
               Koku
@@ -87,8 +79,8 @@ const Navbar = (): JSX.Element => {
                   aria-current={isActive(link.href) ? "page" : undefined}
                   className={`relative flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-mono font-semibold transition-all duration-200 rounded-sm border-2 ${
                     isActive(link.href)
-                      ? "bg-accent border-border text-(--accent-ink) font-bold shadow-[2px_2px_0_0_var(--border)]"
-                      : "border-transparent text-ink-muted hover:border-border hover:bg-surface hover:text-ink"
+                      ? "bg-accent border-nb-cream text-(--accent-ink) font-bold"
+                      : "border-transparent text-nb-cream/75 hover:border-nb-cream hover:bg-nb-cream hover:text-ink"
                   }`}
                 >
                   <span>{link.icon}</span>

@@ -7,7 +7,9 @@
    invisible. Group 2 is aria-hidden, group 1 is the readable copy. */
 .nb-ticker {
   overflow: hidden;
-  border-bottom: 2px solid var(--border);
+  /* The navbar below is ink too; a faint cream hairline keeps the ticker
+     readable as its own strip without breaking the single black band. */
+  border-bottom: 2px solid color-mix(in srgb, var(--color-nb-cream) 22%, transparent);
   background: var(--ink);
   color: var(--color-nb-cream);
 }
@@ -109,11 +111,36 @@ html[data-reduce-motion="true"] .nb-ticker-track > [aria-hidden="true"] {
    unsupported. Always aria-hidden in markup — decoration, never content. */
 .nb-outline-text {
   color: transparent;
-  -webkit-text-stroke: 2px var(--border);
+  /* Stroke colour comes from --nb-outline so it can flip per surface
+     (defaults to ink; cream on the ink footer). */
+  -webkit-text-stroke: 2px var(--nb-outline, var(--border));
+}
+
+footer .nb-outline-text {
+  --nb-outline: var(--color-nb-cream);
 }
 
 @supports not (-webkit-text-stroke: 2px black) {
   .nb-outline-text {
-    color: color-mix(in srgb, var(--border) 10%, transparent);
+    color: color-mix(in srgb, var(--nb-outline, var(--border)) 10%, transparent);
   }
+}
+
+/* ── Colour bands ─────────────────────────────────────────────────────────
+   Full-bleed chapter blocks: bordered top and bottom so every band reads as
+   a pasted strip on the paper backdrop. Content stays in a .container. */
+.nb-band {
+  border-block: 2px solid var(--border);
+}
+
+.nb-band-yellow {
+  background: var(--color-nb-yellow);
+}
+
+.nb-band-pink {
+  background: var(--color-nb-pink);
+}
+
+.nb-band-muted {
+  background: var(--surface-muted);
 }

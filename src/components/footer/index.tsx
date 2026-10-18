@@ -8,7 +8,7 @@ import { JSX } from "react";
 const Footer = (): JSX.Element => (
   <>
     <div className="nb-stripe" aria-hidden="true" />
-    <footer className="relative overflow-hidden bg-surface-muted">
+    <footer className="relative overflow-hidden bg-ink text-nb-cream">
       <div
         aria-hidden
         className="nb-outline-text pointer-events-none absolute -bottom-8 left-1/2 -translate-x-1/2 select-none whitespace-nowrap font-display text-[5rem] font-black uppercase leading-none tracking-tight opacity-50 sm:text-[8rem] md:text-[11rem]"
@@ -25,7 +25,7 @@ const Footer = (): JSX.Element => (
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="text-ink-muted transition-colors duration-200 hover:text-accent hover:underline"
+                    className="text-nb-cream/70 transition-colors duration-200 hover:text-nb-yellow hover:underline"
                   >
                     {link.label}
                   </Link>
@@ -42,7 +42,7 @@ const Footer = (): JSX.Element => (
                     href={link.href}
                     target={link.href.includes(".xml") || link.href.includes(".json") ? "_blank" : undefined}
                     rel={link.href.includes(".xml") || link.href.includes(".json") ? "noopener noreferrer" : undefined}
-                    className="text-ink-muted transition-colors duration-200 hover:text-accent hover:underline"
+                    className="text-nb-cream/70 transition-colors duration-200 hover:text-nb-yellow hover:underline"
                   >
                     {link.label}
                   </a>

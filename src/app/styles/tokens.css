@@ -17,11 +17,12 @@
   --grid-ink: rgba(10, 10, 10, 0.07);
   --grid-ink-strong: rgba(10, 10, 10, 0.1);
 
-  /* Hard offset shadows + tight radius */
-  --radius-nb: 0.25rem;
-  --shadow-hard-sm: 2px 2px 0 0 var(--border);
-  --shadow-hard: 4px 4px 0 0 var(--border);
-  --shadow-hard-lg: 6px 6px 0 0 var(--border);
+  /* Sharp print-shop corners + heavier hard-offset shadows (v2 system) */
+  --radius-nb: 0;
+  --shadow-hard-xs: 2px 2px 0 0 var(--border);
+  --shadow-hard-sm: 3px 3px 0 0 var(--border);
+  --shadow-hard: 5px 5px 0 0 var(--border);
+  --shadow-hard-lg: 8px 8px 0 0 var(--border);
 }
 
 :root[data-accent="emerald"] {
@@ -81,6 +82,14 @@
   --shadow-nb-sm: var(--shadow-hard-sm);
   --shadow-nb: var(--shadow-hard);
   --shadow-nb-lg: var(--shadow-hard-lg);
+
+  /* One sharp corner scale: every rounded-* utility in the app lands on the
+     print grid instead of a soft radius. (rounded-full stays a circle.) */
+  --radius-xs: 0px;
+  --radius-sm: 0px;
+  --radius-md: 0px;
+  --radius-lg: 0px;
+  --radius-xl: 0px;
 
   /* Chunky sans for headings; body + meta stay mono */
   --font-display: "Plus Jakarta Sans", "Segoe UI", system-ui, sans-serif;

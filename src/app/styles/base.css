@@ -79,7 +79,7 @@
   h2,
   h3 {
     font-family: var(--font-display);
-    font-weight: 800;
+    font-weight: 900;
     letter-spacing: -0.015em;
     text-wrap: balance;
   }
@@ -216,7 +216,7 @@ dialog {
   opacity: 0;
   transform: translateY(-8px);
   border: 3px solid var(--border);
-  border-radius: 6px;
+  border-radius: var(--radius-nb);
   box-shadow: var(--shadow-hard-lg);
   transition: opacity 180ms cubic-bezier(0.16, 1, 0.3, 1), transform 180ms cubic-bezier(0.16, 1, 0.3, 1), overlay 180ms
     allow-discrete, display 180ms allow-discrete;
@@ -278,4 +278,19 @@ dialog.is-closing::backdrop {
   body::before {
     content: none;
   }
+
+  /* Colour bands become plain paper in print. */
+  .nb-band-yellow,
+  .nb-band-pink,
+  .nb-band-muted {
+    background: #ffffff !important;
+  }
+}
+
+/* Ink chrome (navbar, footer, ink bands): the default black focus ring would
+   vanish there, so the ring flips to sticker yellow. */
+.navbar :focus-visible,
+footer :focus-visible,
+.nb-band-ink :focus-visible {
+  outline-color: var(--color-nb-yellow);
 }

@@ -7,14 +7,14 @@ const BrandBlock = (): JSX.Element => (
     <div>
       <Link
         href="/"
-        className="font-display text-2xl sm:text-3xl font-extrabold tracking-tight text-ink transition-transform duration-200 hover:-rotate-1 inline-block"
+        className="font-display text-2xl sm:text-3xl font-extrabold tracking-tight text-nb-cream transition-transform duration-200 hover:-rotate-1 inline-block"
       >
         <span className="inline-block -rotate-2 border-2 border-border bg-nb-yellow px-1.5 text-[#0a0a0a] shadow-[2px_2px_0_0_var(--border)]">
           Koku
         </span>
         nime
       </Link>
-      <p className="mt-3 text-xs sm:text-sm leading-relaxed text-ink-muted">
+      <p className="mt-3 text-xs sm:text-sm leading-relaxed text-nb-cream/70">
         Kumpulan link download anime batch dan per episode terlengkap, semua dengan subtitle bahasa Indonesia
         berkualitas tinggi.
       </p>
