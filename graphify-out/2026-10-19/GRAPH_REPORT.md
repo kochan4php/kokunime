@@ -1,22 +1,22 @@
-# Graph Report - kokunime  (2026-10-18)
+# Graph Report - kokunime  (2026-10-19)
 
 ## Corpus Check
-- 533 files · ~173,877 words
+- 546 files · ~182,441 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 2292 nodes · 5270 edges · 149 communities (136 shown, 13 thin omitted)
-- Extraction: 99% EXTRACTED · 1% INFERRED · 0% AMBIGUOUS · INFERRED: 60 edges (avg confidence: 0.71)
+- 2391 nodes · 5649 edges · 164 communities (150 shown, 14 thin omitted)
+- Extraction: 99% EXTRACTED · 1% INFERRED · 0% AMBIGUOUS · INFERRED: 76 edges (avg confidence: 0.72)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `9064741f`
+- Built from commit: `2fd3cd76`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
 ## Community Hubs (Navigation)
-- sanitize.ts
-- main-layout.tsx
+- scraper/constants.ts
+- tags.ts
 - settings.ts
 - icons/index.ts
 - download-extras-panel.tsx
@@ -27,13 +27,13 @@
 - site.ts
 - devDependencies
 - seasons/page.tsx
-- anime-listing.tsx
-- scraper/index.ts
+- search-results.tsx
+- checkRateLimit
 - compilerOptions
-- interfaces/index.ts
+- app/layout.tsx
 - qr.ts
 - formatter
-- release-inbox.ts
+- storage-keys.ts
 - find-unused-exports.mjs
 - diagnostics.ts
 - ignore
@@ -42,18 +42,18 @@
 - biome.json
 - next.config.mjs
 - genres.ts
-- toast.ts
+- detail-hero.tsx
 - format-date.ts
-- [year]/page.tsx
+- endpoint-slug.ts
 - rules
-- safeJsonLd
+- anime-listing.tsx
 - useTranslation
-- endpointSlug
-- collection-actions.ts
+- scraper/index.ts
+- wrapped-content.tsx
 - dependencies
 - bundle-budget.mjs
 - a11y
-- use-command-palette.ts
+- local-catalog.ts
 - suspicious
 - postcss.config.js
 - sw.js
@@ -65,7 +65,7 @@
 - progress.ts
 - vitest.config.ts
 - og-card.tsx
-- bookmarks/page.tsx
+- showToast
 - post-commit
 - post-checkout
 - toTitle
@@ -88,32 +88,32 @@
 - upstream.ts
 - compare-selector.tsx
 - use-collection-data.ts
-- uptime.ts
+- status/route.ts
 - ics.ts
 - settings-appearance-section.tsx
 - qr-reference.py
 - download-group.tsx
 - cache.ts
-- section-detail.tsx
-- grid-skeleton.tsx
+- reveal.tsx
+- main-layout.tsx
 - metrics.ts
-- storage-keys.ts
-- search-index.ts
+- checkEtagMatch
+- redis.ts
 - bookmarks.ts
 - no-third-party.mjs
-- admin-dashboard.tsx
+- .next/**
 - revalidate/route.ts
 - audit-meta.mjs
 - compare-anime-client.tsx
 - subscribeProgress
 - 🚑 RUNBOOK — Kokunime Operations
-- download-section.tsx
-- redis.ts
+- interfaces/index.ts
+- cache-codec.ts
 - 🚀 API Quickstart
 - Arsitektur
 - scan-secrets.mjs
 - renderOgCard
-- episode-watched-toggle.tsx
+- toast.ts
 - deps-allowlist.mjs
 - warm-cache.mjs
 - CONTRIBUTING.md
@@ -148,54 +148,69 @@
 - wrapped/opengraph-image.tsx
 - dictionary.ts
 - bookmarks-folder-bar.tsx
-- duplicate-detector.ts
+- bulk/route.ts
+- sanitize.ts
+- parse-detail.ts
+- route-error.tsx
 - [slug]/loading.tsx
-- wrapped-content.tsx
+- circuit-breaker.ts
+- roulette-content.tsx
+- search.ts
+- share-card.ts
+- graphql/route.ts
+- error-card.tsx
+- anime.ts
+- status/page.tsx
+- api/page.tsx
+- [slug]/opengraph-image.tsx
+- offline-indicator.tsx
+- similar.ts
+- keyboard-navigation.tsx
 
 ## God Nodes (most connected - your core abstractions)
-1. `useTranslation()` - 59 edges
-2. `showToast()` - 56 edges
+1. `useTranslation()` - 67 edges
+2. `showToast()` - 64 edges
 3. `getBookmarks()` - 44 edges
 4. `SITE_URL` - 36 edges
-5. `scripts` - 33 edges
-6. `.next/**` - 32 edges
-7. `animeSlug()` - 30 edges
-8. `endpointSlug()` - 28 edges
-9. `checkEtagMatch()` - 27 edges
-10. `generateEtag()` - 27 edges
+5. `animeSlug()` - 34 edges
+6. `scripts` - 33 edges
+7. `.next/**` - 32 edges
+8. `checkEtagMatch()` - 29 edges
+9. `generateEtag()` - 29 edges
+10. `checkRateLimit()` - 29 edges
 
 ## Surprising Connections (you probably didn't know these)
-- `SeasonYearGroup()` --calls--> `endpointSlug()`  [EXTRACTED]
-  src/sections/season-year-group.tsx → src/utils/endpoint-slug.ts
-- `useCollectionData()` --indirect_call--> `getCollections()`  [INFERRED]
-  src/hooks/use-collection-data.ts → src/utils/collections.ts
-- `useCollectionData()` --indirect_call--> `subscribeCollections()`  [INFERRED]
-  src/hooks/use-collection-data.ts → src/utils/collections.ts
-- `BookmarksPage()` --indirect_call--> `getQueue()`  [INFERRED]
-  src/app/bookmarks/page.tsx → src/utils/watch-queue.ts
-- `BookmarksPage()` --indirect_call--> `subscribeQueue()`  [INFERRED]
-  src/app/bookmarks/page.tsx → src/utils/watch-queue.ts
+- `SearchLocalPanel()` --indirect_call--> `getCatalogSnapshot()`  [INFERRED]
+  src/components/search-local-panel.tsx → src/utils/local-catalog.ts
+- `SearchLocalPanel()` --indirect_call--> `subscribeCatalog()`  [INFERRED]
+  src/components/search-local-panel.tsx → src/utils/local-catalog.ts
+- `BookmarkMetaDialogProps` --references--> `BookmarkItem`  [EXTRACTED]
+  src/components/bookmark-meta-dialog.tsx → src/utils/bookmarks.ts
+- `EpisodeWatchedToggle()` --indirect_call--> `subscribeProgress()`  [INFERRED]
+  src/components/anime/episode-watched-toggle.tsx → src/utils/progress.ts
+- `HomeHistoryStrip()` --indirect_call--> `subscribeProgress()`  [INFERRED]
+  src/components/home-history-strip.tsx → src/utils/progress.ts
 
 ## Import Cycles
 - None detected.
 
-## Communities (149 total, 13 thin omitted)
+## Communities (164 total, 14 thin omitted)
 
-### Community 0 - "sanitize.ts"
-Cohesion: 0.06
-Nodes (42): alt, contentType, Image(), runtime, size, Anime, AnimeDetail, AnimePage (+34 more)
+### Community 0 - "scraper/constants.ts"
+Cohesion: 0.22
+Nodes (9): UPSTREAM_URL, bestImage(), ImgLike, resolveAssetUrl(), formatAnimeData(), formatNumberIndonesian(), formatScoreIndonesian(), GENRE_TRANSLATIONS (+1 more)
 
-### Community 1 - "main-layout.tsx"
-Cohesion: 0.09
-Nodes (8): IndexItem, IndexPage(), letterOf(), LETTERS, metadata, revalidate, HoneypotTrap(), MainLayout()
+### Community 1 - "tags.ts"
+Cohesion: 0.23
+Nodes (26): NO_SNAPSHOT, TagIndexPage(), NO_SNAPSHOT, TagDetailPage(), AnimeTagsEditor(), getCatalogSnapshot(), subscribeCatalog(), addTag() (+18 more)
 
 ### Community 2 - "settings.ts"
-Cohesion: 0.14
-Nodes (28): DEFAULT_STORAGE, formatQuota(), SettingsPageContent(), SettingsStorageSection(), SettingsStorageSectionProps, SettingsTypographySection(), ThemeSync(), AccentColor (+20 more)
+Cohesion: 0.13
+Nodes (30): DEFAULT_STORAGE, formatQuota(), SettingsPageContent(), SettingsStorageSection(), SettingsStorageSectionProps, SettingsTypographySection(), ThemeSync(), AccentColor (+22 more)
 
 ### Community 3 - "icons/index.ts"
 Cohesion: 0.05
-Nodes (29): footerDevLinks, footerNavLinks, footerTags, Footer(), ChevronLeftIcon(), ChevronRightIcon(), SearchIcon(), IconProps (+21 more)
+Nodes (30): footerDevLinks, footerNavLinks, footerTags, Footer(), ChevronLeftIcon(), ChevronRightIcon(), SearchIcon(), IconProps (+22 more)
 
 ### Community 4 - "download-extras-panel.tsx"
 Cohesion: 0.26
@@ -206,8 +221,8 @@ Cohesion: 0.06
 Nodes (33): scripts, a11y:targets, audit:client, audit:meta, backup:cache, build, bundle:budget, changelog (+25 more)
 
 ### Community 6 - "stats-content.tsx"
-Cohesion: 0.14
-Nodes (21): metadata, MiniBarChartProps, MiniBarDatum, dayKey(), formatWatchTime(), MONTHS_SHORT, SERVER_EMPTY, StatsContent() (+13 more)
+Cohesion: 0.16
+Nodes (19): metadata, MiniBarChartProps, MiniBarDatum, dayKey(), formatWatchTime(), MONTHS_SHORT, SERVER_EMPTY, StatsContent() (+11 more)
 
 ### Community 7 - "launchBrowser"
 Cohesion: 0.12
@@ -218,8 +233,8 @@ Cohesion: 0.22
 Nodes (9): style, noNonNullAssertion, noUnusedTemplateLiteral, useConst, useImportType, useNodejsImportProtocol, useNumberNamespace, useSelfClosingElements (+1 more)
 
 ### Community 9 - "site.ts"
-Cohesion: 0.06
-Nodes (28): RFC-9116, .next/**, metadata, dynamic, metadata, dynamic, metadata, SECTIONS (+20 more)
+Cohesion: 0.08
+Nodes (32): RFC-9116, dynamic, GET(), dynamic, dynamic, GET(), dynamic, GET() (+24 more)
 
 ### Community 10 - "devDependencies"
 Cohesion: 0.08
@@ -229,21 +244,21 @@ Nodes (25): devDependencies, axe-core, @biomejs/biome, jsdom, lint-staged, postc
 Cohesion: 0.24
 Nodes (8): SeasonsPage(), Season, SeasonYearGroup(), SeasonYearGroupProps, TaxonomyCard(), TaxonomyCardProps, groupSeasonsByYear(), orderYears()
 
-### Community 12 - "anime-listing.tsx"
-Cohesion: 0.14
-Nodes (19): useUrlState(), AnimeListing(), AnimeListingProps, LISTING_SCHEMA, SORT_LABELS, SORT_MODES, SortMode, VIEW_MODES (+11 more)
+### Community 12 - "search-results.tsx"
+Cohesion: 0.20
+Nodes (12): useUrlState(), SEARCH_SCHEMA, SearchResults(), SearchResultsProps, SORT_ORDERS, SortOrder, VIEW_MODES, readUrlState() (+4 more)
 
-### Community 13 - "scraper/index.ts"
-Cohesion: 0.05
-Nodes (88): RFC-9457, BulkResult, cleanSlugs(), DETAIL_FIELDS, GET(), guardRequest(), POST(), POST_DEPRECATION_HEADERS (+80 more)
+### Community 13 - "checkRateLimit"
+Cohesion: 0.12
+Nodes (30): dynamic, GET(), dynamic, EMPTY, GET(), dynamic, POST(), VALID_NAMES (+22 more)
 
 ### Community 14 - "compilerOptions"
 Cohesion: 0.06
 Nodes (32): dom, dom.iterable, esnext, .next/dev/types/**/*.ts, next-env.d.ts, .next/types/**/*.ts, tailwind.config.js, **/*.ts (+24 more)
 
-### Community 15 - "interfaces/index.ts"
-Cohesion: 0.10
-Nodes (14): Anime(), generateMetadata(), revalidate, RootLayout(), viewport, rules, buildDetailMetadata(), buildAnimeJsonLd() (+6 more)
+### Community 15 - "app/layout.tsx"
+Cohesion: 0.17
+Nodes (5): viewport, rules, ServiceWorkerRegister(), WebVitals(), metadata
 
 ### Community 16 - "qr.ts"
 Cohesion: 0.14
@@ -253,17 +268,17 @@ Nodes (25): PrintQrCard(), PrintQrCardProps, addEccAndInterleave(), applyMask(),
 Cohesion: 0.40
 Nodes (5): quoteStyle, semicolons, trailingCommas, javascript, formatter
 
-### Community 18 - "release-inbox.ts"
-Cohesion: 0.21
-Nodes (20): chipClass(), EMPTY, InboxBell(), ReleaseWatcher(), ReleaseWatcherProps, cachedInbox, cachedUnread, getInboxReleases() (+12 more)
+### Community 18 - "storage-keys.ts"
+Cohesion: 0.08
+Nodes (36): metadata, AdminDashboard(), FeatureFlagView, PRESET_PATHS, DeferredPwaInstallBanner, chipClass(), EMPTY, InboxBell() (+28 more)
 
 ### Community 19 - "find-unused-exports.mjs"
 Cohesion: 0.18
 Nodes (11): corpus, exportsByFile, files, ROOT, SCAN_DIRS, SKIP_EXPORTS, SRC_DIRS, textCache (+3 more)
 
 ### Community 20 - "diagnostics.ts"
-Cohesion: 0.06
-Nodes (33): Suggestion, DeviceDiagnostics(), NO_ENTRIES, timeFormat, TYPE_LABEL, TYPE_ORDER, ErrorCard(), ErrorCardProps (+25 more)
+Cohesion: 0.16
+Nodes (22): DeviceDiagnostics(), NO_ENTRIES, timeFormat, TYPE_LABEL, TYPE_ORDER, StaleDataBanner(), clearDiagnostics(), DiagnosticEntry (+14 more)
 
 ### Community 21 - "ignore"
 Cohesion: 0.22
@@ -271,7 +286,7 @@ Nodes (9): files, ignore, ignoreUnknown, node_modules/**, coverage/**, dist/**, 
 
 ### Community 22 - "vitals-reporter.ts"
 Cohesion: 0.07
-Nodes (37): dynamic, GET(), WebVitals(), EnvIssue, isHttpUrl(), isRedisUrl(), validateEnv(), onRequestError() (+29 more)
+Nodes (36): dynamic, GET(), EnvIssue, isHttpUrl(), isRedisUrl(), validateEnv(), onRequestError(), register() (+28 more)
 
 ### Community 23 - "devDependencies"
 Cohesion: 0.05
@@ -286,40 +301,40 @@ Cohesion: 0.50
 Nodes (3): immutableCacheControl, nextConfig, securityHeaders
 
 ### Community 26 - "genres.ts"
-Cohesion: 0.13
-Nodes (26): CACHE_TTL_SECONDS, mergeSearchResults(), normalizeSearchTerm(), resolveSearchAlias(), SEARCH_ALIASES, cached(), CacheTier, TTL (+18 more)
+Cohesion: 0.21
+Nodes (16): cached(), CacheTier, TTL, fetchSingleGenrePage(), getAnimeByGenres(), getGenres(), getGenresWithMeta(), parseSimplePagination() (+8 more)
 
-### Community 27 - "toast.ts"
-Cohesion: 0.07
-Nodes (39): formatAge(), OfflinePage(), CopyButtonProps, DetailHeroProps, DetailHeroViewProps, readPosterUrl(), registerRefreshSync(), SaveOfflineButton() (+31 more)
+### Community 27 - "detail-hero.tsx"
+Cohesion: 0.09
+Nodes (28): formatAge(), OfflinePage(), CopyButtonProps, DetailHero(), DetailHeroProps, DetailHeroViewProps, readPosterUrl(), registerRefreshSync() (+20 more)
 
 ### Community 28 - "format-date.ts"
 Cohesion: 0.50
 Nodes (3): formatLocalizedDate(), MONTHS_EN, MONTHS_ID
 
-### Community 29 - "[year]/page.tsx"
-Cohesion: 0.12
-Nodes (19): dynamic, GET(), dynamic, GET(), dynamic, GET(), dynamic, GET() (+11 more)
+### Community 29 - "endpoint-slug.ts"
+Cohesion: 0.21
+Nodes (15): GET(), GET(), GET(), GET(), decodeCursor(), encodeCursor(), parseFieldsParam(), projectRecord() (+7 more)
 
 ### Community 30 - "rules"
 Cohesion: 0.20
 Nodes (10): noUnusedVariables, useExhaustiveDependencies, useJsxKeyInIterable, linter, enabled, rules, correctness, recommended (+2 more)
 
-### Community 31 - "safeJsonLd"
-Cohesion: 0.10
-Nodes (24): ApiDocsPage(), ENDPOINTS, metadata, ComparePage(), ComparePageProps, dynamic, metadata, dynamic (+16 more)
+### Community 31 - "anime-listing.tsx"
+Cohesion: 0.07
+Nodes (39): Anime(), revalidate, ApiDocsPage(), ComparePage(), ComparePageProps, dynamic, metadata, dynamic (+31 more)
 
 ### Community 32 - "useTranslation"
-Cohesion: 0.11
-Nodes (22): DetailToc(), SECTIONS, CompareEmptyState(), CompareLoadingCard(), MobileMenu(), MobileMenuProps, NAV_KEY_MAP, NAV_KEY_MAP (+14 more)
+Cohesion: 0.14
+Nodes (18): DetailToc(), SECTIONS, MobileMenu(), MobileMenuProps, NAV_KEY_MAP, NAV_KEY_MAP, Navbar(), SettingsAboutSection() (+10 more)
 
-### Community 33 - "endpointSlug"
-Cohesion: 0.09
-Nodes (24): dynamic, SeasonPage(), DetailMeta(), MetaItemProps, chipColors, GenreTags(), GENRE_DICTIONARY, GenreMeta (+16 more)
+### Community 33 - "scraper/index.ts"
+Cohesion: 0.08
+Nodes (22): dynamic, DetailMeta(), MetaItemProps, chipColors, GenreTags(), GENRE_DICTIONARY, GenreMeta, GenresExplorer() (+14 more)
 
-### Community 34 - "collection-actions.ts"
-Cohesion: 0.30
-Nodes (14): EMPTY_HISTORY, EMPTY_PROGRESS, HomeHistoryStrip(), clearCollectionTab(), removeCollectionItem(), removeHistoryDay(), clearAllHistory(), EMPTY_HISTORY (+6 more)
+### Community 34 - "wrapped-content.tsx"
+Cohesion: 0.14
+Nodes (22): metadata, EMPTY_HISTORY, EMPTY_PROGRESS, HomeHistoryStrip(), RecommendForYou(), RecommendItem, RecommendResponse, SERVER_BOOKMARKS (+14 more)
 
 ### Community 35 - "dependencies"
 Cohesion: 0.13
@@ -333,9 +348,9 @@ Nodes (8): baseline, collect(), current, formatKb(), report(), statSize(), THRES
 Cohesion: 0.25
 Nodes (8): noSvgWithoutTitle, useAnchorContent, useButtonType, useKeyWithClickEvents, useMediaCaption, useSemanticElements, useValidAnchor, a11y
 
-### Community 38 - "use-command-palette.ts"
-Cohesion: 0.18
-Nodes (17): CommandPalette(), CommandPalette, clientSearchCache, useCommandPalette(), UseCommandPaletteResult, fuzzyScore(), HighlightSegment, highlightSegments() (+9 more)
+### Community 38 - "local-catalog.ts"
+Cohesion: 0.05
+Nodes (80): CatalogRecorder(), CatalogRecorderProps, CommandPalette(), CommandPalette, NO_SNAPSHOT, SearchLocalPanel(), SearchLocalPanelProps, clientSearchCache (+72 more)
 
 ### Community 39 - "suspicious"
 Cohesion: 0.22
@@ -366,16 +381,16 @@ Cohesion: 0.33
 Nodes (16): BookmarksQueueView(), SERVER_EMPTY, addToQueue(), clearQueue(), EMPTY_QUEUE, getQueue(), getStorage(), isQueued() (+8 more)
 
 ### Community 51 - "progress.ts"
-Cohesion: 0.24
-Nodes (15): HistoryTracker(), HistoryTrackerProps, clearAllProgress(), EMPTY_PROGRESS, getProgress(), getStorage(), getWatchedCount(), isEpisodeWatched() (+7 more)
+Cohesion: 0.26
+Nodes (15): HistoryTracker(), HistoryTrackerProps, clearAllProgress(), EMPTY_PROGRESS, getProgress(), getProgressList(), getStorage(), getWatchedCount() (+7 more)
 
 ### Community 57 - "og-card.tsx"
 Cohesion: 0.25
 Nodes (6): alt, contentType, Image(), runtime, size, OgCardOptions
 
-### Community 58 - "bookmarks/page.tsx"
-Cohesion: 0.15
-Nodes (19): BookmarksPage(), SERVER_EMPTY_QUEUE, BookmarkMetaDialog(), BookmarksBulkBarProps, BookmarksToolbar(), BookmarksToolbarProps, EmptyStateProps, CollectionTab (+11 more)
+### Community 58 - "showToast"
+Cohesion: 0.19
+Nodes (19): BookmarksPage(), SERVER_EMPTY_QUEUE, BookmarkMetaDialog(), BookmarkMetaDialogProps, BookmarksBulkBarProps, EmptyStateProps, clearAllBookmarks(), exportBookmarksJson() (+11 more)
 
 ### Community 59 - "post-commit"
 Cohesion: 0.40
@@ -390,8 +405,8 @@ Cohesion: 0.15
 Nodes (13): alt, contentType, Image(), runtime, size, generateMetadata(), alt, contentType (+5 more)
 
 ### Community 62 - "animeSlug"
-Cohesion: 0.07
-Nodes (28): BUCKET_META, metadata, revalidate, UpdatePage(), AnimeGrid(), AnimeGridProps, AnimeImage(), AnimeImageProps (+20 more)
+Cohesion: 0.08
+Nodes (22): BUCKET_META, metadata, revalidate, UpdatePage(), AnimeGrid(), AnimeGridProps, AnimeImage(), AnimeImageProps (+14 more)
 
 ### Community 63 - "ADR 0001 — Three-tier cache with stale-while-revalidate"
 Cohesion: 0.40
@@ -434,24 +449,24 @@ Cohesion: 0.40
 Nodes (4): ADR 0005 — Hand-written service worker with per-tier caches, Consequences, Context, Decision
 
 ### Community 79 - "upstream.ts"
-Cohesion: 0.12
-Nodes (28): cleanFirstTitle(), dynamic, GET(), probe(), bodyKey(), DEFAULT_HEADERS, doFetch(), request() (+20 more)
+Cohesion: 0.15
+Nodes (20): cleanFirstTitle(), dynamic, GET(), probe(), bodyKey(), DEFAULT_HEADERS, doFetch(), request() (+12 more)
 
 ### Community 81 - "compare-selector.tsx"
 Cohesion: 0.22
-Nodes (7): CompareSelector(), CompareSelectorProps, Pane, PRESET_COMPARISONS, Side, searchCache, UseAnimeSearchResult
+Nodes (8): CompareSelector(), CompareSelectorProps, Pane, PRESET_COMPARISONS, Side, searchCache, useAnimeSearch(), UseAnimeSearchResult
 
 ### Community 82 - "use-collection-data.ts"
-Cohesion: 0.14
-Nodes (22): BookmarkMetaDialogProps, BookmarkListRow(), BookmarkListRowProps, BookmarksDayList(), BookmarksDayListProps, BookmarksGridViewProps, BookmarksStatusFilters(), BookmarksStatusFiltersProps (+14 more)
+Cohesion: 0.13
+Nodes (25): BookmarkListRow(), BookmarkListRowProps, BookmarksDayList(), BookmarksDayListProps, BookmarksGridViewProps, BookmarksStatusFilters(), BookmarksStatusFiltersProps, chipClass() (+17 more)
 
-### Community 83 - "uptime.ts"
-Cohesion: 0.22
-Nodes (13): dynamic, GET(), dynamic, GET(), renderBadge(), redisCounterValue(), redisRateLimit(), dayKey() (+5 more)
+### Community 83 - "status/route.ts"
+Cohesion: 0.15
+Nodes (18): dynamic, GET(), dynamic, GET(), renderBadge(), dynamic, GET(), COMMIT (+10 more)
 
 ### Community 84 - "ics.ts"
-Cohesion: 0.24
-Nodes (14): dynamic, GET(), UpdateIcsButton(), buildCalendarFeed(), buildWeeklyReminderIcs(), CalendarEvent, CalendarFeedEvent, djb2() (+6 more)
+Cohesion: 0.26
+Nodes (13): dynamic, GET(), buildCalendarFeed(), buildWeeklyReminderIcs(), CalendarEvent, CalendarFeedEvent, djb2(), escapeIcs() (+5 more)
 
 ### Community 85 - "settings-appearance-section.tsx"
 Cohesion: 0.16
@@ -459,71 +474,71 @@ Nodes (14): SettingsAppearanceSection(), SettingsAppearanceSectionProps, THEME_O
 
 ### Community 87 - "download-group.tsx"
 Cohesion: 0.19
-Nodes (11): DownloadGroup(), DownloadGroupProps, renderResolutionBadge(), DownloadPlatform(), getPlatformStyle(), requiresLogin(), episodeAnchors(), KeyboardNavigation() (+3 more)
+Nodes (12): DownloadGroup(), DownloadGroupProps, renderResolutionBadge(), DownloadPlatform(), getPlatformStyle(), requiresLogin(), EpisodeWatchedToggle(), EpisodeWatchedToggleProps (+4 more)
 
 ### Community 88 - "cache.ts"
-Cohesion: 0.13
-Nodes (22): dynamic, GET(), onCacheInvalidate(), entries, getSlowRequests(), SLOW_REQUEST_MS, SlowRequestEntry, CachedResult (+14 more)
+Cohesion: 0.09
+Nodes (33): dynamic, GET(), dynamic, handleCspReport(), POST(), currentLevel(), LEVEL_ORDER, logJson() (+25 more)
 
-### Community 89 - "section-detail.tsx"
-Cohesion: 0.19
-Nodes (7): NewSeriesSkeleton(), ReadingFocusModeProps, SectionDetail(), Synopsis(), Reveal(), RevealProps, parseTotalEpisodes()
+### Community 89 - "reveal.tsx"
+Cohesion: 0.25
+Nodes (6): NewSeriesSkeleton(), Reveal(), RevealProps, Anime, NewSeriesAnime(), getAnimePerPage()
 
-### Community 90 - "grid-skeleton.tsx"
-Cohesion: 0.13
-Nodes (4): CardSkeleton(), GridSkeletonProps, ListingSkeleton(), ListingSkeletonProps
+### Community 90 - "main-layout.tsx"
+Cohesion: 0.07
+Nodes (5): CardSkeleton(), GridSkeletonProps, HoneypotTrap(), ListingSkeleton(), ListingSkeletonProps
 
 ### Community 91 - "metrics.ts"
-Cohesion: 0.16
-Nodes (21): CIRCUIT_VALUE, dynamic, GET(), dynamic, GET(), COMMIT, dynamic, GET() (+13 more)
+Cohesion: 0.22
+Nodes (14): CIRCUIT_VALUE, dynamic, GET(), GET(), counters, getEventLoopLagMs(), getHistogramQuantile(), getHistograms() (+6 more)
 
-### Community 92 - "storage-keys.ts"
-Cohesion: 0.21
-Nodes (6): DeferredPwaInstallBanner, BeforeInstallPromptEvent, getRecent(), SearchHistoryChips(), writeRecent(), STORAGE_KEYS
+### Community 92 - "checkEtagMatch"
+Cohesion: 0.24
+Nodes (15): RFC-9457, GET(), EpisodeGroup, EpisodeMirror, GET(), GET(), GET(), GET() (+7 more)
 
-### Community 93 - "search-index.ts"
-Cohesion: 0.19
-Nodes (17): getRedis(), makeClient(), compact(), getIndexedBySlugs(), getIndexSnapshot(), IndexedAnime, rankIndexItems(), searchLocalIndex() (+9 more)
+### Community 93 - "redis.ts"
+Cohesion: 0.22
+Nodes (14): ensureSubscriber(), getRedis(), handleInvalidateMessage(), INSTANCE_ID, makeClient(), onCacheInvalidate(), publishCacheInvalidate(), RedisClient (+6 more)
 
 ### Community 94 - "bookmarks.ts"
-Cohesion: 0.17
-Nodes (27): BookmarkButton(), BookmarkButtonProps, CollectionCheckerDialog(), LinkResult, RecommendForYou(), RecommendItem, RecommendResponse, SERVER_BOOKMARKS (+19 more)
+Cohesion: 0.19
+Nodes (23): BookmarkButton(), BookmarkButtonProps, CollectionCheckerDialog(), LinkResult, parseAniListJson(), parseMalXml(), serializeMalXml(), slugifyTitle() (+15 more)
 
 ### Community 95 - "no-third-party.mjs"
 Cohesion: 0.20
 Nodes (13): add(), CONTENT_HOSTS, findings, hostOf(), isContentHost(), isSelfHost(), RESOURCE_RELS, ROOT (+5 more)
 
-### Community 96 - "admin-dashboard.tsx"
-Cohesion: 0.22
-Nodes (9): metadata, AdminDashboard(), FeatureFlagView, PRESET_PATHS, AdminLogEntry, adminRequest(), AdminRequestResult, useAdminConsole() (+1 more)
+### Community 96 - ".next/**"
+Cohesion: 0.14
+Nodes (10): .next/**, generateMetadata(), metadata, metadata, generateMetadata(), SearchAnime(), buildDetailMetadata(), buildSearchMetadata() (+2 more)
 
 ### Community 97 - "revalidate/route.ts"
-Cohesion: 0.31
-Nodes (7): dynamic, POST(), MAX_REVALIDATE_PATHS, sanitizeRevalidatePaths(), IndexNowResult, submitToIndexNow(), publishCacheInvalidate()
+Cohesion: 0.33
+Nodes (6): dynamic, POST(), MAX_REVALIDATE_PATHS, sanitizeRevalidatePaths(), IndexNowResult, submitToIndexNow()
 
 ### Community 98 - "audit-meta.mjs"
 Cohesion: 0.13
 Nodes (14): args, base, baseArg, checkJsonLd(), checkNode(), limit, limitArg, problems (+6 more)
 
 ### Community 99 - "compare-anime-client.tsx"
-Cohesion: 0.11
-Nodes (31): CompareAnimeClient(), CompareAnimeClientProps, Side, CompareAnimeCard(), CompareAnimeCardProps, SIDE_DETAIL_LABELS, SIDE_LABELS, CompareGenreAnalysis() (+23 more)
+Cohesion: 0.12
+Nodes (28): CompareAnimeClient(), CompareAnimeClientProps, Side, CompareAnimeCard(), CompareAnimeCardProps, SIDE_DETAIL_LABELS, SIDE_LABELS, CompareGenreAnalysis() (+20 more)
 
 ### Community 100 - "subscribeProgress"
-Cohesion: 0.35
-Nodes (7): ContinueWatching(), ContinueWatchingProps, jumpToEpisode(), EpisodeNavigator(), EpisodeNavigatorProps, nextUnwatchedEpisode(), subscribeProgress()
+Cohesion: 0.28
+Nodes (8): ContinueWatching(), ContinueWatchingProps, jumpToEpisode(), EpisodeNavigator(), EpisodeNavigatorProps, UpdateIcsButton(), nextUnwatchedEpisode(), subscribeProgress()
 
 ### Community 101 - "🚑 RUNBOOK — Kokunime Operations"
 Cohesion: 0.17
 Nodes (11): 10. Incident checklist (5 menit pertama), 1. Deploy normal, 2. Canary bertahap (opsional), 3. Rollback, 4. Backup & restore, 5. Monitoring & alert, 6. Load & chaos, 7. Feature flags (+3 more)
 
-### Community 102 - "download-section.tsx"
-Cohesion: 0.33
-Nodes (5): DownloadGuideModal(), DownloadSection(), parseEpisodeRange(), listEpisodeNumbers(), anime
+### Community 102 - "interfaces/index.ts"
+Cohesion: 0.14
+Nodes (8): DownloadGuideModal(), DownloadSection(), ReadingFocusModeProps, SectionDetail(), parseEpisodeRange(), listEpisodeNumbers(), parseTotalEpisodes(), anime
 
-### Community 103 - "redis.ts"
-Cohesion: 0.21
-Nodes (13): POST(), sha256(), CACHE_CODEC, decodeCacheValue(), encodeCacheValue(), gunzipAsync, gzipAsync, ensureSubscriber() (+5 more)
+### Community 103 - "cache-codec.ts"
+Cohesion: 0.52
+Nodes (5): CACHE_CODEC, decodeCacheValue(), encodeCacheValue(), gunzipAsync, gzipAsync
 
 ### Community 104 - "🚀 API Quickstart"
 Cohesion: 0.22
@@ -541,9 +556,9 @@ Nodes (6): findings, PATTERNS, pending, SCAN_EXTENSIONS, SKIP_DIRS, SKIP_FILES
 Cohesion: 0.33
 Nodes (6): alt, contentType, Image(), runtime, size, renderOgCard()
 
-### Community 108 - "episode-watched-toggle.tsx"
-Cohesion: 0.48
-Nodes (4): EpisodeWatchedToggle(), EpisodeWatchedToggleProps, COMPLETED_FOLDER, maybeAutoArchive()
+### Community 108 - "toast.ts"
+Cohesion: 0.20
+Nodes (16): EMPTY_TOASTS, Toaster(), clearToasts(), dismissToast(), emit(), getToasts(), lastShownAt, listeners (+8 more)
 
 ### Community 109 - "deps-allowlist.mjs"
 Cohesion: 0.33
@@ -622,8 +637,8 @@ Cohesion: 0.33
 Nodes (5): alt, contentType, Image(), runtime, size
 
 ### Community 135 - "section-header.tsx"
-Cohesion: 0.18
-Nodes (9): generateMetadata(), SearchAnime(), SectionHeader(), SectionHeaderProps, SectionTone, TONE_CLASS, buildSearchMetadata(), decodeQuery() (+1 more)
+Cohesion: 0.12
+Nodes (13): IndexItem, IndexPage(), letterOf(), LETTERS, metadata, revalidate, metadata, SECTIONS (+5 more)
 
 ### Community 136 - "[page]/opengraph-image.tsx"
 Cohesion: 0.33
@@ -634,12 +649,12 @@ Cohesion: 0.33
 Nodes (5): alt, contentType, Image(), runtime, size
 
 ### Community 138 - "app/page.tsx"
-Cohesion: 0.09
-Nodes (12): dynamic, revalidate, DetailHero(), RailSkeleton(), compute(), getBlurDataUrl(), memory, HomeHeroSection() (+4 more)
+Cohesion: 0.10
+Nodes (8): dynamic, revalidate, RailSkeleton(), HomeLatestSection(), HomeSectionProps, HeroSkeleton(), HomeSkeleton(), SeasonInRail()
 
 ### Community 139 - "use-sync-link.ts"
-Cohesion: 0.20
-Nodes (22): useSyncLink(), UseSyncLinkResult, getFolderOrder(), mergeFolderOrder(), setFolderOrder(), removeCollection(), addCollection(), EMPTY_COLLECTIONS (+14 more)
+Cohesion: 0.21
+Nodes (22): useSyncLink(), UseSyncLinkResult, getFolderOrder(), mergeFolderOrder(), setFolderOrder(), updateBookmarkUserMeta(), removeCollection(), addCollection() (+14 more)
 
 ### Community 140 - "stats/opengraph-image.tsx"
 Cohesion: 0.33
@@ -665,33 +680,89 @@ Nodes (3): DICTIONARY, DICTIONARY_EN, DICTIONARY_ID
 Cohesion: 0.50
 Nodes (4): BookmarksFolderBar(), BookmarksFolderBarProps, folderChipClass(), MAX_COLLECTION_NAME
 
-### Community 149 - "duplicate-detector.ts"
-Cohesion: 0.53
-Nodes (4): DuplicateGroup, findDuplicateGroups(), NOISE_WORDS, normalizeTitle()
+### Community 146 - "bulk/route.ts"
+Cohesion: 0.23
+Nodes (12): BulkResult, cleanSlugs(), DETAIL_FIELDS, GET(), guardRequest(), POST(), POST_DEPRECATION_HEADERS, resolveBulk() (+4 more)
 
-### Community 154 - "wrapped-content.tsx"
-Cohesion: 0.19
-Nodes (10): metadata, MONTHS_SHORT, SERVER_EMPTY, ProgressEntry, canvasToBlob(), exportShareCard(), renderShareCard(), ShareCardData (+2 more)
+### Community 147 - "sanitize.ts"
+Cohesion: 0.25
+Nodes (7): getAnimeDetailWithMeta(), fetchSinglePage(), extractWithFallback(), FallbackExtractResult, parsePagination(), stripHtmlNoise(), FIXTURES
+
+### Community 148 - "parse-detail.ts"
+Cohesion: 0.34
+Nodes (9): parseAnimeDetail(), parseDownloads(), getDownloadLinks(), normalizeUrl(), parseBytes(), parseGenres(), normalizeSeasonName(), parseSeason() (+1 more)
+
+### Community 151 - "circuit-breaker.ts"
+Cohesion: 0.29
+Nodes (11): BreakerEntry, breakers, canRequest(), CircuitState, entryFor(), getCircuitState(), isOpen(), recordFailure() (+3 more)
+
+### Community 152 - "roulette-content.tsx"
+Cohesion: 0.26
+Nodes (9): metadata, GenreOption, polarPoint(), readSpinHistory(), RouletteContent(), RouletteSpin, SEGMENT_COLORS, segmentPath() (+1 more)
+
+### Community 153 - "search.ts"
+Cohesion: 0.33
+Nodes (8): mergeSearchResults(), normalizeSearchTerm(), resolveSearchAlias(), SEARCH_ALIASES, fetchSearchPage(), mergeWithLocal(), searchAnime(), searchAnimeWithMeta()
+
+### Community 154 - "share-card.ts"
+Cohesion: 0.43
+Nodes (6): canvasToBlob(), exportShareCard(), renderShareCard(), ShareCardData, ShareCardRow, wrapText()
+
+### Community 155 - "graphql/route.ts"
+Cohesion: 0.33
+Nodes (8): apqMemory, POST(), sha256(), analyzeQuery(), GRAPHQL_MAX_COMPLEXITY, GRAPHQL_MAX_DEPTH, QueryAnalysis, RESERVED
+
+### Community 156 - "error-card.tsx"
+Cohesion: 0.24
+Nodes (3): Suggestion, ErrorCard(), ErrorCardProps
+
+### Community 157 - "anime.ts"
+Cohesion: 0.29
+Nodes (7): AnimeDetail, AnimePage, DownloadOption, DownloadResolution, DownloadTarget, Genre, Recommendation
+
+### Community 158 - "status/page.tsx"
+Cohesion: 0.33
+Nodes (6): dotClass(), metadata, revalidate, StatusPage(), buildSparklinePath(), SparklineOptions
+
+### Community 159 - "api/page.tsx"
+Cohesion: 0.29
+Nodes (5): ENDPOINTS, metadata, ApiEndpoint, ApiTesterProps, CodeLang
+
+### Community 160 - "[slug]/opengraph-image.tsx"
+Cohesion: 0.33
+Nodes (6): alt, contentType, Image(), runtime, size, getAnimeDetail()
+
+### Community 161 - "offline-indicator.tsx"
+Cohesion: 0.60
+Nodes (5): getCacheServedSnapshot(), getOnlineSnapshot(), OfflineIndicator(), subscribeCacheServed(), subscribeOnline()
+
+### Community 162 - "similar.ts"
+Cohesion: 0.53
+Nodes (4): genreSet(), numeric(), SimilarInput, similarityScore()
+
+### Community 163 - "keyboard-navigation.tsx"
+Cohesion: 0.60
+Nodes (4): episodeAnchors(), KeyboardNavigation(), nearestEpisodeAnchor(), SHORTCUTS
 
 ## Knowledge Gaps
-- **720 isolated node(s):** `cheerio`, `husky`, `next`, `react`, `react-dom` (+715 more)
+- **738 isolated node(s):** `revalidate`, `metadata`, `ENDPOINTS`, `dynamic`, `NO_SNAPSHOT` (+733 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **13 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **14 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `.next/**` connect `site.ts` to `admin-dashboard.tsx`, `main-layout.tsx`, `endpointSlug`, `stats-content.tsx`, `section-header.tsx`, `app/page.tsx`, `seasons/page.tsx`, `interfaces/index.ts`, `ignore`, `vitals-reporter.ts`, `wrapped-content.tsx`, `[year]/page.tsx`, `animeSlug`, `safeJsonLd`?**
-  _High betweenness centrality (0.063) - this node is a cross-community bridge._
-- **Why does `ignore` connect `ignore` to `site.ts`?**
-  _High betweenness centrality (0.035) - this node is a cross-community bridge._
+- **Why does `.next/**` connect `.next/**` to `wrapped-content.tsx`, `stats-content.tsx`, `section-header.tsx`, `site.ts`, `app/page.tsx`, `seasons/page.tsx`, `app/layout.tsx`, `storage-keys.ts`, `ignore`, `vitals-reporter.ts`, `roulette-content.tsx`, `animeSlug`, `anime-listing.tsx`, `status/page.tsx`, `api/page.tsx`?**
+  _High betweenness centrality (0.083) - this node is a cross-community bridge._
+- **Why does `ignore` connect `ignore` to `.next/**`?**
+  _High betweenness centrality (0.045) - this node is a cross-community bridge._
 - **Why does `files` connect `ignore` to `biome.json`?**
-  _High betweenness centrality (0.033) - this node is a cross-community bridge._
+  _High betweenness centrality (0.043) - this node is a cross-community bridge._
 - **Are the 3 inferred relationships involving `useTranslation()` (e.g. with `getStoredLanguage()` and `setStoredLanguage()`) actually correct?**
   _`useTranslation()` has 3 INFERRED edges - model-reasoned connections that need verification._
 - **Are the 4 inferred relationships involving `getBookmarks()` (e.g. with `RecommendForYou()` and `StatsContent()`) actually correct?**
   _`getBookmarks()` has 4 INFERRED edges - model-reasoned connections that need verification._
-- **What connects `cheerio`, `husky`, `next` to the rest of the system?**
-  _720 weakly-connected nodes found - possible documentation gaps or missing edges._
-- **Should `sanitize.ts` be split into smaller, more focused modules?**
-  _Cohesion score 0.06438631790744467 - nodes in this community are weakly interconnected._
+- **What connects `revalidate`, `metadata`, `ENDPOINTS` to the rest of the system?**
+  _738 weakly-connected nodes found - possible documentation gaps or missing edges._
+- **Should `settings.ts` be split into smaller, more focused modules?**
+  _Cohesion score 0.13174603174603175 - nodes in this community are weakly interconnected._
