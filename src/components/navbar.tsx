@@ -18,18 +18,9 @@ const NAV_KEY_MAP: Record<string, TranslationKey> = {
   "/settings": "nav.settings",
 };
 
-// Factual, short claims only — long enough to fill the loop, never invented.
-const TICKER_ITEMS = [
-  "🔥 Update anime tiap hari",
-  "🎬 Batch + episode, subtitle Indonesia",
-  "🔎 Ctrl+K untuk pencarian cepat",
-  "⌨️ Tekan ? untuk daftar pintasan",
-  "🎲 Tombol dadu untuk anime acak",
-];
-
-// Ink masthead: ticker and navigation share one black band, always-on (no
-// scroll state) so the chrome never flashes. The footer closes every page
-// with the same ink band; content in between stays paper.
+// Ink masthead: navigation lives in one black band, always-on (no scroll
+// state) so the chrome never flashes. The footer closes every page with the
+// same ink band; content in between stays paper.
 const Navbar = (): JSX.Element => {
   const pathname = usePathname();
   const { t } = useTranslation();
@@ -41,21 +32,6 @@ const Navbar = (): JSX.Element => {
 
   return (
     <header className="navbar sticky top-0 z-50 bg-ink">
-      <div className="nb-ticker">
-        <div className="nb-ticker-track">
-          <div className="nb-ticker-group">
-            {TICKER_ITEMS.map((item) => (
-              <span key={item}>{item}</span>
-            ))}
-          </div>
-          <div className="nb-ticker-group" aria-hidden="true">
-            {TICKER_ITEMS.map((item) => (
-              <span key={item}>{item}</span>
-            ))}
-          </div>
-        </div>
-      </div>
-
       <div className="container flex h-16 items-center justify-between gap-4 px-4 md:px-6">
         <div className="flex items-center gap-8 min-w-0">
           <Link

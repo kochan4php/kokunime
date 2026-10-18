@@ -2,7 +2,6 @@ import FeaturedHero from "@/sections/featured-hero";
 import LatestGrid from "@/sections/latest-grid";
 import RecommendationSection from "@/sections/recommendation-section";
 import HomeHistoryStrip from "@/components/home-history-strip";
-import MarqueeStrip from "@/components/marquee-strip";
 import ReleaseWatcher from "@/components/release-watcher";
 import { getBlurDataUrl } from "@/lib/blur";
 import { getAnimePerPage } from "@/services/scraper";
@@ -43,10 +42,6 @@ export const HomeHeroSection = async (): Promise<JSX.Element> => {
           <FeaturedHero featured={anime[0]} items={anime} blurDataURL={blurDataURL} />
         </div>
       </section>
-      <MarqueeStrip
-        items={["Update unggulan", "Batch lengkap", "Resolusi 360p–1080p", "Sub Indo"]}
-        className="mt-12 bg-nb-ink text-nb-cream"
-      />
       <HomeHistoryStrip />
     </>
   );
