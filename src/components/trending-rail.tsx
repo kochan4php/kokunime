@@ -12,8 +12,9 @@ interface TrendingEntry {
   count: number;
 }
 
-// "Sedang Populer" rail on the home page. Renders nothing until /api/trending
-// returns real data (no Redis / no views yet = hidden).
+// "Sedang Populer" chart on the home page: view counts ranked with big
+// numerals (editorial top-N). Renders nothing until /api/trending returns real
+// data (no Redis / no views yet = hidden).
 const TrendingRail = (): JSX.Element | null => {
   const [items, setItems] = useState<TrendingEntry[]>([]);
 
@@ -26,7 +27,7 @@ const TrendingRail = (): JSX.Element | null => {
         const data = (await res.json()) as { items?: TrendingEntry[] };
         if (active && Array.isArray(data.items)) setItems(data.items);
       } catch {
-        // Rail stays hidden.
+        // Chart stays hidden.
       }
     })();
     return () => {
@@ -37,44 +38,43 @@ const TrendingRail = (): JSX.Element | null => {
   if (items.length === 0) return null;
 
   return (
-    <section className="container px-4 pt-8 md:pt-12" aria-labelledby="trending-title">
+    <section className="container px-4 pt-10 md:pt-14" aria-labelledby="trending-title">
       <SectionHeader
         kicker="Trending"
         title="🔥 Sedang Populer"
         titleId="trending-title"
         tone="pink"
-        className="mb-4"
+        className="mb-6"
         badge={<span className="font-mono text-[10px] uppercase tracking-wide text-ink-muted">7 hari terakhir</span>}
       />
-      <div className="nb-cycle flex snap-x gap-3 overflow-x-auto pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-        {items.map((item, index) => (
-          <Link
-            key={item.slug}
-            href={`/anime/${item.slug}`}
-            className="card-shell group block w-32 shrink-0 snap-start sm:w-36"
-          >
-            <div className="card-core">
-              <div className="relative aspect-[3/4] w-full border-b-2 border-border">
-                <span className="absolute left-1.5 top-1.5 z-10 rounded-sm border-2 border-border bg-nb-pink px-1.5 font-mono text-[10px] font-bold text-[#0a0a0a]">
-                  #{index + 1}
-                </span>
-                <AnimeImage
-                  fill
-                  sizes="144px"
-                  src={item.image as string}
-                  alt={item.title}
-                  className="transition-transform duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:scale-105"
-                />
-              </div>
-              <div className="p-2.5">
-                <h3 className="line-clamp-2 text-[11px] font-semibold leading-snug group-hover:underline decoration-2 underline-offset-2">
+      <ol className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+        {items.slice(0, 9).map((item, index) => (
+          <li key={item.slug}>
+            <Link
+              href={`/anime/${item.slug}`}
+              className="group flex items-center gap-3 border-2 border-border bg-surface-solid p-2.5 shadow-[3px_3px_0_0_var(--border)] transition-transform hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[5px_5px_0_0_var(--border)] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none"
+            >
+              <span
+                aria-hidden="true"
+                className="w-9 shrink-0 text-center font-display text-3xl font-black leading-none"
+              >
+                {String(index + 1).padStart(2, "0")}
+              </span>
+              <span className="relative block h-16 w-12 shrink-0 overflow-hidden border-2 border-border bg-surface-muted">
+                <AnimeImage fill sizes="48px" src={item.image as string} alt="" />
+              </span>
+              <span className="min-w-0 flex-1">
+                <span className="block truncate font-display text-sm font-extrabold tracking-tight decoration-2 underline-offset-2 group-hover:underline">
                   {item.title}
-                </h3>
-              </div>
-            </div>
-          </Link>
+                </span>
+                <span className="mt-0.5 block font-mono text-[10px] uppercase tracking-wide text-ink-muted">
+                  {item.count} kunjungan
+                </span>
+              </span>
+            </Link>
+          </li>
         ))}
-      </div>
+      </ol>
     </section>
   );
 };

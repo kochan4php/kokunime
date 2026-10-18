@@ -2,6 +2,7 @@
 
 import MainLayout from "@/layouts/main-layout";
 import MiniBarChart, { MiniBarDatum } from "@/components/mini-bar-chart";
+import SectionHeader from "@/components/section-header";
 import { getBookmarks, subscribeBookmarks, BookmarkItem } from "@/utils/bookmarks";
 import { getHistory, subscribeHistory, HistoryItem } from "@/utils/history";
 import { getProgressList, subscribeProgress, ProgressEntry } from "@/utils/progress";
@@ -138,29 +139,24 @@ const StatsContent = (): JSX.Element => {
   return (
     <MainLayout>
       <section className="container px-4 pt-6 pb-16 md:pt-10">
-        <div className="flex flex-wrap items-end justify-between gap-3">
-          <div>
-            <span className="chip">
-              <span className="h-1.5 w-1.5 rounded-full bg-nb-cyan" />
-              Statistik lokal
-            </span>
-            <h1 className="mt-3 font-display text-2xl font-extrabold tracking-tight text-ink md:text-4xl">
-              Statistik Saya
-            </h1>
-            <p className="mt-2 max-w-xl text-sm text-ink-muted">
-              Dihitung langsung dari data di perangkat ini — bookmark, riwayat, dan progres menonton. Tidak ada yang
-              dikirim ke server.
-            </p>
-          </div>
-          <div className="flex gap-2">
-            <Link href="/wrapped" className="btn-secondary">
-              🎁 Wrapped
-            </Link>
-            <Link href="/bookmarks" className="btn-primary">
-              Buka Tersimpan
-            </Link>
-          </div>
-        </div>
+        <SectionHeader
+          kicker="Statistik lokal"
+          title="Statistik Saya"
+          titleAs="h1"
+          tone="pink"
+          className="mb-8"
+          description="Dihitung langsung dari data di perangkat ini — bookmark, riwayat, dan progres menonton. Tidak ada yang dikirim ke server."
+          aside={
+            <>
+              <Link href="/wrapped" className="btn-secondary">
+                🎁 Wrapped
+              </Link>
+              <Link href="/bookmarks" className="btn-primary">
+                Buka Tersimpan
+              </Link>
+            </>
+          }
+        />
 
         {!stats.hasData ? (
           <div className="card-shell mt-8">

@@ -1,4 +1,5 @@
 import { getSeasons } from "@/services/scraper";
+import SectionHeader from "@/components/section-header";
 import { SITE_URL } from "@/lib/site";
 import { groupSeasonsByYear, orderYears } from "@/utils/seasons";
 import { buildSubpageBreadcrumbJsonLd, safeJsonLd } from "@/lib/seo";
@@ -39,19 +40,14 @@ const SeasonsPage = async (): Promise<JSX.Element> => {
         suppressHydrationWarning
       />
       <section className="container px-4 pt-6 pb-12 md:pt-10 md:pb-20">
-        <div className="mb-8">
-          <span className="chip">
-            <span className="h-1.5 w-1.5 rounded-full bg-accent" />
-            Kalender & Arsip
-          </span>
-          <h1 className="mt-3 font-display text-2xl font-extrabold tracking-tight text-ink md:text-4xl">
-            Jadwal & Musim Rilis Anime
-          </h1>
-          <p className="mt-2 text-sm text-ink-muted max-w-2xl">
-            Cari anime berdasarkan musim penayangan dari tahun 2000-an hingga musim terbaru saat ini: Musim Dingin
-            (*Winter*), Musim Semi (*Spring*), Musim Panas (*Summer*), dan Musim Gugur (*Fall*).
-          </p>
-        </div>
+        <SectionHeader
+          kicker="Kalender & Arsip"
+          title="Jadwal & Musim Rilis Anime"
+          titleAs="h1"
+          tone="orange"
+          className="mb-8"
+          description="Cari anime berdasarkan musim penayangan dari tahun 2000-an hingga musim terbaru saat ini: Musim Dingin (*Winter*), Musim Semi (*Spring*), Musim Panas (*Summer*), dan Musim Gugur (*Fall*)."
+        />
 
         <SeasonsExplorer groups={groups} years={years} />
       </section>

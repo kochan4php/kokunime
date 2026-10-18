@@ -9,6 +9,7 @@ import { animeSlug } from "@/utils/endpoint-slug";
 import { SITE_URL } from "@/lib/site";
 import { buildSubpageBreadcrumbJsonLd, safeJsonLd } from "@/lib/seo";
 import Breadcrumbs from "@/components/breadcrumbs";
+import SectionHeader from "@/components/section-header";
 import { Metadata } from "next";
 import { JSX } from "react";
 
@@ -64,22 +65,15 @@ const UpdatePage = async (): Promise<JSX.Element> => {
           suppressHydrationWarning
         />
         <Breadcrumbs items={[{ name: "Update" }]} />
-        <div className="flex flex-wrap items-end justify-between gap-4">
-          <div>
-            <span className="chip">
-              <span className="h-1.5 w-1.5 rounded-full bg-accent" />
-              Timeline
-            </span>
-            <h1 className="mt-3 font-display text-2xl font-extrabold uppercase tracking-tight text-ink md:text-4xl">
-              Update Terbaru
-            </h1>
-            <p className="mt-2 max-w-xl text-sm text-ink-muted">
-              Anime yang baru diperbarui, dikelompokkan per hari. Ingin rutin mengecek? Simpan pengingat mingguan ke
-              kalender Anda.
-            </p>
-          </div>
-          <UpdateIcsButton events={calendarEvents} />
-        </div>
+        <SectionHeader
+          kicker="Timeline"
+          title="Update Terbaru"
+          titleAs="h1"
+          tone="lime"
+          className="mb-8"
+          description="Anime yang baru diperbarui, dikelompokkan per hari. Ingin rutin mengecek? Simpan pengingat mingguan ke kalender Anda."
+          aside={<UpdateIcsButton events={calendarEvents} />}
+        />
 
         <ReleaseWatcher
           items={anime

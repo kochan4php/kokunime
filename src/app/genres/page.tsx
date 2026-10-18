@@ -2,6 +2,7 @@ import { getGenres } from "@/services/scraper";
 import { SITE_URL } from "@/lib/site";
 import { buildSubpageBreadcrumbJsonLd, safeJsonLd } from "@/lib/seo";
 import GenresExplorer from "@/components/genres-explorer";
+import SectionHeader from "@/components/section-header";
 import MainLayout from "@/layouts/main-layout";
 import { Metadata } from "next";
 import { JSX } from "react";
@@ -36,19 +37,14 @@ const GenresPage = async (): Promise<JSX.Element> => {
         suppressHydrationWarning
       />
       <section className="container px-4 pt-6 pb-12 md:pt-10 md:pb-20">
-        <div className="mb-8">
-          <span className="chip">
-            <span className="h-1.5 w-1.5 rounded-full bg-accent" />
-            Kategori & Tema
-          </span>
-          <h1 className="mt-3 font-display text-2xl font-extrabold tracking-tight text-ink md:text-4xl">
-            Daftar Genre Anime
-          </h1>
-          <p className="mt-2 text-sm text-ink-muted max-w-2xl">
-            Temukan tontonan anime favorit Anda berdasarkan kategori, mulai dari aksi menegangkan, petualangan dunia
-            lain (*Isekai*), romansa manis, hingga komedi.
-          </p>
-        </div>
+        <SectionHeader
+          kicker="Kategori & Tema"
+          title="Daftar Genre Anime"
+          titleAs="h1"
+          tone="teal"
+          className="mb-8"
+          description="Temukan tontonan anime favorit Anda berdasarkan kategori, mulai dari aksi menegangkan, petualangan dunia lain (*Isekai*), romansa manis, hingga komedi."
+        />
 
         <GenresExplorer genres={genres} />
       </section>
