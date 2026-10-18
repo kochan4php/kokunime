@@ -2,6 +2,7 @@
 
 import MainLayout from "@/layouts/main-layout";
 import AnimeImage from "@/components/cards/anime-image";
+import SectionHeader from "@/components/section-header";
 import ViewTransitionLink from "@/components/view-transition-link";
 import { Anime } from "@/interfaces";
 import { animeSlug, endpointSlug } from "@/utils/endpoint-slug";
@@ -159,47 +160,44 @@ const RouletteContent = (): JSX.Element => {
   return (
     <MainLayout>
       <section className="container px-4 pt-6 pb-16 md:pt-10">
-        <div className="mx-auto max-w-2xl text-center">
-          <span className="chip">
-            <span className="h-1.5 w-1.5 rounded-full bg-nb-pink" />
-            Randomizer
-          </span>
-          <h1 className="mt-3 font-display text-2xl font-extrabold tracking-tight text-ink md:text-4xl">
-            Roulette Anime 🎡
-          </h1>
-          <p className="mt-2 text-sm text-ink-muted">
-            Bingung mau nonton apa? Pilih genre (atau biarkan acak), putar, dan ikuti hasilnya.
-          </p>
+        <SectionHeader
+          kicker="Randomizer"
+          title="Roulette Anime 🎡"
+          titleAs="h1"
+          tone="pink"
+          className="mb-10"
+          description="Bingung mau nonton apa? Pilih genre (atau biarkan acak), putar, dan ikuti hasilnya."
+          aside={
+            <>
+              <label htmlFor="roulette-genre" className="sr-only">
+                Pilih genre
+              </label>
+              <select
+                id="roulette-genre"
+                value={genre}
+                onChange={(event) => setGenre(event.target.value)}
+                className="h-10 cursor-pointer rounded-sm border-2 border-border bg-surface px-3 font-mono text-xs text-ink outline-none focus:border-accent"
+              >
+                <option value="__random__">🎲 Genre acak</option>
+                {genres.map((option) => (
+                  <option key={option.slug} value={option.slug}>
+                    {option.name}
+                  </option>
+                ))}
+              </select>
+              <button
+                type="button"
+                onClick={() => void spin()}
+                disabled={spinning}
+                className="btn-primary disabled:opacity-70"
+              >
+                {spinning ? "Memutar…" : "🎰 Putar Roulette"}
+              </button>
+            </>
+          }
+        />
 
-          <div className="mt-6 flex flex-col items-center justify-center gap-3 sm:flex-row">
-            <label htmlFor="roulette-genre" className="sr-only">
-              Pilih genre
-            </label>
-            <select
-              id="roulette-genre"
-              value={genre}
-              onChange={(event) => setGenre(event.target.value)}
-              className="h-10 cursor-pointer rounded-sm border-2 border-border bg-surface px-3 font-mono text-xs text-ink outline-none focus:border-accent"
-            >
-              <option value="__random__">🎲 Genre acak</option>
-              {genres.map((option) => (
-                <option key={option.slug} value={option.slug}>
-                  {option.name}
-                </option>
-              ))}
-            </select>
-            <button
-              type="button"
-              onClick={() => void spin()}
-              disabled={spinning}
-              className="btn-primary w-full justify-center sm:w-auto disabled:opacity-70"
-            >
-              {spinning ? "Memutar…" : "🎰 Putar Roulette"}
-            </button>
-          </div>
-        </div>
-
-        <div className="mx-auto mt-10 flex max-w-2xl flex-col items-center">
+        <div className="mx-auto flex max-w-2xl flex-col items-center">
           <div
             className={`flex h-20 w-20 items-center justify-center rounded-sm border-2 border-border bg-nb-yellow text-4xl shadow-[4px_4px_0_0_var(--border)] ${
               spinning ? "animate-[spin_0.6s_linear_infinite]" : ""

@@ -2,6 +2,7 @@
 
 import MainLayout from "@/layouts/main-layout";
 import BookmarkMetaDialog from "@/components/bookmark-meta-dialog";
+import SectionHeader from "@/components/section-header";
 import BookmarksBulkBar from "@/components/bookmarks/bookmarks-bulk-bar";
 import BookmarksDayList from "@/components/bookmarks/bookmarks-day-list";
 import BookmarksFolderBar from "@/components/bookmarks/bookmarks-folder-bar";
@@ -263,78 +264,88 @@ const BookmarksPage = (): JSX.Element => {
           </p>
         </div>
 
-        <div className="flex flex-wrap items-center justify-between gap-4 print:hidden">
-          <div>
-            <div className="flex items-center gap-2">
-              <button
-                type="button"
-                onClick={() => switchTab("bookmarks")}
-                className={`rounded-sm border-2 border-border px-4 py-1.5 font-display text-sm font-bold tracking-tight transition-all duration-150 cursor-pointer ${
-                  activeTab === "bookmarks"
-                    ? "bg-accent text-(--accent-ink) shadow-[2px_2px_0_0_var(--border)]"
-                    : "bg-surface text-ink-muted hover:text-ink"
-                }`}
-              >
-                Tersimpan ({bookmarks.length})
-              </button>
-              <button
-                type="button"
-                onClick={() => switchTab("history")}
-                className={`rounded-sm border-2 border-border px-4 py-1.5 font-display text-sm font-bold tracking-tight transition-all duration-150 cursor-pointer ${
-                  activeTab === "history"
-                    ? "bg-accent text-(--accent-ink) shadow-[2px_2px_0_0_var(--border)]"
-                    : "bg-surface text-ink-muted hover:text-ink"
-                }`}
-              >
-                Riwayat Terakhir ({history.length})
-              </button>
-            </div>
-            <h1 className="mt-4 font-display text-2xl font-extrabold tracking-tight text-ink md:text-4xl">
-              {activeTab === "bookmarks" ? "Anime Tersimpan" : "Riwayat Terakhir Dilihat"}
-            </h1>
-
-            {activeTab === "bookmarks" && bookmarks.length > 0 && (
-              <BookmarksStatusFilters
-                bookmarks={bookmarks}
-                statusFilter={statusFilter}
-                onStatusFilterChange={setStatusFilter}
+        <div className="print:hidden">
+          <SectionHeader
+            kicker="Koleksi pribadi"
+            title={activeTab === "bookmarks" ? "Anime Tersimpan" : "Riwayat Terakhir Dilihat"}
+            titleAs="h1"
+            tone="purple"
+            badge={
+              <>
+                <button
+                  type="button"
+                  onClick={() => switchTab("bookmarks")}
+                  className={`rounded-sm border-2 border-border px-4 py-1.5 font-display text-sm font-bold tracking-tight transition-all duration-150 cursor-pointer ${
+                    activeTab === "bookmarks"
+                      ? "bg-accent text-(--accent-ink) shadow-[2px_2px_0_0_var(--border)]"
+                      : "bg-surface text-ink-muted hover:text-ink"
+                  }`}
+                >
+                  Tersimpan ({bookmarks.length})
+                </button>
+                <button
+                  type="button"
+                  onClick={() => switchTab("history")}
+                  className={`rounded-sm border-2 border-border px-4 py-1.5 font-display text-sm font-bold tracking-tight transition-all duration-150 cursor-pointer ${
+                    activeTab === "history"
+                      ? "bg-accent text-(--accent-ink) shadow-[2px_2px_0_0_var(--border)]"
+                      : "bg-surface text-ink-muted hover:text-ink"
+                  }`}
+                >
+                  Riwayat Terakhir ({history.length})
+                </button>
+              </>
+            }
+            description={
+              activeTab === "bookmarks"
+                ? "Daftar tontonan tersimpan di perangkat ini — bisa diekspor ke JSON, MAL XML, atau tautan sinkron."
+                : "Jejak judul yang terakhir kamu buka di perangkat ini."
+            }
+            aside={
+              <BookmarksToolbar
+                activeTab={activeTab}
+                viewMode={viewMode}
+                onViewModeChange={setViewMode}
+                allItemsCount={allItems.length}
+                bookmarksCount={bookmarks.length}
+                filterQuery={filterQuery}
+                onFilterQueryChange={setFilterQuery}
+                sortBy={sortBy}
+                onSortByChange={setSortBy}
+                storageStats={storageStats}
+                selectMode={selectMode}
+                onToggleSelectMode={() => {
+                  setSelectMode((prev) => !prev);
+                  setSelectedSlugs([]);
+                }}
+                shareCopied={shareCopied}
+                onCopySyncLink={copySyncLink}
+                onCopyMarkdownAll={() => copyMarkdown(bookmarks)}
+                onExportJson={exportBookmarksJson}
+                onExportMalXml={exportBookmarksMalXml}
+                onImport={handleImport}
+                onClear={handleClear}
               />
-            )}
-            {activeTab === "bookmarks" && (folders.length > 0 || bookmarks.length > 0) && (
-              <BookmarksFolderBar
-                folders={folders}
-                folderFilter={folderFilter}
-                dragOverFolder={dragOverFolder}
-                onFolderFilterChange={setFolderFilter}
-                onDragOverFolderChange={setDragOverFolder}
-                onDropSlug={(folder, slug) => assignFolder(folder, [slug])}
-              />
-            )}
-          </div>
-          <BookmarksToolbar
-            activeTab={activeTab}
-            viewMode={viewMode}
-            onViewModeChange={setViewMode}
-            allItemsCount={allItems.length}
-            bookmarksCount={bookmarks.length}
-            filterQuery={filterQuery}
-            onFilterQueryChange={setFilterQuery}
-            sortBy={sortBy}
-            onSortByChange={setSortBy}
-            storageStats={storageStats}
-            selectMode={selectMode}
-            onToggleSelectMode={() => {
-              setSelectMode((prev) => !prev);
-              setSelectedSlugs([]);
-            }}
-            shareCopied={shareCopied}
-            onCopySyncLink={copySyncLink}
-            onCopyMarkdownAll={() => copyMarkdown(bookmarks)}
-            onExportJson={exportBookmarksJson}
-            onExportMalXml={exportBookmarksMalXml}
-            onImport={handleImport}
-            onClear={handleClear}
+            }
           />
+
+          {activeTab === "bookmarks" && bookmarks.length > 0 && (
+            <BookmarksStatusFilters
+              bookmarks={bookmarks}
+              statusFilter={statusFilter}
+              onStatusFilterChange={setStatusFilter}
+            />
+          )}
+          {activeTab === "bookmarks" && (folders.length > 0 || bookmarks.length > 0) && (
+            <BookmarksFolderBar
+              folders={folders}
+              folderFilter={folderFilter}
+              dragOverFolder={dragOverFolder}
+              onFolderFilterChange={setFolderFilter}
+              onDragOverFolderChange={setDragOverFolder}
+              onDropSlug={(folder, slug) => assignFolder(folder, [slug])}
+            />
+          )}
         </div>
 
         {/* List/grid item titles render as h3; hidden h2 keeps the outline

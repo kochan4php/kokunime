@@ -125,22 +125,3 @@ footer .nb-outline-text {
     color: color-mix(in srgb, var(--nb-outline, var(--border)) 10%, transparent);
   }
 }
-
-/* ── Colour bands ─────────────────────────────────────────────────────────
-   Full-bleed chapter blocks: bordered top and bottom so every band reads as
-   a pasted strip on the paper backdrop. Content stays in a .container. */
-.nb-band {
-  border-block: 2px solid var(--border);
-}
-
-.nb-band-yellow {
-  background: var(--color-nb-yellow);
-}
-
-.nb-band-pink {
-  background: var(--color-nb-pink);
-}
-
-.nb-band-muted {
-  background: var(--surface-muted);
-}

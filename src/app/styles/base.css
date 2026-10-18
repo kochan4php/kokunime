@@ -278,19 +278,11 @@ dialog.is-closing::backdrop {
   body::before {
     content: none;
   }
-
-  /* Colour bands become plain paper in print. */
-  .nb-band-yellow,
-  .nb-band-pink,
-  .nb-band-muted {
-    background: #ffffff !important;
-  }
 }
 
-/* Ink chrome (navbar, footer, ink bands): the default black focus ring would
-   vanish there, so the ring flips to sticker yellow. */
+/* Ink chrome (navbar, footer): the default black focus ring would vanish
+   there, so the ring flips to sticker yellow. */
 .navbar :focus-visible,
-footer :focus-visible,
-.nb-band-ink :focus-visible {
+footer :focus-visible {
   outline-color: var(--color-nb-yellow);
 }

@@ -2,6 +2,7 @@
 
 import MainLayout from "@/layouts/main-layout";
 import MiniBarChart, { MiniBarDatum } from "@/components/mini-bar-chart";
+import SectionHeader from "@/components/section-header";
 import { BookmarkItem, getBookmarks, subscribeBookmarks } from "@/utils/bookmarks";
 import { getHistory, HistoryItem, subscribeHistory } from "@/utils/history";
 import { getProgressList, ProgressEntry, subscribeProgress } from "@/utils/progress";
@@ -94,39 +95,34 @@ const WrappedContent = (): JSX.Element => {
   return (
     <MainLayout>
       <section className="container px-4 pt-6 pb-16 md:pt-10">
-        <div className="flex flex-wrap items-end justify-between gap-3">
-          <div>
-            <span className="chip">
-              <span className="h-1.5 w-1.5 rounded-full bg-nb-pink" />
-              Rekap tahunan
-            </span>
-            <h1 className="mt-3 font-display text-3xl font-black tracking-tight text-ink md:text-5xl">
-              Wrapped <span className="text-accent">{activeYear}</span>
-            </h1>
-            <p className="mt-2 max-w-xl text-sm text-ink-muted">
-              Rekap perjalanan nontonmu tahun ini — dihitung dari data lokal perangkat, tanpa server.
-            </p>
-          </div>
-          <div className="flex items-center gap-2">
-            {availableYears.length > 1 && (
-              <select
-                value={activeYear}
-                onChange={(event) => setYear(Number(event.target.value))}
-                aria-label="Pilih tahun"
-                className="h-10 cursor-pointer rounded-sm border-2 border-border bg-surface px-3 font-mono text-xs text-ink outline-none focus:border-accent"
-              >
-                {availableYears.map((option) => (
-                  <option key={option} value={option}>
-                    {option}
-                  </option>
-                ))}
-              </select>
-            )}
-            <button type="button" onClick={() => void shareSummary()} className="btn-primary">
-              Bagikan 🎁
-            </button>
-          </div>
-        </div>
+        <SectionHeader
+          kicker="Rekap tahunan"
+          title={`Wrapped ${activeYear}`}
+          titleAs="h1"
+          tone="purple"
+          description="Rekap perjalanan nontonmu tahun ini — dihitung dari data lokal perangkat, tanpa server."
+          aside={
+            <>
+              {availableYears.length > 1 && (
+                <select
+                  value={activeYear}
+                  onChange={(event) => setYear(Number(event.target.value))}
+                  aria-label="Pilih tahun"
+                  className="h-10 cursor-pointer rounded-sm border-2 border-border bg-surface px-3 font-mono text-xs text-ink outline-none focus:border-accent"
+                >
+                  {availableYears.map((option) => (
+                    <option key={option} value={option}>
+                      {option}
+                    </option>
+                  ))}
+                </select>
+              )}
+              <button type="button" onClick={() => void shareSummary()} className="btn-primary">
+                Bagikan 🎁
+              </button>
+            </>
+          }
+        />
 
         {!wrapped.hasData ? (
           <div className="card-shell mt-8">

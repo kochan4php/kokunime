@@ -5,6 +5,7 @@ import SettingsAppearanceSection from "@/components/settings/settings-appearance
 import SettingsCatalogSection from "@/components/settings/settings-catalog-section";
 import SettingsLanguageSection from "@/components/settings/settings-language-section";
 import SettingsPreviewCard from "@/components/settings/settings-preview-card";
+import SectionHeader from "@/components/section-header";
 import SettingsStorageSection from "@/components/settings/settings-storage-section";
 import SettingsTypographySection from "@/components/settings/settings-typography-section";
 import {
@@ -200,26 +201,19 @@ const SettingsPageContent = (): JSX.Element => {
 
   return (
     <div className="w-full space-y-8">
-      {/* Full-Width Header Banner */}
-      <div className="card-shell overflow-hidden">
-        <div className="card-core p-5 sm:p-7 md:p-8 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
-          <div className="space-y-2">
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="chip">
-                <span className="h-2 w-2 rounded-sm bg-accent animate-pulse" />
-                {t("settings.hub")}
-              </span>
-              <span className="rounded-sm bg-surface-muted px-3 py-0.5 font-mono text-xs font-bold text-ink-muted">
-                Kokunime {t("common.pro")} v1.0
-              </span>
-            </div>
-            <h1 className="font-display text-2xl sm:text-3xl lg:text-4xl font-black tracking-tight text-ink">
-              {t("settings.title")}
-            </h1>
-            <p className="text-xs sm:text-sm text-ink-muted">{t("settings.subtitle")}</p>
-          </div>
-
-          <div className="flex flex-wrap items-center gap-3 shrink-0">
+      <SectionHeader
+        kicker={t("settings.hub")}
+        title={t("settings.title")}
+        titleAs="h1"
+        tone="purple"
+        badge={
+          <span className="rounded-sm border-2 border-border bg-surface px-2.5 py-0.5 font-mono text-[10px] font-bold text-ink-muted shadow-[2px_2px_0_0_var(--border)]">
+            Kokunime {t("common.pro")} v1.0
+          </span>
+        }
+        description={t("settings.subtitle")}
+        aside={
+          <>
             <button
               type="button"
               onClick={handleExportJson}
@@ -235,9 +229,9 @@ const SettingsPageContent = (): JSX.Element => {
             >
               <span>🔄 {t("settings.reset_default")}</span>
             </button>
-          </div>
-        </div>
-      </div>
+          </>
+        }
+      />
 
       {/* Main Full-Width Dashboard Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">

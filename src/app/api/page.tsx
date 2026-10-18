@@ -1,4 +1,5 @@
 import MainLayout from "@/layouts/main-layout";
+import SectionHeader from "@/components/section-header";
 import ApiTester, { ApiEndpoint } from "@/components/api-tester";
 import { buildSubpageBreadcrumbJsonLd, safeJsonLd } from "@/lib/seo";
 import { SITE_URL } from "@/lib/site";
@@ -188,6 +189,34 @@ const ApiDocsPage = (): JSX.Element => (
     />
 
     <section className="container px-4 pt-6 pb-12 md:pt-10 md:pb-20 space-y-10">
+      <SectionHeader
+        kicker="Developer Hub"
+        title="Kokunime Public REST API"
+        titleAs="h1"
+        tone="teal"
+        badge={
+          <span className="rounded-sm border-2 border-border bg-surface px-2.5 py-0.5 font-mono text-[10px] font-bold text-ink-muted shadow-[2px_2px_0_0_var(--border)]">
+            Public API v1.0
+          </span>
+        }
+        description="Gunakan REST API publik Kokunime secara gratis untuk integrasi aplikasi mobile, bot Discord/Telegram, atau workflow automasi Anda."
+        aside={
+          <>
+            <a
+              href="/api/openapi.json"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn-primary px-4 py-2 text-xs"
+            >
+              <span>📜 OpenAPI 3.1 Spec ↗</span>
+            </a>
+            <Link href="/api/graphql" className="btn-secondary px-4 py-2 text-xs">
+              <span>⚡ GraphQL Playground</span>
+            </Link>
+          </>
+        }
+      />
+
       {/* Probe & health mapping — how ops consumers wire the endpoints. */}
       <div className="card-shell">
         <div className="card-core p-5 space-y-3">
@@ -213,47 +242,6 @@ const ApiDocsPage = (): JSX.Element => (
               <span className="font-bold text-ink">/api/metrics</span> → scrape Prometheus (Bearer METRICS_TOKEN)
             </li>
           </ul>
-        </div>
-      </div>
-
-      {/* Header Banner */}
-      <div className="card-shell overflow-hidden">
-        <div className="card-core p-6 sm:p-8 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
-          <div className="space-y-2">
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="chip">
-                <span className="h-2 w-2 rounded-full bg-accent animate-pulse" />
-                Developer Hub
-              </span>
-              <span className="rounded-sm border border-border bg-surface-muted px-2.5 py-0.5 font-mono text-xs font-bold text-ink-muted">
-                Public API v1.0
-              </span>
-            </div>
-            <h1 className="font-display text-2xl sm:text-3xl lg:text-4xl font-black tracking-tight text-ink">
-              Kokunime Public REST API
-            </h1>
-            <p className="text-xs sm:text-sm text-ink-muted max-w-2xl">
-              Gunakan REST API publik Kokunime secara gratis untuk integrasi aplikasi mobile, bot Discord/Telegram, atau
-              workflow automasi Anda.
-            </p>
-          </div>
-
-          <div className="flex flex-wrap items-center gap-2.5 shrink-0">
-            <a
-              href="/api/openapi.json"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 rounded-sm border-2 border-border bg-accent px-4 py-2 font-mono text-xs font-bold text-(--accent-ink) shadow-[2px_2px_0_0_var(--border)] transition-all hover:-translate-y-0.5 active:translate-y-0 active:shadow-none"
-            >
-              <span>📜 OpenAPI 3.1 Spec ↗</span>
-            </a>
-            <Link
-              href="/api/graphql"
-              className="inline-flex items-center gap-1.5 rounded-sm border-2 border-border bg-surface px-4 py-2 font-mono text-xs font-bold text-ink shadow-[2px_2px_0_0_var(--border)] hover:-translate-y-0.5 hover:text-ink transition-all active:translate-y-0 active:shadow-none"
-            >
-              <span>⚡ GraphQL Playground</span>
-            </Link>
-          </div>
         </div>
       </div>
 

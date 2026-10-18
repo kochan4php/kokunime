@@ -1,6 +1,7 @@
 "use client";
 
 import { adminRequest, useAdminConsole } from "@/hooks/use-admin-console";
+import SectionHeader from "@/components/section-header";
 import { JSX, useState } from "react";
 
 const PRESET_PATHS = ["/", "/update", "/genres", "/years", "/roulette"];
@@ -48,10 +49,13 @@ const AdminDashboard = (): JSX.Element => {
 
   return (
     <div className="mx-auto max-w-3xl">
-      <h1 className="font-display text-2xl font-extrabold tracking-tight text-ink">🛠 Admin Ops</h1>
-      <p className="mt-1 font-mono text-[11px] uppercase tracking-wide text-ink-muted">
-        Index warm-up · cache revalidate · metrics
-      </p>
+      <SectionHeader
+        kicker="Ops"
+        title="🛠 Admin Ops"
+        titleAs="h1"
+        tone="teal"
+        description="Index warm-up · cache revalidate · metrics — butuh token ADMIN_TOKEN atau METRICS_TOKEN."
+      />
 
       <label className="mt-6 block">
         <span className="font-mono text-[11px] font-bold uppercase tracking-wide text-ink-muted">

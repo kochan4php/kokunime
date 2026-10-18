@@ -1,4 +1,5 @@
 import MainLayout from "@/layouts/main-layout";
+import SectionHeader from "@/components/section-header";
 import { SITE_URL } from "@/lib/site";
 import { Metadata } from "next";
 import Link from "next/link";
@@ -86,12 +87,13 @@ const SECTIONS: { title: string; body: JSX.Element }[] = [
 const PrivacyPage = (): JSX.Element => (
   <MainLayout>
     <section className="container mx-auto max-w-3xl px-4 pt-8 pb-16 md:pt-12">
-      <h1 className="font-display text-2xl font-extrabold uppercase tracking-tight text-ink md:text-3xl">
-        Kebijakan Privasi
-      </h1>
-      <p className="mt-2 text-xs text-ink-muted">
-        Terakhir diperbarui: Oktober 2026 · Berlaku untuk semua halaman &amp; API Kokunime.
-      </p>
+      <SectionHeader
+        kicker="Legal"
+        title="Kebijakan Privasi"
+        titleAs="h1"
+        tone="teal"
+        description="Terakhir diperbarui: Oktober 2026 · Berlaku untuk semua halaman & API Kokunime."
+      />
 
       <div className="mt-8 space-y-5">
         {SECTIONS.map((section) => (

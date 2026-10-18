@@ -68,7 +68,7 @@ const Anime = async ({ params }: { params: Promise<{ slug: string }> }): Promise
       <SectionDetail anime={anime} slug={slug} />
       <SimilarAnime slug={slug} title={anime.title ?? ""} />
       {seasonSlug ? <SeasonRail seasonSlug={seasonSlug} seasonName={anime.season?.name} excludeSlug={slug} /> : null}
-      <div className="mt-12">
+      <div className="mt-8 border-t-2 border-border pt-12">
         <RecommendationSection />
       </div>
     </MainLayout>

@@ -1,4 +1,5 @@
 import MainLayout from "@/layouts/main-layout";
+import SectionHeader from "@/components/section-header";
 import { getErrorBudget, getUptimeRollup } from "@/lib/uptime";
 import { SITE_URL } from "@/lib/site";
 import { Metadata } from "next";
@@ -29,11 +30,24 @@ const StatusPage = async (): Promise<JSX.Element> => {
   return (
     <MainLayout>
       <section className="container px-4 pt-6 pb-8 md:pt-10 md:pb-16">
-        <h1 className="font-display text-2xl font-extrabold tracking-tight text-ink md:text-4xl">📡 Status Layanan</h1>
-        <p className="mt-2 max-w-2xl text-sm text-ink-muted">
-          Uptime dari probe otomatis <span className="font-mono text-xs">/api/status</span> setiap 15 menit. Target SLO{" "}
-          {budget.slo_pct}% per 14 hari.
-        </p>
+        <SectionHeader
+          kicker="Transparansi"
+          title="📡 Status Layanan"
+          titleAs="h1"
+          tone="teal"
+          className="mb-6"
+          badge={
+            <span className="rounded-sm border-2 border-border bg-nb-lime px-2.5 py-0.5 font-mono text-[10px] font-bold text-nb-ink shadow-[2px_2px_0_0_var(--border)]">
+              SLO {budget.slo_pct}%
+            </span>
+          }
+          description={
+            <>
+              Uptime dari probe otomatis <span className="font-mono text-xs">/api/status</span> setiap 15 menit. Target
+              SLO {budget.slo_pct}% per 14 hari.
+            </>
+          }
+        />
 
         <div className="mt-6 grid gap-3 sm:grid-cols-3">
           <div className="card-shell">

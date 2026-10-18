@@ -1,5 +1,6 @@
 import SearchResults from "@/sections/search-results";
 import SearchHistoryChips from "@/components/search-history-chips";
+import SectionHeader from "@/components/section-header";
 import { searchAnime } from "@/services/scraper";
 import { sanitizeQuery } from "@/services/scraper/sanitize";
 import { buildSearchMetadata, decodeQuery } from "@/lib/search-metadata";
@@ -21,15 +22,19 @@ const SearchAnime = async ({ params }: { params: Promise<{ query: string }> }): 
   return (
     <MainLayout>
       <section className="container px-4 pt-6 pb-8 md:pt-10 md:pb-16">
-        <span className="chip">
-          <span className="h-1.5 w-1.5 rounded-full bg-accent" />
-          Hasil pencarian
-        </span>
-        <h1 className="mt-4 font-display text-3xl font-extrabold tracking-tight text-ink md:text-5xl">
-          <span className="inline-block rounded-sm border-2 border-border bg-nb-yellow px-2 text-nb-ink shadow-[3px_3px_0_0_var(--border)]">
-            “{query.split("+").join(" ")}”
-          </span>
-        </h1>
+        <SectionHeader
+          kicker="Hasil pencarian"
+          title={`“${query.split("+").join(" ")}”`}
+          titleAs="h1"
+          tone="teal"
+          className="mb-6"
+          badge={
+            <span className="rounded-sm border-2 border-border bg-nb-lime px-2.5 py-0.5 font-mono text-[10px] font-bold text-nb-ink shadow-[2px_2px_0_0_var(--border)]">
+              {anime.length} Judul
+            </span>
+          }
+          description="Hasil dari katalog Kokunime. Pilih judul untuk melihat sinopsis, detail episode, dan link unduhan."
+        />
         <SearchHistoryChips query={decoded} />
         <SearchResults anime={anime} />
       </section>
