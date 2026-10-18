@@ -2,6 +2,7 @@
   position: relative;
   overflow: hidden;
   background: var(--surface-muted);
+  background-image: repeating-linear-gradient(135deg, transparent 0 10px, rgba(10, 10, 10, 0.05) 10px 20px);
   border: 2px solid var(--border);
   animation: nb-pulse 1.4s ease-in-out infinite;
 }

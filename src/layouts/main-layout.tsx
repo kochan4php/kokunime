@@ -1,6 +1,7 @@
 import Navbar from "@/components/navbar";
 import { ChildrenProps } from "@/interfaces";
 import Footer from "@/components/footer";
+import MarqueeStrip from "@/components/marquee-strip";
 import ScrollToTop from "@/components/scroll-to-top";
 import FloatingTopButton from "@/components/floating-top-button";
 import KeyboardNavigation from "@/components/keyboard-navigation";
@@ -26,6 +27,10 @@ const MainLayout = ({ children }: ChildrenProps) => (
     <main id="konten" tabIndex={-1} className="flex-auto">
       {children}
     </main>
+    <MarqueeStrip
+      items={["Kokunime", "Batch + episode", "Subtitle Indonesia", "Update tiap hari", "Gratis tanpa akun"]}
+      className="bg-nb-lime text-nb-ink"
+    />
     <Footer />
     <FloatingTopButton />
   </>

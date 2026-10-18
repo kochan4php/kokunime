@@ -27,7 +27,7 @@ const DetailHeroView = ({ anime, slug, blurDataURL }: DetailHeroViewProps): JSX.
   <div className="relative overflow-hidden sm:overflow-visible">
     <div
       aria-hidden="true"
-      className="pointer-events-none absolute inset-0 -z-10 hidden translate-x-3 translate-y-3 rounded-sm border-2 border-border bg-nb-pink sm:block"
+      className="nb-halftone pointer-events-none absolute inset-0 -z-10 hidden translate-x-3 translate-y-3 rounded-sm border-2 border-border bg-nb-pink sm:block"
     />
     <div className="card-shell">
       <div className="card-core grid md:grid-cols-[320px_1fr]">

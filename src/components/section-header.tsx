@@ -9,6 +9,7 @@ interface SectionHeaderProps {
   titleId?: string;
   titleAs?: "h1" | "h2";
   tone?: SectionTone;
+  index?: string;
   badge?: ReactNode;
   aside?: ReactNode;
   action?: { href: string; label: string };
@@ -34,6 +35,7 @@ const SectionHeader = ({
   titleId,
   titleAs = "h2",
   tone = "yellow",
+  index,
   badge,
   aside,
   action,
@@ -47,12 +49,17 @@ const SectionHeader = ({
       <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
+            {index && (
+              <span className="flex h-6 items-center border-2 border-border bg-nb-ink px-1.5 font-mono text-[11px] font-bold text-nb-cream shadow-[3px_3px_0_0_var(--border)]">
+                {index}
+              </span>
+            )}
             <span className={`nb-sticker -rotate-1 ${TONE_CLASS[tone]}`}>{kicker}</span>
             {badge}
           </div>
           <TitleTag
             id={titleId}
-            className="mt-3 font-display text-3xl font-black uppercase leading-[1.04] tracking-tight text-ink md:text-4xl"
+            className="mt-3 font-display text-4xl font-black uppercase leading-[1.02] tracking-tight text-ink md:text-5xl"
           >
             {title}
           </TitleTag>
@@ -70,7 +77,7 @@ const SectionHeader = ({
         )}
       </div>
       <div className="nb-rule mt-4" aria-hidden="true">
-        <span className="w-16 bg-nb-yellow" />
+        <span className={`w-16 ${TONE_CLASS[tone]}`} />
         <span className="w-10 bg-nb-pink" />
         <span className="w-6 bg-nb-teal" />
         <span className="flex-1 bg-surface-muted" />

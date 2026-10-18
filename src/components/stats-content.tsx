@@ -176,14 +176,19 @@ const StatsContent = (): JSX.Element => {
             <div className="mt-8 grid grid-cols-2 gap-2.5 sm:grid-cols-3 lg:grid-cols-6">
               {kpis.map((kpi) => (
                 <div key={kpi.label} className="card-shell">
-                  <div className="card-core flex h-full flex-col gap-2 p-3.5">
-                    <span
-                      className={`flex h-8 w-8 items-center justify-center rounded-sm border-2 border-border text-base ${kpi.bg}`}
-                    >
-                      {kpi.icon}
-                    </span>
-                    <span className="font-display text-xl font-extrabold text-ink">{kpi.value}</span>
-                    <span className="font-mono text-[10px] uppercase tracking-wide text-ink-muted">{kpi.label}</span>
+                  <div className="card-core flex h-full flex-col overflow-hidden">
+                    <span aria-hidden="true" className={`h-2.5 border-b-2 border-border ${kpi.bg}`} />
+                    <div className="flex flex-1 flex-col gap-2 p-3.5">
+                      <span
+                        className={`flex h-8 w-8 items-center justify-center rounded-sm border-2 border-border text-base ${kpi.bg}`}
+                      >
+                        {kpi.icon}
+                      </span>
+                      <span className="font-display text-3xl font-black leading-none tracking-tight text-ink">
+                        {kpi.value}
+                      </span>
+                      <span className="font-mono text-[10px] uppercase tracking-wide text-ink-muted">{kpi.label}</span>
+                    </div>
                   </div>
                 </div>
               ))}

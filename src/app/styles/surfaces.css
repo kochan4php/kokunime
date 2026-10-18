@@ -15,13 +15,13 @@
 
   @media (hover: hover) {
     .card-shell:hover {
-      transform: translate(-2px, -2px);
+      transform: translate(-3px, -3px) rotate(-0.4deg);
       box-shadow: var(--shadow-hard-lg);
     }
   }
 
   .card-shell:active {
-    transform: translate(2px, 2px);
+    transform: translate(3px, 3px);
     box-shadow: none;
   }
 
@@ -80,5 +80,27 @@
     letter-spacing: 0.04em;
     text-transform: uppercase;
     padding: 0.25rem 0.625rem;
+  }
+
+  /* Print textures: halftone dot screen and 45° hatch, laid over a flat
+     colour with background-image so the paint stays flat underneath. */
+  .nb-halftone {
+    background-image: radial-gradient(var(--nb-texture-ink, rgba(10, 10, 10, 0.16)) 1.2px, transparent 1.3px);
+    background-size: 7px 7px;
+  }
+
+  .nb-hatch {
+    background-image: repeating-linear-gradient(
+      45deg,
+      var(--nb-texture-ink, rgba(10, 10, 10, 0.14)) 0 2px,
+      transparent 2px 9px
+    );
+  }
+}
+
+/* Reduced motion: keep the lift, drop the rotation. */
+@media (hover: hover) and (prefers-reduced-motion: reduce) {
+  .card-shell:hover {
+    transform: translate(-3px, -3px);
   }
 }

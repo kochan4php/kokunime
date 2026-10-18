@@ -125,3 +125,69 @@ footer .nb-outline-text {
     color: color-mix(in srgb, var(--nb-outline, var(--border)) 10%, transparent);
   }
 }
+
+/* ── Marquee strip ────────────────────────────────────────────────────────
+   Full-bleed tape of scrolling display type, used as a chapter divider (home)
+   and as the band above the footer on every page. Two identical groups scroll
+   left by exactly half the track, so the loop is seamless. */
+.nb-marquee {
+  border-block: 2px solid var(--border);
+  overflow: hidden;
+}
+
+.nb-marquee-track {
+  display: flex;
+  width: max-content;
+  animation: nb-marquee-scroll 34s linear infinite;
+}
+
+@media (hover: hover) {
+  .nb-marquee:hover .nb-marquee-track {
+    animation-play-state: paused;
+  }
+}
+
+.nb-marquee-group {
+  display: flex;
+  align-items: center;
+  padding-block: 0.55rem;
+  font-family: var(--font-display);
+  font-size: clamp(0.85rem, 1.5vw, 1.25rem);
+  font-weight: 900;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.nb-marquee-group > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 2.25rem;
+  padding-inline-end: 2.25rem;
+}
+
+.nb-marquee-group > span::after {
+  content: "◆";
+  font-size: 0.7em;
+  opacity: 0.55;
+}
+
+@keyframes nb-marquee-scroll {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nb-marquee-track {
+    animation: none;
+  }
+}
+
+html[data-reduce-motion="true"] .nb-marquee-track {
+  animation: none;
+}

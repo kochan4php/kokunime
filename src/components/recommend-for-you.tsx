@@ -1,6 +1,7 @@
 "use client";
 
 import CardAnime from "@/components/cards/card-anime";
+import SectionHeader from "@/components/section-header";
 import { BookmarkItem, getBookmarks, subscribeBookmarks } from "@/utils/bookmarks";
 import { HistoryItem, getHistory, subscribeHistory } from "@/utils/history";
 import { toTitle } from "@/utils/to-title";
@@ -62,18 +63,14 @@ const RecommendForYou = (): JSX.Element | null => {
 
   return (
     <section className="container px-4 pt-2 pb-10 md:pb-14">
-      <div className="mb-5">
-        <span className="chip">
-          <span className="h-1.5 w-1.5 rounded-full bg-accent" />
-          Untukmu
-        </span>
-        <h2 className="mt-3 font-display text-xl font-extrabold uppercase tracking-tight text-ink md:text-3xl">
-          Rekomendasi Untukmu
-        </h2>
-        {data?.topGenre && (
-          <p className="mt-1 font-mono text-xs text-ink-muted">Karena kamu suka {toTitle(data.topGenre)}</p>
-        )}
-      </div>
+      <SectionHeader
+        kicker="Untukmu"
+        title="Rekomendasi Untukmu"
+        index="03"
+        tone="orange"
+        className="mb-6"
+        description={data?.topGenre ? `Karena kamu suka ${toTitle(data.topGenre)}` : undefined}
+      />
       <div className="nb-cycle grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-2.5 md:grid-cols-5 md:gap-3 lg:grid-cols-6">
         {items.map((item, index) => (
           <CardAnime

@@ -72,7 +72,7 @@ const FeaturedHero = ({ featured, items = [], blurDataURL }: FeaturedHeroProps):
               </div>
             )}
           </div>
-          <div className="flex flex-col justify-center gap-3 sm:gap-4 border-t-2 border-border bg-nb-yellow p-5 sm:p-8 md:border-t-0 md:p-12 min-w-0">
+          <div className="nb-halftone flex flex-col justify-center gap-3 sm:gap-4 border-t-2 border-border bg-nb-yellow p-5 sm:p-8 md:border-t-0 md:p-12 min-w-0">
             <h1 className="font-display text-[1.75rem] font-black leading-[1.05] tracking-[-0.02em] text-nb-ink break-words line-clamp-3 sm:text-4xl md:text-6xl md:line-clamp-none">
               {current?.title ?? "Katalog anime"}
             </h1>

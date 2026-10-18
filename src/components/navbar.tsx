@@ -62,7 +62,7 @@ const Navbar = (): JSX.Element => {
             href="/"
             className="font-display text-2xl font-black tracking-tight text-nb-cream transition-transform duration-200 hover:-rotate-1 shrink-0"
           >
-            <span className="inline-block -rotate-2 border-2 border-border bg-nb-yellow px-1.5 text-[#0a0a0a] shadow-[2px_2px_0_0_var(--border)]">
+            <span className="inline-block -rotate-2 border-2 border-border bg-nb-yellow px-1.5 text-[#0a0a0a] shadow-[3px_3px_0_0_var(--border)]">
               Koku
             </span>
             nime
@@ -80,7 +80,7 @@ const Navbar = (): JSX.Element => {
                   className={`relative flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-mono font-semibold transition-all duration-200 rounded-sm border-2 ${
                     isActive(link.href)
                       ? "bg-accent border-nb-cream text-(--accent-ink) font-bold"
-                      : "border-transparent text-nb-cream/75 hover:border-nb-cream hover:bg-nb-cream hover:text-ink"
+                      : "border-transparent text-nb-cream/75 hover:border-nb-cream hover:bg-nb-yellow hover:text-ink"
                   }`}
                 >
                   <span>{link.icon}</span>
@@ -100,7 +100,7 @@ const Navbar = (): JSX.Element => {
           <a
             href="/api/random"
             title={t("nav.random_anime")}
-            className="hidden lg:inline-flex items-center gap-1.5 rounded-sm border-2 border-border bg-surface px-3 py-1.5 font-mono text-xs font-semibold text-ink transition-all hover:-translate-y-0.5 hover:shadow-[2px_2px_0_0_var(--border)] active:translate-y-0 active:shadow-none cursor-pointer"
+            className="hidden lg:inline-flex items-center gap-1.5 rounded-sm border-2 border-border bg-nb-yellow px-3 py-1.5 font-mono text-xs font-bold text-nb-ink transition-all hover:-translate-y-0.5 hover:shadow-[3px_3px_0_0_var(--border)] active:translate-y-0 active:shadow-none cursor-pointer"
           >
             <span>🎲 {t("nav.random")}</span>
           </a>

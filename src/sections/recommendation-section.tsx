@@ -7,7 +7,7 @@ import { JSX, Suspense } from "react";
 const RecommendationSection = (): JSX.Element => (
   <section id="recommendations" className="container scroll-mt-28 px-4 pb-16 md:pb-20">
     <Reveal>
-      <SectionHeader kicker="Rekomendasi" title="Rekomendasi Anime" tone="purple" className="mb-6" />
+      <SectionHeader kicker="Rekomendasi" title="Rekomendasi Anime" index="02" tone="purple" className="mb-6" />
     </Reveal>
     <Suspense fallback={<RecommendedSkeleton />}>
       <RecommendedAnime />

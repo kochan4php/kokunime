@@ -30,6 +30,7 @@ const LatestGrid = ({ anime, pagination, basePath }: LatestGridProps): JSX.Eleme
         <SectionHeader
           kicker="Katalog"
           title="Update Terbaru"
+          index="01"
           className="mb-8"
           badge={
             <span className="rounded-sm border-2 border-border bg-nb-teal px-2.5 py-0.5 font-mono text-[10px] font-bold text-nb-ink shadow-[2px_2px_0_0_var(--border)]">

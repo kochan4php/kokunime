@@ -17,12 +17,12 @@
   --grid-ink: rgba(10, 10, 10, 0.07);
   --grid-ink-strong: rgba(10, 10, 10, 0.1);
 
-  /* Sharp print-shop corners + heavier hard-offset shadows (v2 system) */
+  /* Sharp print-shop corners + heavier hard-offset shadows (v3: thicker slabs) */
   --radius-nb: 0;
-  --shadow-hard-xs: 2px 2px 0 0 var(--border);
-  --shadow-hard-sm: 3px 3px 0 0 var(--border);
-  --shadow-hard: 5px 5px 0 0 var(--border);
-  --shadow-hard-lg: 8px 8px 0 0 var(--border);
+  --shadow-hard-xs: 3px 3px 0 0 var(--border);
+  --shadow-hard-sm: 4px 4px 0 0 var(--border);
+  --shadow-hard: 6px 6px 0 0 var(--border);
+  --shadow-hard-lg: 10px 10px 0 0 var(--border);
 }
 
 :root[data-accent="emerald"] {

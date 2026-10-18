@@ -14,7 +14,7 @@ const EmptyState = ({ icon, title, message, className = "", children }: EmptySta
   <div className={`card-shell ${className}`.trim()}>
     <div className="card-core flex flex-col items-center justify-center p-12 text-center md:p-20">
       {icon ? (
-        <div className="flex h-16 w-16 items-center justify-center rounded-sm border-2 border-border bg-nb-yellow text-nb-ink shadow-[2px_2px_0_0_var(--border)]">
+        <div className="-rotate-2 flex h-16 w-16 items-center justify-center rounded-sm border-2 border-border bg-nb-yellow text-nb-ink shadow-[4px_4px_0_0_var(--border)]">
           {icon}
         </div>
       ) : null}
