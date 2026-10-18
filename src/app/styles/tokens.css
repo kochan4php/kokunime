@@ -165,3 +165,12 @@
   --font-sans: "Plus Jakarta Sans", "Plus Jakarta Sans Fallback", "Segoe UI", system-ui, sans-serif;
   --font-mono: "JetBrains Mono", "JetBrains Mono Fallback", "SF Mono", Consolas, monospace;
 }
+
+/* More-contrast request: muted copy joins the ink color. Kept unlayered so it
+   wins over the theme token blocks above (cascade layers beat specificity). */
+@media (prefers-contrast: more) {
+  :root,
+  :root[data-theme="dark"] {
+    --ink-muted: var(--ink);
+  }
+}

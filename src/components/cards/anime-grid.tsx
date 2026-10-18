@@ -57,7 +57,10 @@ const AnimeGrid = ({ anime, eagerCount = 0, viewMode = "grid" }: AnimeGridProps)
                         </span>
                       )}
                     </div>
-                    <h3 className="mt-0.5 line-clamp-1 font-display text-xs sm:text-[13px] font-bold text-ink group-hover:underline decoration-2 underline-offset-2">
+                    <h3
+                      translate="no"
+                      className="mt-0.5 line-clamp-1 font-display text-xs sm:text-[13px] font-bold text-ink group-hover:underline decoration-2 underline-offset-2"
+                    >
                       {item.title}
                     </h3>
                     <div className="mt-0.5 flex flex-wrap items-center gap-1.5 font-mono text-[9px] sm:text-[10px] text-ink-muted">

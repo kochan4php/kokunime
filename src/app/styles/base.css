@@ -61,6 +61,41 @@
     }
   }
 
+  /* Requested more contrast: muted copy joins the ink color, the paper grain
+     (decorative noise) disappears, and the focus ring thickens. */
+  @media (prefers-contrast: more) {
+    body::before {
+      display: none;
+    }
+
+    :focus-visible {
+      outline: 3px solid currentColor;
+      outline-offset: 2px;
+    }
+  }
+
+  /* Reduced transparency: overlays stay readable without compositing. */
+  /* biome-ignore lint/correctness/noUnknownMediaFeatureName: prefers-reduced-transparency is a baseline media feature Biome does not know yet. */
+  @media (prefers-reduced-transparency: reduce) {
+    dialog::backdrop {
+      background-color: rgba(0, 0, 0, 0.92);
+    }
+
+    .backdrop-blur,
+    [class*="backdrop-blur"] {
+      backdrop-filter: none !important;
+    }
+  }
+
+  /* Japanese titles: the mono/sans Latin stacks make kanji fall back
+     unpredictably; ask for a system CJK face and drop wide Latin tracking.
+     Utility classes still win where the design wants tracking (vertical
+     title). */
+  :lang(ja) {
+    font-family: "Hiragino Sans", "Yu Gothic", "Noto Sans JP", "Meiryo", system-ui, sans-serif;
+    letter-spacing: normal;
+  }
+
   /* Long grids: skip layout/paint work for cards far outside the viewport
      (progressive — browsers without content-visibility ignore both lines). */
   .cv-auto {

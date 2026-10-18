@@ -44,7 +44,7 @@ const Navbar = (): JSX.Element => {
             nime
           </Link>
 
-          <nav aria-label="Utama" className="hidden lg:flex items-center gap-1.5">
+          <nav aria-label="Utama" className="hidden lg:flex flex-wrap items-center gap-1.5">
             {siteLinks.map((link) => {
               const navKey = NAV_KEY_MAP[link.href];
               const label = navKey ? t(navKey) : link.label;

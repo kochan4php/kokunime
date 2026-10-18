@@ -37,7 +37,8 @@
     "audit:meta": "node scripts/audit-meta.mjs",
     "prepare": "husky",
     "check:third-party": "node scripts/no-third-party.mjs",
-    "check:deps": "node scripts/deps-allowlist.mjs"
+    "check:deps": "node scripts/deps-allowlist.mjs",
+    "a11y:v2": "node scripts/a11y-v2.mjs"
   },
   "dependencies": {
     "cheerio": "^1.2.0",

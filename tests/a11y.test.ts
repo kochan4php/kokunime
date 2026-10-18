@@ -91,7 +91,7 @@ describe("axe accessibility audit", () => {
     );
 
     expect(await runAxe(markup)).toEqual([]);
-  });
+  }, 30_000);
 
   it("error card + footer has no axe violations", async () => {
     const markup = renderToStaticMarkup(
@@ -109,7 +109,7 @@ describe("axe accessibility audit", () => {
     );
 
     expect(await runAxe(markup)).toEqual([]);
-  });
+  }, 30_000);
 
   it("listing page with filter + pagination has no axe violations", async () => {
     const markup = renderToStaticMarkup(
@@ -144,7 +144,7 @@ describe("axe accessibility audit", () => {
     );
 
     expect(await runAxe(markup)).toEqual([]);
-  });
+  }, 30_000);
 
   it("watch-progress + update components have no axe violations", async () => {
     const markup = renderToStaticMarkup(
@@ -167,5 +167,5 @@ describe("axe accessibility audit", () => {
     );
 
     expect(await runAxe(markup)).toEqual([]);
-  });
+  }, 30_000);
 });

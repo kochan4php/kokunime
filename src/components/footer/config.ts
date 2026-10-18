@@ -12,6 +12,7 @@ export const footerNavLinks = [
   { label: "Wrapped Tahunan 🎁", href: "/wrapped" },
   { label: "Roulette Anime 🎡", href: "/roulette" },
   { label: "Pengaturan & Tema ⚙️", href: "/settings" },
+  { label: "Pernyataan Aksesibilitas", href: "/aksesibilitas" },
   { label: "Kebijakan Privasi", href: "/privacy" },
 ];
 

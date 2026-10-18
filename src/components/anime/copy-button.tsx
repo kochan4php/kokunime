@@ -1,6 +1,7 @@
 "use client";
 
-import { JSX, useState } from "react";
+import { JSX } from "react";
+import { showToast } from "@/utils/toast";
 
 interface CopyButtonProps {
   url?: string | undefined;
@@ -10,7 +11,9 @@ interface CopyButtonProps {
   className?: string;
 }
 
-// One-tap copy for download managers or anime titles.
+// One-tap copy for download managers or anime titles. The toast is the single
+// live-region announcement: a live region inside every button would repeat the
+// same label dozens of times per page.
 const CopyButton = ({
   url,
   text,
@@ -18,7 +21,6 @@ const CopyButton = ({
   copiedLabel = "✓ Tersalin",
   className = "",
 }: CopyButtonProps): JSX.Element => {
-  const [copied, setCopied] = useState(false);
   const target = text || url;
 
   if (!target) return <span aria-hidden className="w-11" />;
@@ -26,8 +28,7 @@ const CopyButton = ({
   const copy = async (): Promise<void> => {
     try {
       await navigator.clipboard.writeText(target);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 1500);
+      showToast(copiedLabel);
     } catch {
       // clipboard blocked — nothing we can do, stay quiet
     }
@@ -36,17 +37,12 @@ const CopyButton = ({
   return (
     <button
       type="button"
-      onClick={copy}
-      aria-label={copied ? "Teks tersalin" : label}
+      onClick={() => void copy()}
+      aria-label={label}
       title={label}
-      aria-live="polite"
-      className={`inline-flex shrink-0 items-center justify-center rounded-sm border-2 px-3 font-mono text-[11px] font-semibold uppercase tracking-wider transition-all duration-150 cursor-pointer ${
-        copied
-          ? "border-border bg-nb-lime text-nb-ink shadow-[2px_2px_0_0_var(--border)]"
-          : "border-border bg-surface text-ink-muted shadow-[2px_2px_0_0_var(--border)] motion-safe:hover:-translate-y-0.5 hover:bg-nb-yellow hover:text-nb-ink active:translate-y-0 active:shadow-none"
-      } ${className}`}
+      className={`inline-flex shrink-0 items-center justify-center rounded-sm border-2 px-3 font-mono text-[11px] font-semibold uppercase tracking-wider transition-all duration-150 cursor-pointer border-border bg-surface text-ink-muted shadow-[2px_2px_0_0_var(--border)] motion-safe:hover:-translate-y-0.5 hover:bg-nb-yellow hover:text-nb-ink active:translate-y-0 active:shadow-none ${className}`}
     >
-      {copied ? copiedLabel : label}
+      {label}
     </button>
   );
 };

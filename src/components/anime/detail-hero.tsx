@@ -92,7 +92,10 @@ const DetailHeroView = ({ anime, slug, blurDataURL }: DetailHeroViewProps): JSX.
               </div>
             </div>
             <div className="mt-3 flex flex-col sm:flex-row sm:items-baseline gap-2 min-w-0">
-              <h1 className="font-display text-xl sm:text-2xl md:text-3xl lg:text-4xl font-black leading-[1.08] tracking-tight text-ink break-words min-w-0 line-clamp-2 md:line-clamp-3 hover:line-clamp-none transition-all">
+              <h1
+                translate="no"
+                className="font-display text-xl sm:text-2xl md:text-3xl lg:text-4xl font-black leading-[1.08] tracking-tight text-ink break-words min-w-0 line-clamp-2 md:line-clamp-3 hover:line-clamp-none transition-all"
+              >
                 {anime.title}
               </h1>
               {anime.title && (
@@ -104,7 +107,11 @@ const DetailHeroView = ({ anime, slug, blurDataURL }: DetailHeroViewProps): JSX.
                 />
               )}
             </div>
-            {anime.japanese && <p className="mt-1 font-mono text-xs text-ink-muted break-words">{anime.japanese}</p>}
+            {anime.japanese && (
+              <p lang="ja" translate="no" className="mt-1 font-mono text-xs text-ink-muted break-words">
+                {anime.japanese}
+              </p>
+            )}
             <div className="mt-3 flex flex-wrap items-center gap-2">
               {anime.status && (
                 <span

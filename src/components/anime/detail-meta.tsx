@@ -7,13 +7,16 @@ interface MetaItemProps {
   label: string;
   value?: string | undefined;
   href?: string | undefined;
+  lang?: string | undefined;
 }
 
-const MetaItem = ({ label, value, href }: MetaItemProps): JSX.Element => {
+const MetaItem = ({ label, value, href, lang }: MetaItemProps): JSX.Element => {
   return (
     <div className="rounded-sm border-2 border-border bg-surface px-3 py-2 sm:px-4 sm:py-2.5 min-w-0 overflow-hidden shadow-[2px_2px_0_0_var(--border)]">
       <dt className="font-mono text-[9px] sm:text-[10px] uppercase tracking-wider text-ink-muted truncate">{label}</dt>
       <dd
+        lang={lang}
+        translate={lang === "ja" ? "no" : undefined}
         className="mt-0.5 text-xs sm:text-sm font-semibold text-ink truncate hover:whitespace-normal transition-all cursor-help"
         title={value}
       >
@@ -35,8 +38,8 @@ const MetaItem = ({ label, value, href }: MetaItemProps): JSX.Element => {
 const DetailMeta = ({ anime }: { anime: AnimeDetail }): JSX.Element => {
   const seasonSlug = endpointSlug(anime.season?.endpoint, "seasons");
   const studioSlug = anime.studio?.trim() ? `/studio/${encodeURIComponent(anime.studio.trim())}` : undefined;
-  const items = [
-    { label: "Judul Jepang", value: anime.japanese },
+  const items: MetaItemProps[] = [
+    { label: "Judul Jepang", value: anime.japanese, lang: "ja" },
     { label: "Sinonim / English", value: anime.synonyms },
     { label: "Studio", value: anime.studio, href: studioSlug },
     { label: "Produser", value: anime.producer },
@@ -51,7 +54,7 @@ const DetailMeta = ({ anime }: { anime: AnimeDetail }): JSX.Element => {
   return (
     <dl className="mt-5 grid grid-cols-2 gap-2 sm:grid-cols-2 md:grid-cols-3">
       {items.map((item, index) => (
-        <MetaItem key={index} label={item.label} value={item.value} href={item.href} />
+        <MetaItem key={index} label={item.label} value={item.value} href={item.href} lang={item.lang} />
       ))}
     </dl>
   );

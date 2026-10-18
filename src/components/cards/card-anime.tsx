@@ -71,7 +71,10 @@ const CardAnime = ({
 
           {/* Title and Genre Area */}
           <div className="p-2 sm:p-2.5 flex-1 flex flex-col justify-between min-w-0 gap-1">
-            <h3 className="line-clamp-2 font-display text-[11px] sm:text-xs md:text-[13px] font-bold leading-snug break-words group-hover:underline decoration-2 underline-offset-2">
+            <h3
+              translate="no"
+              className="line-clamp-2 font-display text-[11px] sm:text-xs md:text-[13px] font-bold leading-snug break-words group-hover:underline decoration-2 underline-offset-2"
+            >
               {title}
             </h3>
             {genres && genres.length > 0 && (
