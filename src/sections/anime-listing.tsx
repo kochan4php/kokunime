@@ -1,6 +1,7 @@
 "use client";
 
 import AnimeGrid from "@/components/cards/anime-grid";
+import AnimeImage from "@/components/cards/anime-image";
 import Pagination from "@/sections/pagination";
 import PaginationBar from "@/sections/pagination/bar";
 import { SearchIcon } from "@/components/icons";
@@ -9,6 +10,7 @@ import { Anime, PaginationInfo } from "@/interfaces";
 import { buildItemListJsonLd, safeJsonLd } from "@/lib/seo";
 import { animeSlug } from "@/utils/endpoint-slug";
 import { fuzzyScore } from "@/utils/fuzzy";
+import Link from "next/link";
 import { JSX, useMemo, useState } from "react";
 
 interface AnimeListingProps {
@@ -19,10 +21,21 @@ interface AnimeListingProps {
   eagerCount?: number;
 }
 
+type SortMode = "catalog" | "az" | "za";
+
+const SORT_LABELS: { value: SortMode; label: string }[] = [
+  { value: "catalog", label: "Urutan katalog" },
+  { value: "az", label: "Judul A → Z" },
+  { value: "za", label: "Judul Z → A" },
+];
+
 const AnimeListing = ({ chip, title, anime, pagination, eagerCount = 0 }: AnimeListingProps): JSX.Element => {
   const [filterQuery, setFilterQuery] = useState("");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+  const [sortBy, setSortBy] = useState<SortMode>("catalog");
+  const [genreFilter, setGenreFilter] = useState<string>("all");
   const hasNumbers = (pagination?.total_page ?? 0) > 0;
+  const isFirstPage = !pagination || pagination.current_page <= 1;
 
   const jsonLdItems = useMemo(
     () =>
@@ -32,16 +45,48 @@ const AnimeListing = ({ chip, title, anime, pagination, eagerCount = 0 }: AnimeL
     [anime],
   );
 
+  // Genres present on this page, most frequent first — an honest in-page picker.
+  const genres = useMemo(() => {
+    const counts = new Map<string, number>();
+    for (const item of anime) {
+      for (const genre of item.genres ?? []) {
+        const name = genre.trim();
+        if (name) counts.set(name, (counts.get(name) ?? 0) + 1);
+      }
+    }
+    return [...counts.entries()]
+      .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0], "id"))
+      .slice(0, 12)
+      .map(([name]) => name);
+  }, [anime]);
+
   const filteredAnime = useMemo(() => {
     const q = filterQuery.trim();
-    if (!q) return anime;
+    let list = anime;
+    if (genreFilter !== "all") {
+      list = list.filter((item) => (item.genres ?? []).some((genre) => genre.trim() === genreFilter));
+    }
+    if (!q) return list;
     // Fuzzy filter + re-rank: prefix hits first, subsequence matches still land.
-    return anime
+    return list
       .map((item) => ({ item, score: fuzzyScore(q, item.title) }))
       .filter((entry) => entry.score > 0)
       .sort((a, b) => b.score - a.score)
       .map((entry) => entry.item);
-  }, [anime, filterQuery]);
+  }, [anime, filterQuery, genreFilter]);
+
+  const sortedAnime = useMemo(() => {
+    if (sortBy === "catalog" || filterQuery.trim()) return filteredAnime;
+    const copy = [...filteredAnime];
+    copy.sort((a, b) =>
+      sortBy === "az"
+        ? (a.title ?? "").localeCompare(b.title ?? "", "id", { sensitivity: "base" })
+        : (b.title ?? "").localeCompare(a.title ?? "", "id", { sensitivity: "base" }),
+    );
+    return copy;
+  }, [filteredAnime, sortBy, filterQuery]);
+
+  const newestRail = isFirstPage && anime.length >= 8 ? anime.slice(0, 8) : [];
 
   return (
     <section className="container px-4 pt-6 pb-12 md:pt-10 md:pb-20">
@@ -59,7 +104,7 @@ const AnimeListing = ({ chip, title, anime, pagination, eagerCount = 0 }: AnimeL
         className="mb-8"
         badge={
           <span className="rounded-sm border-2 border-border bg-nb-lime px-2.5 py-0.5 font-mono text-[10px] font-bold text-nb-ink shadow-[2px_2px_0_0_var(--border)]">
-            {filteredAnime.length} Anime
+            {sortedAnime.length} Anime
           </span>
         }
         description={`Daftar anime ${title} lengkap dengan link download batch & episode subtitle Indonesia — update tiap hari di Kokunime.`}
@@ -116,6 +161,39 @@ const AnimeListing = ({ chip, title, anime, pagination, eagerCount = 0 }: AnimeL
                 )}
               </div>
             )}
+
+            {/* Sort (catalog order = upstream recency) */}
+            {anime.length > 3 && (
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value as SortMode)}
+                aria-label="Urutkan anime di halaman ini"
+                className="h-10 cursor-pointer rounded-sm border-2 border-border bg-surface px-2 font-mono text-xs text-ink shadow-[2px_2px_0_0_var(--border)] outline-none focus:border-accent"
+              >
+                {SORT_LABELS.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    ⇅ {option.label}
+                  </option>
+                ))}
+              </select>
+            )}
+
+            {/* Genre picker (genres present on this page) */}
+            {genres.length > 2 && (
+              <select
+                value={genreFilter}
+                onChange={(e) => setGenreFilter(e.target.value)}
+                aria-label="Filter genre di halaman ini"
+                className="h-10 cursor-pointer rounded-sm border-2 border-border bg-surface px-2 font-mono text-xs text-ink shadow-[2px_2px_0_0_var(--border)] outline-none focus:border-accent"
+              >
+                <option value="all">🎭 Semua genre</option>
+                {genres.map((genre) => (
+                  <option key={genre} value={genre}>
+                    {genre}
+                  </option>
+                ))}
+              </select>
+            )}
           </>
         }
       />
@@ -124,18 +202,59 @@ const AnimeListing = ({ chip, title, anime, pagination, eagerCount = 0 }: AnimeL
           the heading outline stays valid (axe heading-order). */}
       <h2 className="sr-only">Daftar anime {title}</h2>
 
-      {filteredAnime.length > 0 ? (
-        <AnimeGrid anime={filteredAnime} eagerCount={eagerCount} viewMode={viewMode} />
+      {/* Quick-scan rail: first items of page 1 in catalog order. */}
+      {newestRail.length > 0 && (
+        <div className="mb-8" data-print-hide>
+          <div className="mb-2 flex items-baseline justify-between gap-2">
+            <h3 className="font-mono text-xs font-bold uppercase tracking-wider text-ink-muted">
+              ⚡ Terbaru di halaman ini
+            </h3>
+            <span className="font-mono text-[10px] text-ink-muted">geser →</span>
+          </div>
+          <ul className="flex snap-x gap-3 overflow-x-auto pb-2">
+            {newestRail.map((item, index) => {
+              const slug = animeSlug(item.link?.endpoint);
+              if (!slug) return null;
+              return (
+                <li key={`${slug}-${index}`} className="w-36 shrink-0 snap-start">
+                  <Link href={`/anime/${slug}`} className="group block">
+                    <div className="relative aspect-[3/4] overflow-hidden rounded-sm border-2 border-border">
+                      <AnimeImage
+                        src={item.link?.image ?? ""}
+                        alt={item.title ?? ""}
+                        fill
+                        sizes="144px"
+                        className="object-cover transition-transform duration-300 group-hover:scale-[1.03]"
+                      />
+                    </div>
+                    <p className="mt-1.5 line-clamp-2 text-xs font-semibold text-ink transition-colors group-hover:text-accent-text">
+                      {item.title}
+                    </p>
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      )}
+
+      {sortedAnime.length > 0 ? (
+        <AnimeGrid anime={sortedAnime} eagerCount={eagerCount} viewMode={viewMode} />
       ) : (
         <div className="card-shell my-8">
           <div className="card-core p-8 text-center">
-            <p className="font-display text-base font-bold text-ink">Tidak ditemukan anime &quot;{filterQuery}&quot;</p>
-            <p className="mt-1 text-xs text-ink-muted">Coba ubah kata kunci filter di atas.</p>
+            <p className="font-display text-base font-bold text-ink">
+              Tidak ditemukan anime &quot;{filterQuery || genreFilter}&quot;
+            </p>
+            <p className="mt-1 text-xs text-ink-muted">Coba ubah kata kunci filter atau genre di atas.</p>
           </div>
         </div>
       )}
 
       {pagination &&
+        !filterQuery &&
+        !genreFilter &&
+        sortBy === "catalog" &&
         !filterQuery &&
         (hasNumbers ? <Pagination pagination={pagination} /> : <PaginationBar pagination={pagination} />)}
     </section>

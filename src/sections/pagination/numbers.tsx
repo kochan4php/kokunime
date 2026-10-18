@@ -12,7 +12,7 @@ interface PageNumbersProps {
 }
 
 const navButton =
-  "flex h-11 w-11 items-center justify-center rounded-sm border-2 border-border bg-surface text-ink shadow-[3px_3px_0_0_var(--border)] transition-all duration-150 hover:-translate-y-0.5 hover:shadow-[5px_5px_0_0_var(--border)] active:translate-y-0 active:shadow-none";
+  "flex h-11 w-11 items-center justify-center rounded-sm border-2 border-border bg-surface text-ink shadow-[3px_3px_0_0_var(--border)] transition-all duration-150 motion-safe:hover:-translate-y-0.5 hover:shadow-[5px_5px_0_0_var(--border)] active:translate-y-0 active:shadow-none";
 
 const PageNumbers = ({ current, total, prevHref, nextHref, basePath }: PageNumbersProps): JSX.Element => (
   <div className="hidden items-center gap-1.5 md:flex">
@@ -43,7 +43,7 @@ const PageNumbers = ({ current, total, prevHref, nextHref, basePath }: PageNumbe
           className={
             page === current
               ? "flex h-11 w-11 -rotate-2 items-center justify-center rounded-sm border-2 border-border bg-accent text-sm font-black text-(--accent-ink) shadow-[4px_4px_0_0_var(--border)] transition-transform duration-150"
-              : "glass flex h-11 w-11 items-center justify-center rounded-sm text-sm font-semibold text-ink shadow-[3px_3px_0_0_var(--border)] transition-all duration-150 hover:-translate-y-0.5 hover:shadow-[5px_5px_0_0_var(--border)] active:translate-y-0 active:shadow-none"
+              : "glass flex h-11 w-11 items-center justify-center rounded-sm text-sm font-semibold text-ink shadow-[3px_3px_0_0_var(--border)] transition-all duration-150 motion-safe:hover:-translate-y-0.5 hover:shadow-[5px_5px_0_0_var(--border)] active:translate-y-0 active:shadow-none"
           }
         >
           {page}

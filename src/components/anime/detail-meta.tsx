@@ -18,7 +18,7 @@ const MetaItem = ({ label, value, href }: MetaItemProps): JSX.Element => {
         title={value}
       >
         {href ? (
-          <Link href={href} className="transition-colors duration-200 hover:text-accent truncate block">
+          <Link href={href} className="transition-colors duration-200 hover:text-accent-text truncate block">
             {value || "—"}
           </Link>
         ) : (
@@ -31,10 +31,11 @@ const MetaItem = ({ label, value, href }: MetaItemProps): JSX.Element => {
 
 const DetailMeta = ({ anime }: { anime: AnimeDetail }): JSX.Element => {
   const seasonSlug = endpointSlug(anime.season?.endpoint, "seasons");
+  const studioSlug = anime.studio?.trim() ? `/studio/${encodeURIComponent(anime.studio.trim())}` : undefined;
   const items = [
     { label: "Judul Jepang", value: anime.japanese },
     { label: "Sinonim / English", value: anime.synonyms },
-    { label: "Studio", value: anime.studio },
+    { label: "Studio", value: anime.studio, href: studioSlug },
     { label: "Produser", value: anime.producer },
     { label: "Rating Umur", value: anime.rating },
     { label: "Rilis", value: anime.release_on },

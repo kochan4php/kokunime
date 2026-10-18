@@ -15,6 +15,9 @@ export const STORAGE_KEYS = {
   pwaDismissed: "kokunime_pwa_dismissed",
   progress: "kokunime_progress",
   history: "kokunime_history",
+  watchQueue: "kokunime_watch_queue",
+  episodeLog: "kokunime_episode_log",
+  folderOrder: "kokunime_folder_order",
   rouletteHistory: "kokunime_roulette_history",
   adminToken: "kokunime_admin_token",
 } as const;

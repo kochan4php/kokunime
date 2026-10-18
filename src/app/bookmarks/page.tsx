@@ -7,29 +7,42 @@ import BookmarksBulkBar from "@/components/bookmarks/bookmarks-bulk-bar";
 import BookmarksDayList from "@/components/bookmarks/bookmarks-day-list";
 import BookmarksFolderBar from "@/components/bookmarks/bookmarks-folder-bar";
 import BookmarksGridView from "@/components/bookmarks/bookmarks-grid-view";
+import BookmarksQueueView from "@/components/bookmarks/bookmarks-queue-view";
 import BookmarksStatusFilters from "@/components/bookmarks/bookmarks-status-filters";
 import BookmarksToolbar from "@/components/bookmarks/bookmarks-toolbar";
+import CollectionCheckerDialog from "@/components/bookmarks/collection-checker-dialog";
 import EmptyState from "@/components/empty-state";
+import { useSyncLink } from "@/hooks/use-sync-link";
 import { CollectionTab, SortBy, useCollectionData } from "@/hooks/use-collection-data";
 import {
   BookmarkItem,
   BookmarkStatus,
-  clearAllBookmarks,
   exportBookmarksJson,
   exportBookmarksMalXml,
-  getBookmarks,
-  importBookmarksJson,
-  removeBookmark,
-  restoreBookmarks,
-  updateBookmarkUserMeta,
+  getFolderOrder,
+  setFolderOrder,
 } from "@/utils/bookmarks";
-import { HistoryItem, clearAllHistory, getHistory, removeHistory, restoreHistory } from "@/utils/history";
-import { ProgressEntry, getProgressList, mergeProgressEntries } from "@/utils/progress";
-import { dayKey } from "@/utils/collection-format";
-import { decodeSyncPayload, encodeSyncPayload } from "@/utils/sync-codec";
+import {
+  addBookmarksToQueue,
+  assignBookmarksToFolder,
+  clearCollectionTab,
+  copyBookmarksMarkdown,
+  exportBookmarksSubsetIcs,
+  exportBookmarksSubsetJson,
+  importBookmarksFromFile,
+  removeBookmarksSubset,
+  removeCollectionItem,
+  removeHistoryDay,
+  setBookmarksRating,
+} from "@/utils/collection-actions";
+import { HistoryItem } from "@/utils/history";
+import { exportShareCard } from "@/utils/share-card";
 import { showToast } from "@/utils/toast";
+import { getQueue, subscribeQueue, type QueueItem } from "@/utils/watch-queue";
 import Link from "next/link";
-import { JSX, useEffect, useMemo, useRef, useState } from "react";
+import { JSX, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
+
+const SERVER_EMPTY_QUEUE: QueueItem[] = [];
 
 const BookmarksPage = (): JSX.Element => {
   const [activeTab, setActiveTab] = useState<CollectionTab>("bookmarks");
@@ -38,12 +51,16 @@ const BookmarksPage = (): JSX.Element => {
   const [folderFilter, setFolderFilter] = useState<string>("all");
   const [filterQuery, setFilterQuery] = useState("");
   const [sortBy, setSortBy] = useState<SortBy>("recent");
-  const [shareCopied, setShareCopied] = useState(false);
   const [metaDialogSlug, setMetaDialogSlug] = useState<string | null>(null);
+  const [checkerOpen, setCheckerOpen] = useState(false);
   const [selectMode, setSelectMode] = useState(false);
   const [selectedSlugs, setSelectedSlugs] = useState<string[]>([]);
   const [dragOverFolder, setDragOverFolder] = useState<string | null>(null);
+  const [folderOrder, setFolderOrderState] = useState<string[]>([]);
   const touchStartRef = useRef<{ x: number; y: number } | null>(null);
+
+  const queue = useSyncExternalStore(subscribeQueue, getQueue, () => SERVER_EMPTY_QUEUE);
+  const { shareCopied, copySyncLink } = useSyncLink();
 
   const { bookmarks, history, nextEpisodes, folders, allItems, sortedItems, storageStats } = useCollectionData(
     activeTab,
@@ -51,47 +68,12 @@ const BookmarksPage = (): JSX.Element => {
     folderFilter,
     filterQuery,
     sortBy,
+    folderOrder,
   );
 
-  // Share-link import: gzip-compressed bookmark + progress payload appended as
-  // #sync=.... Merge is confirm-gated and additive (undo-safe), replacing the
-  // old alert+reload flow. Legacy uncompressed links still decode.
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    const hash = window.location.hash;
-    if (!hash.startsWith("#sync=")) return;
-
-    void (async () => {
-      const payload = await decodeSyncPayload(hash.slice("#sync=".length));
-      const incomingBookmarks = Array.isArray(payload?.b) ? (payload.b as BookmarkItem[]) : [];
-      const incomingProgress = Array.isArray(payload?.p) ? (payload.p as ProgressEntry[]) : [];
-      if (incomingBookmarks.length === 0 && incomingProgress.length === 0) return;
-
-      window.history.replaceState(null, "", window.location.pathname);
-      const accepted = window.confirm(
-        `Tautan sinkronisasi berisi ${incomingBookmarks.length} bookmark dan ${incomingProgress.length} data progres. Gabungkan dengan data di perangkat ini?`,
-      );
-      if (!accepted) return;
-
-      if (incomingBookmarks.length > 0) restoreBookmarks(incomingBookmarks);
-      const mergedProgress = mergeProgressEntries(incomingProgress);
-      showToast(`Sinkron selesai: ${incomingBookmarks.length} bookmark, ${mergedProgress} data progres`);
-    })();
-  }, []);
-
-  const copySyncLink = () => {
-    void (async () => {
-      try {
-        const token = await encodeSyncPayload({ v: 1, b: getBookmarks(), p: getProgressList() });
-        await navigator.clipboard.writeText(`${window.location.origin}/bookmarks#sync=${token}`);
-        setShareCopied(true);
-        setTimeout(() => setShareCopied(false), 2000);
-        showToast("Tautan sync (bookmark + progres) disalin");
-      } catch {
-        showToast("Gagal menyalin tautan sync");
-      }
-    })();
-  };
+  // Folder order is persisted locally; read it after mount so SSR and the
+  // first client render agree (no hydration mismatch).
+  useEffect(() => setFolderOrderState(getFolderOrder()), []);
 
   const metaDialogItem = useMemo(
     () => (metaDialogSlug ? (bookmarks.find((b) => b.slug === metaDialogSlug) ?? null) : null),
@@ -106,122 +88,64 @@ const BookmarksPage = (): JSX.Element => {
   };
 
   const handleClear = () => {
-    if (activeTab === "bookmarks") {
-      if (window.confirm("Hapus semua anime tersimpan?")) {
-        const snapshot = getBookmarks();
-        clearAllBookmarks();
-        if (snapshot.length > 0) {
-          showToast(`${snapshot.length} anime dihapus dari Tersimpan`, {
-            actionLabel: "Urungkan",
-            onAction: () => restoreBookmarks(snapshot),
-          });
-        }
-      }
-    } else {
-      if (window.confirm("Hapus semua riwayat terakhir?")) {
-        const snapshot = getHistory();
-        clearAllHistory();
-        if (snapshot.length > 0) {
-          showToast(`${snapshot.length} riwayat dihapus`, {
-            actionLabel: "Urungkan",
-            onAction: () => restoreHistory(snapshot),
-          });
-        }
-      }
-    }
+    if (activeTab === "queue") return;
+    clearCollectionTab(activeTab);
   };
 
   const handleRemoveItem = (item: BookmarkItem | HistoryItem) => {
-    if (activeTab === "bookmarks") {
-      const snapshot = getBookmarks().find((b) => b.slug === item.slug);
-      removeBookmark(item.slug);
-      if (snapshot) {
-        showToast(`${item.title} dihapus`, {
-          actionLabel: "Urungkan",
-          onAction: () => restoreBookmarks([snapshot]),
-        });
-      }
-    } else {
-      const snapshot = getHistory().filter((h) => h.slug === item.slug);
-      removeHistory(item.slug);
-      showToast(`${item.title} dihapus dari riwayat`, {
-        actionLabel: "Urungkan",
-        onAction: () => restoreHistory(snapshot),
-      });
-    }
+    if (activeTab === "queue") return;
+    removeCollectionItem(activeTab, item);
   };
 
-  // Folder assignment (drag & drop, bulk bar). Keeps a snapshot of the previous
-  // folder per slug so the toast's undo restores exactly what changed.
-  const assignFolder = (folder: string | undefined, slugs: string[]) => {
-    if (slugs.length === 0) return;
-    const previous = getBookmarks()
-      .filter((b) => slugs.includes(b.slug))
-      .map((b) => ({ slug: b.slug, folder: b.folder ?? null }));
-    for (const slug of slugs) updateBookmarkUserMeta(slug, { folder: folder ?? null });
-    showToast(folder ? `${slugs.length} anime dipindah ke 📁 ${folder}` : `Folder dihapus dari ${slugs.length} anime`, {
-      actionLabel: "Urungkan",
-      onAction: () => {
-        for (const entry of previous) updateBookmarkUserMeta(entry.slug, { folder: entry.folder });
+  const reorderFolder = (from: string, to: string) => {
+    if (from === to) return;
+    const order = [...folders];
+    const fromIndex = order.indexOf(from);
+    const toIndex = order.indexOf(to);
+    if (fromIndex === -1 || toIndex === -1) return;
+    order.splice(fromIndex, 1);
+    order.splice(toIndex, 0, from);
+    setFolderOrder(order);
+    setFolderOrderState(order);
+    showToast(`Folder ${from} dipindah`);
+  };
+
+  // PNG card for one folder: count, average rating, top-rated titles.
+  const shareFolderCard = async (folder: string): Promise<void> => {
+    const items = bookmarks.filter((b) => b.folder === folder);
+    const rated = items.filter((b) => typeof b.rating === "number");
+    const average =
+      rated.length > 0 ? (rated.reduce((sum, b) => sum + (b.rating ?? 0), 0) / rated.length).toFixed(1) : "—";
+    const shorten = (title: string) => (title.length > 26 ? `${title.slice(0, 26)}…` : title);
+    const result = await exportShareCard(
+      {
+        kicker: "Folder koleksi",
+        title: folder,
+        accent: "#c4a1ff",
+        rows: [
+          { label: "Isi", value: `${items.length} anime` },
+          { label: "Rating rata-rata", value: average },
+          ...[...rated]
+            .sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0))
+            .slice(0, 3)
+            .map((b) => ({ label: "⭐", value: shorten(b.title) })),
+        ],
+        footer: "kokunime • data lokal perangkat",
       },
-    });
-  };
-
-  const removeDayRange = (timestamp: number) => {
-    const key = dayKey(timestamp);
-    const snapshot = getHistory().filter((entry) => dayKey(entry.viewedAt) === key);
-    if (snapshot.length === 0) return;
-    for (const entry of snapshot) removeHistory(entry.slug);
-    showToast(`${snapshot.length} riwayat dihapus`, {
-      actionLabel: "Urungkan",
-      onAction: () => restoreHistory(snapshot),
-    });
-  };
-
-  const removeSelected = () => {
-    const snapshot = getBookmarks().filter((b) => selectedSlugs.includes(b.slug));
-    if (snapshot.length === 0) return;
-    if (!window.confirm(`Hapus ${snapshot.length} anime terpilih?`)) return;
-    const remaining = getBookmarks().filter((b) => !selectedSlugs.includes(b.slug));
-    clearAllBookmarks();
-    restoreBookmarks(remaining);
-    showToast(`${snapshot.length} anime dihapus`, {
-      actionLabel: "Urungkan",
-      onAction: () => restoreBookmarks(snapshot),
-    });
-    setSelectedSlugs([]);
+      `kokunime-folder-${folder.replace(/[^\p{L}\p{N}]+/gu, "-").toLowerCase()}.png`,
+    );
+    if (result === "downloaded") showToast("Kartu folder diunduh sebagai PNG");
+    else if (result === "failed") showToast("Gagal membuat kartu PNG");
   };
 
   const toggleSelected = (slug: string) => {
     setSelectedSlugs((prev) => (prev.includes(slug) ? prev.filter((s) => s !== slug) : [...prev, slug]));
   };
 
-  const copyMarkdown = (source: BookmarkItem[]) => {
-    void (async () => {
-      if (source.length === 0) return;
-      const origin = window.location.origin;
-      const lines = source.map((b) => {
-        const bits = [
-          b.rating ? ` ⭐ ${b.rating}/10` : "",
-          b.folder ? ` 📁 ${b.folder}` : "",
-          b.status ? ` (${b.status})` : "",
-        ].join("");
-        return `- [${b.title}](${origin}/anime/${b.slug})${bits}`;
-      });
-      try {
-        await navigator.clipboard.writeText(lines.join("\n"));
-        showToast(`${lines.length} judul disalin sebagai Markdown`);
-      } catch {
-        showToast("Gagal menyalin ke clipboard");
-      }
-    })();
-  };
-
   const handleImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    const count = await importBookmarksJson(file);
-    alert(count > 0 ? `Berhasil mengimpor ${count} anime baru!` : "Semua anime dari file backup sudah ada di daftar.");
+    await importBookmarksFromFile(file);
     e.target.value = "";
   };
 
@@ -244,7 +168,10 @@ const BookmarksPage = (): JSX.Element => {
     const dx = touch.clientX - start.x;
     const dy = touch.clientY - start.y;
     if (Math.abs(dx) < 70 || Math.abs(dy) > 60) return;
-    switchTab(dx < 0 ? "history" : "bookmarks");
+    const tabs: CollectionTab[] = ["bookmarks", "queue", "history"];
+    const currentIndex = tabs.indexOf(activeTab);
+    const nextIndex = Math.min(tabs.length - 1, Math.max(0, currentIndex + (dx < 0 ? 1 : -1)));
+    switchTab(tabs[nextIndex] ?? "bookmarks");
   };
 
   return (
@@ -257,17 +184,29 @@ const BookmarksPage = (): JSX.Element => {
         {/* Print-only header: the interactive chrome is hidden when printing. */}
         <div className="hidden print:block">
           <h1 className="font-display text-2xl font-extrabold tracking-tight text-ink">
-            Kokunime — {activeTab === "bookmarks" ? "Anime Tersimpan" : "Riwayat Tontonan"}
+            Kokunime —{" "}
+            {activeTab === "bookmarks"
+              ? "Anime Tersimpan"
+              : activeTab === "queue"
+                ? "Antrean Tonton"
+                : "Riwayat Tontonan"}
           </h1>
           <p className="mt-1 text-sm">
-            {sortedItems.length} judul • dicetak {new Date().toLocaleDateString("id-ID")}
+            {activeTab === "queue" ? queue.length : sortedItems.length} judul • dicetak{" "}
+            {new Date().toLocaleDateString("id-ID")}
           </p>
         </div>
 
         <div className="print:hidden">
           <SectionHeader
             kicker="Koleksi pribadi"
-            title={activeTab === "bookmarks" ? "Anime Tersimpan" : "Riwayat Terakhir Dilihat"}
+            title={
+              activeTab === "bookmarks"
+                ? "Anime Tersimpan"
+                : activeTab === "queue"
+                  ? "Antrean Tonton"
+                  : "Riwayat Terakhir Dilihat"
+            }
             titleAs="h1"
             tone="purple"
             badge={
@@ -285,6 +224,17 @@ const BookmarksPage = (): JSX.Element => {
                 </button>
                 <button
                   type="button"
+                  onClick={() => switchTab("queue")}
+                  className={`rounded-sm border-2 border-border px-4 py-1.5 font-display text-sm font-bold tracking-tight transition-all duration-150 cursor-pointer ${
+                    activeTab === "queue"
+                      ? "bg-accent text-(--accent-ink) shadow-[2px_2px_0_0_var(--border)]"
+                      : "bg-surface text-ink-muted hover:text-ink"
+                  }`}
+                >
+                  Antrean ({queue.length})
+                </button>
+                <button
+                  type="button"
                   onClick={() => switchTab("history")}
                   className={`rounded-sm border-2 border-border px-4 py-1.5 font-display text-sm font-bold tracking-tight transition-all duration-150 cursor-pointer ${
                     activeTab === "history"
@@ -299,33 +249,38 @@ const BookmarksPage = (): JSX.Element => {
             description={
               activeTab === "bookmarks"
                 ? "Daftar tontonan tersimpan di perangkat ini — bisa diekspor ke JSON, MAL XML, atau tautan sinkron."
-                : "Jejak judul yang terakhir kamu buka di perangkat ini."
+                : activeTab === "queue"
+                  ? "Urutan tontonan berikutnya — seret atau pakai ▲/▼ untuk mengatur, lalu mulai dari atas."
+                  : "Jejak judul yang terakhir kamu buka di perangkat ini."
             }
             aside={
-              <BookmarksToolbar
-                activeTab={activeTab}
-                viewMode={viewMode}
-                onViewModeChange={setViewMode}
-                allItemsCount={allItems.length}
-                bookmarksCount={bookmarks.length}
-                filterQuery={filterQuery}
-                onFilterQueryChange={setFilterQuery}
-                sortBy={sortBy}
-                onSortByChange={setSortBy}
-                storageStats={storageStats}
-                selectMode={selectMode}
-                onToggleSelectMode={() => {
-                  setSelectMode((prev) => !prev);
-                  setSelectedSlugs([]);
-                }}
-                shareCopied={shareCopied}
-                onCopySyncLink={copySyncLink}
-                onCopyMarkdownAll={() => copyMarkdown(bookmarks)}
-                onExportJson={exportBookmarksJson}
-                onExportMalXml={exportBookmarksMalXml}
-                onImport={handleImport}
-                onClear={handleClear}
-              />
+              activeTab === "queue" ? undefined : (
+                <BookmarksToolbar
+                  activeTab={activeTab}
+                  viewMode={viewMode}
+                  onViewModeChange={setViewMode}
+                  allItemsCount={allItems.length}
+                  bookmarksCount={bookmarks.length}
+                  filterQuery={filterQuery}
+                  onFilterQueryChange={setFilterQuery}
+                  sortBy={sortBy}
+                  onSortByChange={setSortBy}
+                  storageStats={storageStats}
+                  selectMode={selectMode}
+                  onToggleSelectMode={() => {
+                    setSelectMode((prev) => !prev);
+                    setSelectedSlugs([]);
+                  }}
+                  onOpenChecker={() => setCheckerOpen(true)}
+                  shareCopied={shareCopied}
+                  onCopySyncLink={copySyncLink}
+                  onCopyMarkdownAll={() => void copyBookmarksMarkdown(bookmarks)}
+                  onExportJson={exportBookmarksJson}
+                  onExportMalXml={exportBookmarksMalXml}
+                  onImport={handleImport}
+                  onClear={handleClear}
+                />
+              )
             }
           />
 
@@ -343,16 +298,26 @@ const BookmarksPage = (): JSX.Element => {
               dragOverFolder={dragOverFolder}
               onFolderFilterChange={setFolderFilter}
               onDragOverFolderChange={setDragOverFolder}
-              onDropSlug={(folder, slug) => assignFolder(folder, [slug])}
+              onDropSlug={(folder, slug) => assignBookmarksToFolder(folder, [slug])}
+              onReorderFolder={reorderFolder}
+              onShareFolder={(folder) => void shareFolderCard(folder)}
             />
           )}
         </div>
 
         {/* List/grid item titles render as h3; hidden h2 keeps the outline
             valid (axe heading-order) without changing the visual design. */}
-        <h2 className="sr-only">{activeTab === "bookmarks" ? "Anime tersimpan" : "Riwayat tontonan"}</h2>
+        <h2 className="sr-only">
+          {activeTab === "bookmarks"
+            ? "Anime tersimpan"
+            : activeTab === "queue"
+              ? "Antrean tonton"
+              : "Riwayat tontonan"}
+        </h2>
 
-        {sortedItems.length > 0 ? (
+        {activeTab === "queue" ? (
+          <BookmarksQueueView />
+        ) : sortedItems.length > 0 ? (
           viewMode === "list" ? (
             <BookmarksDayList
               items={sortedItems}
@@ -363,7 +328,7 @@ const BookmarksPage = (): JSX.Element => {
               onToggleSelected={toggleSelected}
               onRemove={handleRemoveItem}
               onEditMeta={setMetaDialogSlug}
-              onRemoveDay={removeDayRange}
+              onRemoveDay={removeHistoryDay}
             />
           ) : (
             <BookmarksGridView
@@ -414,9 +379,17 @@ const BookmarksPage = (): JSX.Element => {
           <BookmarksBulkBar
             selectedSlugs={selectedSlugs}
             folders={folders}
-            onAssignFolder={assignFolder}
-            onCopyMarkdownSelected={() => copyMarkdown(bookmarks.filter((b) => selectedSlugs.includes(b.slug)))}
-            onRemoveSelected={removeSelected}
+            onAssignFolder={assignBookmarksToFolder}
+            onCopyMarkdownSelected={() =>
+              void copyBookmarksMarkdown(bookmarks.filter((b) => selectedSlugs.includes(b.slug)))
+            }
+            onRemoveSelected={() => {
+              if (removeBookmarksSubset(selectedSlugs)) setSelectedSlugs([]);
+            }}
+            onAddToQueue={() => addBookmarksToQueue(selectedSlugs, () => switchTab("queue"))}
+            onExportSelectedJson={() => exportBookmarksSubsetJson(selectedSlugs)}
+            onExportIcsSelected={() => exportBookmarksSubsetIcs(selectedSlugs)}
+            onSetRating={(rating) => setBookmarksRating(selectedSlugs, rating)}
             onCancel={() => {
               setSelectMode(false);
               setSelectedSlugs([]);
@@ -425,6 +398,7 @@ const BookmarksPage = (): JSX.Element => {
         )}
 
         <BookmarkMetaDialog item={metaDialogItem} folders={folders} onClose={() => setMetaDialogSlug(null)} />
+        <CollectionCheckerDialog open={checkerOpen} onClose={() => setCheckerOpen(false)} bookmarks={bookmarks} />
       </section>
     </MainLayout>
   );

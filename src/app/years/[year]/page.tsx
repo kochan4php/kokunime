@@ -1,5 +1,6 @@
 import { getAnimeBySeasons, getSeasons } from "@/services/scraper";
 import { SITE_URL } from "@/lib/site";
+import { collectYearAnime } from "@/lib/year-anime";
 import { endpointSlug } from "@/utils/endpoint-slug";
 import { buildSubpageBreadcrumbJsonLd, safeJsonLd } from "@/lib/seo";
 import AnimeListing from "@/sections/anime-listing";
@@ -20,28 +21,6 @@ export function generateStaticParams(): { year: string }[] {
 
 const YEAR_RE = /^(19|20)\d{2}$/;
 
-async function collectYearAnime(year: string): Promise<Anime[]> {
-  const seasons = (await getSeasons())
-    .map((season) => endpointSlug(season.endpoint, "seasons"))
-    .filter((slug): slug is string => Boolean(slug?.endsWith(`-${year}`)));
-
-  const results = await Promise.allSettled(seasons.map((slug) => getAnimeBySeasons(slug, 1)));
-  const seen = new Set<string>();
-  const anime: Anime[] = [];
-
-  for (const result of results) {
-    if (result.status !== "fulfilled") continue;
-    for (const item of result.value.anime ?? []) {
-      const key = item.link?.endpoint ?? item.title;
-      if (seen.has(key)) continue;
-      seen.add(key);
-      anime.push(item);
-    }
-  }
-
-  return anime;
-}
-
 export async function generateMetadata({ params }: { params: Promise<{ year: string }> }): Promise<Metadata> {
   const { year } = await params;
   if (!YEAR_RE.test(year)) return { title: "Tahun tidak ditemukan" };
@@ -50,7 +29,11 @@ export async function generateMetadata({ params }: { params: Promise<{ year: str
   return {
     title: `Anime Tahun ${year}`,
     description: `Daftar anime rilis tahun ${year} lengkap dengan link download batch subtitle Indonesia.`,
-    alternates: { canonical, languages: { "id-ID": canonical } },
+    alternates: {
+      canonical,
+      languages: { "id-ID": canonical },
+      types: { "application/rss+xml": `/years/${year}/feed.xml` },
+    },
     openGraph: {
       title: `Anime Tahun ${year} · Kokunime`,
       description: `Semua anime rilis ${year} dalam satu halaman.`,

@@ -45,7 +45,7 @@ const InboxBell = (): JSX.Element => {
         aria-haspopup="dialog"
         aria-label={unread.length > 0 ? `Inbox rilis baru (${unread.length} belum dibaca)` : "Inbox rilis baru"}
         title="Inbox rilis baru"
-        className="relative inline-flex h-9 w-9 items-center justify-center rounded-sm border-2 border-border bg-surface text-sm text-ink transition-all hover:-translate-y-0.5 hover:shadow-[2px_2px_0_0_var(--border)] active:translate-y-0 active:shadow-none cursor-pointer"
+        className="relative inline-flex h-9 w-9 items-center justify-center rounded-sm border-2 border-border bg-surface text-sm text-ink transition-all motion-safe:hover:-translate-y-0.5 hover:shadow-[2px_2px_0_0_var(--border)] active:translate-y-0 active:shadow-none cursor-pointer"
       >
         <span aria-hidden="true">{unread.length > 0 ? "🔔" : "🔕"}</span>
         {unread.length > 0 && (
@@ -74,7 +74,7 @@ const InboxBell = (): JSX.Element => {
                 <button
                   type="button"
                   onClick={() => markReleasesRead()}
-                  className="rounded-sm border-2 border-border bg-nb-yellow px-1.5 py-0.5 font-mono text-[10px] font-bold text-nb-ink transition-all hover:-translate-y-0.5 cursor-pointer"
+                  className="rounded-sm border-2 border-border bg-nb-yellow px-1.5 py-0.5 font-mono text-[10px] font-bold text-nb-ink transition-all motion-safe:hover:-translate-y-0.5 cursor-pointer"
                 >
                   Tandai dibaca
                 </button>
@@ -95,7 +95,7 @@ const InboxBell = (): JSX.Element => {
                     <Link
                       href={`/anime/${item.slug}`}
                       onClick={() => setOpen(false)}
-                      className="min-w-0 flex-1 text-xs font-bold text-ink hover:text-accent"
+                      className="min-w-0 flex-1 text-xs font-bold text-ink hover:text-accent-text"
                     >
                       <span className="line-clamp-2">{item.title}</span>
                       <span className="mt-0.5 block font-mono text-[10px] font-normal text-ink-muted">

@@ -26,7 +26,7 @@ const UpdateIcsButton = ({ events }: { events: CalendarEvent[] }): JSX.Element =
       onClick={handleClick}
       disabled={events.length === 0}
       title={t("update.ics_title")}
-      className="rounded-sm border-2 border-border bg-surface px-3 py-1.5 font-mono text-xs font-semibold text-ink-muted shadow-[2px_2px_0_0_var(--border)] transition-all hover:-translate-y-0.5 hover:text-ink active:translate-y-0 active:shadow-none cursor-pointer disabled:opacity-50"
+      className="rounded-sm border-2 border-border bg-surface px-3 py-1.5 font-mono text-xs font-semibold text-ink-muted shadow-[2px_2px_0_0_var(--border)] transition-all motion-safe:hover:-translate-y-0.5 hover:text-ink active:translate-y-0 active:shadow-none cursor-pointer disabled:opacity-50"
     >
       📅 {t("update.ics_button")}
     </button>

@@ -27,7 +27,7 @@ export const ThemeSongsPlayer = ({ animeTitle }: ThemeSongsPlayerProps): JSX.Ele
             target="_blank"
             rel="noopener noreferrer"
             title="Dengarkan di YouTube Music"
-            className="inline-flex items-center gap-1.5 rounded-sm border-2 border-border bg-nb-red px-3 py-1 font-mono text-xs font-bold text-nb-ink shadow-[2px_2px_0_0_var(--border)] hover:-translate-y-0.5 active:translate-y-0 active:shadow-none transition-all"
+            className="inline-flex items-center gap-1.5 rounded-sm border-2 border-border bg-nb-red px-3 py-1 font-mono text-xs font-bold text-nb-ink shadow-[2px_2px_0_0_var(--border)] motion-safe:hover:-translate-y-0.5 active:translate-y-0 active:shadow-none transition-all"
           >
             <span>▶ YouTube Music</span>
           </a>
@@ -36,7 +36,7 @@ export const ThemeSongsPlayer = ({ animeTitle }: ThemeSongsPlayerProps): JSX.Ele
             target="_blank"
             rel="noopener noreferrer"
             title="Dengarkan di Spotify"
-            className="inline-flex items-center gap-1.5 rounded-sm border-2 border-border bg-nb-lime px-3 py-1 font-mono text-xs font-bold text-nb-ink shadow-[2px_2px_0_0_var(--border)] hover:-translate-y-0.5 active:translate-y-0 active:shadow-none transition-all"
+            className="inline-flex items-center gap-1.5 rounded-sm border-2 border-border bg-nb-lime px-3 py-1 font-mono text-xs font-bold text-nb-ink shadow-[2px_2px_0_0_var(--border)] motion-safe:hover:-translate-y-0.5 active:translate-y-0 active:shadow-none transition-all"
           >
             <span>🎧 Spotify</span>
           </a>

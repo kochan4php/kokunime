@@ -103,7 +103,7 @@ const OfflinePage = (): JSX.Element => {
                   key={entry.url}
                   className="flex items-center justify-between gap-3 rounded-sm border-2 border-border bg-surface p-3 shadow-[2px_2px_0_0_var(--border)]"
                 >
-                  <Link href={entry.url} className="min-w-0 truncate text-sm font-bold text-ink hover:text-accent">
+                  <Link href={entry.url} className="min-w-0 truncate text-sm font-bold text-ink hover:text-accent-text">
                     {entry.title || entry.url}
                   </Link>
                   <button

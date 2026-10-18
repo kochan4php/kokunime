@@ -20,7 +20,20 @@ const MODES = {
 const args = process.argv.slice(2);
 const modeArg = args.find((a) => a.startsWith("--mode="));
 const mode = (modeArg ? modeArg.split("=")[1] : "quick").replace(/^--mode=/, "");
-const targetUrl = args.find((a) => !a.startsWith("--")) || "http://localhost:3000/api/health";
+const routesArg = args.find((a) => a.startsWith("--routes="));
+const baseUrl =
+  process.env.LOAD_BASE || args.find((a) => !a.startsWith("--") && a.startsWith("http")) || "http://localhost:3000";
+// Multiple routes: --routes=/api/health,/api/trending (each gets the full
+// burst; the run fails if any route misses the budget). A bare positional URL
+// still selects a single target.
+const targetUrls = routesArg
+  ? routesArg
+      .split("=")[1]
+      .split(",")
+      .map((entry) => entry.trim())
+      .filter(Boolean)
+      .map((entry) => (entry.startsWith("http") ? entry : `${baseUrl}${entry.startsWith("/") ? "" : "/"}${entry}`))
+  : [args.find((a) => !a.startsWith("--")) || `${baseUrl}/api/health`];
 
 if (!MODES[mode]) {
   console.error(`✗ Unknown mode "${mode}". Use quick | spike | soak | breakpoint.`);
@@ -98,11 +111,12 @@ const budgetProblems = (result) => {
 };
 
 const main = async () => {
-  console.log(`\n🚀 Load test [${mode}] → ${targetUrl}`);
+  console.log(`\n🚀 Load test [${mode}] → ${targetUrls.join(", ")}`);
   console.log(`   Budget: p95 ≤ ${P95_BUDGET_MS}ms, success ≥ ${MIN_SUCCESS_RATE * 100}%\n`);
 
   if (mode === "breakpoint") {
     // Ramp concurrency until the budget breaks; informational by design.
+    const targetUrl = targetUrls[0];
     let lastGood = 0;
     let breaking = null;
     for (const concurrency of [5, 10, 20, 40, 80]) {
@@ -125,12 +139,16 @@ const main = async () => {
     process.exit(0);
   }
 
-  const result = await runLoad(targetUrl, MODES[mode]);
-  console.log(summarise(mode, result));
+  const failures = [];
+  for (const targetUrl of targetUrls) {
+    const result = await runLoad(targetUrl, MODES[mode]);
+    console.log(summarise(targetUrl, result));
+    const problems = budgetProblems(result);
+    if (problems.length > 0) failures.push(`${targetUrl}: ${problems.join("; ")}`);
+  }
 
-  const problems = budgetProblems(result);
-  if (problems.length > 0) {
-    console.error(`\n✗ Load budget missed: ${problems.join("; ")}`);
+  if (failures.length > 0) {
+    console.error(`\n✗ Load budget missed:\n  ${failures.join("\n  ")}`);
     process.exit(1);
   }
   console.log(`\n✓ Load budget met (p95 ≤ ${P95_BUDGET_MS}ms, success ≥ ${MIN_SUCCESS_RATE * 100}%)`);

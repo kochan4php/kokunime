@@ -49,7 +49,7 @@ export const WatchOrderTimeline = ({ anime }: WatchOrderTimelineProps): JSX.Elem
         </div>
         <Link
           href={`/search/${encodeURIComponent(franchiseInfo.baseName)}`}
-          className="font-mono text-xs font-bold text-accent hover:underline"
+          className="font-mono text-xs font-bold text-accent-text hover:underline"
         >
           Cari Semua Seri {franchiseInfo.baseName} →
         </Link>
@@ -86,7 +86,7 @@ export const WatchOrderTimeline = ({ anime }: WatchOrderTimelineProps): JSX.Elem
           <p className="mt-2 font-display text-sm font-bold text-ink line-clamp-1 break-words">Kelanjutan Cerita</p>
           <Link
             href={`/search/${encodeURIComponent(franchiseInfo.baseName)}`}
-            className="mt-1 inline-block text-xs font-semibold text-accent hover:underline"
+            className="mt-1 inline-block text-xs font-semibold text-accent-text hover:underline"
           >
             Lihat seri lainnya →
           </Link>

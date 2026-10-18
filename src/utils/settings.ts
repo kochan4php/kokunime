@@ -26,6 +26,8 @@ export interface AppSettings {
   dataSaver: boolean;
   hideSpoilers: boolean;
   autoMarkWatched: boolean;
+  autoArchive: boolean;
+  weeklyGoal: number;
 }
 
 export const DEFAULT_SETTINGS: AppSettings = {
@@ -42,6 +44,8 @@ export const DEFAULT_SETTINGS: AppSettings = {
   dataSaver: false,
   hideSpoilers: false,
   autoMarkWatched: false,
+  autoArchive: false,
+  weeklyGoal: 0,
 };
 
 export const ACCENT_PRESETS: { key: AccentColor; label: string; color: string; desc: string }[] = [
@@ -177,6 +181,50 @@ export const saveSettings = (newSettings: AppSettings): void => {
   }
 };
 
+// Applies an untrusted partial settings object (share-link import) on top of
+// the current settings, keeping only values that survive validation: the key
+// must exist, the type must match the default, and strings must be a known
+// enum value. Returns whether anything was applied.
+const isKnownStringValue = (key: string, value: string): boolean => {
+  if (key === "accent") return ACCENT_PRESETS.some((preset) => preset.key === value);
+  return [
+    "id",
+    "en",
+    "sans",
+    "mono",
+    "serif",
+    "compact",
+    "normal",
+    "large",
+    "comfortable",
+    "none",
+    "sepia",
+    "high-contrast",
+    "grid",
+    "list",
+    "cards",
+    "matrix",
+  ].includes(value);
+};
+
+export const mergeSettings = (partial: unknown): boolean => {
+  if (!partial || typeof partial !== "object") return false;
+  const current = getStoredSettings();
+  const merged: Record<string, unknown> = { ...current };
+  let applied = false;
+  for (const [key, value] of Object.entries(partial as Record<string, unknown>)) {
+    if (!(key in DEFAULT_SETTINGS)) continue;
+    const expected = (DEFAULT_SETTINGS as unknown as Record<string, unknown>)[key];
+    if (typeof value !== typeof expected) continue;
+    if (typeof value === "string" && !isKnownStringValue(key, value)) continue;
+    if (key === "weeklyGoal") merged[key] = Math.max(0, Math.min(99, Math.floor(Number(value) || 0)));
+    else merged[key] = value;
+    applied = true;
+  }
+  if (applied) saveSettings(merged as unknown as AppSettings);
+  return applied;
+};
+
 export interface StorageBreakdown {
   bookmarksCount: number;
   bookmarksBytes: number;
@@ -184,6 +232,10 @@ export interface StorageBreakdown {
   historyBytes: number;
   searchHistoryCount: number;
   searchHistoryBytes: number;
+  queueCount: number;
+  queueBytes: number;
+  marksCount: number;
+  marksBytes: number;
   settingsBytes: number;
   totalBytes: number;
   formattedTotal: string;
@@ -198,6 +250,10 @@ export const calculateStorageBreakdown = (): StorageBreakdown => {
       historyBytes: 0,
       searchHistoryCount: 0,
       searchHistoryBytes: 0,
+      queueCount: 0,
+      queueBytes: 0,
+      marksCount: 0,
+      marksBytes: 0,
       settingsBytes: 0,
       totalBytes: 0,
       formattedTotal: "0 KB",
@@ -207,17 +263,32 @@ export const calculateStorageBreakdown = (): StorageBreakdown => {
   const rawBookmarks = localStorage.getItem(STORAGE_KEYS.bookmarks) || "[]";
   const rawHistory = localStorage.getItem(STORAGE_KEYS.watchHistory) || "[]";
   const rawSearches = localStorage.getItem(STORAGE_KEYS.recentSearches) || "[]";
+  const rawQueue = localStorage.getItem(STORAGE_KEYS.watchQueue) || "[]";
+  const rawMarks = localStorage.getItem(STORAGE_KEYS.episodeLog) || "[]";
   const rawSettings = localStorage.getItem(SETTINGS_STORAGE_KEY) || "{}";
 
-  const bookmarksCount = (JSON.parse(rawBookmarks) || []).length;
-  const historyCount = (JSON.parse(rawHistory) || []).length;
-  const searchHistoryCount = (JSON.parse(rawSearches) || []).length;
+  const countOf = (raw: string): number => {
+    try {
+      const parsed = JSON.parse(raw);
+      return Array.isArray(parsed) ? parsed.length : 0;
+    } catch {
+      return 0;
+    }
+  };
+
+  const bookmarksCount = countOf(rawBookmarks);
+  const historyCount = countOf(rawHistory);
+  const searchHistoryCount = countOf(rawSearches);
+  const queueCount = countOf(rawQueue);
+  const marksCount = countOf(rawMarks);
 
   const bookmarksBytes = new Blob([rawBookmarks]).size;
   const historyBytes = new Blob([rawHistory]).size;
   const searchHistoryBytes = new Blob([rawSearches]).size;
+  const queueBytes = new Blob([rawQueue]).size;
+  const marksBytes = new Blob([rawMarks]).size;
   const settingsBytes = new Blob([rawSettings]).size;
-  const totalBytes = bookmarksBytes + historyBytes + searchHistoryBytes + settingsBytes;
+  const totalBytes = bookmarksBytes + historyBytes + searchHistoryBytes + queueBytes + marksBytes + settingsBytes;
 
   const formattedTotal =
     totalBytes > 1024 * 1024 ? `${(totalBytes / (1024 * 1024)).toFixed(2)} MB` : `${(totalBytes / 1024).toFixed(1)} KB`;
@@ -229,6 +300,10 @@ export const calculateStorageBreakdown = (): StorageBreakdown => {
     historyBytes,
     searchHistoryCount,
     searchHistoryBytes,
+    queueCount,
+    queueBytes,
+    marksCount,
+    marksBytes,
     settingsBytes,
     totalBytes,
     formattedTotal,
@@ -245,6 +320,10 @@ export const exportAllAppData = (): string => {
     bookmarks: JSON.parse(localStorage.getItem(STORAGE_KEYS.bookmarks) || "[]"),
     history: JSON.parse(localStorage.getItem(STORAGE_KEYS.watchHistory) || "[]"),
     searches: JSON.parse(localStorage.getItem(STORAGE_KEYS.recentSearches) || "[]"),
+    queue: JSON.parse(localStorage.getItem(STORAGE_KEYS.watchQueue) || "[]"),
+    progress: JSON.parse(localStorage.getItem(STORAGE_KEYS.progress) || "[]"),
+    episodeLog: JSON.parse(localStorage.getItem(STORAGE_KEYS.episodeLog) || "[]"),
+    folderOrder: JSON.parse(localStorage.getItem(STORAGE_KEYS.folderOrder) || "[]"),
   };
   return JSON.stringify(data, null, 2);
 };
@@ -258,15 +337,16 @@ export const importAllAppData = (jsonString: string): boolean => {
     if (parsed.settings) {
       saveSettings({ ...DEFAULT_SETTINGS, ...parsed.settings });
     }
-    if (Array.isArray(parsed.bookmarks)) {
-      localStorage.setItem(STORAGE_KEYS.bookmarks, JSON.stringify(parsed.bookmarks));
-    }
-    if (Array.isArray(parsed.history)) {
-      localStorage.setItem(STORAGE_KEYS.watchHistory, JSON.stringify(parsed.history));
-    }
-    if (Array.isArray(parsed.searches)) {
-      localStorage.setItem(STORAGE_KEYS.recentSearches, JSON.stringify(parsed.searches));
-    }
+    const writeArray = (key: string, value: unknown): void => {
+      if (Array.isArray(value)) localStorage.setItem(key, JSON.stringify(value));
+    };
+    writeArray(STORAGE_KEYS.bookmarks, parsed.bookmarks);
+    writeArray(STORAGE_KEYS.watchHistory, parsed.history);
+    writeArray(STORAGE_KEYS.recentSearches, parsed.searches);
+    writeArray(STORAGE_KEYS.watchQueue, parsed.queue);
+    writeArray(STORAGE_KEYS.progress, parsed.progress);
+    writeArray(STORAGE_KEYS.episodeLog, parsed.episodeLog);
+    writeArray(STORAGE_KEYS.folderOrder, parsed.folderOrder);
 
     window.dispatchEvent(new Event("storage"));
     return true;

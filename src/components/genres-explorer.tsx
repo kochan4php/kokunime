@@ -215,7 +215,8 @@ export const GenresExplorer = ({ genres }: GenresExplorerProps): JSX.Element => 
         </div>
 
         <p className="font-mono text-xs text-ink-muted">
-          Menampilkan <span className="text-accent font-bold">{filteredGenres.length}</span> dari {genres.length} genre
+          Menampilkan <span className="text-accent-text font-bold">{filteredGenres.length}</span> dari {genres.length}{" "}
+          genre
         </p>
       </div>
 
@@ -233,7 +234,7 @@ export const GenresExplorer = ({ genres }: GenresExplorerProps): JSX.Element => 
                 <Link
                   key={slug}
                   href={`/genres/${slug}`}
-                  className="group relative flex flex-col justify-between rounded-sm border-2 border-border bg-(--nb-card) p-3 sm:p-3.5 text-nb-ink shadow-[2px_2px_0_0_var(--border)] transition-all duration-150 hover:-translate-y-0.5 hover:shadow-[4px_4px_0_0_var(--border)] active:translate-y-0 active:shadow-none"
+                  className="group relative flex flex-col justify-between rounded-sm border-2 border-border bg-(--nb-card) p-3 sm:p-3.5 text-nb-ink shadow-[2px_2px_0_0_var(--border)] transition-all duration-150 motion-safe:hover:-translate-y-0.5 hover:shadow-[4px_4px_0_0_var(--border)] active:translate-y-0 active:shadow-none"
                 >
                   <div className="flex items-center justify-between">
                     <span className="flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-sm bg-white/60 text-base sm:text-lg border-2 border-nb-ink/40 group-hover:scale-110 transition-transform">
@@ -247,7 +248,7 @@ export const GenresExplorer = ({ genres }: GenresExplorerProps): JSX.Element => 
                     <h3 className="font-display text-xs sm:text-sm font-bold text-nb-ink truncate group-hover:underline transition-colors">
                       {genre.name}
                     </h3>
-                    <p className="text-[10px] sm:text-[11px] text-nb-ink/75 mt-0.5 line-clamp-1 leading-snug">
+                    <p className="text-[10px] sm:text-[11px] text-nb-ink mt-0.5 line-clamp-1 leading-snug">
                       {meta.desc}
                     </p>
                   </div>

@@ -43,7 +43,7 @@ const CopyButton = ({
       className={`inline-flex shrink-0 items-center justify-center rounded-sm border-2 px-3 font-mono text-[11px] font-semibold uppercase tracking-wider transition-all duration-150 cursor-pointer ${
         copied
           ? "border-border bg-nb-lime text-nb-ink shadow-[2px_2px_0_0_var(--border)]"
-          : "border-border bg-surface text-ink-muted shadow-[2px_2px_0_0_var(--border)] hover:-translate-y-0.5 hover:bg-nb-yellow hover:text-nb-ink active:translate-y-0 active:shadow-none"
+          : "border-border bg-surface text-ink-muted shadow-[2px_2px_0_0_var(--border)] motion-safe:hover:-translate-y-0.5 hover:bg-nb-yellow hover:text-nb-ink active:translate-y-0 active:shadow-none"
       } ${className}`}
     >
       {copied ? copiedLabel : label}

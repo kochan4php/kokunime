@@ -93,7 +93,7 @@ const BookmarkButton = ({
         className={`inline-flex items-center justify-center gap-2 rounded-sm border-2 transition-all duration-150 cursor-pointer ${
           active
             ? "border-border bg-nb-yellow! text-nb-ink! font-semibold shadow-[2px_2px_0_0_var(--border)]"
-            : "border-border bg-surface text-ink-muted shadow-[2px_2px_0_0_var(--border)] hover:-translate-y-0.5 hover:text-ink active:translate-y-0 active:shadow-none"
+            : "border-border bg-surface text-ink-muted shadow-[2px_2px_0_0_var(--border)] motion-safe:hover:-translate-y-0.5 hover:text-ink active:translate-y-0 active:shadow-none"
         } ${showLabel ? "px-4 py-2 text-sm font-semibold" : "h-9 w-9 p-0"} ${className}`}
       >
         <svg
@@ -117,7 +117,7 @@ const BookmarkButton = ({
           type="button"
           onClick={() => setShowStatusPicker((prev) => !prev)}
           title="Ubah status nonton"
-          className="ml-1 rounded-sm border-2 border-border bg-surface px-2 py-2 text-xs text-ink-muted shadow-[2px_2px_0_0_var(--border)] hover:-translate-y-0.5 hover:text-ink transition-all duration-150 active:translate-y-0 active:shadow-none cursor-pointer"
+          className="ml-1 rounded-sm border-2 border-border bg-surface px-2 py-2 text-xs text-ink-muted shadow-[2px_2px_0_0_var(--border)] motion-safe:hover:-translate-y-0.5 hover:text-ink transition-all duration-150 active:translate-y-0 active:shadow-none cursor-pointer"
         >
           ▼
         </button>

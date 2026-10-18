@@ -49,7 +49,7 @@ const EpisodeNavigator = ({ slug, episodes }: EpisodeNavigatorProps): JSX.Elemen
                   ? "border-border bg-nb-lime text-nb-ink shadow-[2px_2px_0_0_var(--border)]"
                   : episode === next
                     ? "border-border bg-accent text-(--accent-ink) shadow-[2px_2px_0_0_var(--border)]"
-                    : "border-border bg-surface-solid text-ink-muted shadow-[2px_2px_0_0_var(--border)] hover:-translate-y-0.5 hover:text-ink active:translate-y-0 active:shadow-none"
+                    : "border-border bg-surface-solid text-ink-muted shadow-[2px_2px_0_0_var(--border)] motion-safe:hover:-translate-y-0.5 hover:text-ink active:translate-y-0 active:shadow-none"
               }`}
             >
               {episode}

@@ -56,7 +56,7 @@ const MobileMenu = ({ isActive }: MobileMenuProps): JSX.Element => {
         onClick={openMenu}
         aria-label={t("nav.open_menu")}
         title={t("nav.open_menu")}
-        className="flex h-11 w-11 items-center justify-center rounded-sm border-2 border-border bg-nb-yellow text-[#0a0a0a] shadow-[2px_2px_0_0_var(--border)] transition-all duration-150 hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 active:shadow-none lg:hidden cursor-pointer shrink-0"
+        className="flex h-11 w-11 items-center justify-center rounded-sm border-2 border-border bg-nb-yellow text-[#0a0a0a] shadow-[2px_2px_0_0_var(--border)] transition-all duration-150 motion-safe:hover:-translate-x-0.5 motion-safe:hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 active:shadow-none lg:hidden cursor-pointer shrink-0"
       >
         <span aria-hidden className="menu-icon">
           <span className="menu-line" />
@@ -93,7 +93,7 @@ const MobileMenu = ({ isActive }: MobileMenuProps): JSX.Element => {
               type="button"
               onClick={closeMenu}
               aria-label={t("nav.close_menu")}
-              className="flex h-9 w-9 items-center justify-center rounded-sm border-2 border-border bg-surface font-bold text-ink shadow-[2px_2px_0_0_var(--border)] transition-all hover:-translate-y-0.5 active:translate-y-0 active:shadow-none cursor-pointer"
+              className="flex h-9 w-9 items-center justify-center rounded-sm border-2 border-border bg-surface font-bold text-ink shadow-[2px_2px_0_0_var(--border)] transition-all motion-safe:hover:-translate-y-0.5 active:translate-y-0 active:shadow-none cursor-pointer"
             >
               ✕
             </button>
@@ -146,7 +146,7 @@ const MobileMenu = ({ isActive }: MobileMenuProps): JSX.Element => {
                     <span className="text-base">🎲</span>
                     <span className="text-ink font-semibold">{t("nav.random_anime")}</span>
                   </div>
-                  <span className="font-mono text-xs text-accent font-bold">↵</span>
+                  <span className="font-mono text-xs text-accent-text font-bold">↵</span>
                 </a>
               </nav>
             </div>

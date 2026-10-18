@@ -63,7 +63,7 @@ const TrailerButton = ({ trailerUrl, title }: TrailerButtonProps): JSX.Element |
         type="button"
         onClick={openModal}
         title="Tonton Trailer Resmi (Shortcut: T)"
-        className="inline-flex items-center gap-1.5 rounded-sm border-2 border-border bg-accent px-3 py-1.5 font-display text-xs font-bold text-(--accent-ink) shadow-[2px_2px_0_0_var(--border)] transition-all duration-150 hover:-translate-y-0.5 active:translate-y-0 active:shadow-none cursor-pointer"
+        className="inline-flex items-center gap-1.5 rounded-sm border-2 border-border bg-accent px-3 py-1.5 font-display text-xs font-bold text-(--accent-ink) shadow-[2px_2px_0_0_var(--border)] transition-all duration-150 motion-safe:hover:-translate-y-0.5 active:translate-y-0 active:shadow-none cursor-pointer"
       >
         <span>▶</span>
         <span>Trailer</span>

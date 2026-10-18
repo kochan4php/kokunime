@@ -9,6 +9,7 @@
   --ink-muted: #5c544b;
   --accent: #ff8a3d;
   --accent-strong: #e96a1a;
+  --accent-text: #c2410c;
   --accent-2: #ffb457;
   --accent-amber: #ffd93d;
   --accent-ink: #0a0a0a;
@@ -28,30 +29,35 @@
 :root[data-accent="emerald"] {
   --accent: #10b981;
   --accent-strong: #047857;
+  --accent-text: #047857;
   --accent-2: #6ee7b7;
 }
 
 :root[data-accent="violet"] {
   --accent: #8b5cf6;
   --accent-strong: #6d28d9;
+  --accent-text: #6d28d9;
   --accent-2: #c4a1ff;
 }
 
 :root[data-accent="cyan"] {
   --accent: #06b6d4;
   --accent-strong: #0e7490;
+  --accent-text: #0e7490;
   --accent-2: #67e8f9;
 }
 
 :root[data-accent="rose"] {
   --accent: #f43f5e;
   --accent-strong: #be123c;
+  --accent-text: #be123c;
   --accent-2: #ff90e8;
 }
 
 :root[data-accent="amber"] {
   --accent: #f59e0b;
   --accent-strong: #b45309;
+  --accent-text: #92400e;
   --accent-2: #ffd93d;
 }
 
@@ -65,6 +71,7 @@
   --color-ink-muted: var(--ink-muted);
   --color-accent: var(--accent);
   --color-accent-strong: var(--accent-strong);
+  --color-accent-text: var(--accent-text);
   --color-accent-2: var(--accent-2);
   --color-accent-amber: var(--accent-amber);
 

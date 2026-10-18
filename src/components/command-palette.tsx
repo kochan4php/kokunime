@@ -19,11 +19,14 @@ const CommandPalette = (): JSX.Element => {
     liveResults,
     isLoading,
     isClosing,
+    isActionMode,
+    actions,
     openPalette,
     closePalette,
     clearHistory,
     handleSearch,
     handleFormSubmit,
+    runAction,
   } = useCommandPalette();
   const { t, language } = useTranslation();
 
@@ -35,18 +38,18 @@ const CommandPalette = (): JSX.Element => {
         onClick={openPalette}
         aria-label={t("common.search")}
         title={`${t("common.search")} (Ctrl+K atau /)`}
-        className="flex h-11 w-11 items-center justify-center rounded-sm border-2 border-border bg-surface text-ink shadow-[2px_2px_0_0_var(--border)] transition-all duration-150 hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 active:shadow-none lg:hidden cursor-pointer shrink-0"
+        className="flex h-11 w-11 items-center justify-center rounded-sm border-2 border-border bg-surface text-ink shadow-[2px_2px_0_0_var(--border)] transition-all duration-150 motion-safe:hover:-translate-x-0.5 motion-safe:hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 active:shadow-none lg:hidden cursor-pointer shrink-0"
       >
         <SearchIcon />
       </button>
 
-      {/* Desktop Search Button */}
+      {/* Desktop Search Button: visible text names it; no aria-label so the
+          accessible name contains the visible label (axe label-content-name). */}
       <button
         type="button"
         onClick={openPalette}
-        aria-label={t("common.search")}
         title={`${t("common.search")} (Ctrl+K atau /)`}
-        className="hidden lg:flex items-center gap-2 rounded-sm border-2 border-border bg-surface px-3.5 py-2 text-sm text-ink-muted shadow-[2px_2px_0_0_var(--border)] transition-all duration-150 hover:-translate-y-0.5 hover:shadow-[4px_4px_0_0_var(--border)] hover:text-ink active:translate-y-0 active:shadow-none cursor-pointer"
+        className="hidden lg:flex items-center gap-2 rounded-sm border-2 border-border bg-surface px-3.5 py-2 text-sm text-ink-muted shadow-[2px_2px_0_0_var(--border)] transition-all duration-150 motion-safe:hover:-translate-y-0.5 hover:shadow-[4px_4px_0_0_var(--border)] hover:text-ink active:translate-y-0 active:shadow-none cursor-pointer"
       >
         <SearchIcon />
         <span className="w-28 text-left text-xs xl:w-36 truncate">{t("nav.search_placeholder")}</span>
@@ -75,7 +78,7 @@ const CommandPalette = (): JSX.Element => {
             onSubmit={handleFormSubmit}
             className="relative flex items-center border-b-2 border-border px-3.5 sm:px-4 py-3 bg-surface-muted"
           >
-            <span className="text-accent mr-2.5 sm:mr-3 shrink-0">
+            <span className="text-accent-text mr-2.5 sm:mr-3 shrink-0">
               <SearchIcon />
             </span>
             <input
@@ -86,7 +89,7 @@ const CommandPalette = (): JSX.Element => {
                 setQuery(e.target.value);
               }}
               placeholder={
-                language === "en" ? "Type anime title and press Enter..." : "Ketik judul anime, lalu tekan Enter..."
+                language === "en" ? "Anime title, or “>” for quick actions…" : "Judul anime, atau “>” untuk aksi cepat…"
               }
               className="flex-1 bg-transparent text-base sm:text-sm text-ink outline-none placeholder:text-ink-muted min-w-0"
             />
@@ -118,8 +121,44 @@ const CommandPalette = (): JSX.Element => {
 
           {/* Search Body Content */}
           <div className="overflow-y-auto p-3.5 sm:p-4 space-y-4 [scrollbar-width:thin]">
+            {/* Action mode (">"): navigation shortcuts, no network */}
+            {isActionMode && (
+              <div role="region" aria-label="Aksi cepat">
+                <p className="font-mono text-[10px] uppercase tracking-wider text-ink-muted mb-2">
+                  {language === "en" ? `Quick Actions (${actions.length})` : `Aksi Cepat (${actions.length})`}
+                </p>
+                {actions.length > 0 ? (
+                  <div className="space-y-1.5">
+                    {actions.map((action, index) => (
+                      <button
+                        key={action.id}
+                        type="button"
+                        onClick={() => runAction(action)}
+                        className="flex w-full items-center justify-between gap-3 rounded-sm border-2 border-border bg-surface p-2.5 text-left transition-all motion-safe:hover:-translate-y-0.5 hover:shadow-[2px_2px_0_0_var(--border)] active:translate-y-0 active:shadow-none cursor-pointer"
+                      >
+                        <span className="min-w-0 truncate text-xs font-semibold text-ink sm:text-sm">
+                          {index === 0 ? "↵ " : ""}
+                          {action.label}
+                        </span>
+                        <span className="shrink-0 font-mono text-[10px] text-ink-muted">{action.hint} →</span>
+                      </button>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="py-3 text-center font-mono text-xs text-ink-muted">
+                    {language === "en" ? "No matching action." : "Tidak ada aksi yang cocok."}
+                  </p>
+                )}
+                <p className="mt-2 font-mono text-[10px] text-ink-muted">
+                  {language === "en"
+                    ? "Tip: type “>” followed by a page name. Enter opens the first match."
+                    : "Tip: ketik “>” lalu nama halaman. Enter membuka hasil pertama."}
+                </p>
+              </div>
+            )}
+
             {/* Live Autocomplete Results */}
-            {query.trim().length >= 2 && (
+            {!isActionMode && query.trim().length >= 2 && (
               <div role="region" aria-live="polite" aria-label={t("common.search")}>
                 <p className="font-mono text-[10px] uppercase tracking-wider text-ink-muted mb-2">
                   {language === "en"
@@ -137,7 +176,7 @@ const CommandPalette = (): JSX.Element => {
                           onClick={() => {
                             handleSearch(item.title);
                           }}
-                          className="flex items-center gap-3 rounded-sm border-2 border-border bg-surface p-2.5 transition-all hover:-translate-y-0.5 hover:shadow-[2px_2px_0_0_var(--border)] active:translate-y-0 active:shadow-none"
+                          className="flex items-center gap-3 rounded-sm border-2 border-border bg-surface p-2.5 transition-all motion-safe:hover:-translate-y-0.5 hover:shadow-[2px_2px_0_0_var(--border)] active:translate-y-0 active:shadow-none"
                         >
                           <div className="relative h-12 w-9 shrink-0 overflow-hidden rounded-sm border border-border bg-surface-muted">
                             {item.link.image && <AnimeImage fill sizes="36px" src={item.link.image} alt={item.title} />}
@@ -158,7 +197,7 @@ const CommandPalette = (): JSX.Element => {
                               {item.release || "Subtitle Indonesia"}
                             </p>
                           </div>
-                          <span className="font-mono text-xs text-accent font-bold shrink-0">
+                          <span className="font-mono text-xs text-accent-text font-bold shrink-0">
                             {t("common.detail")} →
                           </span>
                         </Link>
@@ -179,7 +218,7 @@ const CommandPalette = (): JSX.Element => {
                         </>
                       )}
                     </p>
-                    <p className="font-mono text-[11px] text-accent mt-1">
+                    <p className="font-mono text-[11px] text-accent-text mt-1">
                       {language === "en"
                         ? "Press Enter to search entire database ↵"
                         : "Tekan Enter untuk mencari di seluruh database ↵"}
@@ -210,7 +249,7 @@ const CommandPalette = (): JSX.Element => {
                       key={item}
                       type="button"
                       onClick={() => handleSearch(item)}
-                      className="rounded-sm border-2 border-border bg-nb-yellow px-3 py-1 text-xs text-[#0a0a0a] font-semibold shadow-[2px_2px_0_0_var(--border)] transition-all hover:-translate-y-0.5 active:translate-y-0 active:shadow-none cursor-pointer"
+                      className="rounded-sm border-2 border-border bg-nb-yellow px-3 py-1 text-xs text-[#0a0a0a] font-semibold shadow-[2px_2px_0_0_var(--border)] transition-all motion-safe:hover:-translate-y-0.5 active:translate-y-0 active:shadow-none cursor-pointer"
                     >
                       {item}
                     </button>
@@ -229,7 +268,7 @@ const CommandPalette = (): JSX.Element => {
                   <a
                     href="/api/random"
                     onClick={closePalette}
-                    className="inline-flex items-center gap-1 font-mono text-[11px] font-semibold text-accent hover:underline"
+                    className="inline-flex items-center gap-1 font-mono text-[11px] font-semibold text-accent-text hover:underline"
                   >
                     <span>🎲 {t("nav.random_anime")}</span>
                   </a>
@@ -238,7 +277,7 @@ const CommandPalette = (): JSX.Element => {
                   <Link
                     href="/settings"
                     onClick={closePalette}
-                    className="flex items-center justify-between rounded-sm border-2 border-border bg-nb-pink px-3 py-2 text-xs font-mono font-semibold text-[#0a0a0a] shadow-[2px_2px_0_0_var(--border)] transition-all hover:-translate-y-0.5 active:translate-y-0 active:shadow-none"
+                    className="flex items-center justify-between rounded-sm border-2 border-border bg-nb-pink px-3 py-2 text-xs font-mono font-semibold text-[#0a0a0a] shadow-[2px_2px_0_0_var(--border)] transition-all motion-safe:hover:-translate-y-0.5 active:translate-y-0 active:shadow-none"
                   >
                     <span>⚙️ {t("nav.settings")}</span>
                     <span className="text-[10px]">🎨</span>
@@ -246,7 +285,7 @@ const CommandPalette = (): JSX.Element => {
                   <Link
                     href="/api"
                     onClick={closePalette}
-                    className="flex items-center justify-between rounded-sm border-2 border-border bg-surface px-3 py-2 text-xs font-mono text-ink-muted shadow-[2px_2px_0_0_var(--border)] transition-all hover:-translate-y-0.5 hover:text-ink active:translate-y-0 active:shadow-none"
+                    className="flex items-center justify-between rounded-sm border-2 border-border bg-surface px-3 py-2 text-xs font-mono text-ink-muted shadow-[2px_2px_0_0_var(--border)] transition-all motion-safe:hover:-translate-y-0.5 hover:text-ink active:translate-y-0 active:shadow-none"
                   >
                     <span>⚡ {t("nav.api")} Docs</span>
                     <span className="text-[10px]">📖</span>
@@ -255,7 +294,7 @@ const CommandPalette = (): JSX.Element => {
                     href="/feed.xml"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center justify-between rounded-sm border-2 border-border bg-surface px-3 py-2 text-xs font-mono text-ink-muted shadow-[2px_2px_0_0_var(--border)] transition-all hover:-translate-y-0.5 hover:text-ink active:translate-y-0 active:shadow-none"
+                    className="flex items-center justify-between rounded-sm border-2 border-border bg-surface px-3 py-2 text-xs font-mono text-ink-muted shadow-[2px_2px_0_0_var(--border)] transition-all motion-safe:hover:-translate-y-0.5 hover:text-ink active:translate-y-0 active:shadow-none"
                   >
                     <span>GET /feed.xml</span>
                     <span className="text-[10px]">📡</span>

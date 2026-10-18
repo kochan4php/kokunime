@@ -52,7 +52,7 @@ const TrendingRail = (): JSX.Element | null => {
           <li key={item.slug}>
             <Link
               href={`/anime/${item.slug}`}
-              className="group flex items-center gap-3 border-2 border-border bg-surface-solid p-2.5 shadow-[3px_3px_0_0_var(--border)] transition-transform hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[5px_5px_0_0_var(--border)] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none"
+              className="group flex items-center gap-3 border-2 border-border bg-surface-solid p-2.5 shadow-[3px_3px_0_0_var(--border)] transition-transform motion-safe:hover:-translate-x-0.5 motion-safe:hover:-translate-y-0.5 hover:shadow-[5px_5px_0_0_var(--border)] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none"
             >
               <span
                 aria-hidden="true"

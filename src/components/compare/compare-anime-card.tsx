@@ -47,7 +47,7 @@ const CompareAnimeCard = ({ anime, slug, side }: CompareAnimeCardProps): JSX.Ele
             <div className="pt-2">
               <Link
                 href={`/anime/${slug}`}
-                className="inline-flex items-center gap-1.5 rounded-sm border-2 border-border bg-accent px-3.5 py-1.5 font-mono text-xs font-bold text-(--accent-ink) shadow-[2px_2px_0_0_var(--border)] hover:-translate-y-0.5 active:translate-y-0 active:shadow-none transition-all"
+                className="inline-flex items-center gap-1.5 rounded-sm border-2 border-border bg-accent px-3.5 py-1.5 font-mono text-xs font-bold text-(--accent-ink) shadow-[2px_2px_0_0_var(--border)] motion-safe:hover:-translate-y-0.5 active:translate-y-0 active:shadow-none transition-all"
               >
                 <span>{side === "a" ? t("compare.open_detail_a") : t("compare.open_detail_b")}</span>
               </Link>

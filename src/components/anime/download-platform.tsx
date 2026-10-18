@@ -33,7 +33,7 @@ const DownloadPlatform = ({ name, url }: { name: string; url?: string | undefine
         target="_blank"
         rel="noopener noreferrer"
         title={needLogin ? `${name} (Mungkin membutuhkan login akun)` : name}
-        className={`group flex min-w-0 flex-1 items-center justify-between gap-1.5 sm:gap-2 rounded-sm border-2 px-3 sm:px-4 py-2 text-xs sm:text-sm shadow-[2px_2px_0_0_var(--border)] transition-all duration-150 hover:-translate-y-0.5 hover:shadow-[4px_4px_0_0_var(--border)] active:translate-y-0 active:shadow-none ${styleClass}`}
+        className={`group flex min-w-0 flex-1 items-center justify-between gap-1.5 sm:gap-2 rounded-sm border-2 px-3 sm:px-4 py-2 text-xs sm:text-sm shadow-[2px_2px_0_0_var(--border)] transition-all duration-150 motion-safe:hover:-translate-y-0.5 hover:shadow-[4px_4px_0_0_var(--border)] active:translate-y-0 active:shadow-none ${styleClass}`}
       >
         <div className="flex items-center gap-1.5 min-w-0">
           <span className="truncate">{name}</span>

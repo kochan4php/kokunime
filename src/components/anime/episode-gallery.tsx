@@ -55,7 +55,13 @@ export const EpisodeGallery = ({ title, posterImage }: EpisodeGalleryProps): JSX
           className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 animate-in fade-in"
         >
           <div className="relative max-w-2xl w-full aspect-video rounded-sm overflow-hidden border-[3px] border-nb-cream">
-            <Image src={selectedImage} alt={title} fill className="object-contain" />
+            <Image
+              src={selectedImage}
+              alt={title}
+              fill
+              sizes="(max-width: 768px) 100vw, 672px"
+              className="object-contain"
+            />
             <button
               type="button"
               onClick={() => setSelectedImage(null)}

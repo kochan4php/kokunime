@@ -77,7 +77,7 @@ const SaveOfflineButton = ({ slug, title }: SaveOfflineButtonProps): JSX.Element
       disabled={busy}
       aria-pressed={saved}
       title={t("offline.save_hint")}
-      className="inline-flex items-center gap-1 rounded-sm border-2 border-border bg-surface px-2 py-0.5 font-mono text-[11px] font-bold text-ink shadow-[2px_2px_0_0_var(--border)] transition-all duration-150 hover:-translate-y-0.5 hover:bg-nb-yellow active:translate-y-0 active:shadow-none disabled:opacity-60"
+      className="inline-flex items-center gap-1 rounded-sm border-2 border-border bg-surface px-2 py-0.5 font-mono text-[11px] font-bold text-ink shadow-[2px_2px_0_0_var(--border)] transition-all duration-150 motion-safe:hover:-translate-y-0.5 hover:bg-nb-yellow active:translate-y-0 active:shadow-none disabled:opacity-60"
     >
       <span aria-hidden="true">{saved ? "✓" : "⤓"}</span>
       <span>{saved ? t("offline.saved") : t("offline.save")}</span>

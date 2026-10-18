@@ -80,7 +80,7 @@ const DetailHeroView = ({ anime, slug, blurDataURL }: DetailHeroViewProps): JSX.
                   <Link
                     href={`/compare?a=${slug}`}
                     title="Bandingkan anime ini dengan judul lain"
-                    className="inline-flex items-center gap-1 rounded-sm border-2 border-border bg-surface px-2 py-0.5 font-mono text-[11px] font-bold text-ink shadow-[2px_2px_0_0_var(--border)] transition-all duration-150 hover:-translate-y-0.5 hover:bg-nb-cyan active:translate-y-0 active:shadow-none"
+                    className="inline-flex items-center gap-1 rounded-sm border-2 border-border bg-surface px-2 py-0.5 font-mono text-[11px] font-bold text-ink shadow-[2px_2px_0_0_var(--border)] transition-all duration-150 motion-safe:hover:-translate-y-0.5 hover:bg-nb-cyan active:translate-y-0 active:shadow-none"
                   >
                     <span>⚖ Banding</span>
                   </Link>
@@ -101,7 +101,7 @@ const DetailHeroView = ({ anime, slug, blurDataURL }: DetailHeroViewProps): JSX.
                 />
               )}
             </div>
-            {anime.japanese && <p className="mt-1 font-mono text-xs text-ink-muted/80 break-words">{anime.japanese}</p>}
+            {anime.japanese && <p className="mt-1 font-mono text-xs text-ink-muted break-words">{anime.japanese}</p>}
             <div className="mt-3 flex flex-wrap items-center gap-2">
               {anime.status && (
                 <span
@@ -147,7 +147,7 @@ const DetailHeroView = ({ anime, slug, blurDataURL }: DetailHeroViewProps): JSX.
                     target="_blank"
                     rel="noopener noreferrer"
                     title={`Cari ${anime.title} di MyAnimeList`}
-                    className="inline-flex items-center gap-1 rounded-sm border-2 border-border bg-surface px-2 py-0.5 font-mono text-[11px] font-bold text-ink shadow-[2px_2px_0_0_var(--border)] transition-all duration-150 hover:-translate-y-0.5 hover:bg-nb-purple active:translate-y-0 active:shadow-none"
+                    className="inline-flex items-center gap-1 rounded-sm border-2 border-border bg-surface px-2 py-0.5 font-mono text-[11px] font-bold text-ink shadow-[2px_2px_0_0_var(--border)] transition-all duration-150 motion-safe:hover:-translate-y-0.5 hover:bg-nb-purple active:translate-y-0 active:shadow-none"
                   >
                     <span>MAL ↗</span>
                   </a>
@@ -156,7 +156,7 @@ const DetailHeroView = ({ anime, slug, blurDataURL }: DetailHeroViewProps): JSX.
                     target="_blank"
                     rel="noopener noreferrer"
                     title={`Cari ${anime.title} di AniList`}
-                    className="inline-flex items-center gap-1 rounded-sm border-2 border-border bg-surface px-2 py-0.5 font-mono text-[11px] font-bold text-ink shadow-[2px_2px_0_0_var(--border)] transition-all duration-150 hover:-translate-y-0.5 hover:bg-nb-teal active:translate-y-0 active:shadow-none"
+                    className="inline-flex items-center gap-1 rounded-sm border-2 border-border bg-surface px-2 py-0.5 font-mono text-[11px] font-bold text-ink shadow-[2px_2px_0_0_var(--border)] transition-all duration-150 motion-safe:hover:-translate-y-0.5 hover:bg-nb-teal active:translate-y-0 active:shadow-none"
                   >
                     <span>AniList ↗</span>
                   </a>

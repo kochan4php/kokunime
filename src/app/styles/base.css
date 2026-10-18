@@ -29,6 +29,11 @@
       transition-duration: 0.01ms !important;
       scroll-behavior: auto !important;
     }
+
+    /* Drop the blueprint grain (an inline SVG texture) as well. */
+    body::before {
+      content: none;
+    }
   }
 
   /* Windows High Contrast / forced-colors: keep the focus ring visible. */
@@ -155,9 +160,12 @@
     color: var(--accent-ink);
   }
 
-  :focus-visible {
+  /* Two-tone focus ring (ink outline + sticker-yellow halo) so the indicator
+     stays visible on the cream body and over hard offset shadows. */
+  :focus-visible:focus-visible {
     outline: 3px solid var(--ink);
     outline-offset: 3px;
+    box-shadow: 0 0 0 7px var(--color-nb-yellow);
   }
 
   /* Anchor jumps (#download) and back-to-top glide instead of teleporting;
@@ -278,11 +286,29 @@ dialog.is-closing::backdrop {
   body::before {
     content: none;
   }
+
+  /* A4-friendly output: hard offset shadows turn into noise on paper, and
+     cards/tables should not split across pages. */
+  .card-shell,
+  .card-core {
+    box-shadow: none !important;
+  }
+
+  .card-shell,
+  li,
+  tr {
+    break-inside: avoid;
+  }
+
+  a[href] {
+    text-decoration-color: currentColor;
+  }
 }
 
 /* Ink chrome (navbar, footer): the default black focus ring would vanish
-   there, so the ring flips to sticker yellow. */
+   there, so the ring flips to sticker yellow with a cream halo. */
 .navbar :focus-visible,
 footer :focus-visible {
   outline-color: var(--color-nb-yellow);
+  box-shadow: 0 0 0 7px var(--color-nb-cream);
 }

@@ -145,5 +145,27 @@ export const buildFaqJsonLd = (anime: AnimeDetail): Record<string, unknown> => (
         text: `${anime.title} memiliki skor rating ${anime.score || "N/A"} dengan status ${anime.status || "N/A"} dan total durasi ${anime.duration || "N/A"}.`,
       },
     },
+    {
+      "@type": "Question",
+      name: `Apa genre dan studio ${anime.title}?`,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: `${anime.title} bergenre ${
+          anime.genre
+            ?.map((g) => g.name)
+            .filter(Boolean)
+            .slice(0, 4)
+            .join(", ") || "N/A"
+        } dengan studio ${anime.studio || anime.producer || "N/A"} dan tayang ${anime.release_on || "N/A"}.`,
+      },
+    },
+    {
+      "@type": "Question",
+      name: `Apakah progres nonton ${anime.title} tersimpan otomatis?`,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: `Tanda "sudah ditonton" dan progres episode ${anime.title} disimpan langsung di perangkat Anda (localStorage) — tanpa akun dan tanpa dikirim ke server, jadi tetap ada saat kembali lagi.`,
+      },
+    },
   ],
 });

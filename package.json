@@ -27,6 +27,10 @@
     "audit:client": "node scripts/find-client-unnecessary.mjs",
     "loadtest": "node scripts/load-test.mjs",
     "e2e": "node scripts/e2e-smoke.mjs",
+    "visual:smoke": "node scripts/visual-smoke.mjs",
+    "perf:budget": "node scripts/perf-budget.mjs",
+    "css:report": "node scripts/css-usage-report.mjs",
+    "verify": "pnpm format:check && pnpm lint && pnpm test && pnpm build && pnpm bundle:budget && pnpm size:budget && node scripts/find-unused-exports.mjs",
     "indexnow": "node scripts/indexnow.mjs",
     "audit:meta": "node scripts/audit-meta.mjs",
     "prepare": "husky"

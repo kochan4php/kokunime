@@ -1,6 +1,6 @@
 "use client";
 
-import CommandPalette from "./command-palette";
+import CommandPalette from "./deferred-palette";
 import InboxBell from "./inbox-bell";
 import MobileMenu from "./mobile-menu";
 import { siteLinks } from "@/components/site-config";
@@ -76,7 +76,7 @@ const Navbar = (): JSX.Element => {
           <a
             href="/api/random"
             title={t("nav.random_anime")}
-            className="hidden lg:inline-flex items-center gap-1.5 rounded-sm border-2 border-border bg-nb-yellow px-3 py-1.5 font-mono text-xs font-bold text-nb-ink transition-all hover:-translate-y-0.5 hover:shadow-[3px_3px_0_0_var(--border)] active:translate-y-0 active:shadow-none cursor-pointer"
+            className="hidden lg:inline-flex items-center gap-1.5 rounded-sm border-2 border-border bg-nb-yellow px-3 py-1.5 font-mono text-xs font-bold text-nb-ink transition-all motion-safe:hover:-translate-y-0.5 hover:shadow-[3px_3px_0_0_var(--border)] active:translate-y-0 active:shadow-none cursor-pointer"
           >
             <span>🎲 {t("nav.random")}</span>
           </a>

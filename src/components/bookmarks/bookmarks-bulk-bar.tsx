@@ -8,6 +8,10 @@ interface BookmarksBulkBarProps {
   onAssignFolder: (folder: string | undefined, slugs: string[]) => void;
   onCopyMarkdownSelected: () => void;
   onRemoveSelected: () => void;
+  onAddToQueue: () => void;
+  onExportSelectedJson: () => void;
+  onExportIcsSelected: () => void;
+  onSetRating: (rating: number | null) => void;
   onCancel: () => void;
 }
 
@@ -18,6 +22,10 @@ const BookmarksBulkBar = ({
   onAssignFolder,
   onCopyMarkdownSelected,
   onRemoveSelected,
+  onAddToQueue,
+  onExportSelectedJson,
+  onExportIcsSelected,
+  onSetRating,
   onCancel,
 }: BookmarksBulkBarProps): JSX.Element => {
   const [bulkFolderChoice, setBulkFolderChoice] = useState("");
@@ -74,6 +82,48 @@ const BookmarksBulkBar = ({
           </button>
         </span>
       )}
+      <button
+        type="button"
+        onClick={onAddToQueue}
+        title="Tambahkan pilihan ke antrean tonton"
+        className="h-8 rounded-sm border-2 border-border bg-nb-lime px-2.5 font-mono text-xs font-bold text-nb-ink shadow-[2px_2px_0_0_var(--border)] transition-all motion-safe:hover:-translate-y-0.5 active:translate-y-0 active:shadow-none cursor-pointer"
+      >
+        ＋ Antrean
+      </button>
+      <select
+        value=""
+        onChange={(e) => {
+          const value = e.target.value;
+          if (!value) return;
+          onSetRating(value === "__none__" ? null : Number(value));
+        }}
+        aria-label="Beri rating item terpilih"
+        className="h-8 cursor-pointer rounded-sm border-2 border-border bg-surface px-2 font-mono text-xs text-ink outline-none focus:border-accent"
+      >
+        <option value="">Rating…</option>
+        {Array.from({ length: 10 }, (_, i) => i + 1).map((n) => (
+          <option key={n} value={String(n)}>
+            ⭐ {n}/10
+          </option>
+        ))}
+        <option value="__none__">Hapus rating</option>
+      </select>
+      <button
+        type="button"
+        onClick={onExportSelectedJson}
+        title="Ekspor pilihan ke file JSON"
+        className="h-8 rounded-sm border-2 border-border bg-surface px-2.5 font-mono text-xs font-semibold text-ink-muted transition-all hover:text-ink cursor-pointer"
+      >
+        Export .json
+      </button>
+      <button
+        type="button"
+        onClick={onExportIcsSelected}
+        title="Unduh pengingat mingguan (.ics) untuk pilihan"
+        className="h-8 rounded-sm border-2 border-border bg-surface px-2.5 font-mono text-xs font-semibold text-ink-muted transition-all hover:text-ink cursor-pointer"
+      >
+        📅 ICS
+      </button>
       <button
         type="button"
         onClick={onCopyMarkdownSelected}

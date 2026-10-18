@@ -28,4 +28,23 @@ describe("sync-codec", () => {
     const decoded = await decodeSyncPayload(legacy);
     expect(decoded?.b).toEqual([{ slug: "x", title: "X" }]);
   });
+
+  it("round-trips a v2 payload (history, queue, settings)", async () => {
+    const payload = {
+      v: 2 as const,
+      b: [{ slug: "a", title: "A" }],
+      p: [{ slug: "a", watched: [1], updatedAt: 2 }],
+      h: [{ slug: "a", title: "A", viewedAt: 3 }],
+      q: [{ slug: "a", title: "A", addedAt: 4 }],
+      s: { accent: "violet", weeklyGoal: 7 },
+    };
+    const token = await encodeSyncPayload(payload);
+    expect(await decodeSyncPayload(token)).toEqual(payload);
+  });
+
+  it("still decodes v1 payloads", async () => {
+    const token = await encodeSyncPayload({ v: 1, b: [], p: [] });
+    const decoded = await decodeSyncPayload(token);
+    expect(decoded?.v).toBe(1);
+  });
 });

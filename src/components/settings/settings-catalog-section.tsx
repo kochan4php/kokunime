@@ -144,6 +144,44 @@ const SettingsCatalogSection = ({ settings, mounted, onUpdate }: SettingsCatalog
               className="h-4 w-4 rounded-sm border-border accent-accent cursor-pointer ml-3"
             />
           </label>
+
+          {/* 6. Auto-archive completed bookmarks */}
+          <label className="flex items-center justify-between p-4 rounded-sm border-2 border-border bg-surface-solid hover:border-accent/50 transition-colors cursor-pointer">
+            <div>
+              <span className="font-display text-xs sm:text-sm font-bold text-ink block">
+                🗃️ {t("settings.auto_archive")}
+              </span>
+              <span className="text-[11px] text-ink-muted">{t("settings.auto_archive_desc")}</span>
+            </div>
+            <input
+              type="checkbox"
+              checked={mounted ? settings.autoArchive : false}
+              onChange={(e) => onUpdate("autoArchive", e.target.checked)}
+              className="h-4 w-4 rounded-sm border-border accent-accent cursor-pointer ml-3"
+            />
+          </label>
+
+          {/* 7. Weekly episode goal */}
+          <div className="p-4 rounded-sm border-2 border-border bg-surface-solid flex items-center justify-between gap-3">
+            <div>
+              <span className="font-display text-xs sm:text-sm font-bold text-ink block">
+                🎯 {t("settings.weekly_goal")}
+              </span>
+              <span className="text-[11px] text-ink-muted">{t("settings.weekly_goal_desc")}</span>
+            </div>
+            <input
+              type="number"
+              min={0}
+              max={99}
+              value={mounted ? settings.weeklyGoal : 0}
+              onChange={(e) => {
+                const value = Math.max(0, Math.min(99, Math.floor(Number(e.target.value) || 0)));
+                onUpdate("weeklyGoal", value);
+              }}
+              aria-label={t("settings.weekly_goal")}
+              className="h-9 w-16 shrink-0 rounded-sm border-2 border-border bg-surface px-2 text-center font-mono text-xs font-bold text-ink outline-none transition-all focus:border-accent"
+            />
+          </div>
         </div>
       </div>
     </div>

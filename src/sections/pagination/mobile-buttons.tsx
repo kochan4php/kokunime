@@ -10,7 +10,7 @@ interface MobilePaginationProps {
 }
 
 const compact = "inline-flex h-10 items-center gap-1 rounded-sm px-3 text-xs";
-const glassCompact = `${compact} glass font-semibold text-ink shadow-[2px_2px_0_0_var(--border)] transition-all duration-150 hover:-translate-y-0.5 active:translate-y-0 active:shadow-none`;
+const glassCompact = `${compact} glass font-semibold text-ink shadow-[2px_2px_0_0_var(--border)] transition-all duration-150 motion-safe:hover:-translate-y-0.5 active:translate-y-0 active:shadow-none`;
 const primaryCompact = `${compact} btn-primary`;
 
 const MobilePagination = ({ current, total, prevHref, nextHref }: MobilePaginationProps): JSX.Element => (

@@ -29,7 +29,10 @@ export const metadata: Metadata = {
   title: "Update Terbaru Anime",
   description:
     "Anime yang baru diperbarui hari ini: episode baru, batch baru, dan lanjutan tontonan — dikelompokkan per hari.",
-  alternates: { canonical: "/update" },
+  alternates: {
+    canonical: "/update",
+    types: { "application/rss+xml": "/update/feed.xml" },
+  },
   openGraph: {
     title: "Update Terbaru Anime · Kokunime",
     description: "Timeline rilis & update anime terbaru per hari.",
@@ -89,7 +92,7 @@ const UpdatePage = async (): Promise<JSX.Element> => {
               <a
                 key={key}
                 href={`#update-${key}`}
-                className="rounded-sm border-2 border-border bg-surface px-3 py-1 font-mono text-[11px] font-semibold text-ink-muted shadow-[2px_2px_0_0_var(--border)] transition-all hover:-translate-y-0.5 hover:bg-nb-yellow hover:text-nb-ink active:translate-y-0 active:shadow-none"
+                className="rounded-sm border-2 border-border bg-surface px-3 py-1 font-mono text-[11px] font-semibold text-ink-muted shadow-[2px_2px_0_0_var(--border)] transition-all motion-safe:hover:-translate-y-0.5 hover:bg-nb-yellow hover:text-nb-ink active:translate-y-0 active:shadow-none"
               >
                 {label} · {count}
               </a>

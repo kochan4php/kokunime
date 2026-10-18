@@ -101,7 +101,7 @@ export const SeasonsExplorer = ({ groups, years }: SeasonsExplorerProps): JSX.El
                 </span>
               </div>
               <h3 className="font-display text-base font-bold text-nb-ink mt-3">{meta.name}</h3>
-              <p className="font-mono text-xs text-nb-ink/75 mt-0.5">
+              <p className="font-mono text-xs text-nb-ink mt-0.5">
                 Kuartal {key === "winter" ? "Q1" : key === "spring" ? "Q2" : key === "summer" ? "Q3" : "Q4"}
               </p>
             </div>
@@ -192,7 +192,7 @@ export const SeasonsExplorer = ({ groups, years }: SeasonsExplorerProps): JSX.El
                     {/^\d{4}$/.test(year) && (
                       <Link
                         href={`/years/${year}`}
-                        className="font-mono text-xs font-bold text-accent underline decoration-2 underline-offset-4 transition-colors hover:text-ink"
+                        className="font-mono text-xs font-bold text-accent-text underline decoration-2 underline-offset-4 transition-colors hover:text-ink"
                       >
                         Semua anime {year} →
                       </Link>
@@ -211,20 +211,20 @@ export const SeasonsExplorer = ({ groups, years }: SeasonsExplorerProps): JSX.El
                         <Link
                           key={slug}
                           href={`/seasons/${slug}`}
-                          className="group relative flex items-center justify-between rounded-sm border-2 border-border bg-surface-solid p-3.5 shadow-[2px_2px_0_0_var(--border)] transition-all duration-150 hover:-translate-y-0.5 hover:shadow-[4px_4px_0_0_var(--border)] active:translate-y-0 active:shadow-none"
+                          className="group relative flex items-center justify-between rounded-sm border-2 border-border bg-surface-solid p-3.5 shadow-[2px_2px_0_0_var(--border)] transition-all duration-150 motion-safe:hover:-translate-y-0.5 hover:shadow-[4px_4px_0_0_var(--border)] active:translate-y-0 active:shadow-none"
                         >
                           <div className="flex items-center gap-3 min-w-0">
                             <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-sm border-2 border-border bg-surface text-xl group-hover:scale-110 transition-transform">
                               {meta.icon}
                             </span>
                             <div className="min-w-0">
-                              <h4 className="font-display text-sm font-bold text-ink truncate group-hover:text-accent transition-colors">
+                              <h4 className="font-display text-sm font-bold text-ink truncate group-hover:text-accent-text transition-colors">
                                 {season.name}
                               </h4>
                               <p className="font-mono text-[11px] text-ink-muted mt-0.5">{meta.months}</p>
                             </div>
                           </div>
-                          <span className="font-mono text-xs text-ink-muted opacity-0 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all text-accent shrink-0">
+                          <span className="font-mono text-xs text-ink-muted opacity-0 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all text-accent-text shrink-0">
                             →
                           </span>
                         </Link>

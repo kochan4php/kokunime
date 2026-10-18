@@ -1,4 +1,5 @@
 import { getAnimePerPage, getGenres, getSeasons } from "@/services/scraper";
+import { getLastUpstreamFetchAt } from "@/services/cache";
 import { SITE_URL } from "@/lib/site";
 import { animeSlug, endpointSlug } from "@/utils/endpoint-slug";
 import type { MetadataRoute } from "next";
@@ -17,6 +18,7 @@ export const getSitemapEntries = async (): Promise<SitemapEntry[]> => {
   const entries: SitemapEntry[] = [
     { url: SITE_URL, lastModified: now, changeFrequency: "daily", priority: 1 },
     { url: `${SITE_URL}/update`, lastModified: now, changeFrequency: "daily", priority: 0.8 },
+    { url: `${SITE_URL}/indeks`, lastModified: now, changeFrequency: "weekly", priority: 0.6 },
     { url: `${SITE_URL}/genres`, lastModified: now, changeFrequency: "weekly", priority: 0.6 },
     { url: `${SITE_URL}/seasons`, lastModified: now, changeFrequency: "weekly", priority: 0.6 },
     { url: `${SITE_URL}/bookmarks`, lastModified: now, changeFrequency: "weekly", priority: 0.5 },
@@ -37,12 +39,16 @@ export const getSitemapEntries = async (): Promise<SitemapEntry[]> => {
   try {
     const { anime = [], pagination } = await getAnimePerPage(1);
 
+    // Catalog-derived URLs carry the real upstream fetch time (cache meta)
+    // instead of the regeneration time; static pages above keep "now".
+    const catalogDate = new Date(getLastUpstreamFetchAt() || Date.now());
+
     for (const item of anime) {
       const endpoint = animeSlug(item.link?.endpoint);
       if (!endpoint) continue;
       entries.push({
         url: `${SITE_URL}/anime/${endpoint}`,
-        lastModified: now,
+        lastModified: catalogDate,
         changeFrequency: "daily",
         priority: 0.7,
         images: item.link?.image ? [item.link.image] : undefined,
@@ -53,7 +59,7 @@ export const getSitemapEntries = async (): Promise<SitemapEntry[]> => {
     for (let page = 2; page <= totalPages; page++) {
       entries.push({
         url: `${SITE_URL}/page/${page}`,
-        lastModified: now,
+        lastModified: catalogDate,
         changeFrequency: "daily",
         priority: 0.5,
       });
@@ -70,7 +76,7 @@ export const getSitemapEntries = async (): Promise<SitemapEntry[]> => {
           if (!endpoint) continue;
           entries.push({
             url: `${SITE_URL}/anime/${endpoint}`,
-            lastModified: now,
+            lastModified: catalogDate,
             changeFrequency: "daily",
             priority: 0.7,
             images: item.link?.image ? [item.link.image] : undefined,
@@ -87,7 +93,7 @@ export const getSitemapEntries = async (): Promise<SitemapEntry[]> => {
         if (!slug) continue;
         entries.push({
           url: `${SITE_URL}/genres/${slug}`,
-          lastModified: now,
+          lastModified: catalogDate,
           changeFrequency: "weekly",
           priority: 0.4,
         });
@@ -101,7 +107,7 @@ export const getSitemapEntries = async (): Promise<SitemapEntry[]> => {
         if (!slug) continue;
         entries.push({
           url: `${SITE_URL}/seasons/${slug}`,
-          lastModified: now,
+          lastModified: catalogDate,
           changeFrequency: "weekly",
           priority: 0.4,
         });
@@ -111,7 +117,7 @@ export const getSitemapEntries = async (): Promise<SitemapEntry[]> => {
       for (const year of years) {
         entries.push({
           url: `${SITE_URL}/years/${year}`,
-          lastModified: now,
+          lastModified: catalogDate,
           changeFrequency: "weekly",
           priority: 0.4,
         });

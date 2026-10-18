@@ -48,7 +48,7 @@ const PwaInstallButton = (): JSX.Element | null => {
     <button
       type="button"
       onClick={handleInstall}
-      className="mt-2 flex w-full items-center justify-center gap-2 rounded-sm border-2 border-border bg-nb-yellow px-4 py-3 text-sm font-bold text-[#0a0a0a] shadow-[2px_2px_0_0_var(--border)] transition-all duration-150 hover:-translate-y-0.5 active:translate-y-0 active:shadow-none"
+      className="mt-2 flex w-full items-center justify-center gap-2 rounded-sm border-2 border-border bg-nb-yellow px-4 py-3 text-sm font-bold text-[#0a0a0a] shadow-[2px_2px_0_0_var(--border)] transition-all duration-150 motion-safe:hover:-translate-y-0.5 active:translate-y-0 active:shadow-none"
     >
       <DownloadIcon className="h-4 w-4" />
       <span>Pasang Aplikasi Kokunime</span>

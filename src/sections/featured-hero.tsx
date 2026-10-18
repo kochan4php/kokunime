@@ -73,25 +73,29 @@ const FeaturedHero = ({ featured, items = [], blurDataURL }: FeaturedHeroProps):
             )}
           </div>
           <div className="nb-halftone flex flex-col justify-center gap-3 sm:gap-4 border-t-2 border-border bg-nb-yellow p-5 sm:p-8 md:border-t-0 md:p-12 min-w-0">
-            <h1 className="font-display text-[1.75rem] font-black leading-[1.05] tracking-[-0.02em] text-nb-ink break-words line-clamp-3 sm:text-4xl md:text-6xl md:line-clamp-none">
+            <h1 className="min-h-[3.15em] font-display text-[1.75rem] font-black leading-[1.05] tracking-[-0.02em] text-nb-ink break-words line-clamp-3 sm:text-4xl md:text-6xl">
               {current?.title ?? "Katalog anime"}
             </h1>
-            {current?.genres?.length ? (
-              <div className="flex flex-wrap gap-1.5">
-                {current.genres.slice(0, 4).map((genre) => (
-                  <span
-                    key={genre}
-                    className="rounded-sm border-2 border-nb-ink bg-nb-cream/70 px-2 py-0.5 font-mono text-[10px] font-bold uppercase tracking-wide text-nb-ink"
-                  >
-                    {genre}
-                  </span>
-                ))}
-              </div>
-            ) : (
-              <p className="font-semibold text-nb-ink/80 leading-relaxed text-xs sm:text-sm">
-                {current?.release ?? "Daftar lengkapnya ada di bawah."}
-              </p>
-            )}
+            {/* Fixed-height slot: slides swap genre chips for release text, and
+                an unreserved slot makes every 6s rotation a layout shift. */}
+            <div className="min-h-[2.75rem]">
+              {current?.genres?.length ? (
+                <div className="flex flex-wrap gap-1.5">
+                  {current.genres.slice(0, 4).map((genre) => (
+                    <span
+                      key={genre}
+                      className="rounded-sm border-2 border-nb-ink bg-nb-cream/70 px-2 py-0.5 font-mono text-[10px] font-bold uppercase tracking-wide text-nb-ink"
+                    >
+                      {genre}
+                    </span>
+                  ))}
+                </div>
+              ) : (
+                <p className="font-semibold text-nb-ink/80 leading-relaxed text-xs sm:text-sm line-clamp-2">
+                  {current?.release ?? "Daftar lengkapnya ada di bawah."}
+                </p>
+              )}
+            </div>
             {slug && (
               <div className="mt-2 flex flex-wrap items-center gap-3">
                 <ViewTransitionLink
@@ -112,7 +116,7 @@ const FeaturedHero = ({ featured, items = [], blurDataURL }: FeaturedHeroProps):
                       type="button"
                       onClick={() => setActiveIndex((prev) => (prev - 1 + list.length) % list.length)}
                       aria-label="Anime sebelumnya"
-                      className="flex h-11 w-11 items-center justify-center rounded-sm border-2 border-border bg-surface text-ink shadow-[2px_2px_0_0_var(--border)] transition-all hover:-translate-y-0.5 active:translate-y-0 active:shadow-none cursor-pointer text-sm font-bold"
+                      className="flex h-11 w-11 items-center justify-center rounded-sm border-2 border-border bg-surface text-ink shadow-[2px_2px_0_0_var(--border)] transition-all motion-safe:hover:-translate-y-0.5 active:translate-y-0 active:shadow-none cursor-pointer text-sm font-bold"
                     >
                       ←
                     </button>
@@ -120,7 +124,7 @@ const FeaturedHero = ({ featured, items = [], blurDataURL }: FeaturedHeroProps):
                       type="button"
                       onClick={() => setActiveIndex((prev) => (prev + 1) % list.length)}
                       aria-label="Anime berikutnya"
-                      className="flex h-11 w-11 items-center justify-center rounded-sm border-2 border-border bg-surface text-ink shadow-[2px_2px_0_0_var(--border)] transition-all hover:-translate-y-0.5 active:translate-y-0 active:shadow-none cursor-pointer text-sm font-bold"
+                      className="flex h-11 w-11 items-center justify-center rounded-sm border-2 border-border bg-surface text-ink shadow-[2px_2px_0_0_var(--border)] transition-all motion-safe:hover:-translate-y-0.5 active:translate-y-0 active:shadow-none cursor-pointer text-sm font-bold"
                     >
                       →
                     </button>

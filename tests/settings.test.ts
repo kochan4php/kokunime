@@ -7,6 +7,7 @@ import {
   calculateStorageBreakdown,
   exportAllAppData,
   importAllAppData,
+  mergeSettings,
 } from "@/utils/settings";
 
 describe("settings utility", () => {
@@ -104,5 +105,32 @@ describe("settings utility", () => {
     const success = importAllAppData(exportedJson);
     expect(success).toBe(true);
     expect(store.kokunime_bookmarks).toContain("naruto");
+  });
+
+  it("rejects malformed storage breakdown JSON without throwing", () => {
+    store.kokunime_bookmarks = "{broken";
+    const breakdown = calculateStorageBreakdown();
+    expect(breakdown.bookmarksCount).toBe(0);
+  });
+
+  it("merges only validated settings from untrusted input", () => {
+    const applied = mergeSettings({
+      accent: "violet",
+      weeklyGoal: 250,
+      nightShift: "yes",
+      font: "comic-sans",
+      bogus: true,
+    });
+    expect(applied).toBe(true);
+    const stored = getStoredSettings();
+    expect(stored.accent).toBe("violet");
+    expect(stored.weeklyGoal).toBe(99);
+    expect(stored.nightShift).toBe(false);
+    expect(stored.font).toBe(DEFAULT_SETTINGS.font);
+  });
+
+  it("rejects non-object sync payloads", () => {
+    expect(mergeSettings(null)).toBe(false);
+    expect(mergeSettings("accent")).toBe(false);
   });
 });

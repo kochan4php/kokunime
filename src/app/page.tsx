@@ -1,4 +1,4 @@
-import HomeSkeleton from "@/sections/home-skeleton";
+import HomeSkeleton, { HeroSkeleton } from "@/sections/home-skeleton";
 import ListingSkeleton from "@/sections/listing-skeleton";
 import { HomeHeroSection, HomeLatestSection } from "@/sections/home-content";
 import RecommendationSection from "@/sections/recommendation-section";
@@ -26,7 +26,7 @@ const Home = async (): Promise<JSX.Element> => {
     <MainLayout>
       {/* Per-section Suspense: hero streams first, the catalog grid and the
           recommendation rails fill in as their data resolves. */}
-      <Suspense fallback={<HomeSkeleton />}>
+      <Suspense fallback={<HeroSkeleton />}>
         <HomeHeroSection />
       </Suspense>
       <TrendingRail />

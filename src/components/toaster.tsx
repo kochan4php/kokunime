@@ -34,7 +34,7 @@ const Toaster = (): JSX.Element | null => {
                 toast.onAction?.();
                 dismissToast(toast.id);
               }}
-              className="shrink-0 rounded-sm border-2 border-border bg-nb-yellow px-2 py-0.5 font-mono text-[10px] font-bold text-nb-ink shadow-[2px_2px_0_0_var(--border)] transition-all hover:-translate-y-0.5 active:translate-y-0 active:shadow-none cursor-pointer"
+              className="shrink-0 rounded-sm border-2 border-border bg-nb-yellow px-2 py-0.5 font-mono text-[10px] font-bold text-nb-ink shadow-[2px_2px_0_0_var(--border)] transition-all motion-safe:hover:-translate-y-0.5 active:translate-y-0 active:shadow-none cursor-pointer"
             >
               {toast.actionLabel}
             </button>

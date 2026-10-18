@@ -80,7 +80,7 @@ const OpenAllLinksButton = ({ links }: { links: DownloadTarget[] }): JSX.Element
       type="button"
       onClick={handleOpenAll}
       title="Buka semua mirror download di tab baru"
-      className="inline-flex items-center gap-1 rounded-sm border-2 border-border bg-surface px-2 py-0.5 font-mono text-[10px] font-semibold text-ink-muted shadow-[2px_2px_0_0_var(--border)] transition-all hover:-translate-y-0.5 hover:text-ink active:translate-y-0 active:shadow-none cursor-pointer"
+      className="inline-flex items-center gap-1 rounded-sm border-2 border-border bg-surface px-2 py-0.5 font-mono text-[10px] font-semibold text-ink-muted shadow-[2px_2px_0_0_var(--border)] transition-all motion-safe:hover:-translate-y-0.5 hover:text-ink active:translate-y-0 active:shadow-none cursor-pointer"
     >
       <span>↗ Buka Semua ({validLinks.length})</span>
     </button>
@@ -200,7 +200,7 @@ const DownloadGroup = ({ group, animeTitle, slug, animeTotal, anchorId }: Downlo
                                 href={linkTarget.url}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="inline-flex items-center justify-center gap-1 rounded-sm border-2 border-border bg-accent px-2.5 py-1 text-[11px] font-bold text-(--accent-ink) shadow-[2px_2px_0_0_var(--border)] transition-all hover:-translate-y-0.5 active:translate-y-0 active:shadow-none"
+                                className="inline-flex items-center justify-center gap-1 rounded-sm border-2 border-border bg-accent px-2.5 py-1 text-[11px] font-bold text-(--accent-ink) shadow-[2px_2px_0_0_var(--border)] transition-all motion-safe:hover:-translate-y-0.5 active:translate-y-0 active:shadow-none"
                               >
                                 <span>Unduh ↗</span>
                               </a>

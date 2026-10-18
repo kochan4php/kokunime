@@ -4,8 +4,12 @@ import MainLayout from "@/layouts/main-layout";
 import MiniBarChart, { MiniBarDatum } from "@/components/mini-bar-chart";
 import SectionHeader from "@/components/section-header";
 import { getBookmarks, subscribeBookmarks, BookmarkItem } from "@/utils/bookmarks";
+import { countMarksSince, getEpisodeMarks, startOfWeek, subscribeEpisodeMarks } from "@/utils/episode-log";
 import { getHistory, subscribeHistory, HistoryItem } from "@/utils/history";
+import { buildWeeklyReminderIcs } from "@/utils/ics";
 import { getProgressList, subscribeProgress, ProgressEntry } from "@/utils/progress";
+import { useSettings } from "@/utils/settings";
+import { showToast } from "@/utils/toast";
 import Link from "next/link";
 import { JSX, useMemo, useSyncExternalStore } from "react";
 
@@ -32,6 +36,13 @@ const StatsContent = (): JSX.Element => {
   const bookmarks = useSyncExternalStore(subscribeBookmarks, getBookmarks, () => SERVER_EMPTY as BookmarkItem[]);
   const history = useSyncExternalStore(subscribeHistory, getHistory, () => SERVER_EMPTY as HistoryItem[]);
   const progress = useSyncExternalStore(subscribeProgress, getProgressList, () => SERVER_EMPTY as ProgressEntry[]);
+  const marks = useSyncExternalStore(subscribeEpisodeMarks, getEpisodeMarks, () => SERVER_EMPTY as never[]);
+  const { weeklyGoal } = useSettings();
+
+  const marksThisWeek = useMemo(() => countMarksSince(startOfWeek()), [marks]);
+  const goalPercentage = weeklyGoal > 0 ? Math.min(1, marksThisWeek / weeklyGoal) : 0;
+  const ringRadius = 42;
+  const ringCircumference = 2 * Math.PI * ringRadius;
 
   const stats = useMemo(() => {
     const months: MiniBarDatum[] = [];
@@ -139,24 +150,38 @@ const StatsContent = (): JSX.Element => {
   return (
     <MainLayout>
       <section className="container px-4 pt-6 pb-16 md:pt-10">
-        <SectionHeader
-          kicker="Statistik lokal"
-          title="Statistik Saya"
-          titleAs="h1"
-          tone="pink"
-          className="mb-8"
-          description="Dihitung langsung dari data di perangkat ini — bookmark, riwayat, dan progres menonton. Tidak ada yang dikirim ke server."
-          aside={
-            <>
-              <Link href="/wrapped" className="btn-secondary">
-                🎁 Wrapped
-              </Link>
-              <Link href="/bookmarks" className="btn-primary">
-                Buka Tersimpan
-              </Link>
-            </>
-          }
-        />
+        {/* Print-only header: the interactive chrome is hidden when printing. */}
+        <div className="hidden print:block">
+          <h1 className="font-display text-2xl font-extrabold tracking-tight text-ink">Kokunime — Statistik Saya</h1>
+          <p className="mt-1 text-sm">
+            {bookmarks.length} tersimpan • {stats.totalWatched} episode ditandai • dicetak{" "}
+            {new Date().toLocaleDateString("id-ID")}
+          </p>
+        </div>
+
+        <div className="print:hidden">
+          <SectionHeader
+            kicker="Statistik lokal"
+            title="Statistik Saya"
+            titleAs="h1"
+            tone="pink"
+            className="mb-8"
+            description="Dihitung langsung dari data di perangkat ini — bookmark, riwayat, dan progres menonton. Tidak ada yang dikirim ke server."
+            aside={
+              <>
+                <button type="button" onClick={() => window.print()} className="btn-secondary">
+                  🖨️ Cetak
+                </button>
+                <Link href="/wrapped" className="btn-secondary">
+                  🎁 Wrapped
+                </Link>
+                <Link href="/bookmarks" className="btn-primary">
+                  Buka Tersimpan
+                </Link>
+              </>
+            }
+          />
+        </div>
 
         {!stats.hasData ? (
           <div className="card-shell mt-8">
@@ -192,6 +217,102 @@ const StatsContent = (): JSX.Element => {
                   </div>
                 </div>
               ))}
+            </div>
+
+            <div className="mt-4 card-shell">
+              <div className="card-core flex flex-col gap-5 p-5 sm:flex-row sm:items-center">
+                <div className="relative mx-auto shrink-0 sm:mx-0">
+                  <svg
+                    viewBox="0 0 100 100"
+                    className="h-28 w-28"
+                    role="img"
+                    aria-label={
+                      weeklyGoal > 0
+                        ? `Target mingguan: ${marksThisWeek} dari ${weeklyGoal} episode`
+                        : "Target mingguan belum aktif"
+                    }
+                  >
+                    <circle
+                      cx="50"
+                      cy="50"
+                      r={ringRadius}
+                      fill="none"
+                      stroke="var(--border)"
+                      strokeWidth="10"
+                      opacity="0.15"
+                    />
+                    <circle
+                      cx="50"
+                      cy="50"
+                      r={ringRadius}
+                      fill="none"
+                      stroke="var(--accent)"
+                      strokeWidth="10"
+                      strokeDasharray={`${goalPercentage * ringCircumference} ${ringCircumference}`}
+                      transform="rotate(-90 50 50)"
+                    />
+                    <text
+                      x="50"
+                      y="52"
+                      textAnchor="middle"
+                      className="fill-ink font-display text-[22px] font-black"
+                      dominantBaseline="middle"
+                    >
+                      {marksThisWeek}
+                    </text>
+                    <text x="50" y="66" textAnchor="middle" className="fill-ink-muted font-mono text-[10px] font-bold">
+                      / {weeklyGoal > 0 ? weeklyGoal : "—"}
+                    </text>
+                  </svg>
+                </div>
+                <div className="min-w-0 flex-1">
+                  <h2 className="font-display text-base font-bold text-ink">🎯 Target Mingguan</h2>
+                  {weeklyGoal > 0 ? (
+                    <p className="mt-1 text-sm text-ink-muted">
+                      {marksThisWeek >= weeklyGoal
+                        ? `Target tercapai! ${marksThisWeek} episode ditandai minggu ini (Senin–hari ini).`
+                        : `${weeklyGoal - marksThisWeek} episode lagi minggu ini (Sen–Min). Semangat!`}
+                    </p>
+                  ) : (
+                    <p className="mt-1 text-sm text-ink-muted">
+                      Aktifkan target di{" "}
+                      <Link href="/settings" className="font-bold text-accent-text underline">
+                        Pengaturan
+                      </Link>{" "}
+                      untuk memantau jumlah episode yang ditandai tiap minggu.
+                    </p>
+                  )}
+                  {weeklyGoal > 0 && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const blob = new Blob(
+                          [
+                            buildWeeklyReminderIcs([
+                              {
+                                title: `Target mingguan Kokunime (${weeklyGoal} episode)`,
+                                url: `${window.location.origin}/stats`,
+                              },
+                            ]),
+                          ],
+                          { type: "text/calendar;charset=utf-8" },
+                        );
+                        const url = URL.createObjectURL(blob);
+                        const anchor = document.createElement("a");
+                        anchor.href = url;
+                        anchor.download = "kokunime-target-mingguan.ics";
+                        anchor.click();
+                        URL.revokeObjectURL(url);
+                        showToast("Pengingat mingguan diunduh (.ics)");
+                      }}
+                      title="Unduh pengingat mingguan (.ics)"
+                      className="mt-3 inline-flex items-center gap-1.5 rounded-sm border-2 border-border bg-surface px-3 py-1.5 font-mono text-xs font-semibold text-ink-muted shadow-[2px_2px_0_0_var(--border)] transition-all motion-safe:hover:-translate-y-0.5 hover:text-ink active:translate-y-0 active:shadow-none"
+                    >
+                      📅 Ingatkan tiap minggu
+                    </button>
+                  )}
+                </div>
+              </div>
             </div>
 
             <div className="mt-4 grid grid-cols-1 gap-4 lg:grid-cols-2">

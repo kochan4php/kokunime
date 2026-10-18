@@ -34,7 +34,7 @@ const SectionDetail = ({ anime, slug }: { anime: AnimeDetail; slug: string }): J
     <nav aria-label="Breadcrumb" className="mb-6">
       <ol className="flex flex-wrap items-center gap-2 font-mono text-xs text-ink-muted">
         <li>
-          <Link href="/" className="transition-colors hover:text-accent">
+          <Link href="/" className="transition-colors hover:text-accent-text">
             Beranda
           </Link>
         </li>

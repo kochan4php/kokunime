@@ -1,10 +1,14 @@
-// Share-link codec for bookmarks + progress sync: JSON → gzip → base64url when
+// Share-link codec for local-data sync: JSON → gzip → base64url when
 // CompressionStream exists (all evergreen browsers, Node ≥18), plain base64url
 // otherwise. The "g." / "j." / legacy prefixes make decode format-agnostic.
+// v2 adds history (h), queue (q) and settings (s); v1 links still decode.
 interface SyncPayload {
-  v: 1;
+  v: 1 | 2;
   b?: unknown[]; // BookmarkItem[]
   p?: unknown[]; // ProgressEntry[]
+  h?: unknown[]; // HistoryItem[] (v2)
+  q?: unknown[]; // QueueItem[] (v2)
+  s?: unknown; // AppSettings (v2)
 }
 
 const toBase64Url = (bytes: Uint8Array): string => {
@@ -47,12 +51,12 @@ export const decodeSyncPayload = async (token: string): Promise<SyncPayload | nu
       const bytes = fromBase64Url(body);
       const stream = new Blob([bytes as unknown as BlobPart]).stream().pipeThrough(new DecompressionStream("gzip"));
       const parsed = JSON.parse(await new Response(stream).text()) as SyncPayload;
-      return parsed?.v === 1 ? parsed : null;
+      return parsed?.v === 1 || parsed?.v === 2 ? parsed : null;
     }
 
     if (prefix === "j") {
       const parsed = JSON.parse(new TextDecoder().decode(fromBase64Url(body))) as SyncPayload;
-      return parsed?.v === 1 ? parsed : null;
+      return parsed?.v === 1 || parsed?.v === 2 ? parsed : null;
     }
 
     // Legacy #sync= links: btoa(encodeURIComponent(JSON.stringify(items))).

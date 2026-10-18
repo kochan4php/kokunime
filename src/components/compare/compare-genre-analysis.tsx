@@ -46,7 +46,7 @@ const CompareGenreAnalysis = ({ animeA, animeB }: CompareGenreAnalysisProps): JS
         {/* Unique Genres Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
           <div className="p-3.5 rounded-sm border-2 border-border bg-surface space-y-1.5">
-            <span className="font-mono text-xs font-bold text-accent block">
+            <span className="font-mono text-xs font-bold text-accent-text block">
               🔴 {t("compare.unique_genres_a")} ({animeA.title}):
             </span>
             <div className="flex flex-wrap gap-1.5">
@@ -54,7 +54,7 @@ const CompareGenreAnalysis = ({ animeA, animeB }: CompareGenreAnalysisProps): JS
                 uniqueGenresA.map((g) => (
                   <span
                     key={g}
-                    className="rounded-sm border border-border bg-accent/15 px-2 py-0.5 font-mono text-xs font-bold text-accent"
+                    className="rounded-sm border border-border bg-accent/15 px-2 py-0.5 font-mono text-xs font-bold text-accent-text"
                   >
                     {g}
                   </span>
@@ -66,7 +66,7 @@ const CompareGenreAnalysis = ({ animeA, animeB }: CompareGenreAnalysisProps): JS
           </div>
 
           <div className="p-3.5 rounded-sm border-2 border-border bg-surface space-y-1.5">
-            <span className="font-mono text-xs font-bold text-accent block">
+            <span className="font-mono text-xs font-bold text-accent-text block">
               🔵 {t("compare.unique_genres_b")} ({animeB.title}):
             </span>
             <div className="flex flex-wrap gap-1.5">
@@ -74,7 +74,7 @@ const CompareGenreAnalysis = ({ animeA, animeB }: CompareGenreAnalysisProps): JS
                 uniqueGenresB.map((g) => (
                   <span
                     key={g}
-                    className="rounded-sm border border-border bg-accent/15 px-2 py-0.5 font-mono text-xs font-bold text-accent"
+                    className="rounded-sm border border-border bg-accent/15 px-2 py-0.5 font-mono text-xs font-bold text-accent-text"
                   >
                     {g}
                   </span>

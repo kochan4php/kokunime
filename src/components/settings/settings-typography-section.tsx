@@ -53,7 +53,7 @@ const SettingsTypographySection = ({ settings, mounted, onUpdate }: SettingsTypo
               }`}
             >
               <span className="font-bold text-xs text-ink">{f.name}</span>
-              <span className="mt-1 font-mono text-[11px] text-accent font-semibold">{f.preview}</span>
+              <span className="mt-1 font-mono text-[11px] text-accent-text font-semibold">{f.preview}</span>
               <span className="mt-1 text-[10px] text-ink-muted">{f.desc}</span>
             </button>
           ))}

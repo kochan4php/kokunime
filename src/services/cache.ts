@@ -5,10 +5,19 @@ import { currentRequestId } from "@/lib/request-context";
 import { recordSlowRequest, SLOW_REQUEST_MS } from "@/lib/slow-log";
 import { unstable_cache } from "next/cache";
 
+// When the upstream catalog was last actually fetched (any key, any tier).
+// Sitemap lastmod reads this so dates reflect real data freshness instead of
+// "now" on every regeneration.
+let lastUpstreamFetchAt = 0;
+
+export const getLastUpstreamFetchAt = (): number => lastUpstreamFetchAt;
+
 const timed = async <T>(fn: () => Promise<T>): Promise<T> => {
   const startedAt = Date.now();
   try {
-    return await fn();
+    const value = await fn();
+    lastUpstreamFetchAt = Date.now();
+    return value;
   } finally {
     const durationMs = Date.now() - startedAt;
     observeHistogram("cache_compute_duration_ms", durationMs);

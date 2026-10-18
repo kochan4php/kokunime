@@ -47,6 +47,7 @@ export const PwaInstallBanner = (): JSX.Element | null => {
   return (
     <aside
       aria-label="Install Aplikasi Kokunime"
+      data-print-hide
       className="fixed bottom-4 left-4 right-4 z-40 mx-auto max-w-md rounded-sm border-2 border-border bg-surface-solid p-4 shadow-[6px_6px_0_0_var(--border)] transition-all duration-300 md:bottom-6 md:right-6 md:left-auto"
     >
       <div className="flex items-start gap-3">
@@ -62,7 +63,7 @@ export const PwaInstallBanner = (): JSX.Element | null => {
             <button
               type="button"
               onClick={handleInstall}
-              className="rounded-sm border-2 border-border bg-accent px-4 py-1.5 font-display text-xs font-bold text-(--accent-ink) shadow-[2px_2px_0_0_var(--border)] transition-all hover:-translate-y-0.5 active:translate-y-0 active:shadow-none cursor-pointer"
+              className="rounded-sm border-2 border-border bg-accent px-4 py-1.5 font-display text-xs font-bold text-(--accent-ink) shadow-[2px_2px_0_0_var(--border)] transition-all motion-safe:hover:-translate-y-0.5 active:translate-y-0 active:shadow-none cursor-pointer"
             >
               ⬇ Pasang Sekarang
             </button>

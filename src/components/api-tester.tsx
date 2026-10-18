@@ -184,7 +184,7 @@ func main() {
         {endpoint.defaultParam && (
           <div className="p-3.5 rounded-sm border-2 border-border bg-surface-solid space-y-2">
             <div className="flex items-center justify-between">
-              <span className="font-mono text-[11px] font-bold text-accent">
+              <span className="font-mono text-[11px] font-bold text-accent-text">
                 ⚙️ Parameter Input: <span className="text-ink">{endpoint.defaultParam.key}</span>
               </span>
               {endpoint.paramsDescription && (
@@ -214,7 +214,7 @@ func main() {
         {!endpoint.defaultParam && (
           <div className="flex items-center justify-between pt-1">
             <span className="font-mono text-xs text-ink-muted">
-              Target URL: <code className="text-accent">{endpoint.sampleUrl}</code>
+              Target URL: <code className="text-accent-text">{endpoint.sampleUrl}</code>
             </span>
             <button
               type="button"
@@ -248,7 +248,7 @@ func main() {
             <button
               type="button"
               onClick={handleCopyCode}
-              className="font-mono text-[10px] font-semibold text-ink-muted hover:text-accent transition-colors cursor-pointer"
+              className="font-mono text-[10px] font-semibold text-ink-muted hover:text-accent-text transition-colors cursor-pointer"
             >
               {copiedCode ? "✓ Kode Disalin!" : "📋 Salin Kode"}
             </button>
@@ -278,7 +278,7 @@ func main() {
               <button
                 type="button"
                 onClick={handleCopyJson}
-                className="font-mono text-[10px] font-semibold text-ink-muted hover:text-accent transition-colors cursor-pointer"
+                className="font-mono text-[10px] font-semibold text-ink-muted hover:text-accent-text transition-colors cursor-pointer"
               >
                 {copiedJson ? "✓ JSON Disalin!" : "📋 Salin JSON"}
               </button>

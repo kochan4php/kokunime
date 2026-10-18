@@ -192,7 +192,7 @@ const SearchResults = ({ anime }: SearchResultsProps): JSX.Element => {
                     onClick={() => toggleGenre(genre)}
                     className={`rounded-sm px-2.5 py-0.5 font-mono text-xs transition-all cursor-pointer ${
                       isSelected
-                        ? "bg-accent/15 font-semibold text-accent border border-accent/40"
+                        ? "bg-accent/15 font-semibold text-accent-text border border-accent/40"
                         : "bg-surface text-ink-muted hover:text-ink border border-border"
                     }`}
                   >

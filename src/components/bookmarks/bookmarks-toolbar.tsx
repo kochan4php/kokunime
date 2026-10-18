@@ -16,6 +16,7 @@ interface BookmarksToolbarProps {
   storageStats: { formattedUsed: string; percentage: number };
   selectMode: boolean;
   onToggleSelectMode: () => void;
+  onOpenChecker: () => void;
   shareCopied: boolean;
   onCopySyncLink: () => void;
   onCopyMarkdownAll: () => void;
@@ -26,7 +27,7 @@ interface BookmarksToolbarProps {
 }
 
 const actionButtonClass =
-  "rounded-sm border-2 border-border bg-surface px-3 py-1.5 font-mono text-xs font-semibold text-ink-muted shadow-[2px_2px_0_0_var(--border)] transition-all hover:-translate-y-0.5 hover:text-ink active:translate-y-0 active:shadow-none cursor-pointer";
+  "rounded-sm border-2 border-border bg-surface px-3 py-1.5 font-mono text-xs font-semibold text-ink-muted shadow-[2px_2px_0_0_var(--border)] transition-all motion-safe:hover:-translate-y-0.5 hover:text-ink active:translate-y-0 active:shadow-none cursor-pointer";
 
 // Right-hand control cluster of the bookmarks page: view mode, filter, sort,
 // storage badge, sync/export/import and clear.
@@ -43,6 +44,7 @@ const BookmarksToolbar = ({
   storageStats,
   selectMode,
   onToggleSelectMode,
+  onOpenChecker,
   shareCopied,
   onCopySyncLink,
   onCopyMarkdownAll,
@@ -112,10 +114,18 @@ const BookmarksToolbar = ({
         </span>
         <button
           type="button"
+          onClick={onOpenChecker}
+          title="Periksa judul duplikat dan tautan yang mati"
+          className={actionButtonClass}
+        >
+          🩺 Cek
+        </button>
+        <button
+          type="button"
           onClick={onToggleSelectMode}
           aria-pressed={selectMode}
           title="Pilih beberapa anime untuk aksi massal"
-          className={`rounded-sm border-2 border-border px-3 py-1.5 font-mono text-xs font-semibold shadow-[2px_2px_0_0_var(--border)] transition-all hover:-translate-y-0.5 active:translate-y-0 active:shadow-none cursor-pointer ${
+          className={`rounded-sm border-2 border-border px-3 py-1.5 font-mono text-xs font-semibold shadow-[2px_2px_0_0_var(--border)] transition-all motion-safe:hover:-translate-y-0.5 active:translate-y-0 active:shadow-none cursor-pointer ${
             selectMode ? "bg-accent text-(--accent-ink) font-bold" : "bg-surface text-ink-muted hover:text-ink"
           }`}
         >
@@ -124,7 +134,7 @@ const BookmarksToolbar = ({
         <button
           type="button"
           onClick={onCopySyncLink}
-          title="Salin tautan sinkronisasi (bookmark + progres menonton) untuk perangkat lain"
+          title="Salin tautan sinkronisasi v2 (bookmark, progres, riwayat, antrean, pengaturan) untuk perangkat lain"
           className={actionButtonClass}
         >
           {shareCopied ? "✓ Link Disalin" : "☁️ Sync Cloud"}
@@ -174,7 +184,7 @@ const BookmarksToolbar = ({
       <button
         type="button"
         onClick={onClear}
-        className="rounded-sm border-2 border-border bg-surface px-3 py-1.5 font-mono text-xs font-semibold text-ink-muted shadow-[2px_2px_0_0_var(--border)] transition-all hover:-translate-y-0.5 hover:bg-nb-red hover:text-nb-ink active:translate-y-0 active:shadow-none cursor-pointer"
+        className="rounded-sm border-2 border-border bg-surface px-3 py-1.5 font-mono text-xs font-semibold text-ink-muted shadow-[2px_2px_0_0_var(--border)] transition-all motion-safe:hover:-translate-y-0.5 hover:bg-nb-red hover:text-nb-ink active:translate-y-0 active:shadow-none cursor-pointer"
       >
         Hapus Semua
       </button>

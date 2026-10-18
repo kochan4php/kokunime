@@ -71,7 +71,7 @@ const Synopsis = ({ anime }: { anime: AnimeDetail }): JSX.Element => {
                 className={`inline-flex items-center gap-1 rounded-sm border-2 px-2.5 py-0.5 font-mono text-[11px] font-semibold transition-all cursor-pointer ${
                   isPlaying
                     ? "border-border bg-accent text-(--accent-ink) font-bold shadow-[2px_2px_0_0_var(--border)] animate-pulse"
-                    : "border-border bg-surface text-ink-muted shadow-[2px_2px_0_0_var(--border)] hover:-translate-y-0.5 hover:text-ink"
+                    : "border-border bg-surface text-ink-muted shadow-[2px_2px_0_0_var(--border)] motion-safe:hover:-translate-y-0.5 hover:text-ink"
                 }`}
               >
                 <span>{isPlaying ? "⏹ Hentikan" : "🔊 Dengarkan"}</span>
@@ -128,7 +128,7 @@ const Synopsis = ({ anime }: { anime: AnimeDetail }): JSX.Element => {
                 type="button"
                 onClick={copySynopsis}
                 title="Salin teks sinopsis"
-                className="rounded-sm border-2 border-border bg-surface px-2.5 py-0.5 font-mono text-[11px] font-semibold text-ink-muted shadow-[2px_2px_0_0_var(--border)] transition-all hover:-translate-y-0.5 hover:text-ink active:translate-y-0 active:shadow-none cursor-pointer"
+                className="rounded-sm border-2 border-border bg-surface px-2.5 py-0.5 font-mono text-[11px] font-semibold text-ink-muted shadow-[2px_2px_0_0_var(--border)] transition-all motion-safe:hover:-translate-y-0.5 hover:text-ink active:translate-y-0 active:shadow-none cursor-pointer"
               >
                 {copied ? "✓ Tersalin" : "📋 Salin"}
               </button>
@@ -140,7 +140,7 @@ const Synopsis = ({ anime }: { anime: AnimeDetail }): JSX.Element => {
               <button
                 type="button"
                 onClick={() => setExpanded((prev) => !prev)}
-                className="font-mono text-xs font-semibold text-accent hover:underline cursor-pointer"
+                className="font-mono text-xs font-semibold text-accent-text hover:underline cursor-pointer"
               >
                 {expanded ? "Ringkas ↑" : "Baca Selengkapnya ↓"}
               </button>

@@ -20,13 +20,13 @@ interface DownloadExtrasPanelProps {
 }
 
 const EXTRA_BUTTON_CLASS =
-  "inline-flex items-center gap-1 rounded-sm border-2 border-border bg-surface px-2.5 py-1 font-mono text-[10px] font-semibold shadow-[2px_2px_0_0_var(--border)] text-ink-muted transition-all hover:-translate-y-0.5 hover:text-ink active:translate-y-0 active:shadow-none cursor-pointer";
+  "inline-flex items-center gap-1 rounded-sm border-2 border-border bg-surface px-2.5 py-1 font-mono text-[10px] font-semibold shadow-[2px_2px_0_0_var(--border)] text-ink-muted transition-all motion-safe:hover:-translate-y-0.5 hover:text-ink active:translate-y-0 active:shadow-none cursor-pointer";
 
 const copiedButtonClass = (copied: boolean): string =>
   `inline-flex items-center gap-1 rounded-sm border-2 px-2.5 py-1 font-mono text-[10px] font-semibold transition-all cursor-pointer ${
     copied
       ? "border-border bg-nb-lime text-nb-ink shadow-[2px_2px_0_0_var(--border)]"
-      : "border-border bg-surface text-ink-muted shadow-[2px_2px_0_0_var(--border)] hover:-translate-y-0.5 hover:text-ink active:translate-y-0 active:shadow-none"
+      : "border-border bg-surface text-ink-muted shadow-[2px_2px_0_0_var(--border)] motion-safe:hover:-translate-y-0.5 hover:text-ink active:translate-y-0 active:shadow-none"
   }`;
 
 const calculateTime = (mb: number, mbps: number): string => {
@@ -198,7 +198,7 @@ const DownloadExtrasPanel = ({ group, animeTitle }: DownloadExtrasPanelProps): J
           className={`inline-flex items-center gap-1 rounded-sm border-2 px-2.5 py-1 font-mono text-[10px] font-semibold transition-all active:scale-95 cursor-pointer ${
             showSpeedCalc
               ? "border-border bg-nb-lime text-nb-ink shadow-[2px_2px_0_0_var(--border)]"
-              : "border-border bg-surface text-ink-muted shadow-[2px_2px_0_0_var(--border)] hover:-translate-y-0.5 hover:text-ink active:translate-y-0 active:shadow-none"
+              : "border-border bg-surface text-ink-muted shadow-[2px_2px_0_0_var(--border)] motion-safe:hover:-translate-y-0.5 hover:text-ink active:translate-y-0 active:shadow-none"
           }`}
         >
           <span>⏱️ Estimasi Waktu</span>

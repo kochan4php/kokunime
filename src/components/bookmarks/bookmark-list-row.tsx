@@ -36,7 +36,7 @@ const BookmarkListRow = ({
       e.dataTransfer.setData("text/plain", item.slug);
       e.dataTransfer.effectAllowed = "move";
     }}
-    className="density-row group relative flex items-center justify-between gap-2.5 sm:gap-3.5 rounded-sm border-2 border-border bg-surface-solid p-2 sm:p-2.5 transition-all duration-150 hover:-translate-y-0.5 hover:shadow-[3px_3px_0_0_var(--border)]"
+    className="density-row group relative flex items-center justify-between gap-2.5 sm:gap-3.5 rounded-sm border-2 border-border bg-surface-solid p-2 sm:p-2.5 transition-all duration-150 motion-safe:hover:-translate-y-0.5 hover:shadow-[3px_3px_0_0_var(--border)]"
   >
     {selectMode && isBookmarkTab && (
       <input
@@ -58,7 +58,7 @@ const BookmarkListRow = ({
         )}
       </div>
       <div className="flex-1 min-w-0">
-        <h3 className="line-clamp-1 font-display text-xs sm:text-[13px] font-bold text-ink transition-colors group-hover:text-accent">
+        <h3 className="line-clamp-1 font-display text-xs sm:text-[13px] font-bold text-ink transition-colors group-hover:text-accent-text">
           {item.title}
         </h3>
         <div className="mt-0.5 flex flex-wrap items-center gap-1.5 font-mono text-[9px] sm:text-[10px] text-ink-muted">
@@ -97,7 +97,7 @@ const BookmarkListRow = ({
         <Link
           href={`/anime/${item.slug}#ep-${nextEpisode}`}
           title={`Lanjut menonton episode ${nextEpisode}`}
-          className="rounded-sm border-2 border-border bg-nb-lime px-2.5 py-1 font-mono text-[11px] font-bold text-nb-ink shadow-[2px_2px_0_0_var(--border)] transition-all hover:-translate-y-0.5 active:translate-y-0 active:shadow-none"
+          className="rounded-sm border-2 border-border bg-nb-lime px-2.5 py-1 font-mono text-[11px] font-bold text-nb-ink shadow-[2px_2px_0_0_var(--border)] transition-all motion-safe:hover:-translate-y-0.5 active:translate-y-0 active:shadow-none"
         >
           ▶ Eps {nextEpisode}
         </Link>

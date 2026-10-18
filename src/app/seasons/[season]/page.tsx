@@ -26,7 +26,10 @@ export async function generateMetadata({
   return {
     title: `Season ${title}`,
     description: `Daftar anime rilis musim ${title}.`,
-    alternates: { canonical: page > 1 ? `/seasons/${season}?page=${page}` : `/seasons/${season}` },
+    alternates: {
+      canonical: page > 1 ? `/seasons/${season}?page=${page}` : `/seasons/${season}`,
+      types: { "application/rss+xml": `/seasons/${season}/feed.xml` },
+    },
     openGraph: {
       title: `Season ${title}`,
       url: `${SITE_URL}${page > 1 ? `/seasons/${season}?page=${page}` : `/seasons/${season}`}`,

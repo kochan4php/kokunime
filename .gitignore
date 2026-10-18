@@ -45,3 +45,5 @@ graphify-out/*root
 
 # local backup snapshots
 /backups/
+# visual smoke failure screenshots
+.smoke/

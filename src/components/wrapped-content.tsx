@@ -6,6 +6,7 @@ import SectionHeader from "@/components/section-header";
 import { BookmarkItem, getBookmarks, subscribeBookmarks } from "@/utils/bookmarks";
 import { getHistory, HistoryItem, subscribeHistory } from "@/utils/history";
 import { getProgressList, ProgressEntry, subscribeProgress } from "@/utils/progress";
+import { exportShareCard } from "@/utils/share-card";
 import { showToast } from "@/utils/toast";
 import Link from "next/link";
 import { JSX, useMemo, useState, useSyncExternalStore } from "react";
@@ -69,6 +70,20 @@ const WrappedContent = (): JSX.Element => {
     };
   }, [activeYear, bookmarks, history, progress]);
 
+  const wrappedCard = () => ({
+    kicker: `Wrapped ${activeYear}`,
+    title: `Perjalanan nontonku di ${activeYear}`,
+    accent: "#c4a1ff",
+    rows: [
+      { label: "🔖 Tersimpan", value: `${wrapped.yearBookmarks.length} anime` },
+      { label: "🕘 Kunjungan", value: `${wrapped.yearHistory.length}` },
+      { label: "📺 Episode ditandai", value: `${wrapped.epsMarked}` },
+      { label: "⭐ Rating rata-rata", value: wrapped.avgRating },
+      ...(wrapped.topFolder ? [{ label: "📁 Folder favorit", value: wrapped.topFolder }] : []),
+    ],
+    footer: "kokunime • data lokal perangkat",
+  });
+
   const shareSummary = async (): Promise<void> => {
     const lines = [
       `🎁 Kokunime Wrapped ${activeYear}`,
@@ -80,16 +95,30 @@ const WrappedContent = (): JSX.Element => {
       `${window.location.origin}/wrapped`,
     ].filter(Boolean);
     const text = lines.join("\n");
+
+    // Card PNG first (share sheet), then plain-text share, then clipboard.
+    const cardResult = await exportShareCard(wrappedCard(), `kokunime-wrapped-${activeYear}.png`, text);
+    if (cardResult === "shared" || cardResult === "cancelled") return;
     try {
-      if (navigator.share) {
+      if (cardResult === "failed" && navigator.share) {
         await navigator.share({ title: `Kokunime Wrapped ${activeYear}`, text });
-      } else {
-        await navigator.clipboard.writeText(text);
-        showToast("Ringkasan Wrapped disalin ke clipboard");
+        return;
       }
+      if (cardResult === "downloaded") {
+        showToast("Kartu Wrapped diunduh sebagai PNG");
+        return;
+      }
+      await navigator.clipboard.writeText(text);
+      showToast("Ringkasan Wrapped disalin ke clipboard");
     } catch {
       // User cancelled the share sheet — nothing to do.
     }
+  };
+
+  const downloadCard = async (): Promise<void> => {
+    const result = await exportShareCard(wrappedCard(), `kokunime-wrapped-${activeYear}.png`);
+    if (result === "downloaded") showToast("Kartu Wrapped diunduh sebagai PNG");
+    else if (result === "failed") showToast("Gagal membuat kartu PNG");
   };
 
   return (
@@ -117,6 +146,9 @@ const WrappedContent = (): JSX.Element => {
                   ))}
                 </select>
               )}
+              <button type="button" onClick={() => void downloadCard()} className="btn-secondary">
+                🖼️ PNG
+              </button>
               <button type="button" onClick={() => void shareSummary()} className="btn-primary">
                 Bagikan 🎁
               </button>
@@ -197,7 +229,7 @@ const WrappedContent = (): JSX.Element => {
                       <li key={bookmark.slug}>
                         <Link
                           href={`/anime/${bookmark.slug}`}
-                          className="flex items-center justify-between gap-2 rounded-sm border-2 border-border bg-surface px-3 py-2 shadow-[2px_2px_0_0_var(--border)] transition-all hover:-translate-y-0.5"
+                          className="flex items-center justify-between gap-2 rounded-sm border-2 border-border bg-surface px-3 py-2 shadow-[2px_2px_0_0_var(--border)] transition-all motion-safe:hover:-translate-y-0.5"
                         >
                           <span className="min-w-0 truncate text-xs font-bold text-ink">
                             {index + 1}. {bookmark.title}

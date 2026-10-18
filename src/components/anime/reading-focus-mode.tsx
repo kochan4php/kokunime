@@ -18,7 +18,7 @@ const ReadingFocusMode = ({ synopsis, title }: ReadingFocusModeProps): JSX.Eleme
         type="button"
         onClick={() => setIsFocus(true)}
         title="Mode fokus membaca sinopsis tanpa distraksi"
-        className="rounded-sm border-2 border-border bg-surface px-2.5 py-0.5 font-mono text-[11px] font-semibold text-ink-muted shadow-[2px_2px_0_0_var(--border)] transition-all hover:-translate-y-0.5 hover:text-ink active:translate-y-0 active:shadow-none cursor-pointer"
+        className="rounded-sm border-2 border-border bg-surface px-2.5 py-0.5 font-mono text-[11px] font-semibold text-ink-muted shadow-[2px_2px_0_0_var(--border)] transition-all motion-safe:hover:-translate-y-0.5 hover:text-ink active:translate-y-0 active:shadow-none cursor-pointer"
       >
         <span>📖 Mode Baca</span>
       </button>
@@ -32,7 +32,7 @@ const ReadingFocusMode = ({ synopsis, title }: ReadingFocusModeProps): JSX.Eleme
         >
           <div className="relative max-h-[85vh] w-full max-w-2xl overflow-y-auto rounded-sm border-2 border-border bg-surface-solid p-6 md:p-8 text-ink shadow-[6px_6px_0_0_var(--border)]">
             <div className="mb-4 flex items-center justify-between border-b-2 border-border pb-3">
-              <h3 className="font-display text-lg font-bold text-accent">{title}</h3>
+              <h3 className="font-display text-lg font-bold text-accent-text">{title}</h3>
               <button
                 type="button"
                 onClick={() => setIsFocus(false)}
@@ -48,7 +48,7 @@ const ReadingFocusMode = ({ synopsis, title }: ReadingFocusModeProps): JSX.Eleme
               <button
                 type="button"
                 onClick={() => setIsFocus(false)}
-                className="rounded-sm border-2 border-border bg-accent px-4 py-1.5 font-display text-xs font-bold text-(--accent-ink) shadow-[2px_2px_0_0_var(--border)] hover:-translate-y-0.5 active:translate-y-0 active:shadow-none transition-all cursor-pointer"
+                className="rounded-sm border-2 border-border bg-accent px-4 py-1.5 font-display text-xs font-bold text-(--accent-ink) shadow-[2px_2px_0_0_var(--border)] motion-safe:hover:-translate-y-0.5 active:translate-y-0 active:shadow-none transition-all cursor-pointer"
               >
                 Selesai Membaca
               </button>

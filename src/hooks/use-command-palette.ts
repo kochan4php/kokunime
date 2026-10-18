@@ -1,6 +1,7 @@
 "use client";
 
 import { Anime } from "@/interfaces";
+import { buildPaletteActions, isActionQuery, type PaletteAction } from "@/utils/palette-actions";
 import { fuzzyScore } from "@/utils/fuzzy";
 import { clearRecentSearches, getRecentSearches, saveRecentSearch } from "@/utils/recent-searches";
 import { useRouter } from "next/navigation";
@@ -19,11 +20,14 @@ interface UseCommandPaletteResult {
   liveResults: Anime[];
   isLoading: boolean;
   isClosing: boolean;
+  isActionMode: boolean;
+  actions: PaletteAction[];
   openPalette: () => void;
   closePalette: () => void;
   clearHistory: () => void;
   handleSearch: (query: string) => void;
   handleFormSubmit: (e: FormEvent) => void;
+  runAction: (action: PaletteAction) => void;
 }
 
 export const useCommandPalette = (): UseCommandPaletteResult => {
@@ -70,7 +74,20 @@ export const useCommandPalette = (): UseCommandPaletteResult => {
 
   const handleFormSubmit = (e: FormEvent) => {
     e.preventDefault();
+    if (isActionMode) {
+      const first = actions[0];
+      if (first) runAction(first);
+      return;
+    }
     handleSearch(query);
+  };
+
+  const isActionMode = isActionQuery(query);
+  const actions = buildPaletteActions(query);
+
+  const runAction = (action: PaletteAction) => {
+    closePalette();
+    router.push(action.href);
   };
 
   // Keyboard shortcut: Ctrl+K or / to open
@@ -99,7 +116,7 @@ export const useCommandPalette = (): UseCommandPaletteResult => {
   // Debounced search for live results with instant in-memory client cache
   useEffect(() => {
     const trimmed = query.trim().toLowerCase();
-    if (trimmed.length < 2) {
+    if (query.startsWith(">") || trimmed.length < 2) {
       setLiveResults([]);
       setIsLoading(false);
       return;
@@ -146,10 +163,13 @@ export const useCommandPalette = (): UseCommandPaletteResult => {
     liveResults,
     isLoading,
     isClosing,
+    isActionMode,
+    actions,
     openPalette,
     closePalette,
     clearHistory,
     handleSearch,
     handleFormSubmit,
+    runAction,
   };
 };

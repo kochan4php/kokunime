@@ -9,7 +9,7 @@ const GenreTags = ({ anime }: { anime: AnimeDetail }): JSX.Element => (
   <div className="flex flex-wrap gap-2">
     {anime.genre.map((item: Genre, index: number) => {
       const slug = endpointSlug(item.endpoint, "genres");
-      const className = `rounded-sm border-2 border-border px-3 py-1 font-mono text-[11px] font-bold uppercase tracking-wider text-nb-ink shadow-[2px_2px_0_0_var(--border)] ${chipColors[index % chipColors.length]} transition-all duration-150 hover:-translate-y-0.5 hover:shadow-[4px_4px_0_0_var(--border)] active:translate-y-0 active:shadow-none`;
+      const className = `rounded-sm border-2 border-border px-3 py-1 font-mono text-[11px] font-bold uppercase tracking-wider text-nb-ink shadow-[2px_2px_0_0_var(--border)] ${chipColors[index % chipColors.length]} transition-all duration-150 motion-safe:hover:-translate-y-0.5 hover:shadow-[4px_4px_0_0_var(--border)] active:translate-y-0 active:shadow-none`;
 
       return slug ? (
         <Link key={index} href={`/genres/${slug}`} className={className}>

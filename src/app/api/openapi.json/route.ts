@@ -37,6 +37,27 @@ export async function GET(request: NextRequest): Promise<NextResponse | Response
           },
         },
       },
+      "/api/check-links": {
+        get: {
+          summary: "Batch dead-link check",
+          description:
+            "Checks up to 30 slugs against the catalog (a slug is ok when its detail page still parses) — used by the bookmarks collection checker.",
+          parameters: [
+            {
+              name: "slugs",
+              in: "query",
+              required: true,
+              description: "Comma-separated slugs, at most 30.",
+              schema: { type: "string" },
+            },
+          ],
+          responses: {
+            "200": { description: "Per-slug {slug, ok} results with checked/dead counts" },
+            "400": { description: "Missing, oversized or invalid slug list" },
+            "429": { description: "Rate limited" },
+          },
+        },
+      },
       "/api/random": {
         get: {
           summary: "Get random anime",

@@ -197,9 +197,9 @@ export const subscribeBookmarks = (listener: () => void): (() => void) => {
   };
 };
 
-export const exportBookmarksJson = (): void => {
+export const exportBookmarksJson = (items?: BookmarkItem[]): void => {
   if (typeof window === "undefined") return;
-  const list = getBookmarks();
+  const list = Array.isArray(items) ? items : getBookmarks();
   const blob = new Blob([JSON.stringify(list, null, 2)], { type: "application/json" });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
@@ -285,6 +285,27 @@ export const importBookmarksJson = async (file: File): Promise<number> => {
   } catch {
     return 0;
   }
+};
+
+// Folder chips keep a user-defined order (drag & drop on the bookmarks page).
+export const getFolderOrder = (): string[] => {
+  const storage = getStorage();
+  if (!storage) return [];
+  try {
+    const raw = storage.getItem(STORAGE_KEYS.folderOrder);
+    const parsed: unknown = raw ? JSON.parse(raw) : [];
+    return Array.isArray(parsed) ? parsed.filter((item): item is string => typeof item === "string") : [];
+  } catch {
+    return [];
+  }
+};
+
+export const setFolderOrder = (order: string[]): void => {
+  const storage = getStorage();
+  if (!storage) return;
+  try {
+    storage.setItem(STORAGE_KEYS.folderOrder, JSON.stringify(order.slice(0, 100)));
+  } catch {}
 };
 
 export const getStorageUsageStats = (): { bytesUsed: number; formattedUsed: string; percentage: number } => {

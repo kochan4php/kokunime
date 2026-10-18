@@ -19,7 +19,7 @@ const AdminDashboard = (): JSX.Element => {
   const [flags, setFlags] = useState<FeatureFlagView[]>([]);
 
   const buttonClass =
-    "inline-flex h-10 items-center rounded-sm border-2 border-border bg-surface px-4 font-mono text-xs font-bold uppercase tracking-wide text-ink shadow-[2px_2px_0_0_var(--border)] transition-all hover:-translate-y-0.5 active:translate-y-0 active:shadow-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed";
+    "inline-flex h-10 items-center rounded-sm border-2 border-border bg-surface px-4 font-mono text-xs font-bold uppercase tracking-wide text-ink shadow-[2px_2px_0_0_var(--border)] transition-all motion-safe:hover:-translate-y-0.5 active:translate-y-0 active:shadow-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed";
 
   const applyFlags = (body: unknown): void => {
     if (body && typeof body === "object" && Array.isArray((body as { flags?: unknown }).flags)) {

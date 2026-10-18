@@ -37,10 +37,9 @@ const PageJump = ({
       />
       <button
         type="submit"
-        aria-label="Lompat ke halaman"
-        className="h-9 rounded-sm border-2 border-border bg-nb-yellow px-2.5 font-mono text-xs font-bold text-nb-ink shadow-[2px_2px_0_0_var(--border)] transition-all hover:-translate-y-0.5 active:translate-y-0 active:shadow-none"
+        className="h-9 rounded-sm border-2 border-border bg-nb-yellow px-2.5 font-mono text-xs font-bold text-nb-ink shadow-[2px_2px_0_0_var(--border)] transition-all motion-safe:hover:-translate-y-0.5 active:translate-y-0 active:shadow-none"
       >
-        Go
+        Lompat
       </button>
     </form>
   );

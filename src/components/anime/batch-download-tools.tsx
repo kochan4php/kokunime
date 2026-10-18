@@ -63,7 +63,7 @@ const BatchDownloadTools = ({ group, animeTitle }: BatchDownloadToolsProps): JSX
         className={`inline-flex items-center gap-1 rounded-sm border-2 px-3 py-1 font-mono text-[11px] font-semibold tracking-wider transition-all duration-150 cursor-pointer ${
           copied
             ? "border-border bg-nb-lime text-nb-ink shadow-[2px_2px_0_0_var(--border)]"
-            : "border-border bg-surface text-ink-muted shadow-[2px_2px_0_0_var(--border)] hover:-translate-y-0.5 hover:text-ink active:translate-y-0 active:shadow-none"
+            : "border-border bg-surface text-ink-muted shadow-[2px_2px_0_0_var(--border)] motion-safe:hover:-translate-y-0.5 hover:text-ink active:translate-y-0 active:shadow-none"
         }`}
       >
         <span>{copied ? "✓ Tersalin!" : "Salin Semua URL"}</span>
@@ -81,7 +81,7 @@ const BatchDownloadTools = ({ group, animeTitle }: BatchDownloadToolsProps): JSX
             className={`inline-flex items-center gap-1 rounded-sm border-2 px-2 py-0.5 sm:px-2.5 sm:py-1 font-mono text-[10px] font-semibold transition-all duration-150 cursor-pointer ${
               copiedRes === q
                 ? "border-border bg-nb-lime text-nb-ink shadow-[2px_2px_0_0_var(--border)]"
-                : "border-border bg-surface text-ink-muted shadow-[2px_2px_0_0_var(--border)] hover:-translate-y-0.5 hover:text-ink active:translate-y-0 active:shadow-none"
+                : "border-border bg-surface text-ink-muted shadow-[2px_2px_0_0_var(--border)] motion-safe:hover:-translate-y-0.5 hover:text-ink active:translate-y-0 active:shadow-none"
             }`}
           >
             <span>{copiedRes === q ? `✓ ${q}` : `📋 ${q}`}</span>
@@ -96,7 +96,7 @@ const BatchDownloadTools = ({ group, animeTitle }: BatchDownloadToolsProps): JSX
         className={`inline-flex items-center gap-1 rounded-sm border-2 px-2.5 py-1 font-mono text-[10px] font-semibold transition-all duration-150 cursor-pointer ${
           showMoreTools
             ? "border-border bg-accent text-(--accent-ink) font-bold shadow-[2px_2px_0_0_var(--border)]"
-            : "border-border bg-surface text-ink-muted shadow-[2px_2px_0_0_var(--border)] hover:-translate-y-0.5 hover:text-ink active:translate-y-0 active:shadow-none"
+            : "border-border bg-surface text-ink-muted shadow-[2px_2px_0_0_var(--border)] motion-safe:hover:-translate-y-0.5 hover:text-ink active:translate-y-0 active:shadow-none"
         }`}
       >
         <span>{showMoreTools ? "🛠️ Tutup Opsi ▲" : "🛠️ Opsi Ekspor ▼"}</span>

@@ -1,6 +1,7 @@
 "use client";
 
 import { BookmarkItem, updateBookmarkUserMeta } from "@/utils/bookmarks";
+import { buildWeeklyReminderIcs } from "@/utils/ics";
 import { showToast } from "@/utils/toast";
 import { JSX, useEffect, useRef, useState } from "react";
 
@@ -118,21 +119,49 @@ const BookmarkMetaDialog = ({ item, folders, onClose }: BookmarkMetaDialogProps)
           />
         </div>
 
-        <div className="mt-5 flex justify-end gap-2">
-          <button
-            type="button"
-            onClick={onClose}
-            className="rounded-sm border-2 border-border bg-surface px-3 py-1.5 font-mono text-xs font-semibold text-ink-muted transition-all hover:text-ink cursor-pointer"
-          >
-            Batal
-          </button>
-          <button
-            type="button"
-            onClick={save}
-            className="rounded-sm border-2 border-border bg-accent px-3 py-1.5 font-mono text-xs font-bold text-(--accent-ink) shadow-[2px_2px_0_0_var(--border)] transition-all hover:-translate-y-0.5 active:translate-y-0 active:shadow-none cursor-pointer"
-          >
-            Simpan
-          </button>
+        <div className="mt-5 flex flex-wrap items-center justify-between gap-2">
+          {item && (
+            <button
+              type="button"
+              onClick={() => {
+                const blob = new Blob(
+                  [
+                    buildWeeklyReminderIcs([
+                      { title: `Cek episode baru: ${item.title}`, url: `${window.location.origin}/anime/${item.slug}` },
+                    ]),
+                  ],
+                  { type: "text/calendar;charset=utf-8" },
+                );
+                const url = URL.createObjectURL(blob);
+                const anchor = document.createElement("a");
+                anchor.href = url;
+                anchor.download = `kokunime-${item.slug}.ics`;
+                anchor.click();
+                URL.revokeObjectURL(url);
+                showToast("Pengingat mingguan diunduh (.ics)");
+              }}
+              title="Unduh pengingat mingguan untuk judul ini (.ics)"
+              className="rounded-sm border-2 border-border bg-surface px-3 py-1.5 font-mono text-xs font-semibold text-ink-muted shadow-[2px_2px_0_0_var(--border)] transition-all motion-safe:hover:-translate-y-0.5 hover:text-ink active:translate-y-0 active:shadow-none cursor-pointer"
+            >
+              📅 Pengingat .ics
+            </button>
+          )}
+          <div className="ml-auto flex gap-2">
+            <button
+              type="button"
+              onClick={onClose}
+              className="rounded-sm border-2 border-border bg-surface px-3 py-1.5 font-mono text-xs font-semibold text-ink-muted transition-all hover:text-ink cursor-pointer"
+            >
+              Batal
+            </button>
+            <button
+              type="button"
+              onClick={save}
+              className="rounded-sm border-2 border-border bg-accent px-3 py-1.5 font-mono text-xs font-bold text-(--accent-ink) shadow-[2px_2px_0_0_var(--border)] transition-all motion-safe:hover:-translate-y-0.5 active:translate-y-0 active:shadow-none cursor-pointer"
+            >
+              Simpan
+            </button>
+          </div>
         </div>
       </div>
     </dialog>

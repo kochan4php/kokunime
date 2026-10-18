@@ -9,7 +9,7 @@ import { animeSlug, endpointSlug } from "@/utils/endpoint-slug";
 import { STORAGE_KEYS } from "@/utils/storage-keys";
 import { showToast } from "@/utils/toast";
 import Link from "next/link";
-import { JSX, useCallback, useEffect, useState } from "react";
+import { JSX, useCallback, useEffect, useRef, useState } from "react";
 
 interface GenreOption {
   name: string;
@@ -23,9 +23,24 @@ interface RouletteSpin {
   at: number;
 }
 
-const MIN_SPIN_MS = 650;
+const MIN_SPIN_MS = 1200;
 const HISTORY_KEY = STORAGE_KEYS.rouletteHistory;
 const MAX_HISTORY = 8;
+
+const SEGMENTS = 8;
+const SEGMENT_ANGLE = 360 / SEGMENTS;
+const SEGMENT_COLORS = ["#ffde00", "#ff90e8", "#23a094", "#c4a1ff", "#ff8a3d", "#ff6b6b", "#a8e10c", "#7dd3fc"];
+
+const polarPoint = (radius: number, degrees: number): [number, number] => {
+  const radians = ((degrees - 90) * Math.PI) / 180;
+  return [120 + radius * Math.cos(radians), 120 + radius * Math.sin(radians)];
+};
+
+const segmentPath = (startDeg: number, endDeg: number): string => {
+  const [x1, y1] = polarPoint(112, startDeg);
+  const [x2, y2] = polarPoint(112, endDeg);
+  return `M 120 120 L ${x1.toFixed(2)} ${y1.toFixed(2)} A 112 112 0 0 1 ${x2.toFixed(2)} ${y2.toFixed(2)} Z`;
+};
 
 const readSpinHistory = (): RouletteSpin[] => {
   if (typeof window === "undefined") return [];
@@ -57,6 +72,9 @@ const RouletteContent = (): JSX.Element => {
   const [result, setResult] = useState<Anime | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [history, setHistory] = useState<RouletteSpin[]>([]);
+  const [wheelItems, setWheelItems] = useState<Anime[]>([]);
+  const [rotation, setRotation] = useState(0);
+  const rotationRef = useRef(0);
 
   useEffect(() => {
     setHistory(readSpinHistory());
@@ -97,10 +115,26 @@ const RouletteContent = (): JSX.Element => {
       const data = (await res.json()) as { anime?: Anime[] };
       const candidates = (data.anime ?? []).filter((item) => animeSlug(item?.link?.endpoint));
       if (candidates.length === 0) throw new Error("empty pool");
-      const pick = candidates[Math.floor(Math.random() * candidates.length)];
+
+      // The visible wheel IS the candidate pool: shuffle, take eight, pick one
+      // of them — the pointer lands on the title actually drawn on the wheel.
+      const pool = [...candidates].sort(() => Math.random() - 0.5).slice(0, SEGMENTS);
+      const index = Math.floor(Math.random() * pool.length);
+      const pick = pool[index];
       if (!pick) throw new Error("empty pick");
       const pickSlug = animeSlug(pick.link?.endpoint);
       if (!pickSlug) throw new Error("empty slug");
+
+      setWheelItems(pool);
+
+      // Rotate so the picked segment's center lands under the top pointer.
+      const centerAngle = index * SEGMENT_ANGLE + SEGMENT_ANGLE / 2;
+      const currentMod = ((rotationRef.current % 360) + 360) % 360;
+      const delta = (((-centerAngle - currentMod) % 360) + 360) % 360;
+      const nextRotation = rotationRef.current + 2 * 360 + delta;
+      rotationRef.current = nextRotation;
+      setRotation(nextRotation);
+
       const remaining = Math.max(0, MIN_SPIN_MS - (Date.now() - started));
       window.setTimeout(() => {
         setResult(pick);
@@ -198,14 +232,85 @@ const RouletteContent = (): JSX.Element => {
         />
 
         <div className="mx-auto flex max-w-2xl flex-col items-center">
-          <div
-            className={`flex h-20 w-20 items-center justify-center rounded-sm border-2 border-border bg-nb-yellow text-4xl shadow-[4px_4px_0_0_var(--border)] ${
-              spinning ? "animate-[spin_0.6s_linear_infinite]" : ""
-            }`}
-            aria-hidden="true"
-          >
-            🎰
+          {/* SVG wheel: eight candidate slots; each spin redraws the pool and
+              rotates so the picked slot lands under the top pointer. */}
+          <div className="relative mt-2">
+            <div
+              aria-hidden="true"
+              className="absolute left-1/2 top-0 z-10 -translate-x-1/2 text-2xl leading-none text-ink drop-shadow-[2px_2px_0_var(--border)]"
+            >
+              ▼
+            </div>
+            <svg
+              viewBox="0 0 240 240"
+              className="h-60 w-60 sm:h-64 sm:w-64"
+              aria-hidden="true"
+              style={{
+                transform: `rotate(${rotation}deg)`,
+                transition: spinning ? `transform ${MIN_SPIN_MS}ms cubic-bezier(0.15, 0.85, 0.1, 1)` : "none",
+              }}
+            >
+              {Array.from({ length: SEGMENTS }, (_, index) => (
+                <path
+                  key={index}
+                  d={segmentPath(index * SEGMENT_ANGLE, (index + 1) * SEGMENT_ANGLE)}
+                  fill={SEGMENT_COLORS[index % SEGMENT_COLORS.length]}
+                  stroke="#0a0a0a"
+                  strokeWidth="2.5"
+                />
+              ))}
+              {Array.from({ length: SEGMENTS }, (_, index) => {
+                const [x, y] = polarPoint(72, index * SEGMENT_ANGLE + SEGMENT_ANGLE / 2);
+                return (
+                  <text
+                    key={`label-${index}`}
+                    x={x}
+                    y={y}
+                    textAnchor="middle"
+                    dominantBaseline="middle"
+                    fontSize="20"
+                    fontWeight="900"
+                    fill="#0a0a0a"
+                  >
+                    {index + 1}
+                  </text>
+                );
+              })}
+              <circle cx="120" cy="120" r="30" fill="#fdf5eb" stroke="#0a0a0a" strokeWidth="3" />
+              <text x="120" y="122" textAnchor="middle" dominantBaseline="middle" fontSize="26">
+                🎡
+              </text>
+            </svg>
           </div>
+
+          {wheelItems.length > 0 && (
+            <>
+              <ol className="mt-4 grid w-full max-w-md grid-cols-1 gap-1 sm:grid-cols-2">
+                {wheelItems.map((item, index) => {
+                  const winner = result && item.link?.endpoint === result.link?.endpoint;
+                  return (
+                    <li
+                      key={`${index}-${item.title}`}
+                      className={`flex min-w-0 items-center gap-2 rounded-sm border-2 border-border px-2 py-1 font-mono text-[11px] ${
+                        winner ? "bg-nb-lime font-bold text-nb-ink" : "bg-surface text-ink-muted"
+                      }`}
+                    >
+                      <span
+                        className="flex h-4 w-4 shrink-0 items-center justify-center rounded-sm border border-border text-[9px] font-bold text-nb-ink"
+                        style={{ backgroundColor: SEGMENT_COLORS[index % SEGMENT_COLORS.length] }}
+                      >
+                        {index + 1}
+                      </span>
+                      <span className="truncate">{item.title}</span>
+                    </li>
+                  );
+                })}
+              </ol>
+              <p className="mt-2 font-mono text-[10px] text-ink-muted">
+                Kandidat di roda inilah yang diundi — 8 judul dari pool genre {genre === "__random__" ? "acak" : genre}.
+              </p>
+            </>
+          )}
 
           {error && (
             <p
@@ -280,7 +385,7 @@ const RouletteContent = (): JSX.Element => {
                     key={`${spinEntry.slug}-${spinEntry.at}`}
                     href={`/anime/${spinEntry.slug}`}
                     title={spinEntry.title}
-                    className="max-w-[12rem] truncate rounded-sm border-2 border-border bg-surface px-2.5 py-1 text-xs font-semibold text-ink shadow-[2px_2px_0_0_var(--border)] transition-all hover:-translate-y-0.5 hover:bg-nb-yellow active:translate-y-0 active:shadow-none"
+                    className="max-w-[12rem] truncate rounded-sm border-2 border-border bg-surface px-2.5 py-1 text-xs font-semibold text-ink shadow-[2px_2px_0_0_var(--border)] transition-all motion-safe:hover:-translate-y-0.5 hover:bg-nb-yellow active:translate-y-0 active:shadow-none"
                   >
                     {spinEntry.title}
                   </Link>

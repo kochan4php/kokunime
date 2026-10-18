@@ -71,6 +71,16 @@ const SettingsStorageSection = ({
               </span>
             </div>
             <div className="p-2.5 rounded-sm bg-surface border-2 border-border">
+              <span className="text-[10px] text-ink-muted block">📋 {t("settings.queue")}</span>
+              <span className="font-bold text-ink">{mounted ? storage.queueCount : 0} Anime</span>
+            </div>
+            <div className="p-2.5 rounded-sm bg-surface border-2 border-border">
+              <span className="text-[10px] text-ink-muted block">📈 {t("settings.episode_log")}</span>
+              <span className="font-bold text-ink">
+                {mounted ? storage.marksCount : 0} {language === "en" ? "Marks" : "Tanda"}
+              </span>
+            </div>
+            <div className="p-2.5 rounded-sm bg-surface border-2 border-border">
               <span className="text-[10px] text-ink-muted block">⚙️ {t("settings.saved_settings")}</span>
               <span className="font-bold text-ink">{language === "en" ? "Saved" : "Tersimpan"}</span>
             </div>
@@ -85,7 +95,7 @@ const SettingsStorageSection = ({
             type="button"
             onClick={onRequestPersist}
             disabled={persisted === true}
-            className="w-full rounded-sm border-2 border-border bg-surface px-3 py-2 font-mono text-xs font-bold text-ink shadow-[2px_2px_0_0_var(--border)] transition-all hover:-translate-y-0.5 hover:bg-nb-teal active:translate-y-0 active:shadow-none cursor-pointer disabled:cursor-default disabled:opacity-70 disabled:hover:translate-y-0"
+            className="w-full rounded-sm border-2 border-border bg-surface px-3 py-2 font-mono text-xs font-bold text-ink shadow-[2px_2px_0_0_var(--border)] transition-all motion-safe:hover:-translate-y-0.5 hover:bg-nb-teal active:translate-y-0 active:shadow-none cursor-pointer disabled:cursor-default disabled:opacity-70 disabled:hover:translate-y-0"
           >
             {persisted === true ? t("settings.persist_active") : t("settings.persist_button")}
           </button>
@@ -96,12 +106,12 @@ const SettingsStorageSection = ({
           <button
             type="button"
             onClick={onExportJson}
-            className="w-full flex items-center justify-center gap-2 rounded-sm border-2 border-border bg-accent px-4 py-2.5 font-mono text-xs font-bold text-(--accent-ink) shadow-[2px_2px_0_0_var(--border)] transition-all hover:-translate-y-0.5 active:translate-y-0 active:shadow-none cursor-pointer"
+            className="w-full flex items-center justify-center gap-2 rounded-sm border-2 border-border bg-accent px-4 py-2.5 font-mono text-xs font-bold text-(--accent-ink) shadow-[2px_2px_0_0_var(--border)] transition-all motion-safe:hover:-translate-y-0.5 active:translate-y-0 active:shadow-none cursor-pointer"
           >
             <span>📥 {t("settings.download_json")}</span>
           </button>
 
-          <label className="w-full flex items-center justify-center gap-2 rounded-sm border-2 border-border bg-surface px-4 py-2.5 font-mono text-xs font-bold text-ink shadow-[2px_2px_0_0_var(--border)] transition-all hover:-translate-y-0.5 hover:bg-nb-purple hover:text-nb-ink active:translate-y-0 active:shadow-none cursor-pointer">
+          <label className="w-full flex items-center justify-center gap-2 rounded-sm border-2 border-border bg-surface px-4 py-2.5 font-mono text-xs font-bold text-ink shadow-[2px_2px_0_0_var(--border)] transition-all motion-safe:hover:-translate-y-0.5 hover:bg-nb-purple hover:text-nb-ink active:translate-y-0 active:shadow-none cursor-pointer">
             <span>📤 {t("settings.restore_json")}</span>
             <input type="file" accept=".json" onChange={onImportJson} className="hidden" />
           </label>

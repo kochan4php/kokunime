@@ -26,7 +26,7 @@ const AnimeGrid = ({ anime, eagerCount = 0, viewMode = "grid" }: AnimeGridProps)
           return (
             <div
               key={endpoint || index}
-              className="group relative flex items-center justify-between gap-2.5 sm:gap-3.5 rounded-sm border-2 border-l-[6px] border-border border-l-(--nb-card) bg-surface-solid p-2 sm:p-2.5 shadow-[2px_2px_0_0_var(--border)] transition-all duration-150 hover:-translate-y-0.5 hover:shadow-[4px_4px_0_0_var(--border)] active:translate-y-0 active:shadow-none"
+              className="group relative flex items-center justify-between gap-2.5 sm:gap-3.5 rounded-sm border-2 border-l-[6px] border-border border-l-(--nb-card) bg-surface-solid p-2 sm:p-2.5 shadow-[2px_2px_0_0_var(--border)] transition-all duration-150 motion-safe:hover:-translate-y-0.5 hover:shadow-[4px_4px_0_0_var(--border)] active:translate-y-0 active:shadow-none"
             >
               <Link href={`/anime/${endpoint}`} className="flex items-center gap-2.5 sm:gap-3 flex-1 min-w-0">
                 <div className="relative h-13 w-10 sm:h-16 sm:w-12 shrink-0 overflow-hidden rounded-sm border-2 border-border bg-surface-muted">
@@ -60,7 +60,7 @@ const AnimeGrid = ({ anime, eagerCount = 0, viewMode = "grid" }: AnimeGridProps)
                   <div className="mt-0.5 flex flex-wrap items-center gap-1.5 font-mono text-[9px] sm:text-[10px] text-ink-muted">
                     {item.release && <span className="text-ink-muted">{item.release}</span>}
                     {item.genres && item.genres.length > 0 && (
-                      <span className="hidden sm:inline-block text-ink-muted/80">
+                      <span className="hidden sm:inline-block text-ink-muted">
                         • {item.genres.slice(0, 3).join(", ")}
                       </span>
                     )}
@@ -78,7 +78,7 @@ const AnimeGrid = ({ anime, eagerCount = 0, viewMode = "grid" }: AnimeGridProps)
                 />
                 <Link
                   href={`/anime/${endpoint}`}
-                  className="hidden sm:inline-flex items-center gap-1 rounded-sm border-2 border-border bg-accent px-2.5 py-1 font-mono text-[11px] font-semibold text-(--accent-ink) shadow-[2px_2px_0_0_var(--border)] transition-all hover:-translate-y-0.5 active:translate-y-0 active:shadow-none"
+                  className="hidden sm:inline-flex items-center gap-1 rounded-sm border-2 border-border bg-accent px-2.5 py-1 font-mono text-[11px] font-semibold text-(--accent-ink) shadow-[2px_2px_0_0_var(--border)] transition-all motion-safe:hover:-translate-y-0.5 active:translate-y-0 active:shadow-none"
                 >
                   <span>Detail</span>
                   <span>→</span>

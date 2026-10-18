@@ -163,6 +163,16 @@ const ENDPOINTS: ApiEndpoint[] = [
   },
   {
     method: "GET",
+    path: "/api/check-links",
+    category: "Detail",
+    description:
+      "Cek tautan mati massal untuk koleksi pribadi: setiap slug dicek ke katalog (maks 30 per request) dan dijawab dengan flag ok.",
+    sampleUrl: "/api/check-links?slugs=naruto-batch-sub-indo,bleach-batch-sub-indo",
+    defaultParam: { key: "slugs", value: "naruto-batch-sub-indo,bleach-batch-sub-indo", placeholder: "slug1,slug2..." },
+    paramsDescription: "slugs: comma separated (maks 30)",
+  },
+  {
+    method: "GET",
     path: "/feed.xml",
     category: "Feed & Spec",
     description: "RSS / Atom XML Feed resmi Kokunime yang mendukung filter parameter genre dan season.",

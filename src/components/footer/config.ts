@@ -3,6 +3,7 @@ export const footerTags = ["Anime Batch", "Subtitle Indonesia", "Download Cepat"
 export const footerNavLinks = [
   { label: "Beranda", href: "/" },
   { label: "Update Terbaru", href: "/update" },
+  { label: "Indeks A–Z 🔤", href: "/indeks" },
   { label: "Daftar Genre", href: "/genres" },
   { label: "Daftar Musim", href: "/seasons" },
   { label: "Koleksi Bookmark", href: "/bookmarks" },

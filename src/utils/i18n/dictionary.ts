@@ -97,6 +97,12 @@ export const DICTIONARY = {
     "settings.hide_spoilers_desc": "Tutup sinopsis awal",
     "settings.auto_mark": "Auto-tandai Episode",
     "settings.auto_mark_desc": "Tandai episode sudah ditonton saat klik link downloadnya",
+    "settings.auto_archive": "Arsip Otomatis Selesai",
+    "settings.auto_archive_desc": 'Pindahkan bookmark ke folder "Selesai" saat semua ep. sudah ditandai',
+    "settings.weekly_goal": "Target Mingguan",
+    "settings.weekly_goal_desc": "Jumlah episode ditandai per minggu (0 = nonaktif)",
+    "settings.queue": "Antrean Tonton",
+    "settings.episode_log": "Log Episode",
 
     // Storage & Backup
     "settings.storage_title": "Penyimpanan & Backup",
@@ -302,6 +308,12 @@ export const DICTIONARY = {
     "settings.hide_spoilers_desc": "Collapse initial synopses",
     "settings.auto_mark": "Auto-mark Episodes",
     "settings.auto_mark_desc": "Mark an episode watched when its download link is clicked",
+    "settings.auto_archive": "Auto-archive Completed",
+    "settings.auto_archive_desc": 'Move bookmarks to the "Selesai" folder when every episode is marked',
+    "settings.weekly_goal": "Weekly Goal",
+    "settings.weekly_goal_desc": "Episodes to mark per week (0 = off)",
+    "settings.queue": "Watch Queue",
+    "settings.episode_log": "Episode Log",
 
     // Storage & Backup
     "settings.storage_title": "Storage & Backup",

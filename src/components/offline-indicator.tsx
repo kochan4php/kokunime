@@ -47,7 +47,7 @@ const OfflineIndicator = (): JSX.Element | null => {
   if (isOnline) return null;
 
   return (
-    <div className="fixed bottom-4 left-4 right-4 z-50 mx-auto max-w-md animate-bounce">
+    <div data-print-hide className="fixed bottom-4 left-4 right-4 z-50 mx-auto max-w-md animate-bounce">
       <div className="flex items-center justify-between rounded-sm border-2 border-border bg-surface-solid p-3.5 shadow-[4px_4px_0_0_var(--border)]">
         <div className="flex items-center gap-2.5">
           <span className="flex h-2.5 w-2.5 rounded-full bg-amber-400 animate-ping" />
@@ -60,7 +60,7 @@ const OfflineIndicator = (): JSX.Element | null => {
         </div>
         <Link
           href="/bookmarks"
-          className="rounded-sm border-2 border-border bg-nb-yellow px-3 py-1 font-mono text-[11px] font-bold text-[#0a0a0a] shadow-[2px_2px_0_0_var(--border)] transition-all hover:-translate-y-0.5 active:translate-y-0 active:shadow-none"
+          className="rounded-sm border-2 border-border bg-nb-yellow px-3 py-1 font-mono text-[11px] font-bold text-[#0a0a0a] shadow-[2px_2px_0_0_var(--border)] transition-all motion-safe:hover:-translate-y-0.5 active:translate-y-0 active:shadow-none"
         >
           Lihat Bookmark →
         </Link>

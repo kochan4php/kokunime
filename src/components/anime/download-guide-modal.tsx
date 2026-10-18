@@ -36,7 +36,7 @@ export const DownloadGuideModal = (): JSX.Element => {
       <button
         type="button"
         onClick={() => setIsOpen(true)}
-        className="inline-flex items-center gap-1.5 rounded-sm border-2 border-border bg-nb-yellow px-3 py-1 font-mono text-[11px] font-bold text-nb-ink shadow-[2px_2px_0_0_var(--border)] transition-all duration-150 hover:-translate-y-0.5 active:translate-y-0 active:shadow-none cursor-pointer"
+        className="inline-flex items-center gap-1.5 rounded-sm border-2 border-border bg-nb-yellow px-3 py-1 font-mono text-[11px] font-bold text-nb-ink shadow-[2px_2px_0_0_var(--border)] transition-all duration-150 motion-safe:hover:-translate-y-0.5 active:translate-y-0 active:shadow-none cursor-pointer"
       >
         <span>💡 Panduan Unduh</span>
       </button>
@@ -97,7 +97,7 @@ export const DownloadGuideModal = (): JSX.Element => {
                 <button
                   type="button"
                   onClick={() => setActiveStep((prev) => Math.min(steps.length - 1, prev + 1))}
-                  className="rounded-sm border-2 border-border bg-accent px-4 py-1.5 font-display text-xs font-bold text-(--accent-ink) shadow-[2px_2px_0_0_var(--border)] hover:-translate-y-0.5 active:translate-y-0 active:shadow-none transition-all cursor-pointer"
+                  className="rounded-sm border-2 border-border bg-accent px-4 py-1.5 font-display text-xs font-bold text-(--accent-ink) shadow-[2px_2px_0_0_var(--border)] motion-safe:hover:-translate-y-0.5 active:translate-y-0 active:shadow-none transition-all cursor-pointer"
                 >
                   Lanjut →
                 </button>
@@ -105,7 +105,7 @@ export const DownloadGuideModal = (): JSX.Element => {
                 <button
                   type="button"
                   onClick={() => setIsOpen(false)}
-                  className="rounded-sm border-2 border-border bg-nb-lime px-5 py-1.5 font-display text-xs font-bold text-nb-ink shadow-[2px_2px_0_0_var(--border)] hover:-translate-y-0.5 active:translate-y-0 active:shadow-none transition-all cursor-pointer"
+                  className="rounded-sm border-2 border-border bg-nb-lime px-5 py-1.5 font-display text-xs font-bold text-nb-ink shadow-[2px_2px_0_0_var(--border)] motion-safe:hover:-translate-y-0.5 active:translate-y-0 active:shadow-none transition-all cursor-pointer"
                 >
                   ✓ Paham, Tutup
                 </button>

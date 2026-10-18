@@ -38,7 +38,7 @@ const SettingsAboutSection = (): JSX.Element => {
         <div className="grid grid-cols-2 gap-2 pt-1 font-mono text-xs">
           <Link
             href="/api"
-            className="flex items-center justify-center rounded-sm border-2 border-border bg-surface px-3 py-2 text-center font-semibold text-ink-muted shadow-[2px_2px_0_0_var(--border)] hover:-translate-y-0.5 hover:text-ink transition-all"
+            className="flex items-center justify-center rounded-sm border-2 border-border bg-surface px-3 py-2 text-center font-semibold text-ink-muted shadow-[2px_2px_0_0_var(--border)] motion-safe:hover:-translate-y-0.5 hover:text-ink transition-all"
           >
             REST API ↗
           </Link>

@@ -46,7 +46,7 @@ const BookmarksGridView = ({
             <Link
               href={`/anime/${item.slug}#ep-${nextEpisodes.get(item.slug)}`}
               title={`Lanjut menonton episode ${nextEpisodes.get(item.slug)}`}
-              className="absolute left-1.5 top-1.5 z-10 rounded-sm border-2 border-border bg-nb-lime px-1.5 py-0.5 font-mono text-[10px] font-bold text-nb-ink shadow-[2px_2px_0_0_var(--border)] transition-transform hover:-translate-y-0.5"
+              className="absolute left-1.5 top-1.5 z-10 rounded-sm border-2 border-border bg-nb-lime px-1.5 py-0.5 font-mono text-[10px] font-bold text-nb-ink shadow-[2px_2px_0_0_var(--border)] transition-transform motion-safe:hover:-translate-y-0.5"
             >
               ▶ {nextEpisodes.get(item.slug)}
             </Link>
@@ -96,7 +96,7 @@ const BookmarksGridView = ({
                     e.preventDefault();
                     onEditMeta(item.slug);
                   }}
-                  className="hover:text-accent font-mono transition-colors cursor-pointer"
+                  className="hover:text-accent-text font-mono transition-colors cursor-pointer"
                   title="Edit rating, folder & catatan"
                   aria-label={`Edit detail ${item.title}`}
                 >
@@ -108,7 +108,7 @@ const BookmarksGridView = ({
                     e.preventDefault();
                     onRemove(item);
                   }}
-                  className="hover:text-accent font-mono transition-colors cursor-pointer"
+                  className="hover:text-accent-text font-mono transition-colors cursor-pointer"
                   title="Hapus dari Tersimpan"
                   aria-label={`Hapus ${item.title}`}
                 >

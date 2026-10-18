@@ -63,7 +63,7 @@ const ShareButton = ({
         onClick={handleShare}
         aria-label="Bagikan anime ini"
         title="Bagikan anime"
-        className={`inline-flex items-center justify-center gap-2 rounded-sm border-2 border-border bg-surface px-4 py-2 text-sm font-semibold text-ink-muted shadow-[2px_2px_0_0_var(--border)] transition-all duration-150 hover:-translate-y-0.5 hover:text-ink active:translate-y-0 active:shadow-none cursor-pointer ${className}`}
+        className={`inline-flex items-center justify-center gap-2 rounded-sm border-2 border-border bg-surface px-4 py-2 text-sm font-semibold text-ink-muted shadow-[2px_2px_0_0_var(--border)] transition-all duration-150 motion-safe:hover:-translate-y-0.5 hover:text-ink active:translate-y-0 active:shadow-none cursor-pointer ${className}`}
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -97,7 +97,7 @@ const ShareButton = ({
             rel="noopener noreferrer"
             title="Bagikan ke WhatsApp"
             onClick={() => setShowOptions(false)}
-            className="flex items-center gap-1 rounded-sm border-2 border-border bg-nb-lime px-2.5 py-1 text-xs font-bold text-nb-ink shadow-[2px_2px_0_0_var(--border)] transition-all duration-150 hover:-translate-y-0.5 active:translate-y-0 active:shadow-none"
+            className="flex items-center gap-1 rounded-sm border-2 border-border bg-nb-lime px-2.5 py-1 text-xs font-bold text-nb-ink shadow-[2px_2px_0_0_var(--border)] transition-all duration-150 motion-safe:hover:-translate-y-0.5 active:translate-y-0 active:shadow-none"
           >
             <span>WhatsApp</span>
           </a>
@@ -107,7 +107,7 @@ const ShareButton = ({
             rel="noopener noreferrer"
             title="Bagikan ke X (Twitter)"
             onClick={() => setShowOptions(false)}
-            className="flex items-center gap-1 rounded-sm border-2 border-border bg-nb-ink px-2.5 py-1 text-xs font-bold text-nb-cream shadow-[2px_2px_0_0_var(--border)] transition-all duration-150 hover:-translate-y-0.5 active:translate-y-0 active:shadow-none"
+            className="flex items-center gap-1 rounded-sm border-2 border-border bg-nb-ink px-2.5 py-1 text-xs font-bold text-nb-cream shadow-[2px_2px_0_0_var(--border)] transition-all duration-150 motion-safe:hover:-translate-y-0.5 active:translate-y-0 active:shadow-none"
           >
             <span>X (Twitter)</span>
           </a>

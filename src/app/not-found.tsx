@@ -61,7 +61,7 @@ const NotFoundPage = (): JSX.Element => {
         </button>
         <button
           onClick={() => (window.history.length > 1 ? router.back() : router.push("/"))}
-          className="glass inline-flex h-11 items-center gap-2 rounded-sm border-2 border-border bg-surface px-6 text-sm font-semibold text-ink shadow-[2px_2px_0_0_var(--border)] transition-all duration-150 hover:-translate-y-0.5 active:translate-y-0 active:shadow-none"
+          className="glass inline-flex h-11 items-center gap-2 rounded-sm border-2 border-border bg-surface px-6 text-sm font-semibold text-ink shadow-[2px_2px_0_0_var(--border)] transition-all duration-150 motion-safe:hover:-translate-y-0.5 active:translate-y-0 active:shadow-none"
         >
           Balik ke halaman sebelumnya
         </button>
@@ -75,7 +75,7 @@ const NotFoundPage = (): JSX.Element => {
               <li key={item.slug}>
                 <Link
                   href={`/anime/${item.slug}`}
-                  className="flex items-center justify-between gap-2 rounded-sm border-2 border-border bg-surface px-3 py-2 text-sm font-semibold text-ink shadow-[2px_2px_0_0_var(--border)] transition-all hover:-translate-y-0.5 active:translate-y-0 active:shadow-none"
+                  className="flex items-center justify-between gap-2 rounded-sm border-2 border-border bg-surface px-3 py-2 text-sm font-semibold text-ink shadow-[2px_2px_0_0_var(--border)] transition-all motion-safe:hover:-translate-y-0.5 active:translate-y-0 active:shadow-none"
                 >
                   <span className="min-w-0 truncate">{item.title}</span>
                   <span aria-hidden="true">→</span>

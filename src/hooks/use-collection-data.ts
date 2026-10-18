@@ -10,13 +10,13 @@ import {
 } from "@/utils/bookmarks";
 import { HistoryItem, getHistory, subscribeHistory } from "@/utils/history";
 import { ProgressEntry, getProgressList, nextEpisodeFromProgress, subscribeProgress } from "@/utils/progress";
-import { useMemo, useSyncExternalStore } from "react";
+import { useEffect, useMemo, useState, useSyncExternalStore } from "react";
 
 const SERVER_BOOKMARKS: BookmarkItem[] = [];
 const SERVER_HISTORY: HistoryItem[] = [];
 const SERVER_PROGRESS: ProgressEntry[] = [];
 
-export type CollectionTab = "bookmarks" | "history";
+export type CollectionTab = "bookmarks" | "history" | "queue";
 export type SortBy = "recent" | "oldest" | "title" | "rating";
 
 // Store subscriptions + derived lists for the bookmarks page.
@@ -26,6 +26,7 @@ export const useCollectionData = (
   folderFilter: string,
   filterQuery: string,
   sortBy: SortBy,
+  folderOrder: string[] = [],
 ) => {
   const bookmarks = useSyncExternalStore(subscribeBookmarks, getBookmarks, () => SERVER_BOOKMARKS);
   const history = useSyncExternalStore(subscribeHistory, getHistory, () => SERVER_HISTORY);
@@ -41,22 +42,30 @@ export const useCollectionData = (
     return map;
   }, [progressList]);
 
+  // Folders follow the user's drag & drop order first, then A→Z for the rest.
   const folders = useMemo(() => {
     const set = new Set<string>();
     bookmarks.forEach((b) => {
       if (b.folder?.trim()) set.add(b.folder.trim());
     });
-    return Array.from(set);
-  }, [bookmarks]);
+    return Array.from(set).sort((a, b) => {
+      const indexA = folderOrder.indexOf(a);
+      const indexB = folderOrder.indexOf(b);
+      if (indexA === -1 && indexB === -1) return a.localeCompare(b, "id");
+      if (indexA === -1) return 1;
+      if (indexB === -1) return -1;
+      return indexA - indexB;
+    });
+  }, [bookmarks, folderOrder]);
 
-  const allItems =
-    activeTab === "bookmarks"
-      ? bookmarks.filter((b) => {
-          const matchStatus = statusFilter === "all" || b.status === statusFilter;
-          const matchFolder = folderFilter === "all" || b.folder === folderFilter;
-          return matchStatus && matchFolder;
-        })
-      : history;
+  const isBookmarkTab = activeTab !== "history";
+  const allItems = isBookmarkTab
+    ? bookmarks.filter((b) => {
+        const matchStatus = statusFilter === "all" || b.status === statusFilter;
+        const matchFolder = folderFilter === "all" || b.folder === folderFilter;
+        return matchStatus && matchFolder;
+      })
+    : history;
 
   const items = allItems.filter((item) => {
     const q = filterQuery.trim().toLowerCase();
@@ -82,5 +91,18 @@ export const useCollectionData = (
     return getStorageUsageStats();
   }, [bookmarks, history]);
 
-  return { bookmarks, history, nextEpisodes, folders, allItems, sortedItems, storageStats };
+  // Compute localStorage stats after mount only: the server render has no
+  // storage, so a value computed during hydration would mismatch the SSR text.
+  const [storageReady, setStorageReady] = useState(false);
+  useEffect(() => setStorageReady(true), []);
+
+  return {
+    bookmarks,
+    history,
+    nextEpisodes,
+    folders,
+    allItems,
+    sortedItems,
+    storageStats: storageReady ? storageStats : { bytesUsed: 0, formattedUsed: "0 B", percentage: 0 },
+  };
 };

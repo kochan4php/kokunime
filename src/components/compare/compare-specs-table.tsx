@@ -22,17 +22,28 @@ const CompareSpecsTable = ({ animeA, animeB }: CompareSpecsTableProps): JSX.Elem
     <div className="card-shell overflow-hidden">
       <div className="card-core p-0 overflow-x-auto">
         <table className="w-full min-w-[620px] border-collapse text-left">
+          <caption className="sr-only">
+            {t("compare.spec_parameter")}: {animeA.title} vs {animeB.title}
+          </caption>
           <thead>
             <tr className="border-b-2 border-border bg-surface-muted font-mono text-xs uppercase tracking-wider text-ink-muted">
-              <th className="p-4 w-1/4">{t("compare.spec_parameter")}</th>
-              <th className="p-4 w-[37.5%] font-display text-sm font-bold text-ink">🔴 {animeA.title}</th>
-              <th className="p-4 w-[37.5%] font-display text-sm font-bold text-ink">🔵 {animeB.title}</th>
+              <th scope="col" className="p-4 w-1/4">
+                {t("compare.spec_parameter")}
+              </th>
+              <th scope="col" className="p-4 w-[37.5%] font-display text-sm font-bold text-ink">
+                🔴 {animeA.title}
+              </th>
+              <th scope="col" className="p-4 w-[37.5%] font-display text-sm font-bold text-ink">
+                🔵 {animeB.title}
+              </th>
             </tr>
           </thead>
           <tbody className="divide-y-2 divide-border text-xs sm:text-sm font-mono">
             {/* Rating Score */}
             <tr className="hover:bg-surface-muted">
-              <td className="p-4 font-bold text-ink-muted">⭐ {t("compare.score_rating")}</td>
+              <th scope="row" className="p-4 text-left font-bold text-ink-muted">
+                ⭐ {t("compare.score_rating")}
+              </th>
               <td className="p-4 font-bold">
                 <span
                   className={`inline-flex items-center gap-1 px-3 py-1 ${
@@ -59,7 +70,9 @@ const CompareSpecsTable = ({ animeA, animeB }: CompareSpecsTableProps): JSX.Elem
 
             {/* Total Episodes */}
             <tr className="hover:bg-surface-muted">
-              <td className="p-4 font-bold text-ink-muted">🎬 {t("compare.total_episodes")}</td>
+              <th scope="row" className="p-4 text-left font-bold text-ink-muted">
+                🎬 {t("compare.total_episodes")}
+              </th>
               <td className="p-4">
                 {animeA.total_episode || "N/A"}{" "}
                 {epA > epB && epB > 0 && (
@@ -80,35 +93,45 @@ const CompareSpecsTable = ({ animeA, animeB }: CompareSpecsTableProps): JSX.Elem
 
             {/* Duration */}
             <tr className="hover:bg-surface-muted">
-              <td className="p-4 font-bold text-ink-muted">⏱️ {t("compare.duration")}</td>
+              <th scope="row" className="p-4 text-left font-bold text-ink-muted">
+                ⏱️ {t("compare.duration")}
+              </th>
               <td className="p-4 text-ink">{animeA.duration || "N/A"}</td>
               <td className="p-4 text-ink">{animeB.duration || "N/A"}</td>
             </tr>
 
             {/* Studio */}
             <tr className="hover:bg-surface-muted">
-              <td className="p-4 font-bold text-ink-muted">🏢 {t("compare.studio")}</td>
-              <td className="p-4 text-accent font-bold">{animeA.studio || animeA.producer || "N/A"}</td>
-              <td className="p-4 text-accent font-bold">{animeB.studio || animeB.producer || "N/A"}</td>
+              <th scope="row" className="p-4 text-left font-bold text-ink-muted">
+                🏢 {t("compare.studio")}
+              </th>
+              <td className="p-4 text-accent-text font-bold">{animeA.studio || animeA.producer || "N/A"}</td>
+              <td className="p-4 text-accent-text font-bold">{animeB.studio || animeB.producer || "N/A"}</td>
             </tr>
 
             {/* Type */}
             <tr className="hover:bg-surface-muted">
-              <td className="p-4 font-bold text-ink-muted">📺 {t("compare.type")}</td>
+              <th scope="row" className="p-4 text-left font-bold text-ink-muted">
+                📺 {t("compare.type")}
+              </th>
               <td className="p-4 text-ink">{animeA.type || "TV Series"}</td>
               <td className="p-4 text-ink">{animeB.type || "TV Series"}</td>
             </tr>
 
             {/* Release Season / Year */}
             <tr className="hover:bg-surface-muted">
-              <td className="p-4 font-bold text-ink-muted">📅 {t("compare.release")}</td>
+              <th scope="row" className="p-4 text-left font-bold text-ink-muted">
+                📅 {t("compare.release")}
+              </th>
               <td className="p-4 text-ink">{animeA.season?.name || animeA.release_on || "N/A"}</td>
               <td className="p-4 text-ink">{animeB.season?.name || animeB.release_on || "N/A"}</td>
             </tr>
 
             {/* Status */}
             <tr className="hover:bg-surface-muted">
-              <td className="p-4 font-bold text-ink-muted">📡 {t("compare.status")}</td>
+              <th scope="row" className="p-4 text-left font-bold text-ink-muted">
+                📡 {t("compare.status")}
+              </th>
               <td className="p-4 text-ink">{animeA.status || "N/A"}</td>
               <td className="p-4 text-ink">{animeB.status || "N/A"}</td>
             </tr>

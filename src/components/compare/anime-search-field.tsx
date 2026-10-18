@@ -38,11 +38,11 @@ const AnimeSearchField = ({
 }: AnimeSearchFieldProps): JSX.Element => (
   <div ref={containerRef} className="relative lg:col-span-5">
     <div className="flex items-center justify-between mb-1.5">
-      <label htmlFor={id} className="block font-mono text-xs font-bold text-accent">
+      <label htmlFor={id} className="block font-mono text-xs font-bold text-accent-text">
         {label}
       </label>
       {detailLoading && (
-        <span className="font-mono text-[10px] text-accent animate-pulse font-bold">{loadingText}</span>
+        <span className="font-mono text-[10px] text-accent-text animate-pulse font-bold">{loadingText}</span>
       )}
     </div>
     <div className="relative">

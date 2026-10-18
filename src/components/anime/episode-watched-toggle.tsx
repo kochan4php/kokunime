@@ -1,7 +1,10 @@
 "use client";
 
+import { maybeAutoArchive } from "@/utils/auto-archive";
+import { recordEpisodeMark, removeEpisodeMark } from "@/utils/episode-log";
 import { useTranslation } from "@/utils/i18n";
 import { isEpisodeWatched, subscribeProgress, toggleEpisodeWatched } from "@/utils/progress";
+import { showToast } from "@/utils/toast";
 import { JSX, useSyncExternalStore } from "react";
 
 interface EpisodeWatchedToggleProps {
@@ -21,10 +24,22 @@ const EpisodeWatchedToggle = ({ slug, episode, title, total }: EpisodeWatchedTog
     () => false,
   );
 
+  const handleToggle = () => {
+    const nowWatched = toggleEpisodeWatched(slug, episode, { title, total });
+    if (nowWatched) {
+      recordEpisodeMark(slug, episode);
+      const archived = maybeAutoArchive(slug, title);
+      showToast(archived ? `${archived} selesai — dipindah ke folder Selesai` : `Episode ${episode} ditandai ditonton`);
+    } else {
+      removeEpisodeMark(slug, episode);
+      showToast(`Tanda episode ${episode} dihapus`);
+    }
+  };
+
   return (
     <button
       type="button"
-      onClick={() => toggleEpisodeWatched(slug, episode, { title, total })}
+      onClick={handleToggle}
       aria-pressed={watched}
       title={
         watched
@@ -34,7 +49,7 @@ const EpisodeWatchedToggle = ({ slug, episode, title, total }: EpisodeWatchedTog
       className={`inline-flex shrink-0 items-center gap-1 rounded-sm border-2 border-border px-2 py-0.5 font-mono text-[10px] font-semibold transition-all cursor-pointer ${
         watched
           ? "bg-nb-lime text-nb-ink shadow-[2px_2px_0_0_var(--border)]"
-          : "bg-surface text-ink-muted shadow-[2px_2px_0_0_var(--border)] hover:-translate-y-0.5 hover:text-ink active:translate-y-0 active:shadow-none"
+          : "bg-surface text-ink-muted shadow-[2px_2px_0_0_var(--border)] motion-safe:hover:-translate-y-0.5 hover:text-ink active:translate-y-0 active:shadow-none"
       }`}
     >
       <span aria-hidden="true">{watched ? "✓" : "○"}</span>

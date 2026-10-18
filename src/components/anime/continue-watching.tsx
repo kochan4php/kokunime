@@ -44,7 +44,7 @@ const ContinueWatching = ({ slug, downloads, variant, className = "" }: Continue
         type="button"
         onClick={() => jumpToEpisode(next)}
         title={`${watchedCount}/${episodes.length} ${t("watch.marked_count")}`}
-        className="hidden lg:inline-flex cursor-pointer items-center gap-1.5 rounded-sm border-2 border-border bg-nb-lime px-2.5 py-1 font-mono text-[11px] font-bold text-nb-ink shadow-[2px_2px_0_0_var(--border)] transition-all duration-150 hover:-translate-y-0.5 active:translate-y-0 active:shadow-none"
+        className="hidden lg:inline-flex cursor-pointer items-center gap-1.5 rounded-sm border-2 border-border bg-nb-lime px-2.5 py-1 font-mono text-[11px] font-bold text-nb-ink shadow-[2px_2px_0_0_var(--border)] transition-all duration-150 motion-safe:hover:-translate-y-0.5 active:translate-y-0 active:shadow-none"
       >
         <span aria-hidden="true">{next === null ? "✓" : "▶"}</span>
         <span>{next === null ? t("watch.all_done") : `${t("watch.continue_ep")} ${next}`}</span>

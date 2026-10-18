@@ -19,7 +19,7 @@ const PaginationButton = ({
   const defaultClass =
     variant === "primary"
       ? "btn-primary inline-flex h-10 items-center gap-1.5 rounded-sm px-5 text-sm"
-      : "glass inline-flex h-10 items-center gap-1.5 rounded-sm px-5 text-sm font-semibold text-ink shadow-[2px_2px_0_0_var(--border)] transition-all duration-150 hover:-translate-y-0.5 hover:shadow-[4px_4px_0_0_var(--border)] active:translate-y-0 active:shadow-none";
+      : "glass inline-flex h-10 items-center gap-1.5 rounded-sm px-5 text-sm font-semibold text-ink shadow-[2px_2px_0_0_var(--border)] transition-all duration-150 motion-safe:hover:-translate-y-0.5 hover:shadow-[4px_4px_0_0_var(--border)] active:translate-y-0 active:shadow-none";
   const cls = className ?? defaultClass;
 
   return href ? (

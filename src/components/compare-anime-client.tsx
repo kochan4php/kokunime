@@ -3,12 +3,17 @@
 import AnimeSearchField from "@/components/compare/anime-search-field";
 import CompareAnimeCard from "@/components/compare/compare-anime-card";
 import CompareGenreAnalysis from "@/components/compare/compare-genre-analysis";
+import CompareRadar, { buildCompareMetrics } from "@/components/compare/compare-radar";
 import CompareSpecsTable from "@/components/compare/compare-specs-table";
+import { CompareEmptyState, CompareLoadingCard } from "@/components/compare/compare-status-panels";
+import { CompareSynopsis } from "@/components/compare/compare-synopsis";
 import { useAnimeSearch } from "@/hooks/use-anime-search";
 import { Anime, AnimeDetail } from "@/interfaces";
 import { animeSlug } from "@/utils/endpoint-slug";
 import { useTranslation } from "@/utils/i18n";
+import { exportShareCard } from "@/utils/share-card";
 import { extractYear, similarityScore } from "@/utils/similar";
+import { showToast } from "@/utils/toast";
 import { JSX, useCallback, useState } from "react";
 
 interface CompareAnimeClientProps {
@@ -35,7 +40,7 @@ const CompareAnimeClient = ({
   initialSlugA,
   initialSlugB,
 }: CompareAnimeClientProps): JSX.Element => {
-  const { t, language } = useTranslation();
+  const { t } = useTranslation();
   const [slugA, setSlugA] = useState(initialSlugA);
   const [slugB, setSlugB] = useState(initialSlugB);
 
@@ -185,6 +190,41 @@ const CompareAnimeClient = ({
     });
   };
 
+  // PNG share card: per-metric scoreline plus which side leads.
+  const handleExportCard = async (): Promise<void> => {
+    if (!animeA || !animeB) return;
+    const metrics = buildCompareMetrics(animeA, animeB);
+    const winsA = metrics.filter((metric) => metric.a > metric.b).length;
+    const winsB = metrics.filter((metric) => metric.b > metric.a).length;
+    const result = await exportShareCard(
+      {
+        kicker: "Adu anime",
+        title: `${animeA.title} vs ${animeB.title}`,
+        accent: "#ff8a3d",
+        rows: [
+          ...metrics.map((metric) => ({
+            label: metric.label,
+            value: `${metric.display(metric.a)} vs ${metric.display(metric.b)}`,
+          })),
+          {
+            label: "Unggul",
+            value:
+              winsA === winsB
+                ? `Seri ${winsA}-${winsB}`
+                : winsA > winsB
+                  ? `🔴 ${winsA}-${winsB}`
+                  : `🔵 ${winsB}-${winsA}`,
+          },
+        ],
+        footer: "kokunime • perbandingan dari data katalog",
+      },
+      "kokunime-compare.png",
+      `${animeA.title} vs ${animeB.title} — ${window.location.href}`,
+    );
+    if (result === "downloaded") showToast("Kartu perbandingan diunduh sebagai PNG");
+    else if (result === "failed") showToast("Gagal membuat kartu PNG");
+  };
+
   const isOverallLoading = loadingA || loadingB;
 
   // Local-only similarity — genre overlap + year/score/type proximity.
@@ -221,13 +261,31 @@ const CompareAnimeClient = ({
             </div>
 
             {slugA && slugB && animeA && animeB && !isOverallLoading && (
-              <button
-                type="button"
-                onClick={handleCopyShare}
-                className="inline-flex items-center gap-1.5 self-start sm:self-auto rounded-sm border-2 border-border bg-surface px-3.5 py-1.5 font-mono text-xs font-semibold text-ink-muted shadow-[2px_2px_0_0_var(--border)] transition-all hover:-translate-y-0.5 hover:text-ink active:translate-y-0 active:shadow-none cursor-pointer"
-              >
-                <span>{shareCopied ? `✓ ${t("common.copied")}` : `🔗 ${t("compare.share")}`}</span>
-              </button>
+              <div className="flex flex-wrap items-center gap-2 self-start sm:self-auto">
+                <button
+                  type="button"
+                  onClick={() => void handleExportCard()}
+                  title="Unduh kartu perbandingan sebagai PNG"
+                  className="inline-flex items-center gap-1.5 rounded-sm border-2 border-border bg-surface px-3.5 py-1.5 font-mono text-xs font-semibold text-ink-muted shadow-[2px_2px_0_0_var(--border)] transition-all motion-safe:hover:-translate-y-0.5 hover:text-ink active:translate-y-0 active:shadow-none cursor-pointer"
+                >
+                  🖼️ PNG
+                </button>
+                <button
+                  type="button"
+                  onClick={() => window.print()}
+                  title="Cetak halaman perbandingan"
+                  className="inline-flex items-center gap-1.5 rounded-sm border-2 border-border bg-surface px-3.5 py-1.5 font-mono text-xs font-semibold text-ink-muted shadow-[2px_2px_0_0_var(--border)] transition-all motion-safe:hover:-translate-y-0.5 hover:text-ink active:translate-y-0 active:shadow-none cursor-pointer"
+                >
+                  🖨️ Cetak
+                </button>
+                <button
+                  type="button"
+                  onClick={handleCopyShare}
+                  className="inline-flex items-center gap-1.5 rounded-sm border-2 border-border bg-surface px-3.5 py-1.5 font-mono text-xs font-semibold text-ink-muted shadow-[2px_2px_0_0_var(--border)] transition-all motion-safe:hover:-translate-y-0.5 hover:text-ink active:translate-y-0 active:shadow-none cursor-pointer"
+                >
+                  <span>{shareCopied ? `✓ ${t("common.copied")}` : `🔗 ${t("compare.share")}`}</span>
+                </button>
+              </div>
             )}
           </div>
 
@@ -260,7 +318,7 @@ const CompareAnimeClient = ({
                 onClick={handleSwap}
                 title="Tukar Posisi Anime A dan B"
                 disabled={(!slugA && !slugB) || isOverallLoading}
-                className="flex h-11 w-11 items-center justify-center rounded-sm border-2 border-border bg-surface text-ink-muted shadow-[2px_2px_0_0_var(--border)] transition-all hover:-translate-y-0.5 hover:bg-nb-yellow hover:text-nb-ink active:translate-y-0 active:shadow-none disabled:opacity-40 cursor-pointer"
+                className="flex h-11 w-11 items-center justify-center rounded-sm border-2 border-border bg-surface text-ink-muted shadow-[2px_2px_0_0_var(--border)] transition-all motion-safe:hover:-translate-y-0.5 hover:bg-nb-yellow hover:text-nb-ink active:translate-y-0 active:shadow-none disabled:opacity-40 cursor-pointer"
               >
                 <span className="text-base font-bold">⇄</span>
               </button>
@@ -297,7 +355,7 @@ const CompareAnimeClient = ({
                   type="button"
                   disabled={isOverallLoading}
                   onClick={() => handlePreset(p.queryA, p.queryB)}
-                  className="rounded-sm border-2 border-border bg-surface px-3 py-1 font-mono text-xs text-ink-muted shadow-[2px_2px_0_0_var(--border)] transition-all hover:-translate-y-0.5 hover:bg-nb-purple hover:text-nb-ink active:translate-y-0 active:shadow-none disabled:opacity-50 cursor-pointer"
+                  className="rounded-sm border-2 border-border bg-surface px-3 py-1 font-mono text-xs text-ink-muted shadow-[2px_2px_0_0_var(--border)] transition-all motion-safe:hover:-translate-y-0.5 hover:bg-nb-purple hover:text-nb-ink active:translate-y-0 active:shadow-none disabled:opacity-50 cursor-pointer"
                 >
                   {p.label}
                 </button>
@@ -324,44 +382,10 @@ const CompareAnimeClient = ({
       )}
 
       {/* Loading Skeleton during overall comparison fetch */}
-      {isOverallLoading && (
-        <div className="card-shell animate-pulse">
-          <div className="card-core p-8 text-center space-y-3">
-            <span className="inline-block text-3xl animate-spin">⏳</span>
-            <h3 className="font-display text-base font-bold text-ink">{t("compare.loading_msg")}</h3>
-            <p className="text-xs text-ink-muted max-w-md mx-auto">
-              {language === "en"
-                ? "Fetching rating scores, studios, episodes, duration, and complete synopses in real-time."
-                : "Mengambil skor rating, studio animasi, episode, durasi, dan sinopsis lengkap kedua anime secara langsung."}
-            </p>
-          </div>
-        </div>
-      )}
+      {isOverallLoading && <CompareLoadingCard />}
 
       {/* Comparison Empty State */}
-      {!isOverallLoading && (!animeA || !animeB) && (
-        <div className="card-shell">
-          <div className="card-core p-10 text-center space-y-4">
-            <span className="text-4xl">⚖️</span>
-            <h3 className="font-display text-lg font-bold text-ink">
-              {!animeA && !animeB
-                ? t("compare.empty_prompt")
-                : !animeA
-                  ? language === "en"
-                    ? "Select Anime A to Complete Comparison"
-                    : "Pilih Anime Pertama (A) untuk Melengkapi Komparasi"
-                  : language === "en"
-                    ? "Select Anime B to Complete Comparison"
-                    : "Pilih Anime Kedua (B) untuk Melengkapi Komparasi"}
-            </h3>
-            <p className="max-w-md mx-auto text-xs text-ink-muted leading-relaxed">
-              {language === "en"
-                ? "Use the search boxes or click a Quick Example above to compare rating scores, total episodes, genres, studios, synopses, and download links instantly."
-                : "Gunakan kotak pencarian atau klik salah satu Contoh Cepat di atas untuk membandingkan skor rating, total episode, genre, studio, sinopsis, dan mirror unduhan secara instan."}
-            </p>
-          </div>
-        </div>
-      )}
+      {!isOverallLoading && (!animeA || !animeB) && <CompareEmptyState hasA={Boolean(animeA)} hasB={Boolean(animeB)} />}
 
       {/* Full Comparison Dashboard */}
       {!isOverallLoading && animeA && animeB && (
@@ -378,7 +402,7 @@ const CompareAnimeClient = ({
           <div className="rounded-sm border-2 border-border bg-surface-solid p-4 shadow-[4px_4px_0_0_var(--border)]">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <span className="font-display text-sm font-bold text-ink">🤝 {t("compare.similarity")}</span>
-              <span className="font-mono text-lg font-extrabold text-accent">{similarity}%</span>
+              <span className="font-mono text-lg font-extrabold text-accent-text">{similarity}%</span>
             </div>
             <div aria-hidden="true" className="mt-2 h-2 overflow-hidden rounded-sm border border-border bg-surface">
               <div className="h-full bg-accent transition-[width] duration-500" style={{ width: `${similarity}%` }} />
@@ -394,28 +418,11 @@ const CompareAnimeClient = ({
 
           <CompareSpecsTable animeA={animeA} animeB={animeB} />
 
+          <CompareRadar animeA={animeA} animeB={animeB} />
+
           <CompareGenreAnalysis animeA={animeA} animeB={animeB} />
 
-          {/* Synopses Side-by-Side */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="card-shell">
-              <div className="card-core p-5 sm:p-6 space-y-3">
-                <h4 className="font-display text-sm sm:text-base font-bold text-ink">📖 {t("compare.synopsis_a")}</h4>
-                <p className="text-xs sm:text-sm text-ink-muted leading-relaxed whitespace-pre-line">
-                  {animeA.synopsis || "Sinopsis tidak tersedia."}
-                </p>
-              </div>
-            </div>
-
-            <div className="card-shell">
-              <div className="card-core p-5 sm:p-6 space-y-3">
-                <h4 className="font-display text-sm sm:text-base font-bold text-ink">📖 {t("compare.synopsis_b")}</h4>
-                <p className="text-xs sm:text-sm text-ink-muted leading-relaxed whitespace-pre-line">
-                  {animeB.synopsis || "Sinopsis tidak tersedia."}
-                </p>
-              </div>
-            </div>
-          </div>
+          <CompareSynopsis animeA={animeA} animeB={animeB} />
         </div>
       )}
     </div>

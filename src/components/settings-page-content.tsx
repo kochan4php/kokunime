@@ -32,6 +32,10 @@ const DEFAULT_STORAGE: StorageBreakdown = {
   historyBytes: 0,
   searchHistoryCount: 0,
   searchHistoryBytes: 0,
+  queueCount: 0,
+  queueBytes: 0,
+  marksCount: 0,
+  marksBytes: 0,
   settingsBytes: 0,
   totalBytes: 0,
   formattedTotal: "0 KB",
@@ -217,7 +221,7 @@ const SettingsPageContent = (): JSX.Element => {
             <button
               type="button"
               onClick={handleExportJson}
-              className="inline-flex items-center gap-1.5 rounded-sm border-2 border-border bg-accent px-4 py-2 font-mono text-xs font-bold text-(--accent-ink) shadow-[2px_2px_0_0_var(--border)] transition-all hover:-translate-y-0.5 active:translate-y-0 active:shadow-none cursor-pointer"
+              className="inline-flex items-center gap-1.5 rounded-sm border-2 border-border bg-accent px-4 py-2 font-mono text-xs font-bold text-(--accent-ink) shadow-[2px_2px_0_0_var(--border)] transition-all motion-safe:hover:-translate-y-0.5 active:translate-y-0 active:shadow-none cursor-pointer"
             >
               <span>📥 {t("settings.export_backup")}</span>
             </button>
@@ -225,7 +229,7 @@ const SettingsPageContent = (): JSX.Element => {
               type="button"
               onClick={handleResetSettings}
               title={t("settings.reset_default")}
-              className="inline-flex items-center gap-1.5 rounded-sm border-2 border-border bg-surface px-4 py-2 font-mono text-xs font-semibold text-ink-muted shadow-[2px_2px_0_0_var(--border)] transition-all hover:-translate-y-0.5 hover:bg-nb-red hover:text-nb-ink active:translate-y-0 active:shadow-none cursor-pointer"
+              className="inline-flex items-center gap-1.5 rounded-sm border-2 border-border bg-surface px-4 py-2 font-mono text-xs font-semibold text-ink-muted shadow-[2px_2px_0_0_var(--border)] transition-all motion-safe:hover:-translate-y-0.5 hover:bg-nb-red hover:text-nb-ink active:translate-y-0 active:shadow-none cursor-pointer"
             >
               <span>🔄 {t("settings.reset_default")}</span>
             </button>
