@@ -1,6 +1,7 @@
 "use client";
 
 import AnimeImage from "@/components/cards/anime-image";
+import SectionHeader from "@/components/section-header";
 import { JSX, useEffect, useState } from "react";
 import Link from "next/link";
 
@@ -37,12 +38,14 @@ const TrendingRail = (): JSX.Element | null => {
 
   return (
     <section className="container px-4 pt-8 md:pt-12" aria-labelledby="trending-title">
-      <div className="mb-4 flex items-center gap-2">
-        <h2 id="trending-title" className="font-display text-lg font-extrabold tracking-tight text-ink md:text-xl">
-          🔥 Sedang Populer
-        </h2>
-        <span className="font-mono text-[10px] uppercase tracking-wide text-ink-muted">7 hari terakhir</span>
-      </div>
+      <SectionHeader
+        kicker="Trending"
+        title="🔥 Sedang Populer"
+        titleId="trending-title"
+        tone="pink"
+        className="mb-4"
+        badge={<span className="font-mono text-[10px] uppercase tracking-wide text-ink-muted">7 hari terakhir</span>}
+      />
       <div className="nb-cycle flex snap-x gap-3 overflow-x-auto pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         {items.map((item, index) => (
           <Link

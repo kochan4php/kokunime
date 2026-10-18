@@ -23,8 +23,10 @@
     gap: 0.625rem;
     border-radius: var(--radius-nb);
     padding: 0.875rem 1.375rem;
-    font-size: 0.875rem;
+    font-size: 0.8rem;
     font-weight: 800;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
     /* Ink on flat accent: --accent-ink stays >= 4.5:1 on every preset. */
     color: var(--accent-ink);
     background: var(--accent);
@@ -51,8 +53,10 @@
     gap: 0.625rem;
     border-radius: var(--radius-nb);
     padding: 0.875rem 1.375rem;
-    font-size: 0.875rem;
+    font-size: 0.8rem;
     font-weight: 800;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
     color: var(--ink);
     background: var(--surface);
     border: 2px solid var(--border);

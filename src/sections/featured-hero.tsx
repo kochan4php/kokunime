@@ -29,7 +29,7 @@ const FeaturedHero = ({ featured, items = [], blurDataURL }: FeaturedHeroProps):
   const slug = current?.link?.endpoint ? animeSlug(current.link.endpoint) : "";
 
   return (
-    <div className="card-shell group relative overflow-hidden">
+    <div className="card-shell group relative overflow-hidden border-[3px] shadow-[6px_6px_0_0_var(--border)] hover:shadow-[8px_8px_0_0_var(--border)]">
       <div className="card-core">
         <div className="grid md:grid-cols-2">
           <div className="relative aspect-[16/10] overflow-hidden border-b-2 border-border md:aspect-auto md:min-h-[26rem] md:border-b-0 md:border-r-2">
@@ -73,14 +73,25 @@ const FeaturedHero = ({ featured, items = [], blurDataURL }: FeaturedHeroProps):
             )}
           </div>
           <div className="flex flex-col justify-center gap-3 sm:gap-4 border-t-2 border-border bg-nb-yellow p-5 sm:p-8 md:border-t-0 md:p-12 min-w-0">
-            <h1 className="font-display text-2xl sm:text-3xl md:text-5xl font-extrabold leading-[1.1] tracking-tight text-nb-ink break-words line-clamp-3 md:line-clamp-none">
+            <h1 className="font-display text-[1.75rem] font-black leading-[1.05] tracking-[-0.02em] text-nb-ink break-words line-clamp-3 sm:text-4xl md:text-6xl md:line-clamp-none">
               {current?.title ?? "Katalog anime"}
             </h1>
-            <p className="font-semibold text-nb-ink/80 leading-relaxed text-xs sm:text-sm">
-              {current?.genres?.length
-                ? current.genres.join(" · ")
-                : (current?.release ?? "Daftar lengkapnya ada di bawah.")}
-            </p>
+            {current?.genres?.length ? (
+              <div className="flex flex-wrap gap-1.5">
+                {current.genres.slice(0, 4).map((genre) => (
+                  <span
+                    key={genre}
+                    className="rounded-sm border-2 border-nb-ink bg-nb-cream/70 px-2 py-0.5 font-mono text-[10px] font-bold uppercase tracking-wide text-nb-ink"
+                  >
+                    {genre}
+                  </span>
+                ))}
+              </div>
+            ) : (
+              <p className="font-semibold text-nb-ink/80 leading-relaxed text-xs sm:text-sm">
+                {current?.release ?? "Daftar lengkapnya ada di bawah."}
+              </p>
+            )}
             {slug && (
               <div className="mt-2 flex flex-wrap items-center gap-3">
                 <ViewTransitionLink

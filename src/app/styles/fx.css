@@ -1,0 +1,119 @@
+/* Print-shop accents: info ticker, colour stripes, chunky section rules and
+   outlined display type. Everything here is decorative or informational —
+   no behaviour, no layout math that other files depend on. */
+
+/* ── Info ticker ──────────────────────────────────────────────────────────
+   Two identical groups scroll left; the track translates -50% so the seam is
+   invisible. Group 2 is aria-hidden, group 1 is the readable copy. */
+.nb-ticker {
+  overflow: hidden;
+  border-bottom: 2px solid var(--border);
+  background: var(--ink);
+  color: var(--color-nb-cream);
+}
+
+.nb-ticker-track {
+  display: flex;
+  width: max-content;
+  animation: nb-ticker-scroll 38s linear infinite;
+}
+
+.nb-ticker:hover .nb-ticker-track,
+.nb-ticker:focus-within .nb-ticker-track {
+  animation-play-state: paused;
+}
+
+@keyframes nb-ticker-scroll {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.nb-ticker-group {
+  display: flex;
+  align-items: center;
+  padding-block: 0.3125rem;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.nb-ticker-group > span + span::before {
+  content: "◆";
+  margin-inline: 1.5rem;
+  color: var(--color-nb-yellow);
+  font-size: 8px;
+  vertical-align: 1px;
+}
+
+/* Reduced motion: stop the scroll and show one wrapped readable copy instead
+   of a clipped strip. Covers the OS setting and the site-level switch. */
+@media (prefers-reduced-motion: reduce) {
+  .nb-ticker-track {
+    animation: none;
+    width: auto;
+    flex-wrap: wrap;
+    padding-inline: 1rem;
+  }
+
+  .nb-ticker-track > [aria-hidden="true"] {
+    display: none;
+  }
+}
+
+html[data-reduce-motion="true"] .nb-ticker-track {
+  animation: none;
+  width: auto;
+  flex-wrap: wrap;
+  padding-inline: 1rem;
+}
+
+html[data-reduce-motion="true"] .nb-ticker-track > [aria-hidden="true"] {
+  display: none;
+}
+
+/* ── Colour stripe ────────────────────────────────────────────────────────
+   Six flat sticker colours; used as the print edge under the navbar and on
+   top of the footer. */
+.nb-stripe {
+  height: 6px;
+  border-top: 2px solid var(--border);
+  background-image: repeating-linear-gradient(
+    90deg,
+    var(--color-nb-yellow) 0 64px,
+    var(--color-nb-pink) 64px 128px,
+    var(--color-nb-teal) 128px 192px,
+    var(--color-nb-lime) 192px 256px,
+    var(--color-nb-purple) 256px 320px,
+    var(--color-nb-orange) 320px 384px
+  );
+}
+
+/* ── Section rule ─────────────────────────────────────────────────────────
+   Chunky strip under section headers: three colour blocks + a muted bar. */
+.nb-rule {
+  display: flex;
+  height: 10px;
+  gap: 4px;
+}
+
+.nb-rule > * {
+  border: 2px solid var(--border);
+}
+
+/* ── Outlined display type ────────────────────────────────────────────────
+   Big stroke-only wordmarks; falls back to a faint fill where text-stroke is
+   unsupported. Always aria-hidden in markup — decoration, never content. */
+.nb-outline-text {
+  color: transparent;
+  -webkit-text-stroke: 2px var(--border);
+}
+
+@supports not (-webkit-text-stroke: 2px black) {
+  .nb-outline-text {
+    color: color-mix(in srgb, var(--border) 10%, transparent);
+  }
+}

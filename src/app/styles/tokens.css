@@ -13,8 +13,9 @@
   --accent-amber: #ffd93d;
   --accent-ink: #0a0a0a;
 
-  /* Backdrop grid (graph paper) */
+  /* Backdrop grid (graph paper): fine 32px cells + heavier 160px majors */
   --grid-ink: rgba(10, 10, 10, 0.07);
+  --grid-ink-strong: rgba(10, 10, 10, 0.1);
 
   /* Hard offset shadows + tight radius */
   --radius-nb: 0.25rem;

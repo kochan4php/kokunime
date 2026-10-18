@@ -18,6 +18,15 @@ const NAV_KEY_MAP: Record<string, TranslationKey> = {
   "/settings": "nav.settings",
 };
 
+// Factual, short claims only — long enough to fill the loop, never invented.
+const TICKER_ITEMS = [
+  "🔥 Update anime tiap hari",
+  "🎬 Batch + episode, subtitle Indonesia",
+  "🔎 Ctrl+K untuk pencarian cepat",
+  "⌨️ Tekan ? untuk daftar pintasan",
+  "🎲 Tombol dadu untuk anime acak",
+];
+
 const Navbar = (): JSX.Element => {
   const [scrolled, setScrolled] = useState(false);
   const pathname = usePathname();
@@ -36,12 +45,25 @@ const Navbar = (): JSX.Element => {
 
   return (
     <header
-      className={`navbar sticky top-0 z-50 transition-all duration-300 ${
-        scrolled
-          ? "bg-surface-solid border-b-2 border-border"
-          : "bg-surface-solid sm:bg-transparent border-b-2 border-transparent"
+      className={`navbar sticky top-0 z-50 transition-colors duration-300 ${
+        scrolled ? "bg-surface-solid" : "bg-surface-solid sm:bg-transparent"
       }`}
     >
+      <div className="nb-ticker">
+        <div className="nb-ticker-track">
+          <div className="nb-ticker-group">
+            {TICKER_ITEMS.map((item) => (
+              <span key={item}>{item}</span>
+            ))}
+          </div>
+          <div className="nb-ticker-group" aria-hidden="true">
+            {TICKER_ITEMS.map((item) => (
+              <span key={item}>{item}</span>
+            ))}
+          </div>
+        </div>
+      </div>
+
       <div className="container flex h-16 items-center justify-between gap-4 px-4 md:px-6">
         <div className="flex items-center gap-8 min-w-0">
           <Link
@@ -95,6 +117,8 @@ const Navbar = (): JSX.Element => {
           <MobileMenu isActive={isActive} />
         </div>
       </div>
+
+      <div className="nb-stripe" aria-hidden="true" />
     </header>
   );
 };
