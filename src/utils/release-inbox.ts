@@ -37,17 +37,35 @@ const getReleaseSeen = (): Record<string, string> => {
   }
 };
 
+// Snapshot cache for useSyncExternalStore: the parsed array must keep the same
+// reference while localStorage is unchanged, otherwise React sees a new
+// snapshot every render and loops ("getSnapshot should be cached").
+let cachedRaw: string | null = null;
+let cachedUnread: UnreadRelease[] = [];
+
 export const getUnreadReleases = (): UnreadRelease[] => {
   const storage = getStorage();
-  if (!storage) return [];
+  if (!storage) return cachedUnread;
+
+  let raw: string | null = null;
   try {
-    const raw = storage.getItem(UNREAD_KEY);
-    if (!raw) return [];
-    const parsed = JSON.parse(raw) as UnreadRelease[];
-    return Array.isArray(parsed) ? parsed : [];
+    raw = storage.getItem(UNREAD_KEY);
   } catch {
-    return [];
+    raw = null;
   }
+  if (raw === cachedRaw) return cachedUnread;
+
+  cachedRaw = raw;
+  cachedUnread = [];
+  if (raw) {
+    try {
+      const parsed = JSON.parse(raw) as UnreadRelease[];
+      if (Array.isArray(parsed)) cachedUnread = parsed;
+    } catch {
+      // Corrupt blob — keep the empty snapshot.
+    }
+  }
+  return cachedUnread;
 };
 
 const write = (key: string, value: unknown): void => {
@@ -69,7 +87,8 @@ export const scanReleases = (items: ReleaseItem[], bookmarkedSlugs: string[]): n
   if (!storage || items.length === 0) return 0;
 
   const seen = getReleaseSeen();
-  const unread = getUnreadReleases();
+  // Copy: getUnreadReleases returns the cached snapshot and must not be mutated.
+  const unread = [...getUnreadReleases()];
   const bookmarked = new Set(bookmarkedSlugs);
   let newUnread = 0;
 

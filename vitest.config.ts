@@ -8,6 +8,7 @@ const DOM_TESTS = [
   "tests/download-anchors.test.ts",
   "tests/honeypot-a11y.test.ts",
   "tests/interactions.test.ts",
+  "tests/release-inbox.test.ts",
 ];
 
 export default defineConfig({
