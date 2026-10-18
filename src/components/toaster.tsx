@@ -42,10 +42,10 @@ const Toaster = (): JSX.Element | null => {
           <button
             type="button"
             onClick={() => dismissToast(toast.id)}
-            aria-label="Tutup notifikasi"
             className="shrink-0 rounded-sm border-2 border-border bg-surface px-1.5 py-0.5 font-mono text-[10px] text-ink-muted transition-colors hover:text-ink cursor-pointer"
           >
-            ✕
+            <span className="sr-only">Tutup notifikasi</span>
+            <span aria-hidden="true">✕</span>
           </button>
         </div>
       ))}

@@ -84,6 +84,14 @@ const ENDPOINTS: ApiEndpoint[] = [
   },
   {
     method: "GET",
+    path: "/api/search-index",
+    category: "Catalog",
+    description:
+      "Dump ringkas dari catalog index server untuk disimpan browser: pencarian instan dan offline memakai data ini, digabung dengan judul yang sudah pernah dilihat di perangkat. Kosong saat index belum di-warm-up.",
+    sampleUrl: "/api/search-index",
+  },
+  {
+    method: "GET",
     path: "/api/genres",
     category: "Catalog",
     description: "Mengambil daftar lengkap seluruh kategori genre anime yang tersedia di katalog Kokunime.",

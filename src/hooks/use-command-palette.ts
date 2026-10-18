@@ -2,7 +2,9 @@
 
 import { Anime } from "@/interfaces";
 import { buildPaletteActions, isActionQuery, type PaletteAction } from "@/utils/palette-actions";
+import { animeSlug } from "@/utils/endpoint-slug";
 import { fuzzyScore } from "@/utils/fuzzy";
+import { type CatalogEntry, ensureServerIndexMerged, searchLocalCatalog } from "@/utils/local-catalog";
 import { clearRecentSearches, getRecentSearches, saveRecentSearch } from "@/utils/recent-searches";
 import { showToast } from "@/utils/toast";
 import { useRouter } from "next/navigation";
@@ -11,6 +13,22 @@ import { type FormEvent, type RefObject, useEffect, useRef, useState } from "rea
 // Shared across mounts: the palette is mounted once per layout, but the cache
 // survives close/reopen so repeat queries are instant.
 const clientSearchCache = new Map<string, Anime[]>();
+
+// Local catalog rows reuse the Anime shape so the palette renders them with the
+// exact same card code path as network results.
+const toPaletteAnime = (entry: CatalogEntry): Anime => ({
+  title: entry.title,
+  release: entry.release,
+  genres: entry.genres,
+  link: { endpoint: entry.slug, image: entry.image },
+});
+
+// Network results win on ties (upstream has fresher titles); local-only hits are
+// appended so offline knowledge is never dropped.
+const mergePaletteResults = (network: Anime[], local: Anime[]): Anime[] => {
+  const seen = new Set(network.map((item) => animeSlug(item.link?.endpoint)));
+  return [...network, ...local.filter((item) => !seen.has(animeSlug(item.link?.endpoint)))].slice(0, 20);
+};
 
 interface UseCommandPaletteResult {
   dialogRef: RefObject<HTMLDialogElement | null>;
@@ -125,7 +143,9 @@ export const useCommandPalette = (): UseCommandPaletteResult => {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
 
-  // Debounced search for live results with instant in-memory client cache
+  // Debounced search for live results with instant in-memory client cache.
+  // The device-local catalog answers first (works offline), the network
+  // response then refines it and appends anything only the server knew.
   useEffect(() => {
     const trimmed = query.trim().toLowerCase();
     if (query.startsWith(">") || trimmed.length < 2) {
@@ -134,11 +154,15 @@ export const useCommandPalette = (): UseCommandPaletteResult => {
       return;
     }
 
+    const local = searchLocalCatalog(trimmed, 8).items.map(toPaletteAnime);
+
     if (clientSearchCache.has(trimmed)) {
-      setLiveResults(clientSearchCache.get(trimmed) || []);
+      setLiveResults(mergePaletteResults(clientSearchCache.get(trimmed) || [], local));
       setIsLoading(false);
       return;
     }
+
+    setLiveResults(local);
 
     const controller = new AbortController();
     const timer = setTimeout(async () => {
@@ -152,9 +176,11 @@ export const useCommandPalette = (): UseCommandPaletteResult => {
         // prefix/substring hits on the exact title should float to the top.
         const ranked = [...results].sort((a, b) => fuzzyScore(trimmed, b.title) - fuzzyScore(trimmed, a.title));
         clientSearchCache.set(trimmed, ranked);
-        setLiveResults(ranked);
+        setLiveResults(mergePaletteResults(ranked, local));
       } catch (error) {
-        if ((error as Error)?.name !== "AbortError") setLiveResults([]);
+        // Offline or upstream down: the local catalog already answered, so keep
+        // whatever it found instead of blanking the list.
+        if ((error as Error)?.name !== "AbortError" && local.length === 0) setLiveResults([]);
       } finally {
         if (!controller.signal.aborted) setIsLoading(false);
       }
@@ -165,6 +191,12 @@ export const useCommandPalette = (): UseCommandPaletteResult => {
       controller.abort();
     };
   }, [query]);
+
+  // Pull the server index once a day so the local catalog can answer for titles
+  // never visited on this device.
+  useEffect(() => {
+    void ensureServerIndexMerged();
+  }, []);
 
   return {
     dialogRef,

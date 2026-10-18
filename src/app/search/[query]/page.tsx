@@ -1,5 +1,6 @@
 import SearchResults from "@/sections/search-results";
 import SearchHistoryChips from "@/components/search-history-chips";
+import SearchLocalPanel from "@/components/search-local-panel";
 import SectionHeader from "@/components/section-header";
 import { searchAnime } from "@/services/scraper";
 import { sanitizeQuery } from "@/services/scraper/sanitize";
@@ -37,6 +38,7 @@ const SearchAnime = async ({ params }: { params: Promise<{ query: string }> }): 
         />
         <SearchHistoryChips query={decoded} />
         <SearchResults anime={anime} />
+        <SearchLocalPanel query={query} serverResults={anime} />
       </section>
     </MainLayout>
   );

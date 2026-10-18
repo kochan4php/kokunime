@@ -10,6 +10,9 @@ export interface UnreadRelease {
   at: number;
   read?: boolean;
   readAt?: number;
+  // Distinguishes a scraped release change from a saved-search match; absent
+  // means "release" for entries written before this field existed.
+  kind?: "release" | "search";
 }
 
 export interface ReleaseItem {
@@ -141,6 +144,34 @@ export const scanReleases = (items: ReleaseItem[], bookmarkedSlugs: string[]): n
   }
 
   return newUnread;
+};
+
+// Pushes one entry (e.g. a saved-search match) into the inbox. One live entry
+// per slug: a title matching two saved searches must not stack.
+export const pushInboxItem = (item: {
+  slug: string;
+  title: string;
+  from: string;
+  to: string;
+  kind?: "release" | "search";
+}): boolean => {
+  const storage = getStorage();
+  if (!storage || !item.slug || !item.title) return false;
+  const inbox = getInboxReleases();
+  if (inbox.some((entry) => entry.slug === item.slug && !entry.read)) return false;
+  const next: UnreadRelease[] = [
+    {
+      slug: item.slug,
+      title: item.title,
+      from: item.from,
+      to: item.to,
+      at: Date.now(),
+      kind: item.kind ?? "release",
+    },
+    ...inbox,
+  ].slice(0, MAX_INBOX);
+  write(UNREAD_KEY, next);
+  return true;
 };
 
 // "Mark all read" keeps history: entries flip to read and stay listed under

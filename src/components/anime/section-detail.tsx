@@ -14,6 +14,7 @@ import { JSX } from "react";
 import BookmarkButton from "./bookmark-button";
 import ShareButton from "./share-button";
 import PrintQrCard from "./print-qr-card";
+import AnimeTagsEditor from "@/components/anime-tags-editor";
 import { parseTotalEpisodes } from "@/utils/progress";
 import { SITE_URL } from "@/lib/site";
 
@@ -50,6 +51,7 @@ const SectionDetail = ({ anime, slug }: { anime: AnimeDetail; slug: string }): J
       <Reveal delay={100}>
         <div id="info">
           <InfoSide anime={anime} />
+          <AnimeTagsEditor slug={slug} />
         </div>
       </Reveal>
     </div>

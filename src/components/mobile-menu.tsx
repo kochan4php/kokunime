@@ -92,10 +92,10 @@ const MobileMenu = ({ isActive }: MobileMenuProps): JSX.Element => {
             <button
               type="button"
               onClick={closeMenu}
-              aria-label={t("nav.close_menu")}
               className="flex h-9 w-9 items-center justify-center rounded-sm border-2 border-border bg-surface font-bold text-ink shadow-[2px_2px_0_0_var(--border)] transition-all motion-safe:hover:-translate-y-0.5 active:translate-y-0 active:shadow-none cursor-pointer"
             >
-              ✕
+              <span className="sr-only">{t("nav.close_menu")}</span>
+              <span aria-hidden="true">✕</span>
             </button>
           </div>
 

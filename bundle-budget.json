@@ -1,23 +1,24 @@
 {
-  "generatedAt": "2026-10-18T12:52:07.997Z",
+  "generatedAt": "2026-10-18T22:29:49.458Z",
   "routes": {
-    "/admin": 685127,
-    "/api": 706798,
-    "/bookmarks": 800804,
-    "/genres": 706501,
-    "/indeks": 669198,
-    "/offline": 715068,
-    "/privacy": 669198,
-    "/roulette": 735229,
-    "/seasons": 707466,
-    "/settings": 733451,
-    "/share": 710017,
-    "/stats": 731709,
-    "/status": 669198,
-    "/update": 733932,
-    "/wrapped": 728096,
+    "/admin": 689552,
+    "/api": 711768,
+    "/bookmarks": 805774,
+    "/genres": 711471,
+    "/indeks": 673623,
+    "/offline": 720038,
+    "/privacy": 673623,
+    "/roulette": 740199,
+    "/seasons": 712436,
+    "/settings": 739541,
+    "/share": 714987,
+    "/stats": 736679,
+    "/status": 707553,
+    "/tag": 727881,
+    "/update": 748622,
+    "/wrapped": 733066,
     "/_global-error": 567218,
-    "/_not-found": 669198
+    "/_not-found": 673623
   },
-  "totalClientJs": 1593006
+  "totalClientJs": 1760356
 }

@@ -1,8 +1,8 @@
 import { getRedis } from "@/lib/redis";
 import type { Anime } from "@/interfaces";
 import { animeSlug } from "@/utils/endpoint-slug";
-import { fuzzyScore } from "@/utils/fuzzy";
 import { ParsedQuery, parseQuerySyntax } from "@/utils/query-syntax";
+import { rankTitles } from "@/utils/rank-query";
 
 const ITEMS_KEY = "kokunime:idx:titles";
 const SNAPSHOT_TTL_MS = 5 * 60 * 1000;
@@ -82,53 +82,14 @@ const getIndexSnapshot = async (): Promise<Map<string, IndexedAnime> | null> => 
 
 export const getIndexSize = async (): Promise<number> => (await getIndexSnapshot())?.size ?? 0;
 
-const compact = (value: string): string => value.toLowerCase().replace(/[^a-z0-9]+/g, "");
+// Whole snapshot for the client-side catalog (the compact form keeps the
+// payload small; the browser stores it and searches offline afterwards).
+export const getIndexDump = async (): Promise<IndexedAnime[]> => [...((await getIndexSnapshot())?.values() ?? [])];
 
 // Pure ranking helper (unit-tested): compact substring/subsequence match with a
-// token-AND fallback, genre ANY-of filter and exclusion terms.
-export const rankIndexItems = (records: IndexedAnime[], parsed: ParsedQuery, limit = 20): IndexedAnime[] => {
-  const nq = compact(parsed.text);
-  const tokens = parsed.text.split(/\s+/).map(compact).filter(Boolean);
-  const scored: { item: IndexedAnime; score: number }[] = [];
-
-  for (const item of records) {
-    if (parsed.genres.length > 0) {
-      const itemGenres = (item.genres ?? []).map((genre) => genre.toLowerCase());
-      const matchesGenre = parsed.genres.some((genre) => itemGenres.some((itemGenre) => itemGenre.includes(genre)));
-      if (!matchesGenre) continue;
-    }
-
-    const nt = compact(item.title);
-    if (parsed.exclude.length > 0 && parsed.exclude.some((term) => compact(term) && nt.includes(compact(term))))
-      continue;
-
-    if (!nq && tokens.length === 0) {
-      scored.push({ item, score: 1 });
-      continue;
-    }
-
-    let score = nq ? fuzzyScore(nq, nt) : 0;
-    if (score === 0 && tokens.length > 0) {
-      let total = 0;
-      let allMatched = true;
-      for (const token of tokens) {
-        const tokenScore = fuzzyScore(token, nt);
-        if (tokenScore === 0) {
-          allMatched = false;
-          break;
-        }
-        total += tokenScore;
-      }
-      if (allMatched) score = Math.max(20, total / tokens.length);
-    }
-    if (score > 0) scored.push({ item, score });
-  }
-
-  return scored
-    .sort((a, b) => b.score - a.score)
-    .slice(0, limit)
-    .map((entry) => entry.item);
-};
+// token-AND fallback, genre/year filters and exclusion terms.
+export const rankIndexItems = (records: IndexedAnime[], parsed: ParsedQuery, limit = 20): IndexedAnime[] =>
+  rankTitles(records, parsed, limit);
 
 // Anime-shaped results so every existing consumer (grid, facets) just works.
 export const searchLocalIndex = async (query: string, limit = 20): Promise<Anime[]> => {

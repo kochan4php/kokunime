@@ -6,9 +6,13 @@ import { fileURLToPath } from "node:url";
 const DOM_TESTS = [
   "tests/a11y.test.ts",
   "tests/download-anchors.test.ts",
+  "tests/diagnostics.test.ts",
   "tests/honeypot-a11y.test.ts",
   "tests/interactions.test.ts",
+  "tests/local-catalog.test.ts",
   "tests/release-inbox.test.ts",
+  "tests/saved-searches.test.ts",
+  "tests/tags.test.ts",
 ];
 
 export default defineConfig({

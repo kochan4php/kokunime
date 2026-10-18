@@ -381,6 +381,8 @@ export const exportAllAppData = (): string => {
     episodeLog: JSON.parse(localStorage.getItem(STORAGE_KEYS.episodeLog) || "[]"),
     folderOrder: JSON.parse(localStorage.getItem(STORAGE_KEYS.folderOrder) || "[]"),
     collections: JSON.parse(localStorage.getItem(STORAGE_KEYS.collections) || "[]"),
+    tags: JSON.parse(localStorage.getItem(STORAGE_KEYS.tags) || "{}"),
+    savedSearches: JSON.parse(localStorage.getItem(STORAGE_KEYS.savedSearches) || "[]"),
   };
   return JSON.stringify(data, null, 2);
 };
@@ -397,6 +399,9 @@ export const importAllAppData = (jsonString: string): boolean => {
     const writeArray = (key: string, value: unknown): void => {
       if (Array.isArray(value)) localStorage.setItem(key, JSON.stringify(value));
     };
+    const writeObject = (key: string, value: unknown): void => {
+      if (value && typeof value === "object" && !Array.isArray(value)) localStorage.setItem(key, JSON.stringify(value));
+    };
     writeArray(STORAGE_KEYS.bookmarks, parsed.bookmarks);
     writeArray(STORAGE_KEYS.watchHistory, parsed.history);
     writeArray(STORAGE_KEYS.recentSearches, parsed.searches);
@@ -405,6 +410,8 @@ export const importAllAppData = (jsonString: string): boolean => {
     writeArray(STORAGE_KEYS.episodeLog, parsed.episodeLog);
     writeArray(STORAGE_KEYS.folderOrder, parsed.folderOrder);
     writeArray(STORAGE_KEYS.collections, parsed.collections);
+    writeArray(STORAGE_KEYS.savedSearches, parsed.savedSearches);
+    writeObject(STORAGE_KEYS.tags, parsed.tags);
 
     window.dispatchEvent(new Event("storage"));
     return true;

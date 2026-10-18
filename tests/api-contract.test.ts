@@ -14,6 +14,7 @@ const { GET: bulkGet } = await import("@/app/api/anime/bulk/route");
 const { GET: episodesGet } = await import("@/app/api/anime/[slug]/episodes/route");
 const { GET: genreGet } = await import("@/app/api/genres/[genre]/route");
 const { GET: suggestGet } = await import("@/app/api/suggest/route");
+const { GET: searchIndexGet } = await import("@/app/api/search-index/route");
 const { GET: trendingGet } = await import("@/app/api/trending/route");
 const { GET: statusGet } = await import("@/app/api/status/route");
 const { encodeCursor, decodeCursor } = await import("@/lib/api-pagination");
@@ -125,6 +126,27 @@ describe("GET /api/suggest + /api/trending + /api/status (contract)", () => {
     expect(json.query).toBe("naruto");
     expect(Array.isArray(json.items)).toBe(true);
     expect(res.headers.get("etag")).toBeTruthy();
+  });
+
+  it("search-index returns compact rows with an ETag and honours If-None-Match", async () => {
+    const res = await searchIndexGet(new NextRequest("http://localhost/api/search-index"));
+    expect(res.status).toBe(200);
+    const json = await res.json();
+    expect(typeof json.total).toBe("number");
+    expect(Array.isArray(json.items)).toBe(true);
+    // Rows are [slug, title, image, release, genres] — arrays, not objects.
+    for (const row of json.items) {
+      expect(Array.isArray(row)).toBe(true);
+      expect(typeof row[0]).toBe("string");
+      expect(typeof row[1]).toBe("string");
+    }
+    const etag = res.headers.get("etag");
+    expect(etag).toBeTruthy();
+
+    const cached = await searchIndexGet(
+      new NextRequest("http://localhost/api/search-index", { headers: { "if-none-match": String(etag) } }),
+    );
+    expect(cached.status).toBe(304);
   });
 
   it("trending returns the { total, items } envelope", async () => {

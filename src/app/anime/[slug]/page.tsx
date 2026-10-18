@@ -1,4 +1,5 @@
 import SectionDetail from "@/components/anime/section-detail";
+import CatalogRecorder from "@/components/catalog-recorder";
 import ViewTracker from "@/components/view-tracker";
 import RecommendationSection from "@/sections/recommendation-section";
 import SimilarAnime from "@/sections/similar-anime";
@@ -69,6 +70,7 @@ const Anime = async ({ params }: { params: Promise<{ slug: string }> }): Promise
         suppressHydrationWarning
       />
       <ViewTracker slug={slug} />
+      <CatalogRecorder slug={slug} detail={anime} />
       <SectionDetail anime={anime} slug={slug} />
       <Suspense fallback={<RailSkeleton />}>
         <SimilarAnime slug={slug} title={anime.title ?? ""} />

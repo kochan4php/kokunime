@@ -401,6 +401,14 @@ export async function GET(request: NextRequest): Promise<NextResponse | Response
           responses: { "200": { description: "Suggestions" }, "304": { description: "Not modified" } },
         },
       },
+      "/api/search-index": {
+        get: {
+          summary: "Client catalog index dump",
+          description:
+            "Compact rows for the browser to store and search offline (empty when the server index is cold).",
+          responses: { "200": { description: "Index dump" }, "304": { description: "Not modified" } },
+        },
+      },
       "/api/trending": {
         get: {
           summary: "Trending titles",
