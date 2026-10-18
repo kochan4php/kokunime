@@ -28,6 +28,8 @@
     "loadtest": "node scripts/load-test.mjs",
     "e2e": "node scripts/e2e-smoke.mjs",
     "visual:smoke": "node scripts/visual-smoke.mjs",
+    "a11y:targets": "node scripts/touch-targets.mjs",
+    "offline:smoke": "node scripts/offline-smoke.mjs",
     "perf:budget": "node scripts/perf-budget.mjs",
     "css:report": "node scripts/css-usage-report.mjs",
     "verify": "pnpm format:check && pnpm lint && pnpm test && pnpm build && pnpm bundle:budget && pnpm size:budget && node scripts/find-unused-exports.mjs",

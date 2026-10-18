@@ -1,41 +1,42 @@
 "use client";
 
 import { AnimeDetail } from "@/interfaces";
+import { pickWinners, seriesMark } from "@/utils/compare";
 import { useTranslation } from "@/utils/i18n";
 import { JSX } from "react";
 
 interface CompareSpecsTableProps {
-  animeA: AnimeDetail;
-  animeB: AnimeDetail;
+  animes: AnimeDetail[];
 }
 
-// Side-by-side spec matrix; the higher score / episode count gets the accent.
-const CompareSpecsTable = ({ animeA, animeB }: CompareSpecsTableProps): JSX.Element => {
+// Side-by-side spec matrix for 2–3 titles; only a unique highest score /
+// episode count per row gets the accent.
+const CompareSpecsTable = ({ animes }: CompareSpecsTableProps): JSX.Element => {
   const { t } = useTranslation();
 
-  const scoreA = parseFloat(animeA.score || "0");
-  const scoreB = parseFloat(animeB.score || "0");
-  const epA = parseInt(animeA.total_episode || "0", 10);
-  const epB = parseInt(animeB.total_episode || "0", 10);
+  const scores = animes.map((anime) => parseFloat(anime.score || "0"));
+  const episodes = animes.map((anime) => parseInt(anime.total_episode || "0", 10));
+  const scoreLeaders = pickWinners(scores);
+  const episodeLeaders = pickWinners(episodes);
+  const episodeRunnerUp = [...episodes].sort((a, b) => b - a)[1] ?? 0;
 
   return (
     <div className="card-shell overflow-hidden">
       <div className="card-core p-0 overflow-x-auto">
-        <table className="w-full min-w-[620px] border-collapse text-left">
+        <table className={`w-full border-collapse text-left ${animes.length > 2 ? "min-w-[860px]" : "min-w-[620px]"}`}>
           <caption className="sr-only">
-            {t("compare.spec_parameter")}: {animeA.title} vs {animeB.title}
+            {t("compare.spec_parameter")}: {animes.map((anime) => anime.title).join(" vs ")}
           </caption>
           <thead>
             <tr className="border-b-2 border-border bg-surface-muted font-mono text-xs uppercase tracking-wider text-ink-muted">
               <th scope="col" className="p-4 w-1/4">
                 {t("compare.spec_parameter")}
               </th>
-              <th scope="col" className="p-4 w-[37.5%] font-display text-sm font-bold text-ink">
-                🔴 {animeA.title}
-              </th>
-              <th scope="col" className="p-4 w-[37.5%] font-display text-sm font-bold text-ink">
-                🔵 {animeB.title}
-              </th>
+              {animes.map((anime, index) => (
+                <th key={`${anime.title}-${index}`} scope="col" className="p-4 font-display text-sm font-bold text-ink">
+                  {seriesMark(index)} {anime.title}
+                </th>
+              ))}
             </tr>
           </thead>
           <tbody className="divide-y-2 divide-border text-xs sm:text-sm font-mono">
@@ -44,28 +45,22 @@ const CompareSpecsTable = ({ animeA, animeB }: CompareSpecsTableProps): JSX.Elem
               <th scope="row" className="p-4 text-left font-bold text-ink-muted">
                 ⭐ {t("compare.score_rating")}
               </th>
-              <td className="p-4 font-bold">
-                <span
-                  className={`inline-flex items-center gap-1 px-3 py-1 ${
-                    scoreA > scoreB && scoreA > 0
-                      ? "rounded-sm border-2 border-border bg-nb-yellow text-nb-ink font-black shadow-[2px_2px_0_0_var(--border)]"
-                      : "text-ink"
-                  }`}
-                >
-                  ⭐ {animeA.score || "N/A"} {scoreA > scoreB && t("compare.higher_score")}
-                </span>
-              </td>
-              <td className="p-4 font-bold">
-                <span
-                  className={`inline-flex items-center gap-1 px-3 py-1 ${
-                    scoreB > scoreA && scoreB > 0
-                      ? "rounded-sm border-2 border-border bg-nb-yellow text-nb-ink font-black shadow-[2px_2px_0_0_var(--border)]"
-                      : "text-ink"
-                  }`}
-                >
-                  ⭐ {animeB.score || "N/A"} {scoreB > scoreA && t("compare.higher_score")}
-                </span>
-              </td>
+              {animes.map((anime, index) => {
+                const leads = scoreLeaders.length === 1 && scoreLeaders[0] === index;
+                return (
+                  <td key={`score-${index}`} className="p-4 font-bold">
+                    <span
+                      className={`inline-flex items-center gap-1 px-3 py-1 ${
+                        leads
+                          ? "rounded-sm border-2 border-border bg-nb-yellow text-nb-ink font-black shadow-[2px_2px_0_0_var(--border)]"
+                          : "text-ink"
+                      }`}
+                    >
+                      ⭐ {anime.score || "N/A"} {leads && t("compare.higher_score")}
+                    </span>
+                  </td>
+                );
+              })}
             </tr>
 
             {/* Total Episodes */}
@@ -73,22 +68,20 @@ const CompareSpecsTable = ({ animeA, animeB }: CompareSpecsTableProps): JSX.Elem
               <th scope="row" className="p-4 text-left font-bold text-ink-muted">
                 🎬 {t("compare.total_episodes")}
               </th>
-              <td className="p-4">
-                {animeA.total_episode || "N/A"}{" "}
-                {epA > epB && epB > 0 && (
-                  <span className="rounded-sm border border-border bg-nb-lime px-1.5 font-bold text-nb-ink">
-                    ({epA - epB} {t("compare.more_episodes")})
-                  </span>
-                )}
-              </td>
-              <td className="p-4">
-                {animeB.total_episode || "N/A"}{" "}
-                {epB > epA && epA > 0 && (
-                  <span className="rounded-sm border border-border bg-nb-lime px-1.5 font-bold text-nb-ink">
-                    ({epB - epA} {t("compare.more_episodes")})
-                  </span>
-                )}
-              </td>
+              {animes.map((anime, index) => {
+                const episode = episodes[index] ?? 0;
+                const leads = episodeLeaders.length === 1 && episodeLeaders[0] === index;
+                return (
+                  <td key={`episodes-${index}`} className="p-4">
+                    {anime.total_episode || "N/A"}{" "}
+                    {leads && episodeRunnerUp > 0 && (
+                      <span className="rounded-sm border border-border bg-nb-lime px-1.5 font-bold text-nb-ink">
+                        ({episode - episodeRunnerUp} {t("compare.more_episodes")})
+                      </span>
+                    )}
+                  </td>
+                );
+              })}
             </tr>
 
             {/* Duration */}
@@ -96,8 +89,11 @@ const CompareSpecsTable = ({ animeA, animeB }: CompareSpecsTableProps): JSX.Elem
               <th scope="row" className="p-4 text-left font-bold text-ink-muted">
                 ⏱️ {t("compare.duration")}
               </th>
-              <td className="p-4 text-ink">{animeA.duration || "N/A"}</td>
-              <td className="p-4 text-ink">{animeB.duration || "N/A"}</td>
+              {animes.map((anime, index) => (
+                <td key={`duration-${index}`} className="p-4 text-ink">
+                  {anime.duration || "N/A"}
+                </td>
+              ))}
             </tr>
 
             {/* Studio */}
@@ -105,8 +101,11 @@ const CompareSpecsTable = ({ animeA, animeB }: CompareSpecsTableProps): JSX.Elem
               <th scope="row" className="p-4 text-left font-bold text-ink-muted">
                 🏢 {t("compare.studio")}
               </th>
-              <td className="p-4 text-accent-text font-bold">{animeA.studio || animeA.producer || "N/A"}</td>
-              <td className="p-4 text-accent-text font-bold">{animeB.studio || animeB.producer || "N/A"}</td>
+              {animes.map((anime, index) => (
+                <td key={`studio-${index}`} className="p-4 text-accent-text font-bold">
+                  {anime.studio || anime.producer || "N/A"}
+                </td>
+              ))}
             </tr>
 
             {/* Type */}
@@ -114,8 +113,11 @@ const CompareSpecsTable = ({ animeA, animeB }: CompareSpecsTableProps): JSX.Elem
               <th scope="row" className="p-4 text-left font-bold text-ink-muted">
                 📺 {t("compare.type")}
               </th>
-              <td className="p-4 text-ink">{animeA.type || "TV Series"}</td>
-              <td className="p-4 text-ink">{animeB.type || "TV Series"}</td>
+              {animes.map((anime, index) => (
+                <td key={`type-${index}`} className="p-4 text-ink">
+                  {anime.type || "TV Series"}
+                </td>
+              ))}
             </tr>
 
             {/* Release Season / Year */}
@@ -123,8 +125,11 @@ const CompareSpecsTable = ({ animeA, animeB }: CompareSpecsTableProps): JSX.Elem
               <th scope="row" className="p-4 text-left font-bold text-ink-muted">
                 📅 {t("compare.release")}
               </th>
-              <td className="p-4 text-ink">{animeA.season?.name || animeA.release_on || "N/A"}</td>
-              <td className="p-4 text-ink">{animeB.season?.name || animeB.release_on || "N/A"}</td>
+              {animes.map((anime, index) => (
+                <td key={`release-${index}`} className="p-4 text-ink">
+                  {anime.season?.name || anime.release_on || "N/A"}
+                </td>
+              ))}
             </tr>
 
             {/* Status */}
@@ -132,8 +137,11 @@ const CompareSpecsTable = ({ animeA, animeB }: CompareSpecsTableProps): JSX.Elem
               <th scope="row" className="p-4 text-left font-bold text-ink-muted">
                 📡 {t("compare.status")}
               </th>
-              <td className="p-4 text-ink">{animeA.status || "N/A"}</td>
-              <td className="p-4 text-ink">{animeB.status || "N/A"}</td>
+              {animes.map((anime, index) => (
+                <td key={`status-${index}`} className="p-4 text-ink">
+                  {anime.status || "N/A"}
+                </td>
+              ))}
             </tr>
           </tbody>
         </table>

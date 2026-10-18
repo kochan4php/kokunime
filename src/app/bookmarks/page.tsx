@@ -31,10 +31,12 @@ import {
   exportBookmarksSubsetJson,
   importBookmarksFromFile,
   removeBookmarksSubset,
+  removeCollection,
   removeCollectionItem,
   removeHistoryDay,
   setBookmarksRating,
 } from "@/utils/collection-actions";
+import { addCollection, renameCollection } from "@/utils/collections";
 import { HistoryItem } from "@/utils/history";
 import { exportShareCard } from "@/utils/share-card";
 import { showToast } from "@/utils/toast";
@@ -140,6 +142,30 @@ const BookmarksPage = (): JSX.Element => {
 
   const toggleSelected = (slug: string) => {
     setSelectedSlugs((prev) => (prev.includes(slug) ? prev.filter((s) => s !== slug) : [...prev, slug]));
+  };
+
+  // Custom-collection handlers: keep the filter and its members consistent —
+  // rename re-points every bookmark (see collections.ts) and delete keeps them.
+  const createCollection = (name: string) => {
+    const result = addCollection(name);
+    if (result === "added") showToast(`Koleksi ${name} dibuat — isi lewat "Pindah ke folder…" atau seret kartu`);
+    else if (result === "exists") showToast("Nama koleksi sudah ada");
+    else showToast("Nama koleksi tidak boleh kosong");
+  };
+
+  const renameFolder = (from: string, to: string) => {
+    const result = renameCollection(from, to);
+    if (result === "renamed") {
+      setFolderFilter(to);
+      showToast(`Koleksi ${from} → ${to}`);
+    } else if (result === "exists") showToast("Nama koleksi sudah dipakai");
+    else if (result === "missing") showToast("Koleksi tidak ditemukan");
+    else showToast("Nama koleksi tidak valid");
+  };
+
+  const deleteFolder = (name: string) => {
+    if (folderFilter === name) setFolderFilter("all");
+    removeCollection(name);
   };
 
   const handleImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -301,6 +327,9 @@ const BookmarksPage = (): JSX.Element => {
               onDropSlug={(folder, slug) => assignBookmarksToFolder(folder, [slug])}
               onReorderFolder={reorderFolder}
               onShareFolder={(folder) => void shareFolderCard(folder)}
+              onCreateCollection={createCollection}
+              onRenameFolder={renameFolder}
+              onDeleteFolder={deleteFolder}
             />
           )}
         </div>

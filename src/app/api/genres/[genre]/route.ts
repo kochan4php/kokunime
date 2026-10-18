@@ -12,6 +12,7 @@ export async function GET(
   { params }: { params: Promise<{ genre: string }> },
 ): Promise<NextResponse | Response> {
   return runWithRequestId(getRequestId(request), async () => {
+    const started = performance.now();
     try {
       const { genre } = await params;
       if (!normalizeSlug(genre)) {
@@ -34,7 +35,11 @@ export async function GET(
       };
 
       const etag = generateEtag(JSON.stringify(payload));
-      const cacheHeaders = { "Cache-Control": "private, max-age=600", ETag: etag };
+      const cacheHeaders = {
+        "Cache-Control": "private, max-age=600",
+        ETag: etag,
+        "Server-Timing": `app;dur=${(performance.now() - started).toFixed(1)}`,
+      };
       if (checkEtagMatch(request, etag)) {
         return new Response(null, { status: 304, headers: cacheHeaders });
       }

@@ -61,6 +61,68 @@
   --accent-2: #ffd93d;
 }
 
+/* --- Dark theme ------------------------------------------------------------
+   Same neobrutalist system, inverted: deep warm paper, cream ink, hard
+   shadows flipped to light slabs. Sticker colors stay bright with black
+   labels in both themes (that is what a sticker is). Exempt from theming:
+   the print QR card and the generated OG images, which stay black-on-white
+   so a camera can read them. */
+:root[data-theme="dark"] {
+  --bg: #17130f;
+  --surface: #1f1a15;
+  --surface-solid: #211c17;
+  --surface-muted: #2a241d;
+  --border: #f4e8d6;
+  --ink: #f7efe3;
+  --ink-muted: #beb2a1;
+  --accent: #ff8a3d;
+  --accent-strong: #ffa463;
+  --accent-text: #ffb27a;
+  --accent-2: #ffb457;
+  --accent-amber: #ffd93d;
+  --accent-ink: #0a0a0a;
+
+  --grid-ink: rgba(247, 239, 227, 0.06);
+  --grid-ink-strong: rgba(247, 239, 227, 0.09);
+}
+
+/* Accents re-tuned for dark surfaces: fills stay bright (they carry black
+   labels), tints lighten so links and accents keep AA on dark paper. */
+:root[data-theme="dark"][data-accent="emerald"] {
+  --accent: #34d399;
+  --accent-strong: #10b981;
+  --accent-text: #6ee7b7;
+  --accent-2: #6ee7b7;
+}
+
+:root[data-theme="dark"][data-accent="violet"] {
+  --accent: #a78bfa;
+  --accent-strong: #8b5cf6;
+  --accent-text: #c4b5fd;
+  --accent-2: #c4a1ff;
+}
+
+:root[data-theme="dark"][data-accent="cyan"] {
+  --accent: #22d3ee;
+  --accent-strong: #06b6d4;
+  --accent-text: #67e8f9;
+  --accent-2: #67e8f9;
+}
+
+:root[data-theme="dark"][data-accent="rose"] {
+  --accent: #fb7185;
+  --accent-strong: #f43f5e;
+  --accent-text: #fda4af;
+  --accent-2: #ff90e8;
+}
+
+:root[data-theme="dark"][data-accent="amber"] {
+  --accent: #fbbf24;
+  --accent-strong: #f59e0b;
+  --accent-text: #fcd34d;
+  --accent-2: #ffd93d;
+}
+
 @theme inline {
   --color-bg: var(--bg);
   --color-surface: var(--surface);

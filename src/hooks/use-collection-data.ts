@@ -8,6 +8,7 @@ import {
   getStorageUsageStats,
   subscribeBookmarks,
 } from "@/utils/bookmarks";
+import { getCollections, subscribeCollections } from "@/utils/collections";
 import { HistoryItem, getHistory, subscribeHistory } from "@/utils/history";
 import { ProgressEntry, getProgressList, nextEpisodeFromProgress, subscribeProgress } from "@/utils/progress";
 import { useEffect, useMemo, useState, useSyncExternalStore } from "react";
@@ -15,6 +16,7 @@ import { useEffect, useMemo, useState, useSyncExternalStore } from "react";
 const SERVER_BOOKMARKS: BookmarkItem[] = [];
 const SERVER_HISTORY: HistoryItem[] = [];
 const SERVER_PROGRESS: ProgressEntry[] = [];
+const SERVER_COLLECTIONS: string[] = [];
 
 export type CollectionTab = "bookmarks" | "history" | "queue";
 export type SortBy = "recent" | "oldest" | "title" | "rating";
@@ -31,6 +33,7 @@ export const useCollectionData = (
   const bookmarks = useSyncExternalStore(subscribeBookmarks, getBookmarks, () => SERVER_BOOKMARKS);
   const history = useSyncExternalStore(subscribeHistory, getHistory, () => SERVER_HISTORY);
   const progressList = useSyncExternalStore(subscribeProgress, getProgressList, () => SERVER_PROGRESS);
+  const collections = useSyncExternalStore(subscribeCollections, getCollections, () => SERVER_COLLECTIONS);
 
   // slug → next unwatched episode, for the "▶ Eps N" continue chips.
   const nextEpisodes = useMemo(() => {
@@ -43,8 +46,10 @@ export const useCollectionData = (
   }, [progressList]);
 
   // Folders follow the user's drag & drop order first, then A→Z for the rest.
+  // Registry-only names stay visible while empty; bookmark-only names (old
+  // files, sync imports) stay visible without a migration pass.
   const folders = useMemo(() => {
-    const set = new Set<string>();
+    const set = new Set<string>(collections);
     bookmarks.forEach((b) => {
       if (b.folder?.trim()) set.add(b.folder.trim());
     });
@@ -56,7 +61,7 @@ export const useCollectionData = (
       if (indexB === -1) return -1;
       return indexA - indexB;
     });
-  }, [bookmarks, folderOrder]);
+  }, [bookmarks, collections, folderOrder]);
 
   const isBookmarkTab = activeTab !== "history";
   const allItems = isBookmarkTab

@@ -1,6 +1,8 @@
 import HomeSkeleton, { HeroSkeleton } from "@/sections/home-skeleton";
 import ListingSkeleton from "@/sections/listing-skeleton";
+import RailSkeleton from "@/components/cards/rail-skeleton";
 import { HomeHeroSection, HomeLatestSection } from "@/sections/home-content";
+import SeasonInRail from "@/sections/season-in-rail";
 import RecommendationSection from "@/sections/recommendation-section";
 import RecommendForYou from "@/components/recommend-for-you";
 import TrendingRail from "@/components/trending-rail";
@@ -32,6 +34,9 @@ const Home = async (): Promise<JSX.Element> => {
       <TrendingRail />
       <Suspense fallback={<ListingSkeleton className="py-16 md:py-24" />}>
         <HomeLatestSection page={1} basePath="/page" />
+      </Suspense>
+      <Suspense fallback={<RailSkeleton />}>
+        <SeasonInRail />
       </Suspense>
       <RecommendationSection />
       <RecommendForYou />

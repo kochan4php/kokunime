@@ -11,27 +11,6 @@
   animation: nav-enter 300ms ease-out both;
 }
 
-.nav-link {
-  position: relative;
-}
-
-.nav-link::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: -6px;
-  height: 3px;
-  background: var(--accent);
-  transform: scaleX(0);
-  transform-origin: left;
-  transition: transform 250ms cubic-bezier(0.32, 0.72, 0, 1);
-}
-
-.nav-link:hover::after {
-  transform: scaleX(1);
-}
-
 .menu-icon {
   position: relative;
   width: 20px;
@@ -59,25 +38,9 @@
   top: 15px;
 }
 
-.menu-open .menu-line:nth-child(1) {
-  transform: translateY(6px) rotate(45deg);
-}
-
-.menu-open .menu-line:nth-child(2) {
-  opacity: 0;
-}
-
-.menu-open .menu-line:nth-child(3) {
-  transform: translateY(-6px) rotate(-45deg);
-}
-
 @media (prefers-reduced-motion: reduce) {
   .navbar {
     animation: none;
-  }
-
-  .nav-link::after {
-    transition: none;
   }
 
   .menu-line {

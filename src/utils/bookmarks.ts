@@ -308,6 +308,21 @@ export const setFolderOrder = (order: string[]): void => {
   } catch {}
 };
 
+// Appends unknown names (shape from a sync link / backup) after the current
+// order; an existing user-defined order always wins.
+export const mergeFolderOrder = (order: unknown): number => {
+  if (!Array.isArray(order)) return 0;
+  const current = getFolderOrder();
+  const added = order
+    .filter((name): name is string => typeof name === "string" && name.trim().length > 0)
+    .map((name) => name.trim())
+    .filter((name) => !current.includes(name));
+  if (added.length === 0) return 0;
+  const merged = [...current, ...new Set(added)];
+  setFolderOrder(merged);
+  return merged.length - current.length;
+};
+
 export const getStorageUsageStats = (): { bytesUsed: number; formattedUsed: string; percentage: number } => {
   const storage = getStorage();
   if (!storage) return { bytesUsed: 0, formattedUsed: "0 B", percentage: 0 };

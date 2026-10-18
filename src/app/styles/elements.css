@@ -38,7 +38,9 @@
   .btn-primary:hover {
     transform: translate(-2px, -2px);
     box-shadow: var(--shadow-hard-lg);
-    background: var(--accent-strong);
+    /* The light tint, not --accent-strong: the dark presets would put
+       near-black label text on a dark fill (contrast < 4.5:1). */
+    background: var(--accent-2);
   }
 
   .btn-primary:active {

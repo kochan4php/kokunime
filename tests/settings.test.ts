@@ -12,13 +12,31 @@ import {
 
 describe("settings utility", () => {
   let store: Record<string, string> = {};
+  let osDark = false;
   const mockRoot = {
     setAttribute: vi.fn(),
     removeAttribute: vi.fn(),
   };
+  // theme-color meta pair the browser chrome uses (media-scoped).
+  const makeMeta = (initial: string) => {
+    const state = { media: initial };
+    return {
+      state,
+      dataset: {} as Record<string, string>,
+      getAttribute: (name: string) => (name === "media" ? state.media : null),
+      setAttribute: (name: string, value: string) => {
+        if (name === "media") state.media = value;
+      },
+    };
+  };
+  let darkMeta = makeMeta("(prefers-color-scheme: dark)");
+  let lightMeta = makeMeta("(prefers-color-scheme: light)");
 
   beforeEach(() => {
     store = {};
+    osDark = false;
+    darkMeta = makeMeta("(prefers-color-scheme: dark)");
+    lightMeta = makeMeta("(prefers-color-scheme: light)");
     const mockStorage = {
       getItem: (key: string) => store[key] ?? null,
       setItem: (key: string, val: string) => {
@@ -38,9 +56,15 @@ describe("settings utility", () => {
       dispatchEvent: vi.fn(),
       addEventListener: vi.fn(),
       removeEventListener: vi.fn(),
+      matchMedia: () => ({
+        matches: osDark,
+        addEventListener: vi.fn(),
+        removeEventListener: vi.fn(),
+      }),
     });
     vi.stubGlobal("document", {
       documentElement: mockRoot,
+      querySelectorAll: () => [darkMeta, lightMeta],
     });
   });
 
@@ -81,6 +105,26 @@ describe("settings utility", () => {
     expect(mockRoot.setAttribute).toHaveBeenCalledWith("data-font-size", "large");
     expect(mockRoot.setAttribute).toHaveBeenCalledWith("data-reduce-motion", "true");
     expect(mockRoot.setAttribute).toHaveBeenCalledWith("data-reading-mode", "sepia");
+  });
+
+  it("resolves the theme and pins the browser chrome to it", () => {
+    applySettingsToDom({ ...DEFAULT_SETTINGS, theme: "dark" });
+    expect(mockRoot.setAttribute).toHaveBeenCalledWith("data-theme", "dark");
+    expect(darkMeta.state.media).toBe("all");
+    expect(lightMeta.state.media).toBe("not all");
+
+    // Explicit light beats an OS that prefers dark.
+    osDark = true;
+    applySettingsToDom({ ...DEFAULT_SETTINGS, theme: "light" });
+    expect(mockRoot.removeAttribute).toHaveBeenCalledWith("data-theme");
+    expect(darkMeta.state.media).toBe("not all");
+    expect(lightMeta.state.media).toBe("all");
+
+    // System follows the OS.
+    applySettingsToDom({ ...DEFAULT_SETTINGS, theme: "system" });
+    expect(mockRoot.setAttribute).toHaveBeenCalledWith("data-theme", "dark");
+    expect(darkMeta.state.media).toBe("(prefers-color-scheme: dark)");
+    expect(lightMeta.state.media).toBe("(prefers-color-scheme: light)");
   });
 
   it("calculates storage breakdown accurately", () => {

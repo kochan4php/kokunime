@@ -192,7 +192,7 @@ export const SeasonsExplorer = ({ groups, years }: SeasonsExplorerProps): JSX.El
                     {/^\d{4}$/.test(year) && (
                       <Link
                         href={`/years/${year}`}
-                        className="font-mono text-xs font-bold text-accent-text underline decoration-2 underline-offset-4 transition-colors hover:text-ink"
+                        className="inline-flex min-h-6 items-center font-mono text-xs font-bold text-accent-text underline decoration-2 underline-offset-4 transition-colors hover:text-ink"
                       >
                         Semua anime {year} →
                       </Link>

@@ -31,7 +31,10 @@ const DetailHeroView = ({ anime, slug, blurDataURL }: DetailHeroViewProps): JSX.
     />
     <div className="card-shell">
       <div className="card-core grid md:grid-cols-[320px_1fr]">
-        <div className="relative aspect-[3/4] max-h-[480px] sm:max-h-[560px] md:max-h-none md:aspect-auto md:min-h-full">
+        <div
+          data-offline-image
+          className="relative aspect-[3/4] max-h-[480px] sm:max-h-[560px] md:max-h-none md:aspect-auto md:min-h-full"
+        >
           {anime.image && (
             <AnimeImage
               fill
@@ -80,7 +83,7 @@ const DetailHeroView = ({ anime, slug, blurDataURL }: DetailHeroViewProps): JSX.
                   <Link
                     href={`/compare?a=${slug}`}
                     title="Bandingkan anime ini dengan judul lain"
-                    className="inline-flex items-center gap-1 rounded-sm border-2 border-border bg-surface px-2 py-0.5 font-mono text-[11px] font-bold text-ink shadow-[2px_2px_0_0_var(--border)] transition-all duration-150 motion-safe:hover:-translate-y-0.5 hover:bg-nb-cyan active:translate-y-0 active:shadow-none"
+                    className="inline-flex items-center gap-1 rounded-sm border-2 border-border bg-surface px-2 py-0.5 font-mono text-[11px] font-bold text-ink shadow-[2px_2px_0_0_var(--border)] transition-all duration-150 motion-safe:hover:-translate-y-0.5 hover:bg-nb-lime hover:text-nb-ink active:translate-y-0 active:shadow-none"
                   >
                     <span>⚖ Banding</span>
                   </Link>
@@ -147,7 +150,7 @@ const DetailHeroView = ({ anime, slug, blurDataURL }: DetailHeroViewProps): JSX.
                     target="_blank"
                     rel="noopener noreferrer"
                     title={`Cari ${anime.title} di MyAnimeList`}
-                    className="inline-flex items-center gap-1 rounded-sm border-2 border-border bg-surface px-2 py-0.5 font-mono text-[11px] font-bold text-ink shadow-[2px_2px_0_0_var(--border)] transition-all duration-150 motion-safe:hover:-translate-y-0.5 hover:bg-nb-purple active:translate-y-0 active:shadow-none"
+                    className="inline-flex items-center gap-1 rounded-sm border-2 border-border bg-surface px-2 py-0.5 font-mono text-[11px] font-bold text-ink shadow-[2px_2px_0_0_var(--border)] transition-all duration-150 motion-safe:hover:-translate-y-0.5 hover:bg-nb-purple hover:text-nb-ink active:translate-y-0 active:shadow-none"
                   >
                     <span>MAL ↗</span>
                   </a>
@@ -156,7 +159,7 @@ const DetailHeroView = ({ anime, slug, blurDataURL }: DetailHeroViewProps): JSX.
                     target="_blank"
                     rel="noopener noreferrer"
                     title={`Cari ${anime.title} di AniList`}
-                    className="inline-flex items-center gap-1 rounded-sm border-2 border-border bg-surface px-2 py-0.5 font-mono text-[11px] font-bold text-ink shadow-[2px_2px_0_0_var(--border)] transition-all duration-150 motion-safe:hover:-translate-y-0.5 hover:bg-nb-teal active:translate-y-0 active:shadow-none"
+                    className="inline-flex items-center gap-1 rounded-sm border-2 border-border bg-surface px-2 py-0.5 font-mono text-[11px] font-bold text-ink shadow-[2px_2px_0_0_var(--border)] transition-all duration-150 motion-safe:hover:-translate-y-0.5 hover:bg-nb-teal hover:text-nb-ink active:translate-y-0 active:shadow-none"
                   >
                     <span>AniList ↗</span>
                   </a>

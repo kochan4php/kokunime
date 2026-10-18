@@ -8,7 +8,7 @@ import { JSX } from "react";
 const Footer = (): JSX.Element => (
   <>
     <div className="nb-stripe" aria-hidden="true" />
-    <footer className="relative overflow-hidden bg-ink text-nb-cream">
+    <footer className="relative overflow-hidden bg-nb-ink text-nb-cream">
       <div
         aria-hidden
         className="nb-outline-text pointer-events-none absolute -bottom-8 left-1/2 -translate-x-1/2 select-none whitespace-nowrap font-display text-[5rem] font-black uppercase leading-none tracking-tight opacity-50 sm:text-[8rem] md:text-[11rem]"

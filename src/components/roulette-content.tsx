@@ -385,7 +385,7 @@ const RouletteContent = (): JSX.Element => {
                     key={`${spinEntry.slug}-${spinEntry.at}`}
                     href={`/anime/${spinEntry.slug}`}
                     title={spinEntry.title}
-                    className="max-w-[12rem] truncate rounded-sm border-2 border-border bg-surface px-2.5 py-1 text-xs font-semibold text-ink shadow-[2px_2px_0_0_var(--border)] transition-all motion-safe:hover:-translate-y-0.5 hover:bg-nb-yellow active:translate-y-0 active:shadow-none"
+                    className="max-w-[12rem] truncate rounded-sm border-2 border-border bg-surface px-2.5 py-1 text-xs font-semibold text-ink shadow-[2px_2px_0_0_var(--border)] transition-all motion-safe:hover:-translate-y-0.5 hover:bg-nb-yellow hover:text-nb-ink active:translate-y-0 active:shadow-none"
                   >
                     {spinEntry.title}
                   </Link>

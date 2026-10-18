@@ -5,6 +5,10 @@
     overflow-x: clip;
   }
 
+  html[data-theme="dark"] {
+    color-scheme: dark;
+  }
+
   /* One global kill-switch for ALL motion (menu, cards, hero, reveals,
      top-loader): per-component fallbacks exist, but this catches anything
      missed. Decorative animation is never essential. */
@@ -36,11 +40,24 @@
     }
   }
 
-  /* Windows High Contrast / forced-colors: keep the focus ring visible. */
+  /* Windows High Contrast / forced-colors: keep the focus ring visible and let
+     borders carry the structure that hard shadows normally draw (WCAG 1.4.11).
+     Decorative fills are dropped by the OS; the skeleton keeps an edge via
+     outline (no layout impact). */
   @media (forced-colors: active) {
     :focus-visible {
       outline: 3px solid Highlight;
       outline-offset: 2px;
+    }
+
+    .card-shell,
+    .card-core,
+    .chip {
+      border-color: CanvasText;
+    }
+
+    .skeleton {
+      outline: 1px solid CanvasText;
     }
   }
 
@@ -78,6 +95,11 @@
     pointer-events: none;
     opacity: 0.05;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  /* The grain is dark noise: inverted it reads as light paper on dark. */
+  html[data-theme="dark"] body::before {
+    filter: invert(1);
   }
 
   h1,
@@ -130,6 +152,15 @@
     --ink: #000000;
     --ink-muted: #352f2a;
     --grid-ink: rgba(0, 0, 0, 0.12);
+  }
+
+  /* On dark paper the same mode flips polarity: white ink, white borders. */
+  html[data-theme="dark"][data-reading-mode="high-contrast"] {
+    --border: #ffffff;
+    --ink: #ffffff;
+    --ink-muted: #d9d0c2;
+    --grid-ink: rgba(255, 255, 255, 0.14);
+    --grid-ink-strong: rgba(255, 255, 255, 0.18);
   }
 
   html[data-reading-mode="high-contrast"] :focus-visible {
@@ -272,8 +303,51 @@ dialog.is-closing::backdrop {
 
 /* Print: keep only the content (see bookmarks "print:" chrome hiding). */
 @media print {
+  /* Printing from the dark theme must not print cream-on-white: force the
+     light palette on paper (the QR card is already black-on-white).
+     Same specificity as the dark block in tokens.css, but base.css loads
+     later in the bundle, so these win while printing; the high-contrast
+     dark pairing outranks it and is listed explicitly. */
+  :root[data-theme="dark"],
+  :root[data-theme="dark"][data-reading-mode="high-contrast"] {
+    color-scheme: light;
+    --bg: #ffffff;
+    --surface: #ffffff;
+    --surface-solid: #ffffff;
+    --surface-muted: #f1e7d8;
+    --border: #0a0a0a;
+    --ink: #0a0a0a;
+    --ink-muted: #5c544b;
+    --accent-text: #c2410c;
+    --grid-ink: rgba(10, 10, 10, 0.07);
+    --grid-ink-strong: rgba(10, 10, 10, 0.1);
+  }
+
+  /* Accent text on paper: the dark tints would wash out, so each accent
+     prints with its light-theme ink (fills stay bright, labels are black). */
+  :root[data-theme="dark"][data-accent="emerald"] {
+    --accent-text: #047857;
+  }
+
+  :root[data-theme="dark"][data-accent="violet"] {
+    --accent-text: #6d28d9;
+  }
+
+  :root[data-theme="dark"][data-accent="cyan"] {
+    --accent-text: #0e7490;
+  }
+
+  :root[data-theme="dark"][data-accent="rose"] {
+    --accent-text: #be123c;
+  }
+
+  :root[data-theme="dark"][data-accent="amber"] {
+    --accent-text: #92400e;
+  }
+
   .navbar,
   footer,
+  .decor-layer,
   .toaster,
   [data-print-hide] {
     display: none !important;
@@ -311,4 +385,32 @@ dialog.is-closing::backdrop {
 footer :focus-visible {
   outline-color: var(--color-nb-yellow);
   box-shadow: 0 0 0 7px var(--color-nb-cream);
+}
+
+/* Decorative sticker layer (behind content, above the page background). On
+   dark paper the bright tints would sit under cream body text — unreadable
+   wherever content scrolls over them — so they become deep tints of the same
+   hue: same shapes, same cream borders, contrast-safe under any text. */
+html[data-theme="dark"] .decor-layer .bg-nb-yellow {
+  background-color: #3f3608;
+}
+
+html[data-theme="dark"] .decor-layer .bg-nb-pink {
+  background-color: #3d2138;
+}
+
+html[data-theme="dark"] .decor-layer .bg-nb-purple {
+  background-color: #2f2447;
+}
+
+html[data-theme="dark"] .decor-layer .bg-nb-teal {
+  background-color: #123a36;
+}
+
+html[data-theme="dark"] .decor-layer .bg-nb-lime {
+  background-color: #2f3a0d;
+}
+
+html[data-theme="dark"] .decor-layer .bg-nb-orange {
+  background-color: #3d2408;
 }

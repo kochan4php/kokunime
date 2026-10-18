@@ -46,7 +46,7 @@ const SettingsAboutSection = (): JSX.Element => {
             href="https://github.com/kochan4php/kokunime"
             target="_blank"
             rel="noreferrer"
-            className="flex items-center justify-center rounded-sm border-2 border-border bg-surface-muted px-3 py-2 text-center font-semibold text-ink hover:bg-nb-yellow transition-colors"
+            className="flex items-center justify-center rounded-sm border-2 border-border bg-surface-muted px-3 py-2 text-center font-semibold text-ink hover:bg-nb-yellow hover:text-nb-ink transition-colors"
           >
             GitHub Repo ↗
           </a>

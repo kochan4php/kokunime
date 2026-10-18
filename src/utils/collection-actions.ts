@@ -3,11 +3,14 @@ import {
   clearAllBookmarks,
   exportBookmarksJson,
   getBookmarks,
+  getFolderOrder,
   importBookmarksJson,
   removeBookmark,
   restoreBookmarks,
+  setFolderOrder,
   updateBookmarkUserMeta,
 } from "@/utils/bookmarks";
+import { getCollections, mergeCollections, removeCollectionName } from "@/utils/collections";
 import { dayKey } from "@/utils/collection-format";
 import { HistoryItem, clearAllHistory, getHistory, removeHistory, restoreHistory } from "@/utils/history";
 import { buildWeeklyReminderIcs } from "@/utils/ics";
@@ -74,6 +77,27 @@ export const assignBookmarksToFolder = (folder: string | undefined, slugs: strin
     actionLabel: "Urungkan",
     onAction: () => {
       for (const entry of previous) updateBookmarkUserMeta(entry.slug, { folder: entry.folder });
+    },
+  });
+};
+
+// Deleting a collection keeps its anime (unassigned) and restores the exact
+// registry order + members on undo.
+export const removeCollection = (name: string): void => {
+  const members = getBookmarks()
+    .filter((item) => item.folder === name)
+    .map((item) => item.slug);
+  if (!window.confirm(`Hapus koleksi "${name}"? ${members.length} anime di dalamnya tetap tersimpan.`)) return;
+  const order = getFolderOrder();
+  removeCollectionName(name);
+  for (const slug of members) updateBookmarkUserMeta(slug, { folder: null });
+  setFolderOrder(order.filter((entry) => entry !== name));
+  showToast(`Koleksi ${name} dihapus`, {
+    actionLabel: "Urungkan",
+    onAction: () => {
+      mergeCollections([name]);
+      for (const slug of members) updateBookmarkUserMeta(slug, { folder: name });
+      setFolderOrder(order);
     },
   });
 };

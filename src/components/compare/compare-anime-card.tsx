@@ -2,6 +2,7 @@
 
 import AnimeImage from "@/components/cards/anime-image";
 import { AnimeDetail } from "@/interfaces";
+import { seriesMark } from "@/utils/compare";
 import { useTranslation } from "@/utils/i18n";
 import Link from "next/link";
 import { JSX } from "react";
@@ -9,13 +10,25 @@ import { JSX } from "react";
 interface CompareAnimeCardProps {
   anime: AnimeDetail;
   slug: string;
-  side: "a" | "b";
+  side: "a" | "b" | "c";
 }
+
+const SIDE_LABELS = {
+  a: "compare.anime_a",
+  b: "compare.anime_b",
+  c: "compare.anime_c",
+} as const;
+
+const SIDE_DETAIL_LABELS = {
+  a: "compare.open_detail_a",
+  b: "compare.open_detail_b",
+  c: "compare.open_detail_c",
+} as const;
 
 // Header card for one side of the comparison dashboard.
 const CompareAnimeCard = ({ anime, slug, side }: CompareAnimeCardProps): JSX.Element => {
   const { t } = useTranslation();
-  const dot = side === "a" ? "🔴" : "🔵";
+  const dot = seriesMark(side === "a" ? 0 : side === "b" ? 1 : 2);
 
   return (
     <div className="card-shell overflow-hidden">
@@ -28,7 +41,7 @@ const CompareAnimeCard = ({ anime, slug, side }: CompareAnimeCardProps): JSX.Ele
           </div>
           <div className="min-w-0 flex-1 space-y-2">
             <span className="chip text-[10px]">
-              {dot} {side === "a" ? t("compare.anime_a") : t("compare.anime_b")}
+              {dot} {t(SIDE_LABELS[side])}
             </span>
             <h3 className="font-display text-base sm:text-lg font-extrabold text-ink leading-snug line-clamp-2">
               {anime.title}
@@ -49,7 +62,7 @@ const CompareAnimeCard = ({ anime, slug, side }: CompareAnimeCardProps): JSX.Ele
                 href={`/anime/${slug}`}
                 className="inline-flex items-center gap-1.5 rounded-sm border-2 border-border bg-accent px-3.5 py-1.5 font-mono text-xs font-bold text-(--accent-ink) shadow-[2px_2px_0_0_var(--border)] motion-safe:hover:-translate-y-0.5 active:translate-y-0 active:shadow-none transition-all"
               >
-                <span>{side === "a" ? t("compare.open_detail_a") : t("compare.open_detail_b")}</span>
+                <span>{t(SIDE_DETAIL_LABELS[side])}</span>
               </Link>
             </div>
           </div>

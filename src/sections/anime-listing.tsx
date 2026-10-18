@@ -2,6 +2,7 @@
 
 import AnimeGrid from "@/components/cards/anime-grid";
 import AnimeImage from "@/components/cards/anime-image";
+import { useUrlState } from "@/hooks/use-url-state";
 import Pagination from "@/sections/pagination";
 import PaginationBar from "@/sections/pagination/bar";
 import { SearchIcon } from "@/components/icons";
@@ -10,6 +11,7 @@ import { Anime, PaginationInfo } from "@/interfaces";
 import { buildItemListJsonLd, safeJsonLd } from "@/lib/seo";
 import { animeSlug } from "@/utils/endpoint-slug";
 import { fuzzyScore } from "@/utils/fuzzy";
+import { UrlStateSchema, writeUrlState } from "@/utils/url-state";
 import Link from "next/link";
 import { JSX, useMemo, useState } from "react";
 
@@ -29,11 +31,29 @@ const SORT_LABELS: { value: SortMode; label: string }[] = [
   { value: "za", label: "Judul Z → A" },
 ];
 
+const VIEW_MODES = new Set(["grid", "list"]);
+const SORT_MODES = new Set(["catalog", "az", "za"]);
+
+// Shareable listing state: filter, view, sort and genre live in the URL query
+// so a filtered view can be copied, bookmarked and restored on refresh.
+const LISTING_SCHEMA: UrlStateSchema = {
+  defaults: { f: "", v: "grid", s: "catalog", g: "all" },
+  sanitize: (key, value) => {
+    if (key === "v") return VIEW_MODES.has(value) ? value : null;
+    if (key === "s") return SORT_MODES.has(value) ? value : null;
+    if (key === "f") return value.slice(0, 80).trim() || null;
+    return value.length <= 48 ? value : null;
+  },
+};
+
 const AnimeListing = ({ chip, title, anime, pagination, eagerCount = 0 }: AnimeListingProps): JSX.Element => {
-  const [filterQuery, setFilterQuery] = useState("");
-  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
-  const [sortBy, setSortBy] = useState<SortMode>("catalog");
-  const [genreFilter, setGenreFilter] = useState<string>("all");
+  const [listingState, setListingState] = useUrlState(LISTING_SCHEMA);
+  const filterQuery = listingState.f ?? "";
+  const viewMode = (listingState.v ?? "grid") as "grid" | "list";
+  const sortBy = (listingState.s ?? "catalog") as SortMode;
+  const genreFilter = listingState.g ?? "all";
+  const [copiedLink, setCopiedLink] = useState(false);
+  const hasViewState = filterQuery !== "" || viewMode !== "grid" || sortBy !== "catalog" || genreFilter !== "all";
   const hasNumbers = (pagination?.total_page ?? 0) > 0;
   const isFirstPage = !pagination || pagination.current_page <= 1;
 
@@ -88,6 +108,20 @@ const AnimeListing = ({ chip, title, anime, pagination, eagerCount = 0 }: AnimeL
 
   const newestRail = isFirstPage && anime.length >= 8 ? anime.slice(0, 8) : [];
 
+  // The URL write is debounced, so the copy handler rebuilds the canonical
+  // link from state instead of trusting window.location right away.
+  const copyViewLink = async () => {
+    try {
+      const query = writeUrlState(window.location.search, listingState, LISTING_SCHEMA);
+      const url = `${window.location.origin}${window.location.pathname}${query}${window.location.hash}`;
+      await navigator.clipboard.writeText(url);
+      setCopiedLink(true);
+      window.setTimeout(() => setCopiedLink(false), 1500);
+    } catch {
+      // clipboard blocked — stay quiet
+    }
+  };
+
   return (
     <section className="container px-4 pt-6 pb-12 md:pt-10 md:pb-20">
       {jsonLdItems.length > 0 && (
@@ -114,7 +148,7 @@ const AnimeListing = ({ chip, title, anime, pagination, eagerCount = 0 }: AnimeL
             <div className="flex items-center gap-1 rounded-sm border-2 border-border bg-surface p-0.5 shadow-[2px_2px_0_0_var(--border)]">
               <button
                 type="button"
-                onClick={() => setViewMode("grid")}
+                onClick={() => setListingState({ v: "grid" })}
                 aria-label="Tampilan Grid"
                 title="Tampilan Grid"
                 className={`flex h-8 w-8 items-center justify-center rounded-sm text-xs transition-all cursor-pointer ${
@@ -125,7 +159,7 @@ const AnimeListing = ({ chip, title, anime, pagination, eagerCount = 0 }: AnimeL
               </button>
               <button
                 type="button"
-                onClick={() => setViewMode("list")}
+                onClick={() => setListingState({ v: "list" })}
                 aria-label="Tampilan List"
                 title="Tampilan List"
                 className={`flex h-8 w-8 items-center justify-center rounded-sm text-xs transition-all cursor-pointer ${
@@ -145,7 +179,7 @@ const AnimeListing = ({ chip, title, anime, pagination, eagerCount = 0 }: AnimeL
                 <input
                   type="text"
                   value={filterQuery}
-                  onChange={(e) => setFilterQuery(e.target.value)}
+                  onChange={(e) => setListingState({ f: e.target.value })}
                   placeholder="Filter di halaman ini..."
                   aria-label="Filter anime di halaman ini"
                   className="h-10 w-full rounded-sm border-2 border-border bg-surface pl-9 pr-8 text-xs text-ink shadow-[2px_2px_0_0_var(--border)] outline-none transition-all placeholder:text-ink-muted focus:border-accent"
@@ -153,8 +187,9 @@ const AnimeListing = ({ chip, title, anime, pagination, eagerCount = 0 }: AnimeL
                 {filterQuery && (
                   <button
                     type="button"
-                    onClick={() => setFilterQuery("")}
-                    className="absolute right-2.5 top-1/2 -translate-y-1/2 text-xs text-ink-muted hover:text-ink cursor-pointer"
+                    onClick={() => setListingState({ f: "" })}
+                    className="absolute right-2.5 top-1/2 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-sm text-xs text-ink-muted hover:text-ink cursor-pointer"
+                    aria-label="Bersihkan filter"
                   >
                     ✕
                   </button>
@@ -166,7 +201,7 @@ const AnimeListing = ({ chip, title, anime, pagination, eagerCount = 0 }: AnimeL
             {anime.length > 3 && (
               <select
                 value={sortBy}
-                onChange={(e) => setSortBy(e.target.value as SortMode)}
+                onChange={(e) => setListingState({ s: e.target.value })}
                 aria-label="Urutkan anime di halaman ini"
                 className="h-10 cursor-pointer rounded-sm border-2 border-border bg-surface px-2 font-mono text-xs text-ink shadow-[2px_2px_0_0_var(--border)] outline-none focus:border-accent"
               >
@@ -182,7 +217,7 @@ const AnimeListing = ({ chip, title, anime, pagination, eagerCount = 0 }: AnimeL
             {genres.length > 2 && (
               <select
                 value={genreFilter}
-                onChange={(e) => setGenreFilter(e.target.value)}
+                onChange={(e) => setListingState({ g: e.target.value })}
                 aria-label="Filter genre di halaman ini"
                 className="h-10 cursor-pointer rounded-sm border-2 border-border bg-surface px-2 font-mono text-xs text-ink shadow-[2px_2px_0_0_var(--border)] outline-none focus:border-accent"
               >
@@ -193,6 +228,19 @@ const AnimeListing = ({ chip, title, anime, pagination, eagerCount = 0 }: AnimeL
                   </option>
                 ))}
               </select>
+            )}
+
+            {/* Share the current filter/sort/view as a link. */}
+            {hasViewState && (
+              <button
+                type="button"
+                onClick={copyViewLink}
+                aria-label={copiedLink ? "Tautan tampilan tersalin" : "Salin tautan tampilan ini"}
+                title="Salin tautan tampilan ini"
+                className="h-10 rounded-sm border-2 border-border bg-surface px-3 font-mono text-xs font-semibold text-ink-muted shadow-[2px_2px_0_0_var(--border)] transition-all motion-safe:hover:-translate-y-0.5 hover:text-ink active:translate-y-0 active:shadow-none cursor-pointer"
+              >
+                {copiedLink ? "✓ Tersalin" : "🔗 Salin"}
+              </button>
             )}
           </>
         }
@@ -253,9 +301,8 @@ const AnimeListing = ({ chip, title, anime, pagination, eagerCount = 0 }: AnimeL
 
       {pagination &&
         !filterQuery &&
-        !genreFilter &&
+        genreFilter === "all" &&
         sortBy === "catalog" &&
-        !filterQuery &&
         (hasNumbers ? <Pagination pagination={pagination} /> : <PaginationBar pagination={pagination} />)}
     </section>
   );

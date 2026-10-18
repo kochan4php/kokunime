@@ -18,7 +18,10 @@ const MetaItem = ({ label, value, href }: MetaItemProps): JSX.Element => {
         title={value}
       >
         {href ? (
-          <Link href={href} className="transition-colors duration-200 hover:text-accent-text truncate block">
+          <Link
+            href={href}
+            className="flex min-h-6 min-w-0 items-center truncate transition-colors duration-200 hover:text-accent-text"
+          >
             {value || "—"}
           </Link>
         ) : (

@@ -31,7 +31,7 @@ export const metadata: Metadata = {
     "Anime yang baru diperbarui hari ini: episode baru, batch baru, dan lanjutan tontonan — dikelompokkan per hari.",
   alternates: {
     canonical: "/update",
-    types: { "application/rss+xml": "/update/feed.xml" },
+    types: { "application/rss+xml": "/update/feed.xml", "text/calendar": "/update/feed.ics" },
   },
   openGraph: {
     title: "Update Terbaru Anime · Kokunime",

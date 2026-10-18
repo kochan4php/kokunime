@@ -22,3 +22,83 @@ jobs:
 
       - name: Verify the latest snapshot
         run: node scripts/backup-cache.mjs --verify
+
+  resilience-drill:
+    # Weekly rehearsal of the failure paths on the production compose stack:
+    # offline/PWA save + corrupt/repair, a wiped cache, and a Redis outage.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Start the compose stack
+        env:
+          NEXT_PUBLIC_SITE_URL: http://localhost:3000
+        run: docker compose up -d --build
+
+      - name: Wait for app health
+        run: |
+          for i in $(seq 1 40); do
+            if curl -fsS --max-time 5 http://localhost:3000/api/live >/dev/null 2>&1; then
+              echo "stack up after $((i * 5))s"
+              exit 0
+            fi
+            sleep 5
+          done
+          echo "::error::stack did not become healthy in time"
+          docker compose logs --tail=120
+          exit 1
+
+      - name: Offline/PWA drill (save → offline → corrupt → repair)
+        env:
+          BASE_URL: http://localhost:3000
+        run: node scripts/offline-smoke.mjs
+
+      - name: Cache corruption drill (cache wiped mid-flight)
+        run: |
+          docker compose exec -T redis redis-cli FLUSHALL
+          sleep 2
+          curl -fsS --max-time 20 http://localhost:3000/api/live >/dev/null
+          curl -fsS -o /dev/null -w "home after FLUSHALL %{http_code}\n" http://localhost:3000/
+          curl -fsS -o /dev/null -w "genre after FLUSHALL %{http_code}\n" http://localhost:3000/api/genres/action
+
+      - name: Redis outage drill (optional dependency — ADR 0002)
+        run: |
+          docker compose stop redis
+          sleep 3
+          curl -fsS -o /dev/null -w "home without redis %{http_code}\n" http://localhost:3000/
+          curl -s -o ready.json -w "ready probe %{http_code}\n" http://localhost:3000/api/ready
+          cat ready.json
+          grep -q '"redis":"error"' ready.json || {
+            echo "::error::ready probe did not report redis:error while redis was stopped"
+            exit 1
+          }
+          docker compose start redis
+          for i in $(seq 1 12); do
+            if curl -fsS --max-time 5 http://localhost:3000/api/ready >/dev/null 2>&1; then
+              echo "recovered after $((i * 5))s"
+              exit 0
+            fi
+            sleep 5
+          done
+          echo "::error::instance did not recover after redis came back"
+          exit 1
+
+      - name: Compose logs on failure
+        if: failure()
+        run: docker compose logs --tail=200
+
+      - name: Tear down
+        if: always()
+        run: docker compose down -v
+
+      - name: Alert (optional webhook)
+        if: failure()
+        continue-on-error: true
+        env:
+          ALERT_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          ALERT_SOURCE: resilience-drill
+        run: node scripts/alert.mjs "Resilience drill gagal — offline/PWA, cache korup, atau Redis outage tidak pulih."

@@ -31,7 +31,7 @@ const Navbar = (): JSX.Element => {
   };
 
   return (
-    <header className="navbar sticky top-0 z-50 bg-ink">
+    <header className="navbar sticky top-0 z-50 bg-nb-ink">
       <div className="container flex h-16 items-center justify-between gap-4 px-4 md:px-6">
         <div className="flex items-center gap-8 min-w-0">
           <Link
@@ -56,7 +56,7 @@ const Navbar = (): JSX.Element => {
                   className={`relative flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-mono font-semibold transition-all duration-200 rounded-sm border-2 ${
                     isActive(link.href)
                       ? "bg-accent border-nb-cream text-(--accent-ink) font-bold"
-                      : "border-transparent text-nb-cream/75 hover:border-nb-cream hover:bg-nb-yellow hover:text-ink"
+                      : "border-transparent text-nb-cream/75 hover:border-nb-cream hover:bg-nb-yellow hover:text-nb-ink"
                   }`}
                 >
                   <span>{link.icon}</span>

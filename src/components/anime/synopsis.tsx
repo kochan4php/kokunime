@@ -91,7 +91,7 @@ const Synopsis = ({ anime }: { anime: AnimeDetail }): JSX.Element => {
                       }
                     }}
                     title={`Kecepatan suara ${speed}x`}
-                    className={`rounded-sm px-1.5 py-0.2 transition-colors cursor-pointer ${
+                    className={`inline-flex min-h-6 items-center rounded-sm px-1.5 py-0.5 transition-colors cursor-pointer ${
                       ttsSpeed === speed ? "bg-accent font-bold text-(--accent-ink)" : "text-ink-muted hover:text-ink"
                     }`}
                   >
@@ -106,7 +106,7 @@ const Synopsis = ({ anime }: { anime: AnimeDetail }): JSX.Element => {
                   type="button"
                   onClick={() => setFontSize(fontSize === "lg" ? "base" : "sm")}
                   title="Perkecil ukuran font sinopsis"
-                  className={`rounded-sm px-1.5 py-0.2 transition-colors cursor-pointer ${
+                  className={`inline-flex min-h-6 items-center rounded-sm px-1.5 py-0.5 transition-colors cursor-pointer ${
                     fontSize === "sm" ? "bg-accent font-bold text-(--accent-ink)" : "text-ink-muted hover:text-ink"
                   }`}
                 >
@@ -116,7 +116,7 @@ const Synopsis = ({ anime }: { anime: AnimeDetail }): JSX.Element => {
                   type="button"
                   onClick={() => setFontSize(fontSize === "sm" ? "base" : "lg")}
                   title="Perbesar ukuran font sinopsis"
-                  className={`rounded-sm px-1.5 py-0.2 transition-colors cursor-pointer ${
+                  className={`inline-flex min-h-6 items-center rounded-sm px-1.5 py-0.5 transition-colors cursor-pointer ${
                     fontSize === "lg" ? "bg-accent font-bold text-(--accent-ink)" : "text-ink-muted hover:text-ink"
                   }`}
                 >
@@ -140,7 +140,7 @@ const Synopsis = ({ anime }: { anime: AnimeDetail }): JSX.Element => {
               <button
                 type="button"
                 onClick={() => setExpanded((prev) => !prev)}
-                className="font-mono text-xs font-semibold text-accent-text hover:underline cursor-pointer"
+                className="inline-flex min-h-6 items-center font-mono text-xs font-semibold text-accent-text hover:underline cursor-pointer"
               >
                 {expanded ? "Ringkas ↑" : "Baca Selengkapnya ↓"}
               </button>

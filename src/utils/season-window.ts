@@ -26,6 +26,25 @@ export const parseSeasonSlug = (slug: string): { season: string; year: number } 
   return { season, year };
 };
 
+// Picks the season to feature on the home rail: the one airing right now, or —
+// when the upstream taxonomy has no current entry yet — the most recently
+// started season before now. Names come as "Spring 2026"; anything else is
+// skipped rather than guessed.
+export const pickCurrentSeason = <T extends { name: string }>(seasons: T[], now: Date = new Date()): T | null => {
+  let best: { item: T; startsAt: number } | null = null;
+  for (const item of seasons) {
+    const match = /^(winter|spring|summer|fall)\s+(\d{4})/i.exec((item.name ?? "").trim());
+    if (!match) continue;
+    const window = getSeasonWindow(`${match[1]}-${match[2]}`, now);
+    if (!window) continue;
+    if (window.state === "airing") return item;
+    if (window.startsAt <= now.getTime() && (!best || window.startsAt > best.startsAt)) {
+      best = { item, startsAt: window.startsAt };
+    }
+  }
+  return best?.item ?? null;
+};
+
 export const getSeasonWindow = (slug: string, now: Date = new Date()): SeasonWindow | null => {
   const parsed = parseSeasonSlug(slug);
   if (!parsed) return null;

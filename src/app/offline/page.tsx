@@ -2,19 +2,33 @@
 
 import MainLayout from "@/layouts/main-layout";
 import Link from "next/link";
-import { JSX, useEffect, useState } from "react";
+import { JSX, useCallback, useEffect, useState } from "react";
 import { useTranslation } from "@/utils/i18n";
 import {
   listSavedOffline,
+  refreshOfflineSaved,
   removeOfflineEntry,
   subscribeOfflineSaved,
   type SavedOfflineEntry,
 } from "@/utils/offline-saved";
+import { showToast } from "@/utils/toast";
+
+// Relative age of a saved copy (last refresh wins over save time).
+const formatAge = (timestamp: number, language: string): string => {
+  const formatter = new Intl.RelativeTimeFormat(language, { numeric: "auto" });
+  const minutes = Math.round((timestamp - Date.now()) / 60_000);
+  if (Math.abs(minutes) < 60) return formatter.format(minutes, "minute");
+  const hours = Math.round(minutes / 60);
+  if (Math.abs(hours) < 24) return formatter.format(hours, "hour");
+  return formatter.format(Math.round(hours / 24), "day");
+};
 
 const OfflinePage = (): JSX.Element => {
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
   const [entries, setEntries] = useState<SavedOfflineEntry[]>([]);
   const [online, setOnline] = useState(true);
+  const [busy, setBusy] = useState<string | null>(null);
+  const [storageText, setStorageText] = useState("");
 
   useEffect(() => {
     let active = true;
@@ -31,6 +45,16 @@ const OfflinePage = (): JSX.Element => {
     window.addEventListener("online", updateOnline);
     window.addEventListener("offline", updateOnline);
 
+    navigator.storage
+      ?.estimate?.()
+      .then((estimate) => {
+        if (!active || !estimate?.usage) return;
+        setStorageText(`${(estimate.usage / 1024 / 1024).toFixed(1)} MB`);
+      })
+      .catch(() => {
+        // Estimate unsupported — the line simply stays hidden.
+      });
+
     return () => {
       active = false;
       unsubscribe();
@@ -43,6 +67,21 @@ const OfflinePage = (): JSX.Element => {
     await removeOfflineEntry(url);
     setEntries((prev) => prev.filter((entry) => entry.url !== url));
   };
+
+  const refreshEntries = useCallback(
+    async (url?: string): Promise<void> => {
+      if (busy) return;
+      setBusy(url ?? "all");
+      try {
+        const ok = await refreshOfflineSaved(url);
+        showToast(ok ? t("offline.refreshed_toast") : t("offline.refresh_failed_toast"));
+        if (ok) setEntries(await listSavedOffline());
+      } finally {
+        setBusy(null);
+      }
+    },
+    [busy, t],
+  );
 
   return (
     <MainLayout>
@@ -89,9 +128,26 @@ const OfflinePage = (): JSX.Element => {
         </div>
 
         <div className="mx-auto mt-12 max-w-2xl">
-          <h2 className="mb-4 font-display text-lg font-extrabold uppercase tracking-tight text-ink">
-            {t("offline.saved_title")}
-          </h2>
+          <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
+            <h2 className="font-display text-lg font-extrabold uppercase tracking-tight text-ink">
+              {t("offline.saved_title")}
+            </h2>
+            {entries.length > 0 && (
+              <button
+                type="button"
+                onClick={() => refreshEntries()}
+                disabled={!online || busy === "all"}
+                className="inline-flex min-h-6 items-center rounded-sm border-2 border-border bg-surface px-2 font-mono text-[11px] font-bold text-ink transition-colors hover:bg-nb-yellow hover:text-nb-ink disabled:opacity-60"
+              >
+                {busy === "all" ? t("offline.refreshing") : t("offline.refresh_all")}
+              </button>
+            )}
+          </div>
+          {storageText && (
+            <p className="mb-3 font-mono text-[11px] text-ink-muted">
+              {t("offline.storage_used")} · {storageText}
+            </p>
+          )}
           {entries.length === 0 ? (
             <p className="rounded-sm border-2 border-border bg-surface p-4 text-sm text-ink-muted shadow-[2px_2px_0_0_var(--border)]">
               {t("offline.saved_empty")}
@@ -101,18 +157,36 @@ const OfflinePage = (): JSX.Element => {
               {entries.map((entry) => (
                 <li
                   key={entry.url}
-                  className="flex items-center justify-between gap-3 rounded-sm border-2 border-border bg-surface p-3 shadow-[2px_2px_0_0_var(--border)]"
+                  className="rounded-sm border-2 border-border bg-surface p-3 shadow-[2px_2px_0_0_var(--border)]"
                 >
-                  <Link href={entry.url} className="min-w-0 truncate text-sm font-bold text-ink hover:text-accent-text">
-                    {entry.title || entry.url}
-                  </Link>
-                  <button
-                    type="button"
-                    onClick={() => remove(entry.url)}
-                    className="shrink-0 rounded-sm border-2 border-border bg-surface px-2 py-0.5 font-mono text-[11px] font-bold text-ink transition-colors hover:bg-nb-red"
-                  >
-                    {t("offline.remove")}
-                  </button>
+                  <div className="flex items-center justify-between gap-3">
+                    <Link
+                      href={entry.url}
+                      className="min-w-0 truncate text-sm font-bold text-ink hover:text-accent-text"
+                    >
+                      {entry.title || entry.url}
+                    </Link>
+                    <span className="shrink-0 font-mono text-[10px] text-ink-muted">
+                      {formatAge(entry.refreshedAt ?? entry.addedAt, language)}
+                    </span>
+                  </div>
+                  <div className="mt-2 flex flex-wrap gap-2">
+                    <button
+                      type="button"
+                      onClick={() => refreshEntries(entry.url)}
+                      disabled={!online || busy === entry.url}
+                      className="inline-flex min-h-6 items-center rounded-sm border-2 border-border bg-surface px-2 font-mono text-[11px] font-bold text-ink transition-colors hover:bg-nb-lime hover:text-nb-ink disabled:opacity-60"
+                    >
+                      {busy === entry.url ? t("offline.refreshing") : t("offline.refresh")}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => remove(entry.url)}
+                      className="inline-flex min-h-6 items-center rounded-sm border-2 border-border bg-surface px-2 font-mono text-[11px] font-bold text-ink transition-colors hover:bg-nb-red hover:text-nb-ink"
+                    >
+                      {t("offline.remove")}
+                    </button>
+                  </div>
                 </li>
               ))}
             </ul>

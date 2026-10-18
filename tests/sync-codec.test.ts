@@ -42,6 +42,17 @@ describe("sync-codec", () => {
     expect(await decodeSyncPayload(token)).toEqual(payload);
   });
 
+  it("round-trips a v3 payload (collections + folder order)", async () => {
+    const payload = {
+      v: 3 as const,
+      b: [{ slug: "a", title: "A", folder: "Rewatch" }],
+      c: ["Rewatch", "Selesai"],
+      o: ["Selesai", "Rewatch"],
+    };
+    const token = await encodeSyncPayload(payload);
+    expect(await decodeSyncPayload(token)).toEqual(payload);
+  });
+
   it("still decodes v1 payloads", async () => {
     const token = await encodeSyncPayload({ v: 1, b: [], p: [] });
     const decoded = await decodeSyncPayload(token);

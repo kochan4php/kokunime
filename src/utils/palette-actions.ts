@@ -4,7 +4,10 @@ export interface PaletteAction {
   id: string;
   label: string;
   hint: string;
+  /** Navigation target; empty for actions handled client-side via kind. */
   href: string;
+  /** Runs against the current page instead of navigating. */
+  kind?: "copy-url" | "open-url";
 }
 
 // ">" action mode list — navigation shortcuts, no network.
@@ -20,6 +23,8 @@ const PALETTE_ACTIONS: PaletteAction[] = [
   { id: "roulette", label: "Roulette anime", hint: "Pilih acak untuk ditonton", href: "/roulette" },
   { id: "settings", label: "Pengaturan & tema", hint: "Aksen, font, data", href: "/settings" },
   { id: "api", label: "Dokumentasi API", hint: "Endpoint JSON publik", href: "/api" },
+  { id: "copy-url", label: "Salin tautan halaman", hint: "URL halaman ini ke papan klip", href: "", kind: "copy-url" },
+  { id: "open-url", label: "Buka di tab baru", hint: "Duplikat halaman ini", href: "", kind: "open-url" },
 ];
 
 export const isActionQuery = (query: string): boolean => query.startsWith(">");

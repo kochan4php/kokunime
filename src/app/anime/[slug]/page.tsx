@@ -8,10 +8,11 @@ import { getAnimeDetail } from "@/services/scraper";
 import { buildAnimeJsonLd, buildBreadcrumbJsonLd, buildFaqJsonLd, safeJsonLd } from "@/lib/seo";
 import { buildDetailMetadata } from "@/lib/detail-metadata";
 import MainLayout from "@/layouts/main-layout";
+import RailSkeleton from "@/components/cards/rail-skeleton";
 import { AnimeDetail } from "@/interfaces";
 import { Metadata } from "next";
 import { notFound, permanentRedirect } from "next/navigation";
-import { JSX } from "react";
+import { JSX, Suspense } from "react";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   return buildDetailMetadata(params);
@@ -27,6 +28,9 @@ export function generateStaticParams(): { slug: string }[] {
   return [];
 }
 
+// Below-fold rails resolve after the main content: stream them behind a
+// skeleton so a slow upstream season listing can never hold back the hero,
+// synopsis, and download links the page exists for.
 const Anime = async ({ params }: { params: Promise<{ slug: string }> }): Promise<JSX.Element> => {
   const { slug } = await params;
   const decoded = decodeURIComponent(slug).trim();
@@ -66,8 +70,14 @@ const Anime = async ({ params }: { params: Promise<{ slug: string }> }): Promise
       />
       <ViewTracker slug={slug} />
       <SectionDetail anime={anime} slug={slug} />
-      <SimilarAnime slug={slug} title={anime.title ?? ""} />
-      {seasonSlug ? <SeasonRail seasonSlug={seasonSlug} seasonName={anime.season?.name} excludeSlug={slug} /> : null}
+      <Suspense fallback={<RailSkeleton />}>
+        <SimilarAnime slug={slug} title={anime.title ?? ""} />
+      </Suspense>
+      {seasonSlug ? (
+        <Suspense fallback={<RailSkeleton />}>
+          <SeasonRail seasonSlug={seasonSlug} seasonName={anime.season?.name} excludeSlug={slug} />
+        </Suspense>
+      ) : null}
       <div className="mt-8 border-t-2 border-border pt-12">
         <RecommendationSection />
       </div>

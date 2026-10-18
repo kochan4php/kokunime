@@ -134,7 +134,7 @@ const BookmarksToolbar = ({
         <button
           type="button"
           onClick={onCopySyncLink}
-          title="Salin tautan sinkronisasi v2 (bookmark, progres, riwayat, antrean, pengaturan) untuk perangkat lain"
+          title="Salin tautan sinkronisasi v3 (bookmark, progres, riwayat, antrean, pengaturan, koleksi) untuk perangkat lain"
           className={actionButtonClass}
         >
           {shareCopied ? "✓ Link Disalin" : "☁️ Sync Cloud"}

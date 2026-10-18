@@ -1,21 +1,35 @@
 "use client";
 
 import {
-  getUnreadReleases,
+  getInboxReleases,
+  markReleaseRead,
   markReleasesRead,
   removeUnreadRelease,
   subscribeReleases,
   UnreadRelease,
 } from "@/utils/release-inbox";
+import { showToast } from "@/utils/toast";
 import Link from "next/link";
-import { JSX, useEffect, useState, useSyncExternalStore } from "react";
+import { JSX, useEffect, useMemo, useState, useSyncExternalStore } from "react";
 
 const EMPTY: UnreadRelease[] = [];
+const OPEN_ALL_MAX = 8;
 
-// New-release inbox: bell in the navbar + App Badging when supported.
+const chipClass = (active: boolean): string =>
+  `rounded-sm border-2 border-border px-1.5 py-0.5 font-mono text-[10px] font-bold transition-colors cursor-pointer ${
+    active ? "bg-nb-yellow text-nb-ink" : "bg-surface text-ink-muted hover:text-ink"
+  }`;
+
+const actionClass =
+  "rounded-sm border-2 border-border bg-surface px-1.5 py-0.5 font-mono text-[10px] font-bold text-ink-muted transition-colors hover:text-ink cursor-pointer disabled:opacity-50";
+
+// New-release inbox: bell in the navbar + App Badging when supported. Read
+// entries stay in the "Semua" tab as history; the badge only counts unread.
 const InboxBell = (): JSX.Element => {
-  const unread = useSyncExternalStore(subscribeReleases, getUnreadReleases, () => EMPTY);
+  const inbox = useSyncExternalStore(subscribeReleases, getInboxReleases, () => EMPTY);
+  const unread = useMemo(() => inbox.filter((item) => !item.read), [inbox]);
   const [open, setOpen] = useState(false);
+  const [filter, setFilter] = useState<"unread" | "all">("unread");
 
   useEffect(() => {
     const nav = navigator as Navigator & {
@@ -35,6 +49,34 @@ const InboxBell = (): JSX.Element => {
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [open]);
+
+  const shown = filter === "unread" ? unread : inbox;
+
+  // Browsers allow a burst of popups from one click, but 50 tabs help nobody:
+  // open the first few and say what happened.
+  const handleOpenAll = () => {
+    const targets = unread.slice(0, OPEN_ALL_MAX);
+    if (targets.length === 0) return;
+    for (const item of targets) window.open(`/anime/${item.slug}`, "_blank", "noopener");
+    setOpen(false);
+    showToast(
+      targets.length < unread.length
+        ? `${targets.length} tab dibuka (maksimal ${OPEN_ALL_MAX} sekaligus)`
+        : `${targets.length} tab dibuka`,
+    );
+  };
+
+  const handleExport = () => {
+    if (inbox.length === 0) return;
+    const blob = new Blob([JSON.stringify(inbox, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement("a");
+    anchor.href = url;
+    anchor.download = "kokunime-inbox.json";
+    anchor.click();
+    URL.revokeObjectURL(url);
+    showToast(`${inbox.length} item inbox diekspor (JSON)`);
+  };
 
   return (
     <div className="relative">
@@ -68,26 +110,37 @@ const InboxBell = (): JSX.Element => {
             aria-label="Inbox rilis baru"
             className="absolute right-0 top-full z-50 mt-2 w-[min(88vw,20rem)] rounded-sm border-2 border-border bg-surface-solid p-3 shadow-[4px_4px_0_0_var(--border)]"
           >
-            <div className="flex items-center justify-between gap-2 border-b-2 border-border pb-2">
+            <div className="flex flex-wrap items-center justify-between gap-2 border-b-2 border-border pb-2">
               <h2 className="font-display text-sm font-bold text-ink">Rilis Baru</h2>
-              {unread.length > 0 && (
+              <div className="flex items-center gap-1" role="group" aria-label="Filter inbox">
                 <button
                   type="button"
-                  onClick={() => markReleasesRead()}
-                  className="rounded-sm border-2 border-border bg-nb-yellow px-1.5 py-0.5 font-mono text-[10px] font-bold text-nb-ink transition-all motion-safe:hover:-translate-y-0.5 cursor-pointer"
+                  aria-pressed={filter === "unread"}
+                  onClick={() => setFilter("unread")}
+                  className={chipClass(filter === "unread")}
                 >
-                  Tandai dibaca
+                  Belum dibaca{unread.length > 0 ? ` (${unread.length})` : ""}
                 </button>
-              )}
+                <button
+                  type="button"
+                  aria-pressed={filter === "all"}
+                  onClick={() => setFilter("all")}
+                  className={chipClass(filter === "all")}
+                >
+                  Semua{inbox.length > 0 ? ` (${inbox.length})` : ""}
+                </button>
+              </div>
             </div>
 
-            {unread.length === 0 ? (
+            {shown.length === 0 ? (
               <p className="pt-3 text-xs leading-relaxed text-ink-muted">
-                Tidak ada rilis baru. Badge 🔔 muncul saat anime tersimpanmu berganti label rilis di halaman update.
+                {filter === "unread"
+                  ? "Tidak ada rilis baru. Badge 🔔 muncul saat anime tersimpanmu berganti label rilis di halaman update."
+                  : "Belum ada riwayat rilis. Tandai dibaca dulu, riwayatnya tersimpan di tab ini."}
               </p>
             ) : (
               <ul className="max-h-72 space-y-2 overflow-y-auto pt-2">
-                {unread.map((item) => (
+                {shown.map((item) => (
                   <li
                     key={item.slug}
                     className="flex items-start justify-between gap-2 rounded-sm border-2 border-border bg-surface p-2"
@@ -95,25 +148,62 @@ const InboxBell = (): JSX.Element => {
                     <Link
                       href={`/anime/${item.slug}`}
                       onClick={() => setOpen(false)}
-                      className="min-w-0 flex-1 text-xs font-bold text-ink hover:text-accent-text"
+                      className={`min-w-0 flex-1 text-xs font-bold hover:text-accent-text ${
+                        item.read ? "text-ink-muted line-through" : "text-ink"
+                      }`}
                     >
                       <span className="line-clamp-2">{item.title}</span>
                       <span className="mt-0.5 block font-mono text-[10px] font-normal text-ink-muted">
                         {item.from} → {item.to}
                       </span>
                     </Link>
-                    <button
-                      type="button"
-                      onClick={() => removeUnreadRelease(item.slug)}
-                      aria-label={`Tandai ${item.title} sudah dibaca`}
-                      className="shrink-0 rounded-sm border-2 border-border bg-surface px-1.5 font-mono text-[10px] text-ink-muted transition-colors hover:text-ink cursor-pointer"
-                    >
-                      ✓
-                    </button>
+                    {item.read ? (
+                      <button
+                        type="button"
+                        onClick={() => removeUnreadRelease(item.slug)}
+                        aria-label={`Hapus ${item.title} dari inbox`}
+                        className="shrink-0 rounded-sm border-2 border-border bg-surface px-1.5 font-mono text-[10px] text-ink-muted transition-colors hover:text-ink cursor-pointer"
+                      >
+                        ✕
+                      </button>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={() => markReleaseRead(item.slug)}
+                        aria-label={`Tandai ${item.title} sudah dibaca`}
+                        className="shrink-0 rounded-sm border-2 border-border bg-surface px-1.5 font-mono text-[10px] text-ink-muted transition-colors hover:text-ink cursor-pointer"
+                      >
+                        ✓
+                      </button>
+                    )}
                   </li>
                 ))}
               </ul>
             )}
+
+            <div className="mt-2 flex flex-wrap items-center gap-1.5 border-t-2 border-border pt-2">
+              <button
+                type="button"
+                onClick={() => markReleasesRead()}
+                disabled={unread.length === 0}
+                className={actionClass}
+              >
+                Tandai dibaca
+              </button>
+              <button type="button" onClick={handleOpenAll} disabled={unread.length === 0} className={actionClass}>
+                Buka semua
+              </button>
+              <button type="button" onClick={handleExport} disabled={inbox.length === 0} className={actionClass}>
+                Ekspor JSON
+              </button>
+              <Link
+                href="/update"
+                onClick={() => setOpen(false)}
+                className="ml-auto font-mono text-[10px] font-bold text-accent-text hover:underline"
+              >
+                Timeline ↗
+              </Link>
+            </div>
           </div>
         </>
       )}

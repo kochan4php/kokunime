@@ -35,4 +35,12 @@ describe("palette action mode", () => {
     expect(actions).toHaveLength(1);
     expect(actions[0]?.href).toBe("/search/zzzqqq");
   });
+
+  it("offers page-level copy/open actions", () => {
+    const actions = buildPaletteActions(">");
+    expect(actions.find((action) => action.id === "copy-url")?.kind).toBe("copy-url");
+    expect(actions.find((action) => action.id === "open-url")?.kind).toBe("open-url");
+    // Fuzzy filtering finds them by name too.
+    expect(buildPaletteActions(">salin").map((action) => action.id)).toContain("copy-url");
+  });
 });

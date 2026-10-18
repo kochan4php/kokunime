@@ -95,7 +95,7 @@ const SettingsStorageSection = ({
             type="button"
             onClick={onRequestPersist}
             disabled={persisted === true}
-            className="w-full rounded-sm border-2 border-border bg-surface px-3 py-2 font-mono text-xs font-bold text-ink shadow-[2px_2px_0_0_var(--border)] transition-all motion-safe:hover:-translate-y-0.5 hover:bg-nb-teal active:translate-y-0 active:shadow-none cursor-pointer disabled:cursor-default disabled:opacity-70 disabled:hover:translate-y-0"
+            className="w-full rounded-sm border-2 border-border bg-surface px-3 py-2 font-mono text-xs font-bold text-ink shadow-[2px_2px_0_0_var(--border)] transition-all motion-safe:hover:-translate-y-0.5 hover:bg-nb-teal hover:text-nb-ink active:translate-y-0 active:shadow-none cursor-pointer disabled:cursor-default disabled:opacity-70 disabled:hover:translate-y-0"
           >
             {persisted === true ? t("settings.persist_active") : t("settings.persist_button")}
           </button>

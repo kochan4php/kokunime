@@ -37,9 +37,59 @@ jobs:
           BASE: ${{ vars.PRODUCTION_URL }}
         run: node scripts/load-test.mjs --mode=breakpoint "$BASE/api/live"
 
+      # Readiness under a burst is informational too: a 503 here means the
+      # breaker opened mid-run (already covered by the gate above), not that
+      # the probe is slow. The drill job gates on the 200↔503 semantics.
+      - name: Readiness probe under burst (informational)
+        if: vars.PRODUCTION_URL != ''
+        continue-on-error: true
+        env:
+          BASE: ${{ vars.PRODUCTION_URL }}
+        run: node scripts/load-test.mjs --mode=quick --routes=/api/live,/api/ready "$BASE"
+
       - name: Skip notice
         if: vars.PRODUCTION_URL == ''
         run: echo "::notice::PRODUCTION_URL belum diisi — job integritas cache dilewati."
+
+      # SEO audit: same sitemap the indexer walks, validated for JSON-LD shape
+      # per @type, OG image dimensions, canonical, and title/description hygiene.
+      - name: Meta audit (strict)
+        if: vars.PRODUCTION_URL != ''
+        env:
+          BASE: ${{ vars.PRODUCTION_URL }}
+        run: node scripts/audit-meta.mjs --strict "$BASE" 60
+
+      # IndexNow is a "tell search engines what changed" ping: only send it when
+      # the live feed actually changed since the last ping (hash in cache).
+      - name: Feed fingerprint
+        id: feed
+        if: vars.PRODUCTION_URL != ''
+        env:
+          BASE: ${{ vars.PRODUCTION_URL }}
+        run: |
+          HASH=$(curl -fsS --max-time 30 "$BASE/feed.xml" | sha256sum | cut -c1-16)
+          echo "hash=$HASH" >> "$GITHUB_OUTPUT"
+          mkdir -p .indexnow-state && echo "$HASH" > .indexnow-state/feed-hash
+
+      - uses: actions/cache/restore@v4
+        if: vars.PRODUCTION_URL != ''
+        id: feed-cache
+        with:
+          path: .indexnow-state
+          key: indexnow-feed-${{ steps.feed.outputs.hash }}
+
+      - name: IndexNow ping (only when the feed changed)
+        if: vars.PRODUCTION_URL != '' && steps.feed-cache.outputs.cache-hit != 'true'
+        env:
+          SITE_URL: ${{ vars.PRODUCTION_URL }}
+        run: node scripts/indexnow.mjs
+
+      - uses: actions/cache/save@v4
+        if: vars.PRODUCTION_URL != '' && steps.feed-cache.outputs.cache-hit != 'true'
+        continue-on-error: true
+        with:
+          path: .indexnow-state
+          key: indexnow-feed-${{ steps.feed.outputs.hash }}
 
       - name: Alert (optional webhook)
         if: failure()

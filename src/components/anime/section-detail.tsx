@@ -13,7 +13,9 @@ import { JSX } from "react";
 
 import BookmarkButton from "./bookmark-button";
 import ShareButton from "./share-button";
+import PrintQrCard from "./print-qr-card";
 import { parseTotalEpisodes } from "@/utils/progress";
+import { SITE_URL } from "@/lib/site";
 
 const SectionDetail = ({ anime, slug }: { anime: AnimeDetail; slug: string }): JSX.Element => (
   <section className="container px-4 pb-24 pt-6 md:pb-12 md:pt-16">
@@ -52,6 +54,7 @@ const SectionDetail = ({ anime, slug }: { anime: AnimeDetail; slug: string }): J
       </Reveal>
     </div>
     <DownloadSection anime={anime} slug={slug} />
+    <PrintQrCard url={`${SITE_URL}/anime/${slug}`} />
     <NewSeriesSection slug={slug} />
 
     {/* Mobile-only sticky CTA: the download action is the core task — keep it

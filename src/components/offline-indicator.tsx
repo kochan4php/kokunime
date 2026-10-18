@@ -30,10 +30,12 @@ const subscribeCacheServed = (callback: () => void) => {
     servedFromCache = false;
     callback();
   };
-  window.addEventListener("message", onMessage);
+  // Service worker postMessages arrive on the container, not on window.
+  const container = navigator.serviceWorker;
+  container?.addEventListener("message", onMessage);
   window.addEventListener("online", onOnline);
   return () => {
-    window.removeEventListener("message", onMessage);
+    container?.removeEventListener("message", onMessage);
     window.removeEventListener("online", onOnline);
   };
 };

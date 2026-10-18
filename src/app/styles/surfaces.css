@@ -88,14 +88,6 @@
     background-image: radial-gradient(var(--nb-texture-ink, rgba(10, 10, 10, 0.16)) 1.2px, transparent 1.3px);
     background-size: 7px 7px;
   }
-
-  .nb-hatch {
-    background-image: repeating-linear-gradient(
-      45deg,
-      var(--nb-texture-ink, rgba(10, 10, 10, 0.14)) 0 2px,
-      transparent 2px 9px
-    );
-  }
 }
 
 /* Reduced motion: keep the lift, drop the rotation. */

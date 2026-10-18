@@ -68,18 +68,21 @@ export async function GET(): Promise<NextResponse> {
     const res = await upstream.get("/");
     const latency = Math.round(performance.now() - start);
 
-    return NextResponse.json({
-      status: "ok",
-      scraper: "operational",
-      upstream: SCRAPE_BASE_URL,
-      upstream_status: res.status ?? 200,
-      latency_ms: latency,
-      probes: [await probe("/page/2/")],
-      memory: memoryMb,
-      redis,
-      environment: process.env.NODE_ENV || "production",
-      timestamp: new Date().toISOString(),
-    });
+    return NextResponse.json(
+      {
+        status: "ok",
+        scraper: "operational",
+        upstream: SCRAPE_BASE_URL,
+        upstream_status: res.status ?? 200,
+        latency_ms: latency,
+        probes: [await probe("/page/2/")],
+        memory: memoryMb,
+        redis,
+        environment: process.env.NODE_ENV || "production",
+        timestamp: new Date().toISOString(),
+      },
+      { headers: { "Server-Timing": `app;dur=${latency.toFixed(1)}` } },
+    );
   } catch (err) {
     const latency = Math.round(performance.now() - start);
     return NextResponse.json(
@@ -95,7 +98,7 @@ export async function GET(): Promise<NextResponse> {
         environment: process.env.NODE_ENV || "production",
         timestamp: new Date().toISOString(),
       },
-      { status: 503 },
+      { status: 503, headers: { "Server-Timing": `app;dur=${latency.toFixed(1)}` } },
     );
   }
 }

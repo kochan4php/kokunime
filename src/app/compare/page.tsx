@@ -12,30 +12,32 @@ export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   title: "Komparasi Anime Side-by-Side · Kokunime",
   description:
-    "Bandingkan skor rating, studio produksi, total episode, durasi, dan genre antara dua anime berdampingan secara instan.",
+    "Bandingkan skor rating, studio produksi, total episode, durasi, dan genre antara dua hingga tiga anime berdampingan secara instan.",
   alternates: {
     canonical: `${SITE_URL}/compare`,
   },
   openGraph: {
     title: "Komparasi Anime Side-by-Side · Kokunime",
     description:
-      "Bandingkan skor rating, studio produksi, total episode, durasi, dan genre antara dua anime berdampingan.",
+      "Bandingkan skor rating, studio produksi, total episode, durasi, dan genre antara dua hingga tiga anime berdampingan.",
     url: `${SITE_URL}/compare`,
   },
 };
 
 interface ComparePageProps {
-  searchParams: Promise<{ a?: string; b?: string }>;
+  searchParams: Promise<{ a?: string; b?: string; c?: string }>;
 }
 
 const ComparePage = async ({ searchParams }: ComparePageProps): Promise<JSX.Element> => {
-  const { a: rawA = "", b: rawB = "" } = await searchParams;
+  const { a: rawA = "", b: rawB = "", c: rawC = "" } = await searchParams;
   const slugA = decodeURIComponent(rawA).trim();
   const slugB = decodeURIComponent(rawB).trim();
+  const slugC = decodeURIComponent(rawC).trim();
 
-  const [animeA, animeB] = await Promise.all([
+  const [animeA, animeB, animeC] = await Promise.all([
     slugA ? getAnimeDetail(slugA).catch(() => null) : Promise.resolve(null),
     slugB ? getAnimeDetail(slugB).catch(() => null) : Promise.resolve(null),
+    slugC ? getAnimeDetail(slugC).catch(() => null) : Promise.resolve(null),
   ]);
 
   return (
@@ -59,10 +61,17 @@ const ComparePage = async ({ searchParams }: ComparePageProps): Promise<JSX.Elem
               Side-by-Side
             </span>
           }
-          description="Pilih dan bandingkan dua anime secara berdampingan untuk menganalisis perbedaan skor MyAnimeList, studio produksi, total episode, durasi tayang, genre unik, dan sinopsis secara instan."
+          description="Pilih dan bandingkan dua hingga tiga anime secara berdampingan untuk menganalisis perbedaan skor MyAnimeList, studio produksi, total episode, durasi tayang, genre unik, dan sinopsis secara instan."
         />
 
-        <CompareAnimeClient initialAnimeA={animeA} initialAnimeB={animeB} initialSlugA={slugA} initialSlugB={slugB} />
+        <CompareAnimeClient
+          initialAnimeA={animeA}
+          initialAnimeB={animeB}
+          initialAnimeC={animeC}
+          initialSlugA={slugA}
+          initialSlugB={slugB}
+          initialSlugC={slugC}
+        />
       </section>
     </MainLayout>
   );

@@ -59,14 +59,20 @@ export async function launchBrowser({ width = 1440, height = 900, mobile = false
 
   const portFile = path.join(profileDir, "DevToolsActivePort");
   const deadline = Date.now() + 20_000;
+  // The port file appears before it is fully written: an EBUSY/ENOENT read just
+  // means "try again on the next tick" (this races hard on Windows).
   let port = null;
   while (Date.now() < deadline) {
-    if (fs.existsSync(portFile)) {
-      const raw = fs.readFileSync(portFile, "utf8").split("\n")[0].trim();
-      if (raw) {
-        port = Number(raw);
-        break;
+    try {
+      if (fs.existsSync(portFile)) {
+        const raw = fs.readFileSync(portFile, "utf8").split("\n")[0].trim();
+        if (raw) {
+          port = Number(raw);
+          break;
+        }
       }
+    } catch {
+      // Mid-write — retry.
     }
     if (proc.exitCode !== null) break;
     await sleep(100);

@@ -4,6 +4,7 @@ import { Anime } from "@/interfaces";
 import { buildPaletteActions, isActionQuery, type PaletteAction } from "@/utils/palette-actions";
 import { fuzzyScore } from "@/utils/fuzzy";
 import { clearRecentSearches, getRecentSearches, saveRecentSearch } from "@/utils/recent-searches";
+import { showToast } from "@/utils/toast";
 import { useRouter } from "next/navigation";
 import { type FormEvent, type RefObject, useEffect, useRef, useState } from "react";
 
@@ -87,6 +88,17 @@ export const useCommandPalette = (): UseCommandPaletteResult => {
 
   const runAction = (action: PaletteAction) => {
     closePalette();
+    if (action.kind === "copy-url") {
+      navigator.clipboard
+        ?.writeText(window.location.href)
+        .then(() => showToast("Tautan halaman disalin"))
+        .catch(() => {});
+      return;
+    }
+    if (action.kind === "open-url") {
+      window.open(window.location.href, "_blank", "noopener");
+      return;
+    }
     router.push(action.href);
   };
 

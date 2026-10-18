@@ -8,12 +8,20 @@ interface SeasonRailProps {
   seasonSlug: string;
   seasonName?: string | undefined;
   excludeSlug: string;
+  heading?: string;
+  kicker?: string;
 }
 
 // "Juga dari musim ini" — server-rendered rail from the season listing the
 // detail page already tells us about (anime.season.endpoint). Hidden when the
 // upstream fetch fails or the rail would only contain the current title.
-const SeasonRail = async ({ seasonSlug, seasonName, excludeSlug }: SeasonRailProps): Promise<JSX.Element | null> => {
+const SeasonRail = async ({
+  seasonSlug,
+  seasonName,
+  excludeSlug,
+  heading = "🗓️ Juga dari",
+  kicker = "musim ini",
+}: SeasonRailProps): Promise<JSX.Element | null> => {
   const result = await getAnimeBySeasons(seasonSlug, 1).catch(() => null);
   if (!result) return null;
 
@@ -33,9 +41,9 @@ const SeasonRail = async ({ seasonSlug, seasonName, excludeSlug }: SeasonRailPro
     <section className="container px-4 pt-10" aria-labelledby="season-rail-title">
       <div className="mb-4 flex items-center gap-2">
         <h2 id="season-rail-title" className="font-display text-lg font-extrabold tracking-tight text-ink md:text-xl">
-          🗓️ Juga dari {seasonName ? seasonName : "musim yang sama"}
+          {heading} {seasonName ? seasonName : "musim yang sama"}
         </h2>
-        <span className="font-mono text-[10px] uppercase tracking-wide text-ink-muted">musim ini</span>
+        <span className="font-mono text-[10px] uppercase tracking-wide text-ink-muted">{kicker}</span>
       </div>
       <div className="nb-cycle flex snap-x gap-3 overflow-x-auto pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         {list.map((item) => (

@@ -3,6 +3,7 @@
 export const STORAGE_KEYS = {
   accent: "kokunime_accent",
   bookmarks: "kokunime_bookmarks",
+  collections: "kokunime_collections",
   font: "kokunime_font",
   lang: "kokunime_lang",
   nightShift: "kokunime_night_shift",

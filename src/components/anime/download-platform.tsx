@@ -15,7 +15,7 @@ const getPlatformStyle = (name: string): string => {
   if (/acefile|racaty|droplover/i.test(name)) {
     return "border-border bg-nb-orange font-bold text-nb-ink";
   }
-  return "border-border bg-surface font-semibold text-ink hover:bg-nb-purple";
+  return "border-border bg-surface font-semibold text-ink hover:bg-nb-purple hover:text-nb-ink";
 };
 
 const requiresLogin = (name: string): boolean => {

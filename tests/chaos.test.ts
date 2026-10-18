@@ -106,4 +106,17 @@ describe("chaos: upstream circuit open", () => {
     recordSuccess(UPSTREAM_CIRCUIT_KEY);
     expect(scaleLimit(100, 1)).toBe(100);
   });
+
+  it("readiness probe tells the truth: 503 degraded while open, 200 ready after recovery", async () => {
+    const { GET } = await import("@/app/api/ready/route");
+
+    const degraded = await GET();
+    expect(degraded.status).toBe(503);
+    expect(await degraded.json()).toMatchObject({ status: "degraded", circuit: "open", shuttingDown: false });
+
+    recordSuccess(UPSTREAM_CIRCUIT_KEY);
+    const ready = await GET();
+    expect(ready.status).toBe(200);
+    expect(await ready.json()).toMatchObject({ status: "ready", circuit: "closed" });
+  });
 });

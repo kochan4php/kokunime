@@ -87,6 +87,32 @@ const OpenAllLinksButton = ({ links }: { links: DownloadTarget[] }): JSX.Element
   );
 };
 
+// Copies a deep link to this episode group (the anchors power the episode
+// navigator jumps); the URL is read at click time, never during render.
+const EpisodeLinkButton = ({ anchorId }: { anchorId: string }): JSX.Element => {
+  const [copied, setCopied] = useState(false);
+  const copy = async () => {
+    try {
+      await navigator.clipboard.writeText(`${window.location.origin}${window.location.pathname}#${anchorId}`);
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 1500);
+    } catch {
+      // clipboard blocked — stay quiet
+    }
+  };
+  return (
+    <button
+      type="button"
+      onClick={copy}
+      aria-label={copied ? "Tautan episode tersalin" : "Salin tautan episode ini"}
+      title="Salin tautan episode ini"
+      className="shrink-0 rounded-sm border-2 border-border bg-surface px-1.5 py-0.5 font-mono text-[10px] text-ink-muted transition-colors hover:text-ink cursor-pointer"
+    >
+      {copied ? "✓" : "🔗"}
+    </button>
+  );
+};
+
 const DownloadGroup = ({ group, animeTitle, slug, animeTotal, anchorId }: DownloadGroupProps): JSX.Element => {
   const settings = useSettings();
   const { t } = useTranslation();
@@ -137,12 +163,13 @@ const DownloadGroup = ({ group, animeTitle, slug, animeTotal, anchorId }: Downlo
             {slug && episodeNumber ? (
               <EpisodeWatchedToggle slug={slug} episode={episodeNumber} title={animeTitle} total={animeTotal} />
             ) : null}
+            {anchorId ? <EpisodeLinkButton anchorId={anchorId} /> : null}
             {allPlatforms.length > 2 && (
               <div className="flex items-center gap-1 rounded-sm border-2 border-border bg-surface p-0.5 font-mono text-[10px] shrink-0">
                 <button
                   type="button"
                   onClick={() => setUserOverride("cards")}
-                  className={`rounded-sm px-2 py-0.5 transition-colors cursor-pointer ${
+                  className={`inline-flex min-h-6 items-center rounded-sm px-2 py-0.5 transition-colors cursor-pointer ${
                     layout === "cards" ? "bg-accent text-(--accent-ink) font-bold" : "text-ink-muted hover:text-ink"
                   }`}
                 >
@@ -151,7 +178,7 @@ const DownloadGroup = ({ group, animeTitle, slug, animeTotal, anchorId }: Downlo
                 <button
                   type="button"
                   onClick={() => setUserOverride("matrix")}
-                  className={`rounded-sm px-2 py-0.5 transition-colors cursor-pointer ${
+                  className={`inline-flex min-h-6 items-center rounded-sm px-2 py-0.5 transition-colors cursor-pointer ${
                     layout === "matrix" ? "bg-accent text-(--accent-ink) font-bold" : "text-ink-muted hover:text-ink"
                   }`}
                 >

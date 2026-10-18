@@ -2,6 +2,7 @@ import MainLayout from "@/layouts/main-layout";
 import SectionHeader from "@/components/section-header";
 import { getErrorBudget, getUptimeRollup } from "@/lib/uptime";
 import { SITE_URL } from "@/lib/site";
+import { buildSparklinePath } from "@/utils/sparkline";
 import { Metadata } from "next";
 import { JSX } from "react";
 
@@ -26,6 +27,14 @@ const dotClass = (uptimePct: number | null): string => {
 const StatusPage = async (): Promise<JSX.Element> => {
   const rollup = await getUptimeRollup(14);
   const budget = getErrorBudget(rollup);
+  // Chart reads oldest → newest; the rollup list stays newest-first.
+  const chronological = [...rollup].reverse();
+  const values = chronological.map((day) => day.uptime_pct);
+  const measured = values.filter((value): value is number => value !== null);
+  const floor = measured.length > 0 ? Math.min(99, Math.floor(Math.min(...measured))) : 99;
+  const rangeFormat = new Intl.DateTimeFormat("id-ID", { day: "numeric", month: "short" });
+  const firstDay = chronological[0]?.date;
+  const lastDay = chronological[chronological.length - 1]?.date;
 
   return (
     <MainLayout>
@@ -79,6 +88,42 @@ const StatusPage = async (): Promise<JSX.Element> => {
             </div>
           </div>
         </div>
+
+        {measured.length > 1 && (
+          <figure className="card-shell mt-3">
+            <figcaption className="sr-only">
+              Tren uptime harian 14 hari terakhir, dari {firstDay} sampai {lastDay}.
+            </figcaption>
+            <div className="card-core p-4">
+              <div className="flex items-center justify-between font-mono text-[10px] uppercase tracking-wider text-ink-muted">
+                <span>Tren uptime 14 hari</span>
+                <span>maks 100%</span>
+              </div>
+              {/* Decorative: every value is already in the daily list below. */}
+              <svg
+                viewBox="0 0 100 28"
+                preserveAspectRatio="none"
+                className="mt-2 h-12 w-full text-ink"
+                aria-hidden="true"
+              >
+                <path
+                  d={buildSparklinePath(values, { floor })}
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth={2}
+                  vectorEffect="non-scaling-stroke"
+                />
+              </svg>
+              <div className="flex items-center justify-between font-mono text-[10px] text-ink-muted">
+                <span>{floor}%</span>
+                <span>
+                  {firstDay ? rangeFormat.format(new Date(firstDay)) : ""} –{" "}
+                  {lastDay ? rangeFormat.format(new Date(lastDay)) : ""}
+                </span>
+              </div>
+            </div>
+          </figure>
+        )}
 
         <h2 className="mt-8 font-display text-lg font-bold text-ink">Riwayat harian</h2>
         <ul className="mt-3 space-y-1.5">

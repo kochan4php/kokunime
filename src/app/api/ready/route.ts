@@ -11,6 +11,7 @@ export const dynamic = "force-dynamic";
 // circuit makes the instance "not ready" for fresh writes. A shutting-down
 // instance is never ready — that is how load balancers drain it.
 export async function GET(): Promise<NextResponse> {
+  const started = performance.now();
   const circuit = getCircuitState(UPSTREAM_CIRCUIT_KEY);
   const redis = await redisHealth();
   const shuttingDown = isShuttingDown();
@@ -24,6 +25,12 @@ export async function GET(): Promise<NextResponse> {
       shuttingDown,
       timestamp: new Date().toISOString(),
     },
-    { status: ready ? 200 : 503, headers: { "Cache-Control": "no-store" } },
+    {
+      status: ready ? 200 : 503,
+      headers: {
+        "Cache-Control": "no-store",
+        "Server-Timing": `app;dur=${(performance.now() - started).toFixed(1)}`,
+      },
+    },
   );
 }

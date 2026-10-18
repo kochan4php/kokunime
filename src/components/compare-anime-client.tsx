@@ -1,15 +1,16 @@
 "use client";
 
-import AnimeSearchField from "@/components/compare/anime-search-field";
 import CompareAnimeCard from "@/components/compare/compare-anime-card";
 import CompareGenreAnalysis from "@/components/compare/compare-genre-analysis";
-import CompareRadar, { buildCompareMetrics } from "@/components/compare/compare-radar";
+import CompareRadar from "@/components/compare/compare-radar";
+import CompareSelector from "@/components/compare/compare-selector";
 import CompareSpecsTable from "@/components/compare/compare-specs-table";
 import { CompareEmptyState, CompareLoadingCard } from "@/components/compare/compare-status-panels";
 import { CompareSynopsis } from "@/components/compare/compare-synopsis";
 import { useAnimeSearch } from "@/hooks/use-anime-search";
 import { Anime, AnimeDetail } from "@/interfaces";
 import { animeSlug } from "@/utils/endpoint-slug";
+import { buildCompareMetrics, pickWinners, seriesMark } from "@/utils/compare";
 import { useTranslation } from "@/utils/i18n";
 import { exportShareCard } from "@/utils/share-card";
 import { extractYear, similarityScore } from "@/utils/similar";
@@ -19,52 +20,61 @@ import { JSX, useCallback, useState } from "react";
 interface CompareAnimeClientProps {
   initialAnimeA: AnimeDetail | null;
   initialAnimeB: AnimeDetail | null;
+  initialAnimeC: AnimeDetail | null;
   initialSlugA: string;
   initialSlugB: string;
+  initialSlugC: string;
 }
 
-const PRESET_COMPARISONS = [
-  { label: "Naruto vs Bleach", queryA: "Naruto", queryB: "Bleach" },
-  { label: "Jujutsu Kaisen vs Kimetsu no Yaiba", queryA: "Jujutsu Kaisen", queryB: "Kimetsu no Yaiba" },
-  { label: "One Piece vs Shingeki no Kyojin", queryA: "One Piece", queryB: "Shingeki no Kyojin" },
-  { label: "Frieren vs Mushoku Tensei", queryA: "Frieren", queryB: "Mushoku Tensei" },
-  { label: "Solo Leveling vs Mashle", queryA: "Solo Leveling", queryB: "Mashle" },
-  { label: "Spy x Family vs Oshi no Ko", queryA: "Spy x Family", queryB: "Oshi no Ko" },
-];
-
-type Side = "a" | "b";
+type Side = "a" | "b" | "c";
 
 const CompareAnimeClient = ({
   initialAnimeA,
   initialAnimeB,
+  initialAnimeC,
   initialSlugA,
   initialSlugB,
+  initialSlugC,
 }: CompareAnimeClientProps): JSX.Element => {
   const { t } = useTranslation();
   const [slugA, setSlugA] = useState(initialSlugA);
   const [slugB, setSlugB] = useState(initialSlugB);
+  const [slugC, setSlugC] = useState(initialSlugC);
 
   const [animeA, setAnimeA] = useState<AnimeDetail | null>(initialAnimeA);
   const [animeB, setAnimeB] = useState<AnimeDetail | null>(initialAnimeB);
+  const [animeC, setAnimeC] = useState<AnimeDetail | null>(initialAnimeC);
 
   const [errorA, setErrorA] = useState<string | null>(null);
   const [errorB, setErrorB] = useState<string | null>(null);
+  const [errorC, setErrorC] = useState<string | null>(null);
 
   const [loadingA, setLoadingA] = useState(false);
   const [loadingB, setLoadingB] = useState(false);
+  const [loadingC, setLoadingC] = useState(false);
 
   const [shareCopied, setShareCopied] = useState(false);
 
   const paneA = useAnimeSearch(initialAnimeA?.title || initialSlugA || "");
   const paneB = useAnimeSearch(initialAnimeB?.title || initialSlugB || "");
+  const paneC = useAnimeSearch(initialAnimeC?.title || initialSlugC || "");
 
-  const updateUrl = useCallback((a: string, b: string) => {
+  // One setter bundle per slot so loading/selecting never repeats the A/B
+  // ternaries three times over.
+  const slots = {
+    a: { setSlug: setSlugA, setAnime: setAnimeA, setError: setErrorA, setLoading: setLoadingA, pane: paneA },
+    b: { setSlug: setSlugB, setAnime: setAnimeB, setError: setErrorB, setLoading: setLoadingB, pane: paneB },
+    c: { setSlug: setSlugC, setAnime: setAnimeC, setError: setErrorC, setLoading: setLoadingC, pane: paneC },
+  } satisfies Record<Side, unknown>;
+
+  const updateUrl = useCallback((a: string, b: string, c: string) => {
     const params = new URLSearchParams();
     if (a) params.set("a", a);
     if (b) params.set("b", b);
-    const newUrl = `/compare?${params.toString()}`;
+    if (c) params.set("c", c);
+    const query = params.toString();
     if (typeof window !== "undefined") {
-      window.history.replaceState(null, "", newUrl);
+      window.history.replaceState(null, "", query ? `/compare?${query}` : "/compare");
     }
   }, []);
 
@@ -76,43 +86,43 @@ const CompareAnimeClient = ({
   };
 
   const loadDetail = async (side: Side, slug: string, fallbackTitle: string) => {
-    const setLoading = side === "a" ? setLoadingA : setLoadingB;
-    const setError = side === "a" ? setErrorA : setErrorB;
-    const setAnime = side === "a" ? setAnimeA : setAnimeB;
-    const pane = side === "a" ? paneA : paneB;
+    const slot = slots[side];
 
-    setLoading(true);
-    setError(null);
+    slot.setLoading(true);
+    slot.setError(null);
     try {
       const data = await fetchDetail(slug);
       if (data && data.title) {
-        setAnime(data);
-        pane.syncSelected(data.title);
+        slot.setAnime(data);
+        slot.pane.syncSelected(data.title);
       } else {
-        setAnime(null);
-        setError(`Anime "${fallbackTitle}" tidak ditemukan di database.`);
+        slot.setAnime(null);
+        slot.setError(`Anime "${fallbackTitle}" tidak ditemukan di database.`);
       }
     } catch {
-      setAnime(null);
-      setError("Gagal menghubungi server untuk mengambil data.");
+      slot.setAnime(null);
+      slot.setError("Gagal menghubungi server untuk mengambil data.");
     } finally {
-      setLoading(false);
+      slot.setLoading(false);
     }
   };
 
   const chooseAnime = (side: Side) => (item: Anime) => {
     const slug = animeSlug(item.link.endpoint) || animeSlug(item.link.url);
     if (!slug) return;
-    const pane = side === "a" ? paneA : paneB;
-    pane.select(item);
-    if (side === "a") {
-      setSlugA(slug);
-      updateUrl(slug, slugB);
-    } else {
-      setSlugB(slug);
-      updateUrl(slugA, slug);
-    }
+    const slot = slots[side];
+    slot.pane.select(item);
+    slot.setSlug(slug);
+    updateUrl(side === "a" ? slug : slugA, side === "b" ? slug : slugB, side === "c" ? slug : slugC);
     void loadDetail(side, slug, item.title);
+  };
+
+  const clearThird = () => {
+    setSlugC("");
+    setAnimeC(null);
+    setErrorC(null);
+    paneC.syncSelected("");
+    updateUrl(slugA, slugB, "");
   };
 
   const handleSwap = () => {
@@ -125,7 +135,7 @@ const CompareAnimeClient = ({
     setSlugB(slugA);
     setAnimeA(animeB);
     setAnimeB(animeA);
-    updateUrl(slugB, slugA);
+    updateUrl(slugB, slugA, slugC);
   };
 
   const handlePreset = async (queryA: string, queryB: string) => {
@@ -153,7 +163,7 @@ const CompareAnimeClient = ({
       if (sA && sB) {
         setSlugA(sA);
         setSlugB(sB);
-        updateUrl(sA, sB);
+        updateUrl(sA, sB, slugC);
 
         const [detailA, detailB] = await Promise.all([fetchDetail(sA), fetchDetail(sB)]);
 
@@ -193,39 +203,44 @@ const CompareAnimeClient = ({
   // PNG share card: per-metric scoreline plus which side leads.
   const handleExportCard = async (): Promise<void> => {
     if (!animeA || !animeB) return;
-    const metrics = buildCompareMetrics(animeA, animeB);
-    const winsA = metrics.filter((metric) => metric.a > metric.b).length;
-    const winsB = metrics.filter((metric) => metric.b > metric.a).length;
+    const compared = [animeA, animeB, animeC].filter((anime): anime is AnimeDetail => Boolean(anime));
+    const metrics = buildCompareMetrics(...compared);
+    const leadersByMetric = metrics.map((metric) => pickWinners(metric.values));
+    const wins = compared.map(
+      (_, index) => leadersByMetric.filter((leaders) => leaders.length === 1 && leaders[0] === index).length,
+    );
+    const allTied = wins.every((count) => count === wins[0]);
+    const title = compared.map((anime) => anime.title).join(" vs ");
     const result = await exportShareCard(
       {
         kicker: "Adu anime",
-        title: `${animeA.title} vs ${animeB.title}`,
+        title,
         accent: "#ff8a3d",
         rows: [
           ...metrics.map((metric) => ({
             label: metric.label,
-            value: `${metric.display(metric.a)} vs ${metric.display(metric.b)}`,
+            value: metric.values.map((value) => metric.display(value)).join(" vs "),
           })),
           {
             label: "Unggul",
-            value:
-              winsA === winsB
-                ? `Seri ${winsA}-${winsB}`
-                : winsA > winsB
-                  ? `🔴 ${winsA}-${winsB}`
-                  : `🔵 ${winsB}-${winsA}`,
+            value: allTied
+              ? `Seri ${wins.join("-")}`
+              : wins.map((count, index) => `${seriesMark(index)} ${count}`).join(" · "),
           },
         ],
         footer: "kokunime • perbandingan dari data katalog",
       },
       "kokunime-compare.png",
-      `${animeA.title} vs ${animeB.title} — ${window.location.href}`,
+      `${title} — ${window.location.href}`,
     );
     if (result === "downloaded") showToast("Kartu perbandingan diunduh sebagai PNG");
     else if (result === "failed") showToast("Gagal membuat kartu PNG");
   };
 
   const isOverallLoading = loadingA || loadingB;
+
+  // Every filled slot, in A → C order; the dashboard renders 2 or 3 columns.
+  const compared = [animeA, animeB, animeC].filter((anime): anime is AnimeDetail => Boolean(anime));
 
   // Local-only similarity — genre overlap + year/score/type proximity.
   const similarity =
@@ -248,125 +263,29 @@ const CompareAnimeClient = ({
 
   return (
     <div className="w-full space-y-8">
-      {/* Top Interactive Selector Card */}
-      <div className="card-shell overflow-visible">
-        <div className="card-core p-5 sm:p-7 space-y-6">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b-2 border-border pb-4">
-            <div>
-              <span className="chip">
-                <span className="h-2 w-2 rounded-full bg-accent animate-pulse" />
-                {t("compare.select_header")}
-              </span>
-              <h2 className="mt-1 font-display text-lg sm:text-xl font-bold text-ink">{t("compare.select_header")}</h2>
-            </div>
-
-            {slugA && slugB && animeA && animeB && !isOverallLoading && (
-              <div className="flex flex-wrap items-center gap-2 self-start sm:self-auto">
-                <button
-                  type="button"
-                  onClick={() => void handleExportCard()}
-                  title="Unduh kartu perbandingan sebagai PNG"
-                  className="inline-flex items-center gap-1.5 rounded-sm border-2 border-border bg-surface px-3.5 py-1.5 font-mono text-xs font-semibold text-ink-muted shadow-[2px_2px_0_0_var(--border)] transition-all motion-safe:hover:-translate-y-0.5 hover:text-ink active:translate-y-0 active:shadow-none cursor-pointer"
-                >
-                  🖼️ PNG
-                </button>
-                <button
-                  type="button"
-                  onClick={() => window.print()}
-                  title="Cetak halaman perbandingan"
-                  className="inline-flex items-center gap-1.5 rounded-sm border-2 border-border bg-surface px-3.5 py-1.5 font-mono text-xs font-semibold text-ink-muted shadow-[2px_2px_0_0_var(--border)] transition-all motion-safe:hover:-translate-y-0.5 hover:text-ink active:translate-y-0 active:shadow-none cursor-pointer"
-                >
-                  🖨️ Cetak
-                </button>
-                <button
-                  type="button"
-                  onClick={handleCopyShare}
-                  className="inline-flex items-center gap-1.5 rounded-sm border-2 border-border bg-surface px-3.5 py-1.5 font-mono text-xs font-semibold text-ink-muted shadow-[2px_2px_0_0_var(--border)] transition-all motion-safe:hover:-translate-y-0.5 hover:text-ink active:translate-y-0 active:shadow-none cursor-pointer"
-                >
-                  <span>{shareCopied ? `✓ ${t("common.copied")}` : `🔗 ${t("compare.share")}`}</span>
-                </button>
-              </div>
-            )}
-          </div>
-
-          {/* Search Inputs & Swap */}
-          <div className="grid grid-cols-1 lg:grid-cols-11 gap-4 items-center">
-            <AnimeSearchField
-              id="input-anime-a"
-              label={`🔴 ${t("compare.anime_a")}`}
-              placeholder={t("compare.placeholder_a")}
-              query={paneA.query}
-              onQueryChange={paneA.setQuery}
-              results={paneA.results}
-              isSearching={paneA.isSearching}
-              detailLoading={loadingA}
-              showDropdown={paneA.showDropdown}
-              loadingText={t("common.loading")}
-              onFocus={() => {
-                if (paneA.results.length > 0 && paneA.query !== paneA.selectedTitle.current) {
-                  paneA.setShowDropdown(true);
-                }
-              }}
-              onSelect={chooseAnime("a")}
-              containerRef={paneA.containerRef}
-            />
-
-            {/* Swap Button (1 col) */}
-            <div className="flex justify-center lg:col-span-1 py-1 lg:py-0">
-              <button
-                type="button"
-                onClick={handleSwap}
-                title="Tukar Posisi Anime A dan B"
-                disabled={(!slugA && !slugB) || isOverallLoading}
-                className="flex h-11 w-11 items-center justify-center rounded-sm border-2 border-border bg-surface text-ink-muted shadow-[2px_2px_0_0_var(--border)] transition-all motion-safe:hover:-translate-y-0.5 hover:bg-nb-yellow hover:text-nb-ink active:translate-y-0 active:shadow-none disabled:opacity-40 cursor-pointer"
-              >
-                <span className="text-base font-bold">⇄</span>
-              </button>
-            </div>
-
-            <AnimeSearchField
-              id="input-anime-b"
-              label={`🔵 ${t("compare.anime_b")}`}
-              placeholder={t("compare.placeholder_b")}
-              query={paneB.query}
-              onQueryChange={paneB.setQuery}
-              results={paneB.results}
-              isSearching={paneB.isSearching}
-              detailLoading={loadingB}
-              showDropdown={paneB.showDropdown}
-              loadingText={t("common.loading")}
-              onFocus={() => {
-                if (paneB.results.length > 0 && paneB.query !== paneB.selectedTitle.current) {
-                  paneB.setShowDropdown(true);
-                }
-              }}
-              onSelect={chooseAnime("b")}
-              containerRef={paneB.containerRef}
-            />
-          </div>
-
-          {/* Quick Presets */}
-          <div className="pt-2">
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="font-mono text-xs font-bold text-ink-muted">⚡ {t("compare.quick_examples")}</span>
-              {PRESET_COMPARISONS.map((p, idx) => (
-                <button
-                  key={idx}
-                  type="button"
-                  disabled={isOverallLoading}
-                  onClick={() => handlePreset(p.queryA, p.queryB)}
-                  className="rounded-sm border-2 border-border bg-surface px-3 py-1 font-mono text-xs text-ink-muted shadow-[2px_2px_0_0_var(--border)] transition-all motion-safe:hover:-translate-y-0.5 hover:bg-nb-purple hover:text-nb-ink active:translate-y-0 active:shadow-none disabled:opacity-50 cursor-pointer"
-                >
-                  {p.label}
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
+      <CompareSelector
+        paneA={paneA}
+        paneB={paneB}
+        paneC={paneC}
+        readyAB={Boolean(slugA && slugB && animeA && animeB)}
+        hasA={Boolean(slugA)}
+        hasB={Boolean(slugB)}
+        hasThird={Boolean(slugC)}
+        isOverallLoading={isOverallLoading}
+        loadingA={loadingA}
+        loadingB={loadingB}
+        loadingC={loadingC}
+        shareCopied={shareCopied}
+        onSelect={chooseAnime}
+        onSwap={handleSwap}
+        onClearThird={clearThird}
+        onPreset={(queryA, queryB) => void handlePreset(queryA, queryB)}
+        onExportCard={() => void handleExportCard()}
+        onCopyShare={handleCopyShare}
+      />
 
       {/* Error Banners */}
-      {(errorA || errorB) && (
+      {(errorA || errorB || errorC) && (
         <div className="space-y-2">
           {errorA && (
             <div className="rounded-sm border-2 border-border bg-nb-red p-4 text-xs font-mono font-bold text-nb-ink shadow-[2px_2px_0_0_var(--border)]">
@@ -376,6 +295,11 @@ const CompareAnimeClient = ({
           {errorB && (
             <div className="rounded-sm border-2 border-border bg-nb-red p-4 text-xs font-mono font-bold text-nb-ink shadow-[2px_2px_0_0_var(--border)]">
               🔵 {errorB}
+            </div>
+          )}
+          {errorC && (
+            <div className="rounded-sm border-2 border-border bg-nb-red p-4 text-xs font-mono font-bold text-nb-ink shadow-[2px_2px_0_0_var(--border)]">
+              🟣 {errorC}
             </div>
           )}
         </div>
@@ -396,12 +320,20 @@ const CompareAnimeClient = ({
             <span className="truncate font-mono text-xs font-bold text-ink">🔴 {animeA.title}</span>
             <span className="shrink-0 font-mono text-[10px] text-ink-muted">vs</span>
             <span className="truncate text-right font-mono text-xs font-bold text-ink">🔵 {animeB.title}</span>
+            {animeC && (
+              <>
+                <span className="shrink-0 font-mono text-[10px] text-ink-muted">vs</span>
+                <span className="truncate text-right font-mono text-xs font-bold text-ink">🟣 {animeC.title}</span>
+              </>
+            )}
           </div>
 
           {/* Client-side similarity summary (no network) */}
           <div className="rounded-sm border-2 border-border bg-surface-solid p-4 shadow-[4px_4px_0_0_var(--border)]">
             <div className="flex flex-wrap items-center justify-between gap-2">
-              <span className="font-display text-sm font-bold text-ink">🤝 {t("compare.similarity")}</span>
+              <span className="font-display text-sm font-bold text-ink">
+                🤝 {t(animeC ? "compare.similarity_pair" : "compare.similarity")}
+              </span>
               <span className="font-mono text-lg font-extrabold text-accent-text">{similarity}%</span>
             </div>
             <div aria-hidden="true" className="mt-2 h-2 overflow-hidden rounded-sm border border-border bg-surface">
@@ -411,18 +343,19 @@ const CompareAnimeClient = ({
           </div>
 
           {/* Header Side-by-Side Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className={`grid grid-cols-1 gap-6 ${animeC ? "md:grid-cols-2 xl:grid-cols-3" : "md:grid-cols-2"}`}>
             <CompareAnimeCard anime={animeA} slug={slugA} side="a" />
             <CompareAnimeCard anime={animeB} slug={slugB} side="b" />
+            {animeC && <CompareAnimeCard anime={animeC} slug={slugC} side="c" />}
           </div>
 
-          <CompareSpecsTable animeA={animeA} animeB={animeB} />
+          <CompareSpecsTable animes={compared} />
 
-          <CompareRadar animeA={animeA} animeB={animeB} />
+          <CompareRadar animes={compared} />
 
-          <CompareGenreAnalysis animeA={animeA} animeB={animeB} />
+          <CompareGenreAnalysis animes={compared} />
 
-          <CompareSynopsis animeA={animeA} animeB={animeB} />
+          <CompareSynopsis animes={compared} />
         </div>
       )}
     </div>

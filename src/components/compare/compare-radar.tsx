@@ -1,63 +1,8 @@
 "use client";
 
 import { AnimeDetail } from "@/interfaces";
-import { extractYear } from "@/utils/similar";
+import { buildCompareMetrics, pickWinners, seriesColor, seriesMark } from "@/utils/compare";
 import { JSX } from "react";
-
-interface CompareMetric {
-  key: string;
-  label: string;
-  a: number;
-  b: number;
-  display: (value: number) => string;
-  /** true when a lower value is better (none today, kept for clarity). */
-  lowerIsBetter?: boolean;
-}
-
-const parseFirstNumber = (value?: string | null): number => {
-  const match = value?.match(/\d+(?:\.\d+)?/);
-  return match ? Number(match[0]) : 0;
-};
-
-// Five locally computable metrics — no extra requests. Values are the raw
-// numbers; the radar normalizes per axis by the pair's max.
-export const buildCompareMetrics = (animeA: AnimeDetail, animeB: AnimeDetail): CompareMetric[] => [
-  {
-    key: "score",
-    label: "Skor",
-    a: Number(animeA.score ?? 0),
-    b: Number(animeB.score ?? 0),
-    display: (value) => (value > 0 ? value.toFixed(1) : "—"),
-  },
-  {
-    key: "episodes",
-    label: "Episode",
-    a: parseFirstNumber(animeA.total_episode),
-    b: parseFirstNumber(animeB.total_episode),
-    display: (value) => (value > 0 ? String(value) : "—"),
-  },
-  {
-    key: "duration",
-    label: "Durasi",
-    a: parseFirstNumber(animeA.duration),
-    b: parseFirstNumber(animeB.duration),
-    display: (value) => (value > 0 ? `${value} m` : "—"),
-  },
-  {
-    key: "genres",
-    label: "Genre",
-    a: animeA.genre?.length ?? 0,
-    b: animeB.genre?.length ?? 0,
-    display: (value) => (value > 0 ? String(value) : "—"),
-  },
-  {
-    key: "year",
-    label: "Tahun",
-    a: extractYear(animeA.release_on) ?? 0,
-    b: extractYear(animeB.release_on) ?? 0,
-    display: (value) => (value > 0 ? String(value) : "—"),
-  },
-];
 
 const RADIUS = 100;
 const AXES = 5;
@@ -71,35 +16,28 @@ const polygonPoints = (values: number[]): string =>
   values.map((value, index) => axisPoint(index, value * RADIUS).join(",")).join(" ");
 
 interface CompareRadarProps {
-  animeA: AnimeDetail;
-  animeB: AnimeDetail;
+  animes: AnimeDetail[];
 }
 
 // Radar chart of the five local metrics plus a per-metric winner list.
-const CompareRadar = ({ animeA, animeB }: CompareRadarProps): JSX.Element => {
-  const metrics = buildCompareMetrics(animeA, animeB);
+const CompareRadar = ({ animes }: CompareRadarProps): JSX.Element => {
+  const metrics = buildCompareMetrics(...animes);
 
-  const fractions = (side: "a" | "b"): number[] =>
+  const fractions = (seriesIndex: number): number[] =>
     metrics.map((metric) => {
-      const max = Math.max(metric.a, metric.b);
-      return max > 0 ? metric[side] / max : 0.5;
+      const max = Math.max(...metric.values);
+      return max > 0 ? (metric.values[seriesIndex] ?? 0) / max : 0.5;
     });
 
-  const pointsA = polygonPoints(fractions("a"));
-  const pointsB = polygonPoints(fractions("b"));
-
-  const winners = metrics.map((metric) => ({
-    metric,
-    winner: metric.a === metric.b ? "tie" : metric.a > metric.b ? "a" : ("b" as const),
-  }));
+  const winners = metrics.map((metric) => ({ metric, leaders: pickWinners(metric.values) }));
 
   return (
     <div className="card-shell">
       <div className="card-core p-5 sm:p-6">
         <h3 className="font-display text-sm font-bold text-ink sm:text-base">🕸️ Peta Kekuatan (5 Metrik)</h3>
         <p className="mt-1 text-xs text-ink-muted">
-          Tiap sumbu dinormalkan terhadap yang tertinggi di antara kedua judul — bentuk yang lebih lebar berarti unggul
-          di sumbu itu.
+          Tiap sumbu dinormalkan terhadap yang tertinggi di antara judul yang dibandingkan — bentuk yang lebih lebar
+          berarti unggul di sumbu itu.
         </p>
 
         <div className="mt-4 flex flex-col items-center gap-6 md:flex-row md:justify-around">
@@ -108,7 +46,7 @@ const CompareRadar = ({ animeA, animeB }: CompareRadarProps): JSX.Element => {
             className="h-64 w-64 shrink-0"
             role="img"
             aria-label={`Radar perbandingan: ${metrics
-              .map((metric) => `${metric.label} ${metric.display(metric.a)} lawan ${metric.display(metric.b)}`)
+              .map((metric) => `${metric.label} ${metric.values.map((value) => metric.display(value)).join(" lawan ")}`)
               .join("; ")}`}
           >
             {/* Grid rings */}
@@ -139,8 +77,16 @@ const CompareRadar = ({ animeA, animeB }: CompareRadarProps): JSX.Element => {
               );
             })}
 
-            <polygon points={pointsA} fill="#ff6b6b" fillOpacity="0.35" stroke="#ff6b6b" strokeWidth="2.5" />
-            <polygon points={pointsB} fill="#23a094" fillOpacity="0.35" stroke="#23a094" strokeWidth="2.5" />
+            {animes.map((anime, index) => (
+              <polygon
+                key={`${anime.title}-${index}`}
+                points={polygonPoints(fractions(index))}
+                fill={seriesColor(index)}
+                fillOpacity="0.35"
+                stroke={seriesColor(index)}
+                strokeWidth="2.5"
+              />
+            ))}
 
             {/* Axis labels */}
             {metrics.map((metric, index) => {
@@ -161,24 +107,26 @@ const CompareRadar = ({ animeA, animeB }: CompareRadarProps): JSX.Element => {
           </svg>
 
           <ul className="w-full max-w-xs space-y-2">
-            <li className="flex items-center gap-2 font-mono text-[11px] font-bold">
-              <span aria-hidden="true" className="inline-block h-3 w-3 rounded-sm border border-border bg-[#ff6b6b]" />
-              🔴 {animeA.title}
-            </li>
-            <li className="flex items-center gap-2 font-mono text-[11px] font-bold">
-              <span aria-hidden="true" className="inline-block h-3 w-3 rounded-sm border border-border bg-[#23a094]" />
-              🔵 {animeB.title}
-            </li>
+            {animes.map((anime, index) => (
+              <li key={`${anime.title}-${index}`} className="flex items-center gap-2 font-mono text-[11px] font-bold">
+                <span
+                  aria-hidden="true"
+                  className="inline-block h-3 w-3 rounded-sm border border-border"
+                  style={{ backgroundColor: seriesColor(index) }}
+                />
+                {seriesMark(index)} {anime.title}
+              </li>
+            ))}
             <li aria-hidden="true" className="my-2 h-0.5 bg-border" />
-            {winners.map(({ metric, winner }) => (
+            {winners.map(({ metric, leaders }) => (
               <li key={metric.key} className="flex items-center justify-between gap-2 font-mono text-xs">
                 <span className="text-ink-muted">{metric.label}</span>
                 <span className="font-bold text-ink">
-                  {winner === "tie" ? (
+                  {leaders.length !== 1 ? (
                     <span className="text-ink-muted">seri —</span>
                   ) : (
                     <>
-                      {winner === "a" ? "🔴" : "🔵"} {metric.display(winner === "a" ? metric.a : metric.b)}
+                      {seriesMark(leaders[0] ?? 0)} {metric.display(metric.values[leaders[0] ?? 0] ?? 0)}
                     </>
                   )}
                 </span>

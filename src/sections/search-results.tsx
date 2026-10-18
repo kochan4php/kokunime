@@ -3,8 +3,10 @@
 import AnimeGrid from "@/components/cards/anime-grid";
 import EmptyState from "@/components/anime/empty-state";
 import Reveal from "@/components/reveal";
+import { useUrlState } from "@/hooks/use-url-state";
 import { Anime } from "@/interfaces";
-import { JSX, useMemo, useState } from "react";
+import { UrlStateSchema } from "@/utils/url-state";
+import { JSX, useMemo } from "react";
 
 interface SearchResultsProps {
   anime: Anime[];
@@ -12,11 +14,35 @@ interface SearchResultsProps {
 
 type SortOrder = "default" | "asc" | "desc";
 
+const SORT_ORDERS = new Set(["default", "asc", "desc"]);
+const VIEW_MODES = new Set(["grid", "list"]);
+
+// Shareable search view: sort, view, genre logic and the selected genres live
+// in the URL query ("g" holds a "|"-joined genre list).
+const SEARCH_SCHEMA: UrlStateSchema = {
+  defaults: { s: "default", v: "grid", g: "", l: "OR" },
+  sanitize: (key, value) => {
+    if (key === "s") return SORT_ORDERS.has(value) ? value : null;
+    if (key === "v") return VIEW_MODES.has(value) ? value : null;
+    if (key === "l") return value === "AND" || value === "OR" ? value : null;
+    const genres = [
+      ...new Set(
+        value
+          .split("|")
+          .map((genre) => genre.trim())
+          .filter(Boolean),
+      ),
+    ].slice(0, 8);
+    return genres.length > 0 ? genres.join("|") : null;
+  },
+};
+
 const SearchResults = ({ anime }: SearchResultsProps): JSX.Element => {
-  const [sortBy, setSortBy] = useState<SortOrder>("default");
-  const [selectedGenres, setSelectedGenres] = useState<string[]>([]);
-  const [genreLogic, setGenreLogic] = useState<"AND" | "OR">("OR");
-  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+  const [state, setState] = useUrlState(SEARCH_SCHEMA);
+  const sortBy = (state.s ?? "default") as SortOrder;
+  const viewMode = (state.v ?? "grid") as "grid" | "list";
+  const genreLogic = (state.l ?? "OR") as "AND" | "OR";
+  const selectedGenres = useMemo(() => (state.g ? state.g.split("|") : []), [state.g]);
 
   const allGenres = useMemo(() => {
     const set = new Set<string>();
@@ -30,10 +56,13 @@ const SearchResults = ({ anime }: SearchResultsProps): JSX.Element => {
 
   const toggleGenre = (genre: string) => {
     if (genre === "all") {
-      setSelectedGenres([]);
+      setState({ g: "" });
       return;
     }
-    setSelectedGenres((prev) => (prev.includes(genre) ? prev.filter((g) => g !== genre) : [...prev, genre]));
+    const next = selectedGenres.includes(genre)
+      ? selectedGenres.filter((g) => g !== genre)
+      : [...selectedGenres, genre];
+    setState({ g: next.join("|") });
   };
 
   const filteredAnime = useMemo(() => {
@@ -77,7 +106,7 @@ const SearchResults = ({ anime }: SearchResultsProps): JSX.Element => {
                 <span className="font-mono text-[11px] text-ink-muted uppercase tracking-wider">Urutkan:</span>
                 <button
                   type="button"
-                  onClick={() => setSortBy("default")}
+                  onClick={() => setState({ s: "default" })}
                   className={`rounded-sm px-3 py-1 font-mono text-xs transition-all cursor-pointer ${
                     sortBy === "default"
                       ? "bg-accent border-2 border-border text-(--accent-ink) font-semibold shadow-[2px_2px_0_0_var(--border)]"
@@ -88,7 +117,7 @@ const SearchResults = ({ anime }: SearchResultsProps): JSX.Element => {
                 </button>
                 <button
                   type="button"
-                  onClick={() => setSortBy("asc")}
+                  onClick={() => setState({ s: "asc" })}
                   className={`rounded-sm px-3 py-1 font-mono text-xs transition-all cursor-pointer ${
                     sortBy === "asc"
                       ? "bg-accent border-2 border-border text-(--accent-ink) font-semibold shadow-[2px_2px_0_0_var(--border)]"
@@ -99,7 +128,7 @@ const SearchResults = ({ anime }: SearchResultsProps): JSX.Element => {
                 </button>
                 <button
                   type="button"
-                  onClick={() => setSortBy("desc")}
+                  onClick={() => setState({ s: "desc" })}
                   className={`rounded-sm px-3 py-1 font-mono text-xs transition-all cursor-pointer ${
                     sortBy === "desc"
                       ? "bg-accent border-2 border-border text-(--accent-ink) font-semibold shadow-[2px_2px_0_0_var(--border)]"
@@ -115,7 +144,7 @@ const SearchResults = ({ anime }: SearchResultsProps): JSX.Element => {
             <div className="flex items-center gap-1 rounded-sm border-2 border-border bg-surface p-0.5 shadow-[2px_2px_0_0_var(--border)]">
               <button
                 type="button"
-                onClick={() => setViewMode("grid")}
+                onClick={() => setState({ v: "grid" })}
                 title="Tampilan Grid Poster"
                 className={`rounded-sm px-2.5 py-0.5 font-mono text-xs transition-all cursor-pointer ${
                   viewMode === "grid" ? "bg-accent text-(--accent-ink) font-bold" : "text-ink-muted hover:text-ink"
@@ -125,7 +154,7 @@ const SearchResults = ({ anime }: SearchResultsProps): JSX.Element => {
               </button>
               <button
                 type="button"
-                onClick={() => setViewMode("list")}
+                onClick={() => setState({ v: "list" })}
                 title="Tampilan List Kompak"
                 className={`rounded-sm px-2.5 py-0.5 font-mono text-xs transition-all cursor-pointer ${
                   viewMode === "list" ? "bg-accent text-(--accent-ink) font-bold" : "text-ink-muted hover:text-ink"
@@ -161,7 +190,7 @@ const SearchResults = ({ anime }: SearchResultsProps): JSX.Element => {
                   <div className="flex items-center rounded-sm border-2 border-border bg-surface p-0.5">
                     <button
                       type="button"
-                      onClick={() => setGenreLogic("OR")}
+                      onClick={() => setState({ l: "OR" })}
                       className={`rounded-sm px-2 py-0.5 font-mono text-[10px] font-bold cursor-pointer transition-all ${
                         genreLogic === "OR" ? "bg-accent text-(--accent-ink)" : "text-ink-muted hover:text-ink"
                       }`}
@@ -170,7 +199,7 @@ const SearchResults = ({ anime }: SearchResultsProps): JSX.Element => {
                     </button>
                     <button
                       type="button"
-                      onClick={() => setGenreLogic("AND")}
+                      onClick={() => setState({ l: "AND" })}
                       className={`rounded-sm px-2 py-0.5 font-mono text-[10px] font-bold cursor-pointer transition-all ${
                         genreLogic === "AND" ? "bg-accent text-(--accent-ink)" : "text-ink-muted hover:text-ink"
                       }`}

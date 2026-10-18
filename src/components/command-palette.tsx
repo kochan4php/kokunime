@@ -185,7 +185,7 @@ const CommandPalette = (): JSX.Element => {
                             <h4 className="line-clamp-1 text-xs sm:text-sm font-semibold text-ink">
                               {highlightSegments(item.title, query.trim()).map((segment, index) =>
                                 segment.match ? (
-                                  <mark key={`${segment.text}-${index}`} className="bg-nb-yellow px-0.5 text-ink">
+                                  <mark key={`${segment.text}-${index}`} className="bg-nb-yellow px-0.5 text-nb-ink">
                                     {segment.text}
                                   </mark>
                                 ) : (

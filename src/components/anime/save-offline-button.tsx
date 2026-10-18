@@ -23,6 +23,16 @@ const registerRefreshSync = (): void => {
     });
 };
 
+// Only the optimizer URL is worth caching: a cross-origin image comes back
+// opaque and CacheStorage pads opaque entries to multi-MB, so the poster of a
+// saved page is cached in its optimized (same-origin) form only.
+const readPosterUrl = (): string[] => {
+  const image = document.querySelector<HTMLImageElement>("[data-offline-image] img");
+  const src = image?.currentSrc || image?.src;
+  if (!src || !src.startsWith(window.location.origin) || !src.includes("/_next/image")) return [];
+  return [src];
+};
+
 const SaveOfflineButton = ({ slug, title }: SaveOfflineButtonProps): JSX.Element => {
   const { t } = useTranslation();
   const url = `/anime/${slug}`;
@@ -56,6 +66,7 @@ const SaveOfflineButton = ({ slug, title }: SaveOfflineButtonProps): JSX.Element
           url,
           title,
           apiUrls: [`/api/anime/${slug}`, `/api/anime/${slug}/download`],
+          imageUrls: readPosterUrl(),
         });
         if (ok) {
           setSaved(true);
@@ -73,11 +84,12 @@ const SaveOfflineButton = ({ slug, title }: SaveOfflineButtonProps): JSX.Element
   return (
     <button
       type="button"
+      data-offline-save
       onClick={toggle}
       disabled={busy}
       aria-pressed={saved}
       title={t("offline.save_hint")}
-      className="inline-flex items-center gap-1 rounded-sm border-2 border-border bg-surface px-2 py-0.5 font-mono text-[11px] font-bold text-ink shadow-[2px_2px_0_0_var(--border)] transition-all duration-150 motion-safe:hover:-translate-y-0.5 hover:bg-nb-yellow active:translate-y-0 active:shadow-none disabled:opacity-60"
+      className="inline-flex items-center gap-1 rounded-sm border-2 border-border bg-surface px-2 py-0.5 font-mono text-[11px] font-bold text-ink shadow-[2px_2px_0_0_var(--border)] transition-all duration-150 motion-safe:hover:-translate-y-0.5 hover:bg-nb-yellow hover:text-nb-ink active:translate-y-0 active:shadow-none disabled:opacity-60"
     >
       <span aria-hidden="true">{saved ? "✓" : "⤓"}</span>
       <span>{saved ? t("offline.saved") : t("offline.save")}</span>

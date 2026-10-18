@@ -17,6 +17,22 @@ const CACHE_CAPS = { [PAGES_CACHE]: 90, [API_CACHE]: 150, [STATIC_CACHE]: 300 };
 const OFFLINE_URL = "/offline";
 const PRECACHE_URLS = [OFFLINE_URL, "/manifest.webmanifest", "/icon.svg"];
 
+// The /offline document is a client component: without its own chunks it shows
+// only the server shell when the network is gone. Parse the freshly fetched
+// HTML for /_next/static/... URLs and keep those bytes too.
+const precacheOfflineChunks = async (cache) => {
+  try {
+    const response = await fetch(OFFLINE_URL, { cache: "no-cache" });
+    if (!response.ok) return;
+    const html = await response.clone().text();
+    await cache.put(OFFLINE_URL, response);
+    const urls = [...new Set(html.match(/\/_next\/static\/[^"'\s\\]+/g) ?? [])];
+    await Promise.all(urls.map((url) => cache.add(url).catch(() => {})));
+  } catch {
+    // Offline install (or a weird HTML shape) — the plain precache remains.
+  }
+};
+
 // Pages worth keeping offline: app shell pages + anime detail pages. Anything
 // else falls through to the /offline fallback.
 const OFFLINE_PAGES = [/^\/$/, /^\/page\//, /^\/bookmarks/, /^\/genres/, /^\/seasons/, /^\/anime\//];
@@ -26,6 +42,21 @@ const OFFLINE_PAGES = [/^\/$/, /^\/page\//, /^\/bookmarks/, /^\/genres/, /^\/sea
 const API_SWR = [/^\/api\/anime\//, /^\/api\/genres/, /^\/api\/seasons/, /^\/api\/recommend/, /^\/api\/search/];
 
 const isOfflinePage = (pathname) => OFFLINE_PAGES.some((pattern) => pattern.test(pathname));
+
+// Tell pages when data could not be refreshed (or arrived from the
+// stale/fallback tier) so the UI can say "data per <time>" instead of silently
+// showing old numbers. Cleared by any fresh, non-degraded response.
+const DEGRADED_TIERS = new Set(["stale", "fallback"]);
+const notifyDataState = (response) => {
+  try {
+    const tier = response.headers.get("X-Cache-Tier") || "";
+    if (DEGRADED_TIERS.has(tier)) {
+      broadcast({ type: "kokunime:data-stale", at: response.headers.get("date") || new Date().toISOString() });
+    } else {
+      broadcast({ type: "kokunime:data-fresh" });
+    }
+  } catch {}
+};
 
 const broadcast = (message) => {
   self.clients.matchAll({ type: "window" }).then((clients) => {
@@ -54,9 +85,9 @@ const writeSavedMeta = async (list) => {
   await cache.put(SAVED_META_URL, new Response(JSON.stringify(list), { headers: { "content-type": "application/json" } }));
 };
 
-const saveOffline = async ({ url, title, apiUrls = [] }) => {
+const saveOffline = async ({ url, title, apiUrls = [], imageUrls = [] }) => {
   const cache = await caches.open(SAVED_CACHE);
-  const targets = [url, ...apiUrls];
+  const targets = [url, ...apiUrls, ...imageUrls];
   let failures = 0;
 
   for (const target of targets) {
@@ -75,7 +106,10 @@ const saveOffline = async ({ url, title, apiUrls = [] }) => {
   if (failures === targets.length) return false;
 
   const meta = await readSavedMeta();
-  const next = [{ url, title, addedAt: Date.now(), apiUrls }, ...meta.filter((item) => item.url !== url)].slice(0, 60);
+  const next = [
+    { url, title, addedAt: Date.now(), apiUrls, imageUrls },
+    ...meta.filter((item) => item.url !== url),
+  ].slice(0, 60);
   await writeSavedMeta(next);
   return true;
 };
@@ -86,7 +120,27 @@ const removeOffline = async (url) => {
   const entry = meta.find((item) => item.url === url);
   await cache.delete(url);
   for (const api of entry?.apiUrls ?? []) await cache.delete(api);
+  for (const image of entry?.imageUrls ?? []) await cache.delete(image);
   await writeSavedMeta(meta.filter((item) => item.url !== url));
+};
+
+// Re-fetch one saved entry (page + APIs + poster). Used by "Perbarui" and by
+// the background sync below; the network is allowed to still be down.
+const refreshEntry = async (cache, item) => {
+  const targets = [item.url, ...(item.apiUrls ?? []), ...(item.imageUrls ?? [])];
+  let ok = false;
+  for (const target of targets) {
+    try {
+      const response = await fetch(target, { cache: "no-cache" });
+      if (response.ok) {
+        await cache.put(target, response);
+        ok = true;
+      }
+    } catch {
+      // Still offline — keep the older copy.
+    }
+  }
+  return ok;
 };
 
 // Background refresh (Sync / Periodic Sync, Chromium): re-fetch every saved
@@ -95,14 +149,12 @@ const refreshSaved = async () => {
   const meta = await readSavedMeta();
   if (meta.length === 0) return;
   const cache = await caches.open(SAVED_CACHE);
+  const refreshed = [];
   for (const item of meta) {
-    try {
-      const response = await fetch(item.url, { cache: "no-cache" });
-      if (response.ok) await cache.put(item.url, response);
-    } catch {
-      // Still offline — keep the older copy.
-    }
+    if (await refreshEntry(cache, item)) refreshed.push({ ...item, refreshedAt: Date.now() });
+    else refreshed.push(item);
   }
+  await writeSavedMeta(refreshed);
 
   // Keep the shell APIs warm in the SWR cache so the next offline visit has
   // fresh data for the rails/inbox instead of whatever was cached at save time.
@@ -206,7 +258,12 @@ self.addEventListener("install", (event) => {
   event.waitUntil(
     caches
       .open(STATIC_CACHE)
-      .then((cache) => cache.addAll(PRECACHE_URLS).catch(() => {}))
+      .then((cache) =>
+        cache
+          .addAll(PRECACHE_URLS)
+          .catch(() => {})
+          .then(() => precacheOfflineChunks(cache)),
+      )
       .then(() => self.skipWaiting()),
   );
 });
@@ -243,6 +300,24 @@ self.addEventListener("message", (event) => {
         reply({ type: "kokunime:remove-result", ok: true, url: data.url });
         broadcast({ type: "kokunime:offline-list-changed" });
       }),
+    );
+  } else if (data.type === "kokunime:refresh-offline") {
+    event.waitUntil(
+      (async () => {
+        const cache = await caches.open(SAVED_CACHE);
+        const meta = await readSavedMeta();
+        const targets = data.url ? meta.filter((item) => item.url === data.url) : meta;
+        let refreshed = 0;
+        for (const item of targets) {
+          if (!(await refreshEntry(cache, item))) continue;
+          refreshed++;
+          const index = meta.findIndex((entry) => entry.url === item.url);
+          if (index >= 0) meta[index] = { ...item, refreshedAt: Date.now() };
+        }
+        if (refreshed > 0) await writeSavedMeta(meta);
+        reply({ type: "kokunime:refresh-result", ok: refreshed > 0, refreshed });
+        if (refreshed > 0) broadcast({ type: "kokunime:offline-list-changed" });
+      })(),
     );
   } else if (data.type === "kokunime:queue-track") {
     event.waitUntil(
@@ -283,9 +358,20 @@ self.addEventListener("fetch", (event) => {
   const url = new URL(request.url);
   if (url.origin !== self.location.origin) return;
 
-  // RSC payloads and image optimizers must NEVER be intercepted: navigation
-  // requests already carry the page cache, RSC would double-cache responses.
-  if (url.pathname.startsWith("/_next/image") || url.searchParams.has("_rsc") || request.headers.get("RSC") === "1") {
+  // RSC payloads must NEVER be intercepted: navigation requests already carry
+  // the page cache, RSC would double-cache responses.
+  if (url.searchParams.has("_rsc") || request.headers.get("RSC") === "1") return;
+
+  // Optimized images: a page saved offline also stores its poster, so serve the
+  // saved copy when the network is down. Nothing is cached here — the rolling
+  // caches stay free of image bytes.
+  if (url.pathname.startsWith("/_next/image")) {
+    event.respondWith(
+      caches
+        .open(SAVED_CACHE)
+        .then((cache) => cache.match(request))
+        .then((saved) => saved || fetch(request)),
+    );
     return;
   }
 
@@ -297,10 +383,19 @@ self.addEventListener("fetch", (event) => {
         const cached = await cache.match(request);
         const network = fetch(request)
           .then((response) => {
-            if (response.ok) cache.put(request, response.clone());
+            if (response.ok) {
+              cache.put(request, response.clone());
+              notifyDataState(response);
+            }
             return response;
           })
-          .catch(() => undefined);
+          .catch(() => {
+            broadcast({
+              type: "kokunime:data-stale",
+              at: cached?.headers?.get("date") || new Date().toISOString(),
+            });
+            return undefined;
+          });
         if (cached) return cached;
         const response = await network;
         if (response) return response;
@@ -327,6 +422,7 @@ self.addEventListener("fetch", (event) => {
             const copy = response.clone();
             caches.open(PAGES_CACHE).then((cache) => cache.put(request, copy));
           }
+          notifyDataState(response);
           return response;
         })
         .catch(async () => {

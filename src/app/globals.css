@@ -13,5 +13,7 @@
   margin-inline: auto;
 }
 
-/* UI is light-only; dark: variants must stay inert instead of following OS dark mode. */
-@custom-variant dark (&:where(.dark, .dark *));
+/* Theme-aware dark: variant. The theme is chosen by the visitor (or their OS)
+   and lands on <html> as data-theme="dark" before first paint, so `dark:` never
+   follows the OS on its own. */
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));

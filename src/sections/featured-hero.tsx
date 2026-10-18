@@ -64,10 +64,14 @@ const FeaturedHero = ({ featured, items = [], blurDataURL }: FeaturedHeroProps):
                     type="button"
                     onClick={() => setActiveIndex(idx)}
                     aria-label={`Slide ke ${idx + 1}`}
-                    className={`h-2.5 rounded-sm border border-nb-ink transition-all duration-200 cursor-pointer ${
-                      activeIndex === idx ? "w-7 bg-nb-yellow" : "w-2.5 bg-nb-cream/80 hover:bg-nb-cream"
-                    }`}
-                  />
+                    className="group flex h-6 min-w-6 cursor-pointer items-center justify-center rounded-sm"
+                  >
+                    <span
+                      className={`h-2.5 rounded-sm border border-nb-ink transition-all duration-200 ${
+                        activeIndex === idx ? "w-7 bg-nb-yellow" : "w-2.5 bg-nb-cream/80 group-hover:bg-nb-cream"
+                      }`}
+                    />
+                  </button>
                 ))}
               </div>
             )}

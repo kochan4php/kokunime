@@ -4,7 +4,9 @@ export interface SavedOfflineEntry {
   url: string;
   title: string;
   addedAt: number;
+  refreshedAt?: number;
   apiUrls?: string[];
+  imageUrls?: string[];
 }
 
 const SAVED_CACHE = "kokunime-saved";
@@ -68,6 +70,7 @@ export const saveOfflineEntry = async (entry: {
   url: string;
   title: string;
   apiUrls?: string[];
+  imageUrls?: string[];
 }): Promise<boolean> => {
   if (!("caches" in window)) return false;
 
@@ -78,7 +81,7 @@ export const saveOfflineEntry = async (entry: {
   try {
     const cache = await caches.open(SAVED_CACHE);
     let saved = 0;
-    for (const target of [entry.url, ...(entry.apiUrls ?? [])]) {
+    for (const target of [entry.url, ...(entry.apiUrls ?? []), ...(entry.imageUrls ?? [])]) {
       try {
         const response = await fetch(target, { cache: "no-cache" });
         if (response.ok) {
@@ -112,9 +115,53 @@ export const removeOfflineEntry = async (url: string): Promise<void> => {
     const entry = meta.find((item) => item.url === url);
     await cache.delete(url);
     for (const api of entry?.apiUrls ?? []) await cache.delete(api);
+    for (const image of entry?.imageUrls ?? []) await cache.delete(image);
     await writeMetaDirect(meta.filter((item) => item.url !== url));
   } catch {
     // Nothing else to do — the entry stays until the next attempt.
+  }
+};
+
+// Re-fetch saved copies (one entry, or every entry when url is omitted).
+export const refreshOfflineSaved = async (url?: string): Promise<boolean> => {
+  if (!("caches" in window)) return false;
+
+  const viaWorker = await askServiceWorker(
+    { type: "kokunime:refresh-offline", url },
+    "kokunime:refresh-result",
+    20_000,
+  );
+  if (viaWorker) return viaWorker.ok === true;
+
+  // Direct fallback: refresh the requested entries without the worker.
+  try {
+    const cache = await caches.open(SAVED_CACHE);
+    const meta = await readMetaDirect();
+    const targets = url ? meta.filter((item) => item.url === url) : meta;
+    let refreshed = 0;
+    for (const item of targets) {
+      let ok = false;
+      for (const target of [item.url, ...(item.apiUrls ?? []), ...(item.imageUrls ?? [])]) {
+        try {
+          const response = await fetch(target, { cache: "no-cache" });
+          if (response.ok) {
+            await cache.put(target, response);
+            ok = true;
+          }
+        } catch {
+          // Still offline for this target — keep the older copy.
+        }
+      }
+      if (ok) {
+        refreshed++;
+        const index = meta.findIndex((entry) => entry.url === item.url);
+        if (index >= 0) meta[index] = { ...item, refreshedAt: Date.now() };
+      }
+    }
+    if (refreshed > 0) await writeMetaDirect(meta);
+    return refreshed > 0;
+  } catch {
+    return false;
   }
 };
 

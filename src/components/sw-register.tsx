@@ -19,11 +19,13 @@ const ServiceWorkerRegister = (): null => {
 
     if (process.env.NODE_ENV === "production") {
       // On alias/preview domains the build id and cache expectations differ:
-      // register only on the configured production origin.
+      // register only on the configured production origin. localhost stays
+      // allowed — self-hosting and the offline smoke run a real build locally.
       const configuredSite = process.env.NEXT_PUBLIC_SITE_URL;
       if (configuredSite) {
         try {
-          if (new URL(configuredSite).origin !== window.location.origin) return;
+          const isLocalHost = ["localhost", "127.0.0.1"].includes(window.location.hostname);
+          if (!isLocalHost && new URL(configuredSite).origin !== window.location.origin) return;
         } catch {
           // Malformed env value — treat as unset and continue.
         }

@@ -15,7 +15,11 @@ import { evaluate, findBrowser, launchBrowser, navigate, runAxe, screenshot, sle
 
 const BASE_URL = (process.env.BASE_URL || "http://localhost:3000").replace(/\/$/, "");
 const MOBILE = process.env.MOBILE === "1";
-const AXE_ON = (process.env.AXE || "on") !== "off";
+// Windows High Contrast emulation: no OS switch needed to catch a forced-colors
+// regression. axe runs with FORCED=1 because its color rules misread forced
+// system palettes.
+const FORCED = process.env.FORCED === "1";
+const AXE_ON = (process.env.AXE || (FORCED ? "off" : "on")) !== "off";
 const ROUTES = (
   process.env.ROUTES || "/,/update,/seasons,/genres,/bookmarks,/stats,/wrapped,/compare,/roulette,/settings"
 )
@@ -66,6 +70,14 @@ async function main() {
   const routes = [...ROUTES];
 
   try {
+    if (FORCED) {
+      await cdp.send(
+        "Emulation.setEmulatedMedia",
+        { features: [{ name: "forced-colors", value: "active" }] },
+        sessionId,
+      );
+    }
+
     // Discover one detail route from the home page so the check stays
     // data-agnostic (slug changes all the time).
     try {
@@ -85,16 +97,16 @@ async function main() {
       const offConsole = cdp.on(sessionId, "Runtime.consoleAPICalled", (params) => {
         if (params.type !== "error") return;
         const text = (params.args || []).map((arg) => arg.value ?? arg.description ?? "").join(" ");
-        if (text && !isNoise(text)) consoleErrors.push(text.slice(0, 200));
+        if (text && !isNoise(text)) consoleErrors.push(text.slice(0, 700));
       });
       const offException = cdp.on(sessionId, "Runtime.exceptionThrown", (params) => {
         const text = params.exceptionDetails?.exception?.description || params.exceptionDetails?.text || "";
-        if (text && !isNoise(text)) consoleErrors.push(String(text).slice(0, 200));
+        if (text && !isNoise(text)) consoleErrors.push(String(text).slice(0, 700));
       });
       const offLog = cdp.on(sessionId, "Log.entryAdded", (params) => {
         if (params.entry?.level !== "error") return;
         const text = params.entry?.text || "";
-        if (text && !isNoise(text)) consoleErrors.push(text.slice(0, 200));
+        if (text && !isNoise(text)) consoleErrors.push(text.slice(0, 700));
       });
 
       let axeViolations = null;
@@ -172,6 +184,55 @@ async function main() {
         offLog();
       }
     }
+
+    // Modal focus handoff (desktop, once): the palette traps focus inside the
+    // open dialog, Esc closes it, and focus returns to the trigger.
+    if (!MOBILE) {
+      try {
+        await navigate(cdp, sessionId, `${BASE_URL}/`, { settleMs: 800 });
+        // Two triggers exist (mobile + desktop); only the visible one counts.
+        const visibleTrigger = `[...document.querySelectorAll('button[title*="Ctrl+K"]')].find((el) => el.getBoundingClientRect().width > 0)`;
+        const hasTrigger = await evaluate(cdp, sessionId, `Boolean(${visibleTrigger})`);
+        if (hasTrigger) {
+          await evaluate(
+            cdp,
+            sessionId,
+            `(() => { const b = ${visibleTrigger}; b.focus(); b.click(); return true; })()`,
+          );
+          await sleep(500);
+          const trapped = await evaluate(
+            cdp,
+            sessionId,
+            `(() => { const d = document.querySelector('dialog[open]'); return Boolean(d && d.contains(document.activeElement)); })()`,
+          );
+          await cdp.send(
+            "Input.dispatchKeyEvent",
+            { type: "rawKeyDown", key: "Escape", code: "Escape", windowsVirtualKeyCode: 27 },
+            sessionId,
+          );
+          await cdp.send(
+            "Input.dispatchKeyEvent",
+            { type: "keyUp", key: "Escape", code: "Escape", windowsVirtualKeyCode: 27 },
+            sessionId,
+          );
+          await sleep(700);
+          const restored = await evaluate(cdp, sessionId, `document.activeElement === ${visibleTrigger}`);
+          const problems = [];
+          if (!trapped) problems.push("focus is not trapped inside the open dialog");
+          if (!restored) problems.push("focus did not return to the trigger after Esc");
+          if (problems.length > 0) {
+            failures.push({ route: "modal-focus", problems });
+            console.log(`  × modal-focus`);
+            for (const problem of problems) console.log(`      - ${problem}`);
+          } else {
+            console.log(`  ✓ modal-focus (palette trap + focus restore)`);
+          }
+        }
+      } catch (error) {
+        failures.push({ route: "modal-focus", problems: [`check failed: ${String(error).slice(0, 160)}`] });
+        console.log(`  × modal-focus — ${String(error).slice(0, 140)}`);
+      }
+    }
   } finally {
     cdp.close();
     cleanup();
@@ -182,7 +243,9 @@ async function main() {
     console.error(`\n✗ visual-smoke: ${failures.length}/${routes.length} route(s) failed.`);
     process.exitCode = 1;
   } else {
-    console.log(`\n✓ visual-smoke: ${routes.length} route(s) clean${MOBILE ? " (mobile 390px)" : ""}.`);
+    console.log(
+      `\n✓ visual-smoke: ${routes.length} route(s) clean${MOBILE ? " (mobile 390px)" : ""}${FORCED ? " (forced-colors)" : ""}.`,
+    );
   }
   return failures.length;
 }

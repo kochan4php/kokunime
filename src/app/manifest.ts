@@ -65,6 +65,13 @@ export default function manifest(): MetadataRoute.Manifest {
         url: "/genres",
         icons: [{ src: "/icons/icon-192.png", sizes: "192x192" }],
       },
+      {
+        name: "Tersimpan Offline",
+        short_name: "Offline",
+        description: "Buka halaman yang disimpan untuk dibaca tanpa internet",
+        url: "/offline",
+        icons: [{ src: "/icons/icon-192.png", sizes: "192x192" }],
+      },
     ],
   };
 }

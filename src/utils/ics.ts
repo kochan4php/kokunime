@@ -66,3 +66,48 @@ export const buildWeeklyReminderIcs = (events: CalendarEvent[], count = 26): str
   lines.push("END:VCALENDAR");
   return `${lines.map(foldLine).join("\r\n")}\r\n`;
 };
+
+export interface CalendarFeedEvent extends CalendarEvent {
+  description?: string;
+}
+
+const formatDate = (date: Date): string => formatUtc(date).slice(0, 8);
+
+// Subscribable webcal feed: one all-day event per recently updated title.
+// Upstream carries no real air timestamps, so DTSTART is the day the title was
+// seen in this feed; stable UIDs let calendar apps update entries in place
+// instead of duplicating them on every refresh.
+export const buildCalendarFeed = (events: CalendarFeedEvent[], day = new Date()): string => {
+  const date = formatDate(day);
+  const dtStamp = formatUtc(day);
+
+  const lines = [
+    "BEGIN:VCALENDAR",
+    "VERSION:2.0",
+    "PRODID:-//Kokunime//Update Feed//ID",
+    "CALSCALE:GREGORIAN",
+    "METHOD:PUBLISH",
+    "X-WR-CALNAME:Kokunime Update Terbaru",
+    "X-WR-TIMEZONE:Asia/Jakarta",
+    "REFRESH-INTERVAL;VALUE=DURATION:PT6H",
+    "X-PUBLISHED-TTL:PT6H",
+  ];
+
+  for (const event of events) {
+    lines.push(
+      "BEGIN:VEVENT",
+      `UID:kokunime-feed-${djb2(event.url)}@kokunime`,
+      `DTSTAMP:${dtStamp}`,
+      `DTSTART;VALUE=DATE:${date}`,
+      "DURATION:P1D",
+      "TRANSP:TRANSPARENT",
+      `SUMMARY:${escapeIcs(event.title)}`,
+      `DESCRIPTION:${escapeIcs(event.description ?? event.url)}`,
+      `URL:${event.url}`,
+      "END:VEVENT",
+    );
+  }
+
+  lines.push("END:VCALENDAR");
+  return `${lines.map(foldLine).join("\r\n")}\r\n`;
+};

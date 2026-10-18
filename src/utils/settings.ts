@@ -9,11 +9,13 @@ export type FontFamily = "sans" | "mono" | "serif";
 export type FontSize = "compact" | "normal" | "large";
 export type CardDensity = "comfortable" | "compact";
 export type ReadingMode = "none" | "sepia" | "high-contrast";
+export type ThemeMode = "light" | "dark" | "system";
 type DefaultViewMode = "grid" | "list";
 type DownloadLayoutMode = "cards" | "matrix";
 
 export interface AppSettings {
   language: AppLanguage;
+  theme: ThemeMode;
   accent: AccentColor;
   font: FontFamily;
   fontSize: FontSize;
@@ -32,6 +34,7 @@ export interface AppSettings {
 
 export const DEFAULT_SETTINGS: AppSettings = {
   language: "id",
+  theme: "system",
   accent: "orange",
   font: "mono",
   fontSize: "normal",
@@ -101,6 +104,53 @@ export const getStoredSettings = (): AppSettings => {
   }
 };
 
+const darkQuery = (): MediaQueryList | null =>
+  typeof window !== "undefined" && typeof window.matchMedia === "function"
+    ? window.matchMedia("(prefers-color-scheme: dark)")
+    : null;
+
+// Browser chrome (mobile status bar) follows the resolved theme, not the OS,
+// once the visitor has picked a theme explicitly. Roles are marked once: the
+// live media string is rewritten on every call, so it can no longer say which
+// meta is the dark one.
+const syncThemeColorMeta = (mode: ThemeMode, dark: boolean): void => {
+  for (const meta of document.querySelectorAll<HTMLMetaElement>('meta[name="theme-color"]')) {
+    let role = meta.dataset.themeRole;
+    if (!role) {
+      const media = meta.getAttribute("media") ?? "";
+      if (media.includes("dark")) role = "dark";
+      else if (media.includes("light")) role = "light";
+      else continue; // single un-scoped theme-color meta: the browser decides
+      meta.dataset.themeRole = role;
+    }
+    if (mode === "system") {
+      meta.setAttribute("media", role === "dark" ? "(prefers-color-scheme: dark)" : "(prefers-color-scheme: light)");
+    } else {
+      meta.setAttribute("media", (role === "dark") === dark ? "all" : "not all");
+    }
+  }
+};
+
+let themeMediaBound = false;
+
+// "system" follows the OS live; an explicit choice always wins.
+export const applyTheme = (mode: ThemeMode): void => {
+  if (typeof window === "undefined") return;
+  const dark = mode === "dark" || (mode === "system" && (darkQuery()?.matches ?? false));
+  const root = document.documentElement;
+  if (dark) root.setAttribute("data-theme", "dark");
+  else root.removeAttribute("data-theme");
+  syncThemeColorMeta(mode, dark);
+
+  if (!themeMediaBound) {
+    themeMediaBound = true;
+    darkQuery()?.addEventListener("change", () => {
+      const current = getStoredSettings().theme;
+      if (current === "system") applyTheme(current);
+    });
+  }
+};
+
 export const applySettingsToDom = (settings: AppSettings): void => {
   if (typeof window === "undefined") return;
   const root = document.documentElement;
@@ -110,6 +160,9 @@ export const applySettingsToDom = (settings: AppSettings): void => {
   root.lang = lang;
   localStorage.setItem(STORAGE_KEYS.lang, lang);
   window.dispatchEvent(new CustomEvent("kokunime:lang_change", { detail: { language: lang } }));
+
+  // 0b. Theme (before accents: dark variants depend on the data-theme scope)
+  applyTheme(settings.theme || "system");
 
   // 1. Accent
   if (settings.accent === "orange") {
@@ -190,6 +243,9 @@ const isKnownStringValue = (key: string, value: string): boolean => {
   return [
     "id",
     "en",
+    "light",
+    "dark",
+    "system",
     "sans",
     "mono",
     "serif",
@@ -324,6 +380,7 @@ export const exportAllAppData = (): string => {
     progress: JSON.parse(localStorage.getItem(STORAGE_KEYS.progress) || "[]"),
     episodeLog: JSON.parse(localStorage.getItem(STORAGE_KEYS.episodeLog) || "[]"),
     folderOrder: JSON.parse(localStorage.getItem(STORAGE_KEYS.folderOrder) || "[]"),
+    collections: JSON.parse(localStorage.getItem(STORAGE_KEYS.collections) || "[]"),
   };
   return JSON.stringify(data, null, 2);
 };
@@ -347,6 +404,7 @@ export const importAllAppData = (jsonString: string): boolean => {
     writeArray(STORAGE_KEYS.progress, parsed.progress);
     writeArray(STORAGE_KEYS.episodeLog, parsed.episodeLog);
     writeArray(STORAGE_KEYS.folderOrder, parsed.folderOrder);
+    writeArray(STORAGE_KEYS.collections, parsed.collections);
 
     window.dispatchEvent(new Event("storage"));
     return true;

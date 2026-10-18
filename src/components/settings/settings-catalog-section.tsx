@@ -109,7 +109,7 @@ const SettingsCatalogSection = ({ settings, mounted, onUpdate }: SettingsCatalog
               type="checkbox"
               checked={mounted ? settings.dataSaver : false}
               onChange={(e) => onUpdate("dataSaver", e.target.checked)}
-              className="h-4 w-4 rounded-sm border-border accent-accent cursor-pointer ml-3"
+              className="h-6 w-6 shrink-0 rounded-sm border-border accent-accent cursor-pointer ml-3"
             />
           </label>
 
@@ -125,7 +125,7 @@ const SettingsCatalogSection = ({ settings, mounted, onUpdate }: SettingsCatalog
               type="checkbox"
               checked={mounted ? settings.hideSpoilers : false}
               onChange={(e) => onUpdate("hideSpoilers", e.target.checked)}
-              className="h-4 w-4 rounded-sm border-border accent-accent cursor-pointer ml-3"
+              className="h-6 w-6 shrink-0 rounded-sm border-border accent-accent cursor-pointer ml-3"
             />
           </label>
 
@@ -141,7 +141,7 @@ const SettingsCatalogSection = ({ settings, mounted, onUpdate }: SettingsCatalog
               type="checkbox"
               checked={mounted ? settings.autoMarkWatched : false}
               onChange={(e) => onUpdate("autoMarkWatched", e.target.checked)}
-              className="h-4 w-4 rounded-sm border-border accent-accent cursor-pointer ml-3"
+              className="h-6 w-6 shrink-0 rounded-sm border-border accent-accent cursor-pointer ml-3"
             />
           </label>
 
@@ -157,7 +157,7 @@ const SettingsCatalogSection = ({ settings, mounted, onUpdate }: SettingsCatalog
               type="checkbox"
               checked={mounted ? settings.autoArchive : false}
               onChange={(e) => onUpdate("autoArchive", e.target.checked)}
-              className="h-4 w-4 rounded-sm border-border accent-accent cursor-pointer ml-3"
+              className="h-6 w-6 shrink-0 rounded-sm border-border accent-accent cursor-pointer ml-3"
             />
           </label>
 
