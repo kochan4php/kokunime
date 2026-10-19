@@ -2,6 +2,11 @@
 // URL (?v=<build id>) injected by src/components/sw-register.tsx — a new build
 // registers a new script URL, activates it, and the old cache names are purged.
 const VERSION = new URL(self.location.href).searchParams.get("v") || "dev";
+
+// Outbox lives in its own classic worker script (this keeps the main worker
+// under 500 lines). Versioned so a stale implementation cannot outlive a build.
+importScripts(`/sw-outbox.js?v=${VERSION}`);
+const { enqueueRequest, flushOutbox } = self.kokunimeOutbox;
 const STATIC_CACHE = `kokunime-static-${VERSION}`;
 const PAGES_CACHE = `kokunime-pages-${VERSION}`;
 const API_CACHE = `kokunime-api-${VERSION}`;
@@ -228,78 +233,6 @@ const pruneCache = async (name) => {
   const keys = await cache.keys();
   const excess = keys.length - maxEntries;
   for (let i = 0; i < excess; i++) await cache.delete(keys[i]);
-};
-
-// --- Offline action outbox (Background Sync, Chromium) -----------------------
-
-// track-view pings that failed offline queue here and replay via the
-// "kokunime-flush-queue" sync tag (fallback: an explicit flush message from
-// the page when it comes back online).
-const OUTBOX_DB = "kokunime-outbox";
-const OUTBOX_STORE = "requests";
-
-const openOutbox = () =>
-  new Promise((resolve, reject) => {
-    const request = indexedDB.open(OUTBOX_DB, 1);
-    request.onupgradeneeded = () => {
-      if (!request.result.objectStoreNames.contains(OUTBOX_STORE)) {
-        request.result.createObjectStore(OUTBOX_STORE, { autoIncrement: true });
-      }
-    };
-    request.onsuccess = () => resolve(request.result);
-    request.onerror = () => reject(request.error);
-  });
-
-const enqueueRequest = async (item) => {
-  const db = await openOutbox();
-  try {
-    await new Promise((resolve, reject) => {
-      const tx = db.transaction(OUTBOX_STORE, "readwrite");
-      tx.objectStore(OUTBOX_STORE).add(item);
-      tx.oncomplete = () => resolve();
-      tx.onerror = () => reject(tx.error);
-    });
-  } finally {
-    db.close();
-  }
-};
-
-const flushOutbox = async () => {
-  const db = await openOutbox();
-  try {
-    const items = await new Promise((resolve, reject) => {
-      const store = db.transaction(OUTBOX_STORE, "readonly").objectStore(OUTBOX_STORE);
-      const values = store.getAll();
-      const keys = store.getAllKeys();
-      values.transaction.oncomplete = () =>
-        resolve(values.result.map((value, index) => ({ key: keys.result[index], value })));
-      values.transaction.onerror = () => reject(values.transaction.error);
-    });
-
-    let flushed = 0;
-    for (const item of items) {
-      try {
-        const response = await fetch(item.value.url, {
-          method: "POST",
-          headers: { "content-type": "application/json" },
-          body: JSON.stringify(item.value.body),
-        });
-        if (!response.ok) continue;
-      } catch {
-        break; // Still offline — keep the rest for the next sync.
-      }
-      await new Promise((resolve) => {
-        const tx = db.transaction(OUTBOX_STORE, "readwrite");
-        tx.objectStore(OUTBOX_STORE).delete(item.key);
-        tx.oncomplete = resolve;
-        tx.onerror = resolve;
-      });
-      flushed++;
-    }
-    return flushed;
-  } finally {
-    db.close();
-  }
 };
 
 // --- Lifecycle --------------------------------------------------------------

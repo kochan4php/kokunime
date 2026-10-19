@@ -14,6 +14,7 @@ const check = (name, ok, detail = "") => {
 
 const { cdp, sessionId, cleanup } = await launchBrowser({ width: 1280, height: 900 });
 const js = (expression) => evaluate(cdp, sessionId, expression);
+const jsAsync = (expression) => evaluate(cdp, sessionId, expression, { awaitPromise: true });
 const open = (path) => navigate(cdp, sessionId, `${BASE}${path}`, { settleMs: 2000 });
 const waitFor = async (expression, timeoutMs = 12000) => {
   const deadline = Date.now() + timeoutMs;
@@ -243,6 +244,23 @@ try {
     "backup: tampered checksum is rejected",
     tampered && (await js(`document.body.innerText.includes("Checksum tidak cocok")`)),
   );
+
+  // ---- Service worker: versioned main script + split outbox ----------------
+  const sw = await jsAsync(`(async () => {
+    if (!("serviceWorker" in navigator)) return { supported: false };
+    const registration = await Promise.race([
+      navigator.serviceWorker.ready,
+      new Promise((resolve) => setTimeout(() => resolve(null), 5000)),
+    ]);
+    return { supported: true, active: registration?.active?.scriptURL ?? "" };
+  })()`);
+  check(
+    "service-worker: versioned main script is active",
+    sw?.supported && sw.active.includes("/sw.js?v="),
+    JSON.stringify(sw),
+  );
+  const outboxStatus = await jsAsync(`fetch("/sw-outbox.js").then((response) => response.status).catch(() => 0)`);
+  check("service-worker: split outbox script is served", outboxStatus === 200, String(outboxStatus));
 
   console.log(`\n${failures.length === 0 ? "ALL PASS" : `${failures.length} FAIL`}`);
   process.exitCode = failures.length === 0 ? 0 : 1;
