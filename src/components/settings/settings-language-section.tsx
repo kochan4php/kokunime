@@ -9,12 +9,14 @@ interface SettingsLanguageSectionProps {
   settings: AppSettings;
   mounted: boolean;
   onLanguageChange: (language: AppLanguage) => void;
+  onReset: () => void;
 }
 
 const SettingsLanguageSection = ({
   settings,
   mounted,
   onLanguageChange,
+  onReset,
 }: SettingsLanguageSectionProps): JSX.Element => {
   const { t, language } = useTranslation();
 
@@ -26,6 +28,7 @@ const SettingsLanguageSection = ({
           iconClassName="bg-nb-yellow"
           title={t("settings.language_title")}
           desc={t("settings.language_desc")}
+          onReset={onReset}
         />
 
         {/* Language Radio Cards */}

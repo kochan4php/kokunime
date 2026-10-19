@@ -9,6 +9,8 @@ interface ViewTransitionLinkProps {
   children: ReactNode;
   className?: string;
   title?: string;
+  /** Poster element to name for the shared-element transition (details page). */
+  posterName?: string;
   /** Opt back into Next's viewport prefetch (rare — hover-intent is the default). */
   eagerPrefetch?: boolean;
 }
@@ -26,10 +28,27 @@ const ViewTransitionLink = ({
   children,
   className,
   title,
+  posterName,
   eagerPrefetch = false,
 }: ViewTransitionLinkProps): JSX.Element => {
   const router = useRouter();
   const timer = useRef<number | null>(null);
+
+  // Shared-element handoff: only the hovered/focused card is named, so two
+  // rails showing the same title cannot produce duplicate view-transition-name
+  // (which aborts the transition).
+  const markPoster = (element: HTMLElement): void => {
+    if (!posterName) return;
+    // Only one named poster at a time: the same title can appear in several
+    // rails, and duplicate view-transition-name aborts the transition.
+    for (const other of document.querySelectorAll<HTMLElement>("[data-poster]")) {
+      if (!element.contains(other)) other.style.removeProperty("view-transition-name");
+    }
+    element.querySelector<HTMLElement>("[data-poster]")?.style.setProperty("view-transition-name", posterName);
+  };
+  const clearPoster = (element: HTMLElement): void => {
+    element.querySelector<HTMLElement>("[data-poster]")?.style.removeProperty("view-transition-name");
+  };
 
   const startIntent = (): void => {
     if (eagerPrefetch || timer.current !== null) return;
@@ -78,9 +97,16 @@ const ViewTransitionLink = ({
       {...(title !== undefined ? { title } : {})}
       {...(eagerPrefetch ? {} : { prefetch: false })}
       onPointerEnter={startIntent}
+      onPointerDown={(event) => markPoster(event.currentTarget)}
       onPointerLeave={cancelIntent}
-      onFocus={startIntent}
-      onBlur={cancelIntent}
+      onFocus={(event) => {
+        startIntent();
+        markPoster(event.currentTarget);
+      }}
+      onBlur={(event) => {
+        cancelIntent();
+        clearPoster(event.currentTarget);
+      }}
       onClick={handleClick}
     >
       {children}

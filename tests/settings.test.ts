@@ -5,10 +5,9 @@ import {
   saveSettings,
   applySettingsToDom,
   calculateStorageBreakdown,
-  exportAllAppData,
-  importAllAppData,
   mergeSettings,
 } from "@/utils/settings";
+import { exportAllAppData, importAllAppData } from "@/utils/backup";
 
 describe("settings utility", () => {
   let store: Record<string, string> = {};
@@ -129,7 +128,7 @@ describe("settings utility", () => {
 
   it("calculates storage breakdown accurately", () => {
     store.kokunime_bookmarks = JSON.stringify([{ slug: "one-piece", title: "One Piece" }]);
-    store.kokunime_watch_history = JSON.stringify([{ slug: "bleach", title: "Bleach" }]);
+    store.kokunime_history = JSON.stringify([{ slug: "bleach", title: "Bleach" }]);
     store.kokunime_recent_searches = JSON.stringify(["naruto", "jujutsu"]);
 
     const breakdown = calculateStorageBreakdown();
@@ -155,6 +154,42 @@ describe("settings utility", () => {
     store.kokunime_bookmarks = "{broken";
     const breakdown = calculateStorageBreakdown();
     expect(breakdown.bookmarksCount).toBe(0);
+  });
+
+  it("rejects a backup whose checksum no longer matches", () => {
+    store.kokunime_bookmarks = JSON.stringify([{ slug: "naruto" }]);
+    const tampered = JSON.parse(exportAllAppData());
+    expect(tampered.checksum).toBeTruthy();
+    tampered.bookmarks.push({ slug: "injected" });
+
+    expect(importAllAppData(JSON.stringify(tampered))).toBe(false);
+    expect(store.kokunime_bookmarks).not.toContain("injected");
+  });
+
+  it("merges a backup without dropping existing items", () => {
+    store.kokunime_bookmarks = JSON.stringify([{ slug: "naruto", title: "Naruto" }]);
+    const incoming = {
+      app: "Kokunime",
+      version: "2.0.0",
+      bookmarks: [
+        { slug: "bleach", title: "Bleach" },
+        { slug: "naruto", title: "Naruto (baru)" },
+      ],
+    };
+
+    expect(importAllAppData(JSON.stringify(incoming), "merge")).toBe(true);
+    const list = JSON.parse(store.kokunime_bookmarks) as { slug: string; title: string }[];
+    expect(list.map((item) => item.slug).sort()).toEqual(["bleach", "naruto"]);
+    expect(list.find((item) => item.slug === "naruto")?.title).toBe("Naruto (baru)");
+  });
+
+  it("round-trips a checksummed export", () => {
+    store.kokunime_bookmarks = JSON.stringify([{ slug: "naruto", title: "Naruto" }]);
+    const exported = exportAllAppData();
+    store.kokunime_bookmarks = JSON.stringify([]);
+
+    expect(importAllAppData(exported)).toBe(true);
+    expect(JSON.parse(store.kokunime_bookmarks)).toEqual([{ slug: "naruto", title: "Naruto" }]);
   });
 
   it("merges only validated settings from untrusted input", () => {

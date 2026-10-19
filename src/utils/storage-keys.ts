@@ -8,7 +8,6 @@ export const STORAGE_KEYS = {
   lang: "kokunime_lang",
   nightShift: "kokunime_night_shift",
   userSettings: "kokunime_user_settings",
-  watchHistory: "kokunime_watch_history",
   recentSearches: "kokunime_recent_searches",
   settingsChanged: "kokunime_settings_changed",
   diagnostics: "kokunime_diagnostics",
@@ -25,5 +24,7 @@ export const STORAGE_KEYS = {
   episodeLog: "kokunime_episode_log",
   folderOrder: "kokunime_folder_order",
   rouletteHistory: "kokunime_roulette_history",
+  firstVisitTips: "kokunime_first_visit_tips",
+  paletteHistory: "kokunime_palette_history",
   adminToken: "kokunime_admin_token",
 } as const;

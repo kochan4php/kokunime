@@ -5,9 +5,10 @@ import { buildPaletteActions, isActionQuery, type PaletteAction } from "@/utils/
 import { animeSlug } from "@/utils/endpoint-slug";
 import { fuzzyScore } from "@/utils/fuzzy";
 import { type CatalogEntry, ensureServerIndexMerged, searchLocalCatalog } from "@/utils/local-catalog";
+import { recordCommand } from "@/utils/palette-history";
 import { clearRecentSearches, getRecentSearches, saveRecentSearch } from "@/utils/recent-searches";
 import { showToast } from "@/utils/toast";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { type FormEvent, type RefObject, useEffect, useRef, useState } from "react";
 
 // Shared across mounts: the palette is mounted once per layout, but the cache
@@ -58,6 +59,7 @@ export const useCommandPalette = (): UseCommandPaletteResult => {
   const [isLoading, setIsLoading] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
   const router = useRouter();
+  const pathname = usePathname();
 
   const openPalette = () => {
     setIsClosing(false);
@@ -102,15 +104,30 @@ export const useCommandPalette = (): UseCommandPaletteResult => {
   };
 
   const isActionMode = isActionQuery(query);
-  const actions = buildPaletteActions(query);
+  const actions = buildPaletteActions(query, pathname);
 
   const runAction = (action: PaletteAction) => {
+    if (action.id !== "search") recordCommand(action.id);
     closePalette();
     if (action.kind === "copy-url") {
       navigator.clipboard
         ?.writeText(window.location.href)
         .then(() => showToast("Tautan halaman disalin"))
         .catch(() => {});
+      return;
+    }
+    if (action.kind === "copy-title") {
+      const title = document.querySelector("h1")?.textContent?.trim();
+      if (title) {
+        navigator.clipboard
+          ?.writeText(title)
+          .then(() => showToast("Judul anime disalin"))
+          .catch(() => {});
+      }
+      return;
+    }
+    if (action.kind === "shortcuts") {
+      window.dispatchEvent(new KeyboardEvent("keydown", { key: "?" }));
       return;
     }
     if (action.kind === "open-url") {

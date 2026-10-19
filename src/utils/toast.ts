@@ -13,7 +13,7 @@ export interface ToastItem {
   durationMs: number;
 }
 
-const DEFAULT_DURATION_MS = 6000;
+const DEFAULT_DURATION_MS = 8000;
 const MAX_TOASTS = 3;
 // Identical messages inside this window refresh the existing toast instead of
 // stacking duplicates (e.g. double-clicking a save button).

@@ -33,6 +33,7 @@ const DetailHeroView = ({ anime, slug, blurDataURL }: DetailHeroViewProps): JSX.
       <div className="card-core grid md:grid-cols-[320px_1fr]">
         <div
           data-offline-image
+          style={slug ? { viewTransitionName: `poster-${slug}` } : undefined}
           className="relative aspect-[3/4] max-h-[480px] sm:max-h-[560px] md:max-h-none md:aspect-auto md:min-h-full"
         >
           {anime.image && (

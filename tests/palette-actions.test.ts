@@ -43,4 +43,14 @@ describe("palette action mode", () => {
     // Fuzzy filtering finds them by name too.
     expect(buildPaletteActions(">salin").map((action) => action.id)).toContain("copy-url");
   });
+
+  it("adds a contextual copy-title action on detail pages", () => {
+    const actions = buildPaletteActions(">", "/anime/naruto");
+    expect(actions[0]?.id).toBe("copy-title");
+    expect(actions[0]?.kind).toBe("copy-title");
+  });
+
+  it("exposes the keyboard cheat-sheet action", () => {
+    expect(buildPaletteActions(">").find((action) => action.id === "shortcuts")?.kind).toBe("shortcuts");
+  });
 });

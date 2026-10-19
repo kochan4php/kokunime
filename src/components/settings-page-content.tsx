@@ -14,15 +14,15 @@ import {
   AppSettings,
   calculateStorageBreakdown,
   DEFAULT_SETTINGS,
-  exportAllAppData,
   getStoredSettings,
-  importAllAppData,
   saveSettings,
   SETTINGS_CHANGE_EVENT,
   StorageBreakdown,
 } from "@/utils/settings";
 import { STORAGE_KEYS } from "@/utils/storage-keys";
+import { useBackupTools } from "@/hooks/use-backup-tools";
 import { useTranslation } from "@/utils/i18n";
+import { showToast } from "@/utils/toast";
 import { JSX, useEffect, useState } from "react";
 
 const DEFAULT_STORAGE: StorageBreakdown = {
@@ -53,8 +53,6 @@ const SettingsPageContent = (): JSX.Element => {
   const [mounted, setMounted] = useState(false);
   const [settings, setSettings] = useState<AppSettings>(DEFAULT_SETTINGS);
   const [storage, setStorage] = useState<StorageBreakdown>(DEFAULT_STORAGE);
-  const [exportCopied, setExportCopied] = useState(false);
-  const [importStatus, setImportStatus] = useState<string | null>(null);
   const [persisted, setPersisted] = useState<boolean | null>(null);
   const [quotaLabel, setQuotaLabel] = useState<string | null>(null);
 
@@ -107,56 +105,50 @@ const SettingsPageContent = (): JSX.Element => {
     }
   };
 
-  const handleExportJson = () => {
-    const json = exportAllAppData();
-    const blob = new Blob([json], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `kokunime-backup-${new Date().toISOString().slice(0, 10)}.json`;
-    a.click();
-    URL.revokeObjectURL(url);
-    setExportCopied(true);
-    setTimeout(() => setExportCopied(false), 3000);
-  };
-
-  const handleImportJson = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      const content = event.target?.result as string;
-      const success = importAllAppData(content);
-      if (success) {
-        setImportStatus(
-          language === "en" ? "✓ Data & preferences restored successfully!" : "✓ Data & preferensi berhasil diimpor!",
-        );
-        setSettings(getStoredSettings());
-        setStorage(calculateStorageBreakdown());
-      } else {
-        setImportStatus(language === "en" ? "⚠️ Invalid JSON backup format." : "⚠️ Format file JSON tidak valid.");
-      }
-      setTimeout(() => setImportStatus(null), 4000);
-    };
-    reader.readAsText(file);
-    e.target.value = "";
-  };
+  const backup = useBackupTools({
+    language,
+    onRestored: (restored) => {
+      setSettings(restored);
+      setLanguage(restored.language);
+      setStorage(calculateStorageBreakdown());
+    },
+  });
 
   const handleClearSearches = () => {
     const msg = language === "en" ? "Clear all recent search history?" : "Hapus semua riwayat pencarian terakhir?";
     if (confirm(msg)) {
+      const snapshot = localStorage.getItem(STORAGE_KEYS.recentSearches);
       localStorage.removeItem(STORAGE_KEYS.recentSearches);
       setStorage(calculateStorageBreakdown());
       window.dispatchEvent(new Event("storage"));
+      showToast(language === "en" ? "Search history cleared" : "Riwayat pencarian dihapus", {
+        actionLabel: language === "en" ? "Undo" : "Urungkan",
+        onAction: () => {
+          if (snapshot !== null) localStorage.setItem(STORAGE_KEYS.recentSearches, snapshot);
+          setStorage(calculateStorageBreakdown());
+          window.dispatchEvent(new Event("storage"));
+        },
+        durationMs: 8000,
+      });
     }
   };
 
   const handleClearHistory = () => {
     const msg = language === "en" ? "Clear all watched anime history?" : "Hapus semua riwayat tontonan anime?";
     if (confirm(msg)) {
-      localStorage.removeItem(STORAGE_KEYS.watchHistory);
+      const snapshot = localStorage.getItem(STORAGE_KEYS.history);
+      localStorage.removeItem(STORAGE_KEYS.history);
       setStorage(calculateStorageBreakdown());
       window.dispatchEvent(new Event("storage"));
+      showToast(language === "en" ? "Watch history cleared" : "Riwayat tontonan dihapus", {
+        actionLabel: language === "en" ? "Undo" : "Urungkan",
+        onAction: () => {
+          if (snapshot !== null) localStorage.setItem(STORAGE_KEYS.history, snapshot);
+          setStorage(calculateStorageBreakdown());
+          window.dispatchEvent(new Event("storage"));
+        },
+        durationMs: 8000,
+      });
     }
   };
 
@@ -166,10 +158,39 @@ const SettingsPageContent = (): JSX.Element => {
         ? "Reset all settings to default values?"
         : "Kembalikan semua pengaturan ke nilai bawaan (default)?";
     if (confirm(msg)) {
+      const snapshot = getStoredSettings();
       saveSettings(DEFAULT_SETTINGS);
       setSettings(DEFAULT_SETTINGS);
       setLanguage("id");
+      showToast(language === "en" ? "Settings reset to defaults" : "Pengaturan dikembalikan ke default", {
+        actionLabel: language === "en" ? "Undo" : "Urungkan",
+        onAction: () => {
+          saveSettings(snapshot);
+          setSettings(snapshot);
+          setLanguage(snapshot.language);
+        },
+        durationMs: 8000,
+      });
     }
+  };
+
+  const resetSection = (keys: (keyof AppSettings)[]): void => {
+    const snapshot = getStoredSettings();
+    const updated = { ...settings };
+    for (const key of keys) {
+      (updated as unknown as Record<string, unknown>)[key] = DEFAULT_SETTINGS[key];
+    }
+    saveSettings(updated);
+    setSettings(updated);
+    if (keys.includes("language")) setLanguage(updated.language);
+    showToast(language === "en" ? "Section reset to defaults" : "Bagian dikembalikan ke default", {
+      actionLabel: language === "en" ? "Undo" : "Urungkan",
+      onAction: () => {
+        saveSettings(snapshot);
+        setSettings(snapshot);
+        setLanguage(snapshot.language);
+      },
+    });
   };
 
   const handleRequestPersist = async (): Promise<void> => {
@@ -220,7 +241,7 @@ const SettingsPageContent = (): JSX.Element => {
           <>
             <button
               type="button"
-              onClick={handleExportJson}
+              onClick={backup.exportJson}
               className="inline-flex items-center gap-1.5 rounded-sm border-2 border-border bg-accent px-4 py-2 font-mono text-xs font-bold text-(--accent-ink) shadow-[2px_2px_0_0_var(--border)] transition-all motion-safe:hover:-translate-y-0.5 active:translate-y-0 active:shadow-none cursor-pointer"
             >
               <span>📥 {t("settings.export_backup")}</span>
@@ -246,10 +267,36 @@ const SettingsPageContent = (): JSX.Element => {
             settings={settings}
             mounted={mounted}
             onLanguageChange={(lang) => updateSetting("language", lang)}
+            onReset={() => resetSection(["language"])}
           />
-          <SettingsAppearanceSection settings={settings} mounted={mounted} onUpdate={updateSetting} />
-          <SettingsTypographySection settings={settings} mounted={mounted} onUpdate={updateSetting} />
-          <SettingsCatalogSection settings={settings} mounted={mounted} onUpdate={updateSetting} />
+          <SettingsAppearanceSection
+            settings={settings}
+            mounted={mounted}
+            onUpdate={updateSetting}
+            onReset={() => resetSection(["theme", "accent", "nightShift", "reduceMotion"])}
+          />
+          <SettingsTypographySection
+            settings={settings}
+            mounted={mounted}
+            onUpdate={updateSetting}
+            onReset={() => resetSection(["font", "fontSize", "density", "readingMode"])}
+          />
+          <SettingsCatalogSection
+            settings={settings}
+            mounted={mounted}
+            onUpdate={updateSetting}
+            onReset={() =>
+              resetSection([
+                "defaultView",
+                "downloadLayout",
+                "dataSaver",
+                "hideSpoilers",
+                "autoMarkWatched",
+                "autoArchive",
+                "weeklyGoal",
+              ])
+            }
+          />
         </div>
 
         {/* Right / Sidebar Column (4 cols) */}
@@ -259,11 +306,20 @@ const SettingsPageContent = (): JSX.Element => {
             mounted={mounted}
             quotaLabel={quotaLabel}
             persisted={persisted}
-            exportCopied={exportCopied}
-            importStatus={importStatus}
+            exportCopied={backup.exportCopied}
+            importStatus={backup.importStatus}
+            preview={backup.preview}
+            backupBusy={backup.busy}
+            passphrase={backup.passphrase}
+            onPassphraseChange={backup.setPassphrase}
             onRequestPersist={() => void handleRequestPersist()}
-            onExportJson={handleExportJson}
-            onImportJson={handleImportJson}
+            onExportJson={backup.exportJson}
+            onExportEncrypted={() => void backup.exportEncrypted()}
+            onSavePicker={() => void backup.saveToFolder()}
+            onImportJson={backup.importJson}
+            onImportFile={(file) => void backup.importFile(file)}
+            onApplyBackup={(mode) => void backup.apply(mode)}
+            onCancelPreview={backup.cancelPreview}
             onClearSearches={handleClearSearches}
             onClearHistory={handleClearHistory}
             onResetAll={handleResetAll}

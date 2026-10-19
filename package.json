@@ -39,7 +39,8 @@
     "check:third-party": "node scripts/no-third-party.mjs",
     "check:deps": "node scripts/deps-allowlist.mjs",
     "a11y:v2": "node scripts/a11y-v2.mjs",
-    "seo:v3": "node scripts/seo-v3.mjs"
+    "seo:v3": "node scripts/seo-v3.mjs",
+    "ux:v2": "node scripts/ux-v2.mjs"
   },
   "dependencies": {
     "cheerio": "^1.2.0",

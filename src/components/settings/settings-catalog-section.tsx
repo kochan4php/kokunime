@@ -9,9 +9,10 @@ interface SettingsCatalogSectionProps {
   settings: AppSettings;
   mounted: boolean;
   onUpdate: <K extends keyof AppSettings>(key: K, value: AppSettings[K]) => void;
+  onReset: () => void;
 }
 
-const SettingsCatalogSection = ({ settings, mounted, onUpdate }: SettingsCatalogSectionProps): JSX.Element => {
+const SettingsCatalogSection = ({ settings, mounted, onUpdate, onReset }: SettingsCatalogSectionProps): JSX.Element => {
   const { t, language } = useTranslation();
 
   return (
@@ -22,6 +23,7 @@ const SettingsCatalogSection = ({ settings, mounted, onUpdate }: SettingsCatalog
           iconClassName="bg-nb-orange"
           title={t("settings.catalog_pref")}
           desc={t("settings.catalog_desc")}
+          onReset={onReset}
         />
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5 sm:gap-4">

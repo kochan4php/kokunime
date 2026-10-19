@@ -9,6 +9,7 @@ interface SettingsAppearanceSectionProps {
   settings: AppSettings;
   mounted: boolean;
   onUpdate: <K extends keyof AppSettings>(key: K, value: AppSettings[K]) => void;
+  onReset: () => void;
 }
 
 const THEME_OPTIONS: { key: ThemeMode; icon: string; labelKey: TranslationKey }[] = [
@@ -17,7 +18,12 @@ const THEME_OPTIONS: { key: ThemeMode; icon: string; labelKey: TranslationKey }[
   { key: "system", icon: "🖥️", labelKey: "settings.theme_system" },
 ];
 
-const SettingsAppearanceSection = ({ settings, mounted, onUpdate }: SettingsAppearanceSectionProps): JSX.Element => {
+const SettingsAppearanceSection = ({
+  settings,
+  mounted,
+  onUpdate,
+  onReset,
+}: SettingsAppearanceSectionProps): JSX.Element => {
   const { t } = useTranslation();
 
   return (
@@ -28,6 +34,7 @@ const SettingsAppearanceSection = ({ settings, mounted, onUpdate }: SettingsAppe
           iconClassName="bg-nb-pink"
           title={t("settings.theme_title")}
           desc={t("settings.theme_desc")}
+          onReset={onReset}
         />
 
         {/* Theme mode: explicit light/dark, or follow the device */}

@@ -9,12 +9,18 @@ interface SettingsTypographySectionProps {
   settings: AppSettings;
   mounted: boolean;
   onUpdate: <K extends keyof AppSettings>(key: K, value: AppSettings[K]) => void;
+  onReset: () => void;
 }
 
 const activeSegmentClass = "border-2 border-border bg-accent text-(--accent-ink) shadow-[2px_2px_0_0_var(--border)]";
 const idleSegmentClass = "border-border bg-surface text-ink-muted hover:text-ink";
 
-const SettingsTypographySection = ({ settings, mounted, onUpdate }: SettingsTypographySectionProps): JSX.Element => {
+const SettingsTypographySection = ({
+  settings,
+  mounted,
+  onUpdate,
+  onReset,
+}: SettingsTypographySectionProps): JSX.Element => {
   const { t } = useTranslation();
 
   return (
@@ -25,6 +31,7 @@ const SettingsTypographySection = ({ settings, mounted, onUpdate }: SettingsTypo
           iconClassName="bg-nb-teal"
           title={t("settings.typography_title")}
           desc={t("settings.typography_desc")}
+          onReset={onReset}
         />
 
         {/* Font Family Cards */}

@@ -1,4 +1,5 @@
 import { fuzzyScore } from "@/utils/fuzzy";
+import { getRecentCommands } from "@/utils/palette-history";
 
 export interface PaletteAction {
   id: string;
@@ -7,7 +8,7 @@ export interface PaletteAction {
   /** Navigation target; empty for actions handled client-side via kind. */
   href: string;
   /** Runs against the current page instead of navigating. */
-  kind?: "copy-url" | "open-url";
+  kind?: "copy-url" | "open-url" | "copy-title" | "shortcuts";
 }
 
 // ">" action mode list — navigation shortcuts, no network.
@@ -30,16 +31,33 @@ const PALETTE_ACTIONS: PaletteAction[] = [
 export const isActionQuery = (query: string): boolean => query.startsWith(">");
 
 // ">" action mode: the search fallback stays pinned first, the rest is fuzzy
-// filtered over label+hint with the same scorer as search.
-export const buildPaletteActions = (query: string): PaletteAction[] => {
+// filtered over label+hint with the same scorer as search. Recently executed
+// commands float to the top; detail pages add page-context actions.
+export const buildPaletteActions = (query: string, pathname = "/"): PaletteAction[] => {
   if (!isActionQuery(query)) return [];
-  const actionQuery = query.slice(1).trim().toLowerCase();
-  if (!actionQuery) return PALETTE_ACTIONS;
 
-  const ranked = PALETTE_ACTIONS.map((action) => ({
-    action,
-    score: fuzzyScore(actionQuery, `${action.label} ${action.hint}`),
-  }))
+  const contextual: PaletteAction[] = pathname.startsWith("/anime/")
+    ? [{ id: "copy-title", label: "Salin judul anime", hint: "Judul halaman ini", href: "", kind: "copy-title" }]
+    : [];
+  const allActions = [
+    ...contextual,
+    ...PALETTE_ACTIONS,
+    { id: "shortcuts", label: "Pintasan keyboard", hint: "Lihat semua tombol", href: "", kind: "shortcuts" as const },
+  ];
+  const actionQuery = query.slice(1).trim().toLowerCase();
+  if (!actionQuery) {
+    const recentIds = getRecentCommands();
+    const recent = recentIds
+      .map((id) => allActions.find((action) => action.id === id))
+      .filter((action): action is PaletteAction => Boolean(action));
+    return [...recent, ...allActions.filter((action) => !recentIds.includes(action.id))];
+  }
+
+  const ranked = allActions
+    .map((action) => ({
+      action,
+      score: fuzzyScore(actionQuery, `${action.label} ${action.hint}`),
+    }))
     .filter((entry) => entry.score > 0)
     .sort((a, b) => b.score - a.score)
     .map((entry) => entry.action);

@@ -1,5 +1,6 @@
 import { parseAniListJson, parseMalXml, serializeMalXml } from "@/utils/bookmark-parsers";
 import { STORAGE_KEYS } from "@/utils/storage-keys";
+import { showToast } from "@/utils/toast";
 export type BookmarkStatus = "watching" | "plan" | "completed" | "dropped";
 
 export interface BookmarkItem {
@@ -25,6 +26,15 @@ const getStorage = () => (typeof window !== "undefined" ? window.localStorage : 
 const EMPTY_BOOKMARKS: BookmarkItem[] = [];
 let cachedList: BookmarkItem[] = EMPTY_BOOKMARKS;
 let lastRawData: string | null = null;
+
+// Optimistic writes are rolled back to storage truth if the quota is full:
+// drop the in-memory cache so the next read reflects what actually persisted.
+// There is no network queue here — every mutation is local-first.
+const rollback = (): void => {
+  lastRawData = null;
+  cachedList = EMPTY_BOOKMARKS;
+  showToast("Penyimpanan penuh — perubahan dibatalkan");
+};
 
 export const getBookmarks = (): BookmarkItem[] => {
   const storage = getStorage();
@@ -82,7 +92,10 @@ export const toggleBookmark = (item: {
     lastRawData = serialized;
     cachedList = list;
     window.dispatchEvent(new CustomEvent(EVENT_NAME, { detail: { slug: item.slug, bookmarked: nextBookmarked } }));
-  } catch {}
+  } catch {
+    rollback();
+    return isBookmarked(item.slug);
+  }
 
   return nextBookmarked;
 };
@@ -97,7 +110,9 @@ export const removeBookmark = (slug: string): void => {
     lastRawData = serialized;
     cachedList = list;
     window.dispatchEvent(new CustomEvent(EVENT_NAME, { detail: { slug, bookmarked: false } }));
-  } catch {}
+  } catch {
+    rollback();
+  }
 };
 
 // Undo support: re-inserts previously removed items. Existing entries win, so

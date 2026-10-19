@@ -317,7 +317,7 @@ export const calculateStorageBreakdown = (): StorageBreakdown => {
   }
 
   const rawBookmarks = localStorage.getItem(STORAGE_KEYS.bookmarks) || "[]";
-  const rawHistory = localStorage.getItem(STORAGE_KEYS.watchHistory) || "[]";
+  const rawHistory = localStorage.getItem(STORAGE_KEYS.history) || "[]";
   const rawSearches = localStorage.getItem(STORAGE_KEYS.recentSearches) || "[]";
   const rawQueue = localStorage.getItem(STORAGE_KEYS.watchQueue) || "[]";
   const rawMarks = localStorage.getItem(STORAGE_KEYS.episodeLog) || "[]";
@@ -364,60 +364,6 @@ export const calculateStorageBreakdown = (): StorageBreakdown => {
     totalBytes,
     formattedTotal,
   };
-};
-
-export const exportAllAppData = (): string => {
-  if (typeof window === "undefined") return "{}";
-  const data = {
-    app: "Kokunime",
-    version: "1.0.0",
-    exportedAt: new Date().toISOString(),
-    settings: getStoredSettings(),
-    bookmarks: JSON.parse(localStorage.getItem(STORAGE_KEYS.bookmarks) || "[]"),
-    history: JSON.parse(localStorage.getItem(STORAGE_KEYS.watchHistory) || "[]"),
-    searches: JSON.parse(localStorage.getItem(STORAGE_KEYS.recentSearches) || "[]"),
-    queue: JSON.parse(localStorage.getItem(STORAGE_KEYS.watchQueue) || "[]"),
-    progress: JSON.parse(localStorage.getItem(STORAGE_KEYS.progress) || "[]"),
-    episodeLog: JSON.parse(localStorage.getItem(STORAGE_KEYS.episodeLog) || "[]"),
-    folderOrder: JSON.parse(localStorage.getItem(STORAGE_KEYS.folderOrder) || "[]"),
-    collections: JSON.parse(localStorage.getItem(STORAGE_KEYS.collections) || "[]"),
-    tags: JSON.parse(localStorage.getItem(STORAGE_KEYS.tags) || "{}"),
-    savedSearches: JSON.parse(localStorage.getItem(STORAGE_KEYS.savedSearches) || "[]"),
-  };
-  return JSON.stringify(data, null, 2);
-};
-
-export const importAllAppData = (jsonString: string): boolean => {
-  if (typeof window === "undefined") return false;
-  try {
-    const parsed = JSON.parse(jsonString);
-    if (!parsed || typeof parsed !== "object") return false;
-
-    if (parsed.settings) {
-      saveSettings({ ...DEFAULT_SETTINGS, ...parsed.settings });
-    }
-    const writeArray = (key: string, value: unknown): void => {
-      if (Array.isArray(value)) localStorage.setItem(key, JSON.stringify(value));
-    };
-    const writeObject = (key: string, value: unknown): void => {
-      if (value && typeof value === "object" && !Array.isArray(value)) localStorage.setItem(key, JSON.stringify(value));
-    };
-    writeArray(STORAGE_KEYS.bookmarks, parsed.bookmarks);
-    writeArray(STORAGE_KEYS.watchHistory, parsed.history);
-    writeArray(STORAGE_KEYS.recentSearches, parsed.searches);
-    writeArray(STORAGE_KEYS.watchQueue, parsed.queue);
-    writeArray(STORAGE_KEYS.progress, parsed.progress);
-    writeArray(STORAGE_KEYS.episodeLog, parsed.episodeLog);
-    writeArray(STORAGE_KEYS.folderOrder, parsed.folderOrder);
-    writeArray(STORAGE_KEYS.collections, parsed.collections);
-    writeArray(STORAGE_KEYS.savedSearches, parsed.savedSearches);
-    writeObject(STORAGE_KEYS.tags, parsed.tags);
-
-    window.dispatchEvent(new Event("storage"));
-    return true;
-  } catch {
-    return false;
-  }
 };
 
 const subscribeSettings = (callback: () => void): (() => void) => {

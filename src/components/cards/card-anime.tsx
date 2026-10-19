@@ -19,11 +19,18 @@ const CardAnime = ({
   const isCompleted = /complete|tamat/i.test(meta || "");
 
   return (
-    <ViewTransitionLink href={path} className="cv-auto group block h-full select-none">
+    <ViewTransitionLink
+      href={path}
+      className="cv-auto group block h-full select-none"
+      {...(slug ? { posterName: `poster-${slug}` } : {})}
+    >
       <div className="card-shell h-full">
         <div className="card-core flex flex-col h-full overflow-hidden">
           {/* Poster Image Container */}
-          <div className="relative aspect-[3/4] w-full overflow-hidden border-b-2 border-border bg-surface-muted">
+          <div
+            data-poster
+            className="relative aspect-[3/4] w-full overflow-hidden border-b-2 border-border bg-surface-muted"
+          >
             <AnimeImage
               fill
               sizes="(max-width: 640px) 50vw, (max-width: 1024px) 25vw, (max-width: 1440px) 18vw, 14vw"
