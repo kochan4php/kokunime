@@ -25,6 +25,9 @@ export async function generateMetadata({
   return {
     title: `Genre ${title}`,
     description: `Daftar anime dengan genre ${title}.`,
+    // Deep listing pages are thin duplicates of page 1 — keep them crawlable
+    // but out of the index.
+    robots: page > 5 ? { index: false, follow: true } : undefined,
     alternates: {
       canonical: page > 1 ? `/genres/${genre}?page=${page}` : `/genres/${genre}`,
       types: { "application/rss+xml": `/genres/${genre}/feed.xml` },

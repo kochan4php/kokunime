@@ -19,7 +19,15 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: "Download Anime Subtitle Indonesia · Kokunime",
     description: "Kumpulan link download anime batch dan episode, semua dengan subtitle Indonesia.",
-    alternates: { canonical: "/", languages: { "id-ID": "/" } },
+    alternates: {
+      canonical: "/",
+      languages: { "id-ID": "/", "x-default": "/" },
+      types: {
+        "application/rss+xml": "/feed.xml",
+        "application/atom+xml": "/feed.atom",
+        "application/feed+json": "/feed.json",
+      },
+    },
   };
 }
 

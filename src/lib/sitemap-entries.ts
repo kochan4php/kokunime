@@ -29,12 +29,6 @@ export const getSitemapEntries = async (): Promise<SitemapEntry[]> => {
     { url: `${SITE_URL}/wrapped`, lastModified: now, changeFrequency: "monthly", priority: 0.3 },
     { url: `${SITE_URL}/privacy`, lastModified: now, changeFrequency: "yearly", priority: 0.2 },
     { url: `${SITE_URL}/aksesibilitas`, lastModified: now, changeFrequency: "yearly", priority: 0.2 },
-    ...["isekai", "action", "romance", "shounen", "fantasy", "comedy", "movie"].map((keyword) => ({
-      url: `${SITE_URL}/search/${keyword}`,
-      lastModified: now,
-      changeFrequency: "weekly" as const,
-      priority: 0.5,
-    })),
   ];
 
   try {

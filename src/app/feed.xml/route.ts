@@ -1,4 +1,4 @@
-import { escapeXml, getFeedData } from "@/lib/feed-items";
+import { escapeXml, feedResponse, getFeedData } from "@/lib/feed-items";
 import { SITE_URL } from "@/lib/site";
 import { NextRequest } from "next/server";
 
@@ -14,6 +14,8 @@ export async function GET(request: NextRequest): Promise<Response> {
     querySuffix,
   } = await getFeedData(siteUrl, searchParams.get("genre"), searchParams.get("season"));
 
+  const lastBuildDate = (entries[0]?.updated ?? new Date()).toUTCString();
+
   const rssItems = entries
     .map(
       (entry) => `    <item>
@@ -21,6 +23,7 @@ export async function GET(request: NextRequest): Promise<Response> {
       <link>${entry.url}</link>
       <guid>${entry.url}</guid>
       <description>${escapeXml(entry.summary)}</description>
+      <pubDate>${entry.updated.toUTCString()}</pubDate>
       ${entry.image ? `<enclosure url="${escapeXml(entry.image)}" type="image/jpeg" />` : ""}
     </item>`,
     )
@@ -33,16 +36,12 @@ export async function GET(request: NextRequest): Promise<Response> {
     <link>${siteUrl}</link>
     <description>${escapeXml(feedDesc)}</description>
     <language>id-ID</language>
+    <lastBuildDate>${lastBuildDate}</lastBuildDate>
     <atom:link href="${siteUrl}/feed.xml${querySuffix}" rel="self" type="application/rss+xml"/>
     <atom:link rel="hub" href="https://pubsubhubbub.appspot.com/"/>
 ${rssItems}
   </channel>
 </rss>`.trim();
 
-  return new Response(rssFeed, {
-    headers: {
-      "Content-Type": "application/xml; charset=utf-8",
-      "Cache-Control": "public, max-age=0, s-maxage=1800, stale-while-revalidate=1800",
-    },
-  });
+  return feedResponse(request, rssFeed, "application/xml; charset=utf-8");
 }

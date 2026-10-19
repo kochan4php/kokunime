@@ -38,7 +38,8 @@
     "prepare": "husky",
     "check:third-party": "node scripts/no-third-party.mjs",
     "check:deps": "node scripts/deps-allowlist.mjs",
-    "a11y:v2": "node scripts/a11y-v2.mjs"
+    "a11y:v2": "node scripts/a11y-v2.mjs",
+    "seo:v3": "node scripts/seo-v3.mjs"
   },
   "dependencies": {
     "cheerio": "^1.2.0",

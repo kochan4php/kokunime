@@ -43,6 +43,9 @@ export async function buildDetailMetadata(params: Promise<{ slug: string }>): Pr
     alternates: {
       canonical: `/anime/${slug}`,
       languages: { "id-ID": `/anime/${slug}`, "x-default": `/anime/${slug}` },
+      types: {
+        "application/json+oembed": `${SITE_URL}/api/oembed?url=${encodeURIComponent(`${SITE_URL}/anime/${slug}`)}&format=json`,
+      },
     },
     // OG deliberately omits `images`: the file convention
     // (anime/[slug]/opengraph-image.tsx) serves a 1200×630 card with declared

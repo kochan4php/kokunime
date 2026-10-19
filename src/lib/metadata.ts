@@ -30,7 +30,11 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "/",
     languages: { "id-ID": "/", "x-default": "/" },
-    types: { "application/rss+xml": "/feed.xml", "application/atom+xml": "/feed.atom" },
+    types: {
+      "application/rss+xml": "/feed.xml",
+      "application/atom+xml": "/feed.atom",
+      "application/feed+json": "/feed.json",
+    },
   },
   icons: {
     icon: [{ url: "/icon.svg", type: "image/svg+xml" }],

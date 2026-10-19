@@ -1,5 +1,9 @@
 export const SITE_NAME = "Kokunime";
 
+export const SITE_AUTHOR = "Deo Subarno";
+
+export const SITE_REPO = "https://github.com/kochan4php/kokunime";
+
 export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://kokunime.netlify.app";
 
 export const SITE_DESCRIPTION = "Kumpulan link download anime batch dan episode, semua dengan subtitle Indonesia.";

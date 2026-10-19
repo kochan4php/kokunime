@@ -26,6 +26,7 @@ export async function generateMetadata({ params }: { params: Promise<{ page: str
   return {
     title: `Download Anime Subtitle Indonesia · Halaman ${page}`,
     description: `Kumpulan link download anime batch dan episode, semua dengan subtitle Indonesia. Halaman ${page}.`,
+    robots: page > 5 ? { index: false, follow: true } : undefined,
     alternates: { canonical: `/page/${page}` },
     openGraph: {
       title: `Download Anime Subtitle Indonesia · Halaman ${page}`,

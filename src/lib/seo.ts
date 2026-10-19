@@ -1,5 +1,5 @@
 import { AnimeDetail, Genre } from "@/interfaces";
-import { SITE_NAME, SITE_URL } from "./site";
+import { SITE_AUTHOR, SITE_NAME, SITE_REPO, SITE_URL } from "./site";
 
 // JSON.stringify does not escape "</script>", so scraped titles/synopses could
 // break out of the <script type="application/ld+json"> tag → stored XSS.
@@ -10,6 +10,15 @@ export const buildWebSiteJsonLd = (): Record<string, unknown> => ({
   "@type": "WebSite",
   name: SITE_NAME,
   url: SITE_URL,
+  inLanguage: "id",
+  publisher: {
+    "@type": "Organization",
+    name: SITE_NAME,
+    url: SITE_URL,
+    logo: { "@type": "ImageObject", url: `${SITE_URL}/og.png`, width: 1200, height: 630 },
+    sameAs: [SITE_REPO],
+  },
+  creator: { "@type": "Person", name: SITE_AUTHOR },
   potentialAction: {
     "@type": "SearchAction",
     target: {
@@ -33,8 +42,25 @@ export const buildAnimeJsonLd = (anime: AnimeDetail, slug: string): Record<strin
     image: anime.image,
     description: anime.synopsis,
     genre: anime.genre?.map((genre: Genre) => genre.name) ?? [],
-    inLanguage: "id",
+    // The series itself is Japanese; the page around it is Indonesian.
+    inLanguage: "ja",
   };
+
+  const alternateNames = [anime.japanese, anime.synonyms]
+    .flatMap((value) => (value ? value.split(",") : []))
+    .map((value) => value.trim())
+    .filter(Boolean);
+  if (alternateNames.length > 0) {
+    jsonLd.alternateName = [...new Set(alternateNames)];
+  }
+
+  if (anime.studio?.trim()) {
+    jsonLd.productionCompany = { "@type": "Organization", name: anime.studio.trim() };
+  }
+
+  if (anime.release_on?.trim() && anime.release_on.trim().toUpperCase() !== "N/A") {
+    jsonLd.datePublished = anime.release_on.trim();
+  }
 
   if (!isNaN(scoreNum) && scoreNum > 0) {
     jsonLd.aggregateRating = {
@@ -73,12 +99,14 @@ export const buildAnimeJsonLd = (anime: AnimeDetail, slug: string): Record<strin
       name: `Tonton Trailer ${anime.title}`,
       target: anime.trailer,
     });
+    jsonLd.trailer = { "@type": "VideoObject", name: `Trailer ${anime.title}`, url: anime.trailer };
   }
   jsonLd.potentialAction = actions;
   jsonLd.publisher = {
     "@type": "Organization",
     name: SITE_NAME,
     url: SITE_URL,
+    logo: { "@type": "ImageObject", url: `${SITE_URL}/og.png`, width: 1200, height: 630 },
   };
 
   return jsonLd;
@@ -116,6 +144,8 @@ export const buildItemListJsonLd = (
   "@context": "https://schema.org",
   "@type": "ItemList",
   name,
+  inLanguage: "id",
+  itemListOrder: "https://schema.org/ItemListOrderAscending",
   numberOfItems: items.length,
   itemListElement: items.map((item, index) => ({
     "@type": "ListItem",

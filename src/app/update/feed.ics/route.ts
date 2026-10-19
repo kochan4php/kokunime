@@ -1,13 +1,13 @@
+import { feedResponse, UPDATE_FEED_CACHE } from "@/lib/feed-items";
 import { SITE_URL } from "@/lib/site";
 import { getAnimePerPage } from "@/services/scraper";
 import { buildCalendarFeed, CalendarFeedEvent } from "@/utils/ics";
-import { NextResponse } from "next/server";
 
 export const dynamic = "force-dynamic";
 
 // Webcal subscription feed: /update/feed.ics — the same first catalog page the
 // RSS feed serves, as one all-day calendar event per title.
-export async function GET(): Promise<Response> {
+export async function GET(request: Request): Promise<Response> {
   const { anime = [] } = await getAnimePerPage(1);
 
   const events: CalendarFeedEvent[] = anime.slice(0, 50).map((item) => {
@@ -23,11 +23,13 @@ export async function GET(): Promise<Response> {
     };
   });
 
-  return new NextResponse(buildCalendarFeed(events), {
-    headers: {
-      "Content-Type": "text/calendar; charset=utf-8",
-      "Content-Disposition": 'inline; filename="kokunime-update.ics"',
-      "Cache-Control": "public, max-age=0, s-maxage=900, stale-while-revalidate=1800",
+  return feedResponse(
+    request,
+    buildCalendarFeed(events, new Date(Math.floor(Date.now() / 3_600_000) * 3_600_000)),
+    "text/calendar; charset=utf-8",
+    {
+      cache: UPDATE_FEED_CACHE,
+      headers: { "Content-Disposition": 'inline; filename="kokunime-update.ics"' },
     },
-  });
+  );
 }

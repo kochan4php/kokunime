@@ -3,7 +3,7 @@ import Breadcrumbs from "@/components/breadcrumbs";
 import MainLayout from "@/layouts/main-layout";
 import { Anime } from "@/interfaces";
 import { searchAnime } from "@/services/scraper";
-import { sanitizeQuery } from "@/services/scraper/sanitize";
+import { decodeStudioName } from "@/lib/studio";
 import { SITE_URL } from "@/lib/site";
 import { buildSubpageBreadcrumbJsonLd, safeJsonLd } from "@/lib/seo";
 import { Metadata } from "next";
@@ -18,24 +18,19 @@ export function generateStaticParams(): { name: string }[] {
   return [];
 }
 
-const decodeName = (raw: string): string => {
-  try {
-    return sanitizeQuery(decodeURIComponent(raw).trim(), 80);
-  } catch {
-    return sanitizeQuery(raw.trim(), 80);
-  }
-};
-
 export async function generateMetadata({ params }: { params: Promise<{ name: string }> }): Promise<Metadata> {
   const { name } = await params;
-  const studio = decodeName(name);
+  const studio = decodeStudioName(name);
   if (!studio) return { title: "Studio tidak ditemukan" };
 
   const canonical = `/studio/${encodeURIComponent(studio)}`;
   return {
     title: `Anime Studio ${studio}`,
     description: `Judul-judul katalog Kokunime yang cocok dengan studio ${studio}, lengkap dengan link download batch subtitle Indonesia.`,
-    alternates: { canonical },
+    alternates: {
+      canonical,
+      types: { "application/rss+xml": `${canonical}/feed.xml` },
+    },
     openGraph: {
       title: `Anime Studio ${studio} · Kokunime`,
       description: `Hasil katalog untuk studio ${studio}.`,
@@ -46,7 +41,7 @@ export async function generateMetadata({ params }: { params: Promise<{ name: str
 
 const StudioPage = async ({ params }: { params: Promise<{ name: string }> }): Promise<JSX.Element> => {
   const { name } = await params;
-  const studio = decodeName(name);
+  const studio = decodeStudioName(name);
   if (!studio) notFound();
 
   const anime: Anime[] = await searchAnime(studio);

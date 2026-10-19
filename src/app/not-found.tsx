@@ -55,6 +55,7 @@ const NotFoundPage = (): JSX.Element => {
       title="Kayaknya kamu nyasar"
       message="Halaman ini nggak ada. Mungkin link-nya salah atau sudah dihapus."
     >
+      <meta name="robots" content="noindex, nofollow" />
       <div className="mt-2 flex flex-wrap items-center justify-center gap-2">
         <button onClick={() => router.push("/")} className="btn-primary">
           Kembali ke beranda

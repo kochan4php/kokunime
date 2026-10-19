@@ -1,14 +1,16 @@
-import { escapeXml, getFeedData } from "@/lib/feed-items";
+import { escapeXml, feedResponse, getFeedData } from "@/lib/feed-items";
 import { SITE_URL } from "@/lib/site";
+import { NextRequest } from "next/server";
 
 export const dynamic = "force-dynamic";
 
 // Per-genre RSS: /genres/[genre]/feed.xml (linked from the genre page metadata).
-export async function GET(_request: Request, { params }: { params: Promise<{ genre: string }> }): Promise<Response> {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ genre: string }> }): Promise<Response> {
   const { genre } = await params;
   const siteUrl = SITE_URL;
   const { title: feedTitle, description: feedDesc, entries } = await getFeedData(siteUrl, genre, null);
   const selfUrl = `${siteUrl}/genres/${genre}/feed.xml`;
+  const lastBuildDate = (entries[0]?.updated ?? new Date()).toUTCString();
 
   const rssItems = entries
     .map(
@@ -17,6 +19,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ gen
       <link>${entry.url}</link>
       <guid>${entry.url}</guid>
       <description>${escapeXml(entry.summary)}</description>
+      <pubDate>${entry.updated.toUTCString()}</pubDate>
       ${entry.image ? `<enclosure url="${escapeXml(entry.image)}" type="image/jpeg" />` : ""}
     </item>`,
     )
@@ -29,16 +32,12 @@ export async function GET(_request: Request, { params }: { params: Promise<{ gen
     <link>${siteUrl}/genres/${genre}</link>
     <description>${escapeXml(feedDesc)}</description>
     <language>id-ID</language>
+    <lastBuildDate>${lastBuildDate}</lastBuildDate>
     <atom:link href="${selfUrl}" rel="self" type="application/rss+xml"/>
     <atom:link rel="hub" href="https://pubsubhubbub.appspot.com/"/>
 ${rssItems}
   </channel>
 </rss>`.trim();
 
-  return new Response(rssFeed, {
-    headers: {
-      "Content-Type": "application/xml; charset=utf-8",
-      "Cache-Control": "public, max-age=0, s-maxage=1800, stale-while-revalidate=1800",
-    },
-  });
+  return feedResponse(request, rssFeed, "application/xml; charset=utf-8");
 }

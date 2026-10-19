@@ -1,5 +1,3 @@
-﻿import { NextRequest } from "next/server";
-
 export function generateEtag(payload: string): string {
   let hash = 0;
   for (let i = 0; i < payload.length; i++) {
@@ -10,7 +8,7 @@ export function generateEtag(payload: string): string {
   return `"${Math.abs(hash).toString(36)}-${payload.length.toString(36)}"`;
 }
 
-export function checkEtagMatch(request: NextRequest, etag: string): boolean {
+export function checkEtagMatch(request: Request, etag: string): boolean {
   const ifNoneMatch = request.headers.get("if-none-match");
   if (!ifNoneMatch) return false;
   return ifNoneMatch === etag || ifNoneMatch === `W/${etag}` || ifNoneMatch.includes(etag);

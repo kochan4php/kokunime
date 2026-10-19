@@ -1,20 +1,21 @@
-import { escapeXml } from "@/lib/feed-items";
+import { escapeXml, feedResponse, releaseDate, UPDATE_FEED_CACHE } from "@/lib/feed-items";
 import { SITE_URL } from "@/lib/site";
 import { getAnimePerPage } from "@/services/scraper";
-import { NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 
 export const dynamic = "force-dynamic";
 
 // Update timeline RSS: /update/feed.xml — the same first catalog page the
 // /update page groups by recency, published as a flat feed.
-export async function GET(): Promise<Response> {
+export async function GET(request: NextRequest): Promise<Response> {
   const siteUrl = SITE_URL;
   const { anime = [] } = await getAnimePerPage(1);
-  const updated = new Date();
+  const published = anime.slice(0, 50).map((item) => releaseDate(item.release));
+  const lastBuildDate = (published[0] ?? new Date()).toUTCString();
 
   const rssItems = anime
     .slice(0, 50)
-    .map((item) => {
+    .map((item, index) => {
       const endpoint = item.link?.endpoint ?? "";
       const url = `${siteUrl}${endpoint.startsWith("/") ? "" : "/"}${endpoint}`;
       const genres = item.genres?.filter(Boolean).slice(0, 3).join(", ");
@@ -26,7 +27,7 @@ export async function GET(): Promise<Response> {
       <link>${url}</link>
       <guid>${url}</guid>
       <description>${escapeXml(summary)}</description>
-      <pubDate>${updated.toUTCString()}</pubDate>
+      <pubDate>${published[index]?.toUTCString()}</pubDate>
       ${item.link?.image ? `<enclosure url="${escapeXml(item.link.image)}" type="image/jpeg" />` : ""}
     </item>`;
     })
@@ -39,16 +40,12 @@ export async function GET(): Promise<Response> {
     <link>${siteUrl}/update</link>
     <description>Episode dan batch anime yang baru diperbarui di Kokunime, subtitle Indonesia.</description>
     <language>id-ID</language>
+    <lastBuildDate>${lastBuildDate}</lastBuildDate>
     <atom:link href="${siteUrl}/update/feed.xml" rel="self" type="application/rss+xml"/>
     <atom:link rel="hub" href="https://pubsubhubbub.appspot.com/"/>
 ${rssItems}
   </channel>
 </rss>`.trim();
 
-  return new NextResponse(rssFeed, {
-    headers: {
-      "Content-Type": "application/xml; charset=utf-8",
-      "Cache-Control": "public, max-age=0, s-maxage=900, stale-while-revalidate=1800",
-    },
-  });
+  return feedResponse(request, rssFeed, "application/xml; charset=utf-8", { cache: UPDATE_FEED_CACHE });
 }
