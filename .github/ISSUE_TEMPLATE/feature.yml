@@ -1,0 +1,33 @@
+name: Feature request
+description: Usulkan perbaikan yang selaras dengan batasan proyek
+title: "[feat]: "
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Masalah yang ingin diselesaikan
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Usulan solusi
+      description: Jelaskan dampak ke user, aksesibilitas, performa, dan data.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatif yang sudah dipertimbangkan
+  - type: checkboxes
+    id: constraints
+    attributes:
+      label: Batasan proyek
+      options:
+        - label: Tidak menambah runtime dependency tanpa alasan kuat.
+          required: true
+        - label: Tidak memerlukan akun, komentar, streaming, atau iklan.
+          required: true
+        - label: Tidak membuat konten palsu atau klaim data yang tidak terverifikasi.
+          required: true
