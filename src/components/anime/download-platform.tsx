@@ -1,5 +1,7 @@
 import CopyButton from "./copy-button";
+import LinkHealthBadge from "./link-health-badge";
 import { DownloadIcon } from "@/components/icons";
+import { LinkHealthRecord } from "@/interfaces";
 import { JSX } from "react";
 
 const getPlatformStyle = (name: string): string => {
@@ -22,7 +24,15 @@ const requiresLogin = (name: string): boolean => {
   return /acefile|krakenfiles|hxfile/i.test(name);
 };
 
-const DownloadPlatform = ({ name, url }: { name: string; url?: string | undefined }): JSX.Element => {
+const DownloadPlatform = ({
+  name,
+  url,
+  health,
+}: {
+  name: string;
+  url?: string | undefined;
+  health?: LinkHealthRecord | undefined;
+}): JSX.Element => {
   const styleClass = getPlatformStyle(name);
   const needLogin = requiresLogin(name);
 
@@ -37,6 +47,7 @@ const DownloadPlatform = ({ name, url }: { name: string; url?: string | undefine
       >
         <div className="flex items-center gap-1.5 min-w-0">
           <span className="truncate">{name}</span>
+          <LinkHealthBadge record={health} />
           {needLogin && (
             <span
               title="Penyedia ini mungkin memerlukan login akun"

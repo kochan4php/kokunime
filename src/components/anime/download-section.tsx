@@ -5,13 +5,21 @@ import EpisodeNavigator from "./episode-navigator";
 import { DownloadGuideModal } from "./download-guide-modal";
 import Reveal from "@/components/reveal";
 import SectionHeader from "@/components/section-header";
-import { AnimeDetail, DownloadOption } from "@/interfaces";
+import { AnimeDetail, DownloadOption, LinkHealthSnapshot } from "@/interfaces";
 import { parseEpisodeRange } from "@/services/scraper/sanitize";
 import { listEpisodeNumbers } from "@/utils/episodes";
 import { parseTotalEpisodes } from "@/utils/progress";
 import { JSX, useMemo, useState } from "react";
 
-const DownloadSection = ({ anime, slug }: { anime: AnimeDetail; slug?: string }): JSX.Element => {
+const DownloadSection = ({
+  anime,
+  slug,
+  linkHealth,
+}: {
+  anime: AnimeDetail;
+  slug?: string;
+  linkHealth?: LinkHealthSnapshot | null | undefined;
+}): JSX.Element => {
   const downloads = useMemo(() => anime.download ?? [], [anime.download]);
   const totalEpisodes = useMemo(() => parseTotalEpisodes(anime.total_episode), [anime.total_episode]);
   const episodeNumbers = useMemo(() => listEpisodeNumbers(downloads), [downloads]);
@@ -172,6 +180,7 @@ const DownloadSection = ({ anime, slug }: { anime: AnimeDetail; slug?: string })
                   slug={slug}
                   animeTotal={totalEpisodes}
                   anchorId={anchorId}
+                  linkHealth={linkHealth}
                 />
               </Reveal>
             );

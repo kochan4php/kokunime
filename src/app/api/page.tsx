@@ -48,6 +48,15 @@ const ENDPOINTS: ApiEndpoint[] = [
   },
   {
     method: "GET",
+    path: "/api/admin/link-health?slug={slug}",
+    category: "General",
+    description:
+      "Snapshot kesehatan mirror unduhan terakhir untuk satu anime. GET membaca cache; POST {slug,max} menjalankan pemeriksaan live (maks 30 URL) dan menyimpan hasilnya. Butuh Bearer ADMIN_TOKEN/METRICS_TOKEN.",
+    sampleUrl: "/api/admin/link-health?slug=naruto-batch-sub-indo",
+    paramsDescription: "Authorization: Bearer <ADMIN_TOKEN|METRICS_TOKEN> · slug: string",
+  },
+  {
+    method: "GET",
     path: "/api/metrics",
     category: "General",
     description:
@@ -214,7 +223,7 @@ const ApiDocsPage = (): JSX.Element => (
         tone="teal"
         badge={
           <span className="rounded-sm border-2 border-border bg-surface px-2.5 py-0.5 font-mono text-[10px] font-bold text-ink-muted shadow-[2px_2px_0_0_var(--border)]">
-            Public API v1.0
+            Public API v1.1
           </span>
         }
         description="Gunakan REST API publik Kokunime secara gratis untuk integrasi aplikasi mobile, bot Discord/Telegram, atau workflow automasi Anda."

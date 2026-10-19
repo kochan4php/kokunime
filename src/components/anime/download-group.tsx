@@ -1,6 +1,6 @@
 "use client";
 
-import { DownloadOption, DownloadResolution, DownloadTarget } from "@/interfaces";
+import { DownloadOption, DownloadResolution, DownloadTarget, LinkHealthSnapshot } from "@/interfaces";
 import DownloadPlatform from "./download-platform";
 import BatchDownloadTools from "./batch-download-tools";
 import EpisodeWatchedToggle from "./episode-watched-toggle";
@@ -8,6 +8,7 @@ import { parseEpisodeRange } from "@/services/scraper/sanitize";
 import { useSettings } from "@/utils/settings";
 import { useTranslation } from "@/utils/i18n";
 import { isEpisodeWatched, toggleEpisodeWatched } from "@/utils/progress";
+import LinkHealthBadge from "./link-health-badge";
 import { JSX, useMemo, useState } from "react";
 
 interface DownloadGroupProps {
@@ -16,6 +17,7 @@ interface DownloadGroupProps {
   slug?: string | undefined;
   animeTotal?: number | undefined;
   anchorId?: string | undefined;
+  linkHealth?: LinkHealthSnapshot | null | undefined;
 }
 
 const renderResolutionBadge = (res: DownloadResolution): JSX.Element => {
@@ -113,7 +115,14 @@ const EpisodeLinkButton = ({ anchorId }: { anchorId: string }): JSX.Element => {
   );
 };
 
-const DownloadGroup = ({ group, animeTitle, slug, animeTotal, anchorId }: DownloadGroupProps): JSX.Element => {
+const DownloadGroup = ({
+  group,
+  animeTitle,
+  slug,
+  animeTotal,
+  anchorId,
+  linkHealth,
+}: DownloadGroupProps): JSX.Element => {
   const settings = useSettings();
   const { t } = useTranslation();
   const [userOverride, setUserOverride] = useState<"cards" | "matrix" | null>(null);
@@ -223,14 +232,17 @@ const DownloadGroup = ({ group, animeTitle, slug, animeTotal, anchorId }: Downlo
                         return (
                           <td key={plat} className="p-2.5 whitespace-nowrap text-center min-w-[90px] sm:min-w-[105px]">
                             {linkTarget?.url ? (
-                              <a
-                                href={linkTarget.url}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="inline-flex items-center justify-center gap-1 rounded-sm border-2 border-border bg-accent px-2.5 py-1 text-[11px] font-bold text-(--accent-ink) shadow-[2px_2px_0_0_var(--border)] transition-all motion-safe:hover:-translate-y-0.5 active:translate-y-0 active:shadow-none"
-                              >
-                                <span>Unduh ↗</span>
-                              </a>
+                              <span className="inline-flex flex-wrap items-center justify-center gap-1">
+                                <a
+                                  href={linkTarget.url}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="inline-flex items-center justify-center gap-1 rounded-sm border-2 border-border bg-accent px-2.5 py-1 text-[11px] font-bold text-(--accent-ink) shadow-[2px_2px_0_0_var(--border)] transition-all motion-safe:hover:-translate-y-0.5 active:translate-y-0 active:shadow-none"
+                                >
+                                  <span>Unduh ↗</span>
+                                </a>
+                                <LinkHealthBadge record={linkHealth?.records[linkTarget.url]} />
+                              </span>
                             ) : (
                               <span className="text-ink-muted/40 font-mono">—</span>
                             )}
@@ -260,7 +272,12 @@ const DownloadGroup = ({ group, animeTitle, slug, animeTotal, anchorId }: Downlo
                   }`}
                 >
                   {res.link.map((platform: DownloadTarget, i: number) => (
-                    <DownloadPlatform key={i} name={platform.platform} url={platform.url} />
+                    <DownloadPlatform
+                      key={i}
+                      name={platform.platform}
+                      url={platform.url}
+                      health={platform.url ? linkHealth?.records[platform.url] : undefined}
+                    />
                   ))}
                 </div>
               </div>

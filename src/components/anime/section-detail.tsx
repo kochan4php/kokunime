@@ -16,7 +16,15 @@ import ShareButton from "./share-button";
 import PrintQrCard from "./print-qr-card";
 import AnimeTagsEditor from "@/components/anime-tags-editor";
 import { parseTotalEpisodes } from "@/utils/progress";
+import { getAnimeLinkHealth } from "@/lib/link-health";
 import { SITE_URL } from "@/lib/site";
+
+// Link health is read-only here: an admin/cron run writes the snapshot, and a
+// page render never waits on a third-party mirror.
+const DownloadWithHealth = async ({ anime, slug }: { anime: AnimeDetail; slug: string }): Promise<JSX.Element> => {
+  const linkHealth = await getAnimeLinkHealth(slug);
+  return <DownloadSection anime={anime} slug={slug} linkHealth={linkHealth} />;
+};
 
 const SectionDetail = ({ anime, slug }: { anime: AnimeDetail; slug: string }): JSX.Element => (
   <section className="container px-4 pb-24 pt-6 md:pb-12 md:pt-16">
@@ -55,7 +63,7 @@ const SectionDetail = ({ anime, slug }: { anime: AnimeDetail; slug: string }): J
         </div>
       </Reveal>
     </div>
-    <DownloadSection anime={anime} slug={slug} />
+    <DownloadWithHealth anime={anime} slug={slug} />
     <PrintQrCard url={`${SITE_URL}/anime/${slug}`} />
     <NewSeriesSection slug={slug} />
 

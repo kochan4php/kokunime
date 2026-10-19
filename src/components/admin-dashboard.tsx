@@ -17,6 +17,7 @@ interface FeatureFlagView {
 const AdminDashboard = (): JSX.Element => {
   const { token, logs, busy, saveToken, run } = useAdminConsole();
   const [flags, setFlags] = useState<FeatureFlagView[]>([]);
+  const [linkSlug, setLinkSlug] = useState("");
 
   const buttonClass =
     "inline-flex h-10 items-center rounded-sm border-2 border-border bg-surface px-4 font-mono text-xs font-bold uppercase tracking-wide text-ink shadow-[2px_2px_0_0_var(--border)] transition-all motion-safe:hover:-translate-y-0.5 active:translate-y-0 active:shadow-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed";
@@ -156,6 +157,39 @@ const AdminDashboard = (): JSX.Element => {
         </button>
         <button type="button" disabled={busy} className={buttonClass} onClick={() => void loadFlags()}>
           Feature flags
+        </button>
+      </div>
+
+      <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:items-end">
+        <label className="min-w-0 flex-1">
+          <span className="font-mono text-[10px] font-bold uppercase tracking-wide text-ink-muted">
+            Cek link unduhan — slug anime
+          </span>
+          <input
+            type="text"
+            value={linkSlug}
+            onChange={(event) => setLinkSlug(event.target.value)}
+            placeholder="contoh: one-piece"
+            className="mt-1 w-full rounded-sm border-2 border-border bg-surface px-3 py-2 font-mono text-sm text-ink outline-none focus-visible:ring-2 focus-visible:ring-focus"
+          />
+        </label>
+        <button
+          type="button"
+          disabled={busy || !linkSlug.trim()}
+          className={buttonClass}
+          onClick={() => {
+            const slug = linkSlug.trim();
+            if (!slug) return;
+            void run(`Link health ${slug}`, () =>
+              adminRequest("/api/admin/link-health", token.trim(), {
+                method: "POST",
+                headers: { "content-type": "application/json" },
+                body: JSON.stringify({ slug, max: 20 }),
+              }),
+            );
+          }}
+        >
+          Cek link
         </button>
       </div>
 
