@@ -1,17 +1,19 @@
-import MainLayout from "@/layouts/main-layout";
+import { SectionHeaderSkeleton } from "@/components/skeletons/skeleton-primitives";
+import { SkeletonPage } from "@/components/skeletons/page-skeleton";
 import { JSX } from "react";
 
 export default function Loading(): JSX.Element {
   return (
-    <MainLayout>
-      <div className="container max-w-6xl px-4 py-8 md:py-12 space-y-6">
-        <div className="skeleton h-10 w-64 rounded-sm" />
-        <div className="skeleton h-4 w-96 rounded-sm" />
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-          <div className="skeleton h-80 rounded-sm" />
-          <div className="skeleton h-80 rounded-sm" />
-        </div>
+    <SkeletonPage
+      label="Memuat komparasi anime"
+      containerClassName="container max-w-6xl px-4"
+      className="pt-6 pb-12 md:pt-10 md:pb-20"
+    >
+      <SectionHeaderSkeleton badge titleWidth="w-80" className="mb-8" />
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+        <div className="skeleton h-80 rounded-sm" />
+        <div className="skeleton h-80 rounded-sm" />
       </div>
-    </MainLayout>
+    </SkeletonPage>
   );
 }
