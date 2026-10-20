@@ -78,8 +78,7 @@ chore(deps): bump vitest
 - `feat` → minor, `fix`/`perf`/`refactor`/`revert` → patch,
   `!` atau `BREAKING CHANGE` → major.
 - Hook `.husky/commit-msg` memvalidasi format (pesan non-conforming ditolak).
-- Pre-commit menjalankan lint-staged (format + lint file yang berubah). Regen
-  graphify dilewati dengan `GRAPHIFY_SKIP_HOOK=1` bila perlu.
+- Pre-commit menjalankan lint-staged (format + lint file yang berubah).
 
 ---
 

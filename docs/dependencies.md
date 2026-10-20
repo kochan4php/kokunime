@@ -13,7 +13,7 @@ ADR; devDependency baru harus menggantikan sesuatu atau menutup gap yang jelas.
 | `cheerio` | Parsing HTML upstream (scraper) | Satu-satunya parser HTML; jangan tambah parser kedua. |
 | `redis` (v6) | Cache tier bersama opsional | Semua fitur Redis punya fallback in-memory — ADR 0002. |
 | `sharp` | Image optimization Next.js + generator ikon/OG | Dipakai runtime oleh `next/image`; jangan dihapus dari production image. |
-| `husky` | Git hooks (lint-staged, commit-msg, graphify) | Tooling — berada di `dependencies` karena legacy; kandidat pindah ke devDependencies. |
+| `husky` | Git hooks (lint-staged, commit-msg) | Tooling — berada di `dependencies` karena legacy; kandidat pindah ke devDependencies. |
 
 Tidak ada lagi: `axios` (diganti fetch native — ADR 0007), `eslint` +
 `prettier` (diganti Biome), library coverage/analisis bundle eksternal

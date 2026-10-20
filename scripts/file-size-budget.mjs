@@ -14,7 +14,6 @@ const IGNORED_DIRS = new Set([
   ".turbo",
   ".cache",
   "node_modules",
-  "graphify-out",
   "coverage",
   "dist",
   "build",

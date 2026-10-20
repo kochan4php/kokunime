@@ -5,17 +5,7 @@
 import { readFileSync, readdirSync, statSync } from "node:fs";
 import path from "node:path";
 
-const SKIP_DIRS = new Set([
-  ".git",
-  "node_modules",
-  ".next",
-  "backups",
-  "graphify-out",
-  "coverage",
-  "dist",
-  ".vercel",
-  ".netlify",
-]);
+const SKIP_DIRS = new Set([".git", "node_modules", ".next", "backups", "coverage", "dist", ".vercel", ".netlify"]);
 const SKIP_FILES = new Set(["pnpm-lock.yaml", "package-lock.json"]);
 const SCAN_EXTENSIONS = new Set([
   ".ts",

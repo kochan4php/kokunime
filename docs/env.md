@@ -38,7 +38,6 @@ log `env_validation` — tidak pernah mencrash server.
 | `PARSER_BENCH_BUDGET_MS` | `tests/parser-benchmark.test.ts` | Override budget benchmark parser (default 100 lokal / 300 CI). |
 | `ALERT_WEBHOOK_URL`, `DISCORD_WEBHOOK_URL` | `scripts/alert.mjs` | Webhook alert ops; kosong = skip dengan notice. |
 | `ALERT_SOURCE` | `scripts/alert.mjs` | Label sumber alert (default `GITHUB_JOB`). |
-| `GRAPHIFY_SKIP_HOOK` | Git hook | `1` = lewati regen graphify saat commit. |
 
 ## Variabel CI GitHub (repo Settings → Secrets and variables → Actions)
 

@@ -34,8 +34,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
-graphify-out/cache
-graphify-out/*root
+graphify-out/
 
 # local setup notes (never commit)
 /SETUP.local.md
