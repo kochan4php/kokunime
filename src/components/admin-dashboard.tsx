@@ -168,10 +168,10 @@ const AdminDashboard = (): JSX.Element => {
           disabled={busy}
           className={buttonClass}
           onClick={() =>
-            void run("Vitals p75", () => adminRequest("/api/admin/vitals", token.trim(), { method: "GET" }))
+            void run("Vitals p75/p95", () => adminRequest("/api/admin/vitals", token.trim(), { method: "GET" }))
           }
         >
-          Vitals p75
+          Vitals p75/p95
         </button>
         <button
           type="button"

@@ -2,6 +2,7 @@ import MainLayout from "@/layouts/main-layout";
 import DeviceDiagnostics from "@/components/device-diagnostics";
 import SectionHeader from "@/components/section-header";
 import { getErrorBudget, getUptimeRollup } from "@/lib/uptime";
+import { getVitalsSummary } from "@/lib/vitals-reporter";
 import { SITE_URL } from "@/lib/site";
 import { buildSparklinePath } from "@/utils/sparkline";
 import { Metadata } from "next";
@@ -11,7 +12,7 @@ export const revalidate = 300;
 
 export const metadata: Metadata = {
   title: "Status Layanan · Kokunime",
-  description: "Status uptime publik Kokunime 14 hari terakhir dan error budget SLO 99,5%.",
+  description: "Status uptime publik Kokunime 14 hari terakhir, error budget SLO 99,5%, dan ringkasan Web Vitals.",
   alternates: { canonical: `${SITE_URL}/status` },
   robots: { index: false },
 };
@@ -23,11 +24,20 @@ const dotClass = (uptimePct: number | null): string => {
   return "bg-nb-red";
 };
 
+const formatVital = (name: string, value: number): string =>
+  name === "CLS" ? value.toFixed(3) : `${Math.round(value)} ms`;
+
+const formatMix = (counts: Record<string, number>): string => {
+  const entries = Object.entries(counts).sort((a, b) => b[1] - a[1]);
+  return entries.length > 0 ? entries.map(([key, count]) => `${key} ${count}`).join(" · ") : "—";
+};
+
 // Public status page rendered from the daily uptime rollup (Redis counters
 // bumped by the /api/status probe). ISR keeps it static for 5 minutes.
 const StatusPage = async (): Promise<JSX.Element> => {
   const rollup = await getUptimeRollup(14);
   const budget = getErrorBudget(rollup);
+  const vitals = getVitalsSummary().slice(0, 6);
   // Chart reads oldest → newest; the rollup list stays newest-first.
   const chronological = [...rollup].reverse();
   const values = chronological.map((day) => day.uptime_pct);
@@ -151,6 +161,61 @@ const StatusPage = async (): Promise<JSX.Element> => {
           <p className="mt-4 font-mono text-[11px] text-ink-muted">
             Belum ada data probe — Redis tidak dikonfigurasi di lingkungan ini, atau probe baru dipasang.
           </p>
+        )}
+
+        <h2 className="mt-8 font-display text-lg font-bold text-ink">Web Vitals</h2>
+        <p className="mt-1 font-mono text-[10px] text-ink-muted">
+          Sampel 20% sesi, in-memory sejak proses ini start — bukan angka global. 6 terburuk p75; n = maks 200 sampel
+          terakhir.
+        </p>
+        {vitals.length === 0 ? (
+          <p className="mt-3 font-mono text-[11px] text-ink-muted">Belum ada sampel RUM di proses ini.</p>
+        ) : (
+          <div className="mt-3 overflow-x-auto">
+            <table className="w-full min-w-[40rem] border-collapse font-mono text-xs">
+              <caption className="sr-only">Ringkasan Web Vitals per rute</caption>
+              <thead>
+                <tr className="text-left text-ink-muted">
+                  <th scope="col" className="border-b-2 border-border px-2 py-1 font-bold">
+                    Metrik
+                  </th>
+                  <th scope="col" className="border-b-2 border-border px-2 py-1 font-bold">
+                    Rute
+                  </th>
+                  <th scope="col" className="border-b-2 border-border px-2 py-1 font-bold">
+                    n
+                  </th>
+                  <th scope="col" className="border-b-2 border-border px-2 py-1 font-bold">
+                    p75
+                  </th>
+                  <th scope="col" className="border-b-2 border-border px-2 py-1 font-bold">
+                    p95
+                  </th>
+                  <th scope="col" className="border-b-2 border-border px-2 py-1 font-bold">
+                    Device
+                  </th>
+                  <th scope="col" className="border-b-2 border-border px-2 py-1 font-bold">
+                    Koneksi
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {vitals.map((row) => (
+                  <tr key={`${row.name}:${row.path}`} className="border-b border-border">
+                    <th scope="row" className="px-2 py-1 text-left font-bold">
+                      {row.name}
+                    </th>
+                    <td className="px-2 py-1">{row.path}</td>
+                    <td className="px-2 py-1">{row.count}</td>
+                    <td className="px-2 py-1">{formatVital(row.name, row.p75)}</td>
+                    <td className="px-2 py-1">{formatVital(row.name, row.p95)}</td>
+                    <td className="px-2 py-1">{formatMix(row.devices)}</td>
+                    <td className="px-2 py-1">{formatMix(row.connections)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
 
         <div className="mt-8">

@@ -12,6 +12,7 @@ interface VitalsReport {
   value: number;
   path: string;
   deviceType?: string | undefined;
+  connection?: string | undefined;
 }
 
 interface VitalsSummaryRow {
@@ -20,26 +21,31 @@ interface VitalsSummaryRow {
   count: number;
   p50: number;
   p75: number;
+  p95: number;
   max: number;
+  devices: Record<string, number>;
+  connections: Record<string, number>;
 }
 
-// Last SAMPLE_WINDOW values per (metric, path) feed the p50/p75 admin view.
-// Bounded by MAX_SERIES so a flood of random paths cannot grow memory.
+interface VitalEntry {
+  value: number;
+  deviceType?: string | undefined;
+  connection?: string | undefined;
+}
+
+// Last SAMPLE_WINDOW entries per (metric, path) feed the percentiles and the
+// optional device/connection mix. Bounded by MAX_SERIES so a flood of random
+// paths cannot grow memory.
+//
+// Next bundles pages and route handlers separately, so a module-level Map would
+// give each bundle its own copy. Pinning it to globalThis keeps one ring buffer
+// per process: /api/report-vitals writes it, /status and the admin endpoint read it.
 const SAMPLE_WINDOW = 200;
 const MAX_SERIES = 300;
-const samples = new Map<string, number[]>();
-
-const recordSample = (name: VitalName, path: string, value: number): void => {
-  const key = `${name}:${path}`;
-  const bucket = samples.get(key);
-  if (bucket) {
-    bucket.push(value);
-    if (bucket.length > SAMPLE_WINDOW) bucket.shift();
-    return;
-  }
-  if (samples.size >= MAX_SERIES) return;
-  samples.set(key, [value]);
+const globalStore = globalThis as typeof globalThis & {
+  __kokunimeVitals?: Map<string, VitalEntry[]>;
 };
+const samples = (globalStore.__kokunimeVitals ??= new Map<string, VitalEntry[]>());
 
 // Nearest-rank percentile (ceil(p*n)-1), clamped for tiny sample counts.
 const percentile = (sorted: number[], p: number): number => {
@@ -47,19 +53,46 @@ const percentile = (sorted: number[], p: number): number => {
   return sorted[index] ?? 0;
 };
 
+const recordSample = (
+  name: VitalName,
+  path: string,
+  value: number,
+  deviceType: string | undefined,
+  connection: string | undefined,
+): void => {
+  const key = `${name}:${path}`;
+  let entries = samples.get(key);
+  if (!entries) {
+    if (samples.size >= MAX_SERIES) return;
+    entries = [];
+    samples.set(key, entries);
+  }
+  entries.push({ value, deviceType, connection });
+  if (entries.length > SAMPLE_WINDOW) entries.shift();
+};
+
 export const getVitalsSummary = (): VitalsSummaryRow[] => {
   const rows: VitalsSummaryRow[] = [];
-  for (const [key, values] of samples) {
-    if (values.length === 0) continue;
+  for (const [key, entries] of samples) {
+    if (entries.length === 0) continue;
     const name = key.slice(0, key.indexOf(":")) as VitalName;
-    const sorted = [...values].sort((a, b) => a - b);
+    const sorted = entries.map((entry) => entry.value).sort((a, b) => a - b);
+    const devices: Record<string, number> = {};
+    const connections: Record<string, number> = {};
+    for (const entry of entries) {
+      if (entry.deviceType) devices[entry.deviceType] = (devices[entry.deviceType] ?? 0) + 1;
+      if (entry.connection) connections[entry.connection] = (connections[entry.connection] ?? 0) + 1;
+    }
     rows.push({
       name,
       path: key.slice(name.length + 1),
       count: sorted.length,
       p50: percentile(sorted, 0.5),
       p75: percentile(sorted, 0.75),
+      p95: percentile(sorted, 0.95),
       max: sorted[sorted.length - 1] ?? 0,
+      devices,
+      connections,
     });
   }
   return rows.sort((a, b) => b.p75 - a.p75);
@@ -74,9 +107,9 @@ const MAX_FINGERPRINTS = 200;
 const lastSent = new Map<string, number>();
 
 export async function reportVitals(report: VitalsReport): Promise<boolean> {
-  // Every accepted sample lands in the p75 ring buffer first; the webhook gate
-  // below only decides whether it also becomes an alert.
-  recordSample(report.name, report.path, report.value);
+  // Every accepted sample lands in the percentile ring buffer first; the
+  // webhook gate below only decides whether it also becomes an alert.
+  recordSample(report.name, report.path, report.value, report.deviceType, report.connection);
 
   const webhook = process.env.ERROR_WEBHOOK_URL?.trim();
   if (!webhook) return false;
@@ -98,6 +131,7 @@ export async function reportVitals(report: VitalsReport): Promise<boolean> {
     fields: [
       { name: "Path", value: report.path.slice(0, 200), inline: true },
       ...(report.deviceType ? [{ name: "Device", value: report.deviceType.slice(0, 20), inline: true }] : []),
+      ...(report.connection ? [{ name: "Connection", value: report.connection.slice(0, 12), inline: true }] : []),
     ],
   });
 }

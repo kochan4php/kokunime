@@ -7,6 +7,8 @@ export const VITALS_THRESHOLDS = {
   INP: 200,
   FCP: 1800,
   TTFB: 800,
+  // LoAF has no web.dev "poor" cut-off; 200ms is our alert threshold.
+  LoAF: 200,
 } as const;
 
 export type VitalName = keyof typeof VITALS_THRESHOLDS;

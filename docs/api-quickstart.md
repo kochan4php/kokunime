@@ -93,7 +93,8 @@ curl -X POST "https://<host>/api/report" \
 
 Endpoint admin (`/api/admin/*`, `/api/metrics`) butuh
 `Authorization: Bearer <ADMIN_TOKEN|METRICS_TOKEN>`; tanpa token terkonfigurasi
-mereka membalas 404. Halaman `/status` menampilkan uptime publik 14 hari.
+mereka membalas 404. Halaman `/status` menampilkan uptime publik 14 hari dan
+ringkasan Web Vitals in-memory (sampel 20% sesi, sejak proses start).
 
 ## Etika pemakaian
 
