@@ -89,7 +89,7 @@ describe("fuzz: parsers never throw and keep their invariants", () => {
       expect(() => animeSlug(sample)).not.toThrow();
       expect(() => endpointSlug(sample, "anime")).not.toThrow();
       const normalized = normalizeSlug(sample);
-      if (normalized !== null) expect(normalized).toMatch(/^[a-z0-9][a-z0-9-]{0,159}$/);
+      if (normalized !== null) expect(normalized).toMatch(/^[a-z0-9][a-z0-9_-]{0,159}$/);
     }
   });
 });

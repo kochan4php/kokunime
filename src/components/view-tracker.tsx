@@ -7,6 +7,9 @@ import { useEffect } from "react";
 const ViewTracker = ({ slug }: { slug: string }): null => {
   useEffect(() => {
     if (!slug) return;
+    // A few catalog slugs are percent-encoded Unicode; trending only accepts
+    // ASCII keys, so skip the best-effort ping instead of sending a 400.
+    if (!/^[a-z0-9][a-z0-9_-]{0,120}$/i.test(slug)) return;
     const nav = navigator as Navigator & { doNotTrack?: string };
     if (nav.doNotTrack === "1") return;
 

@@ -24,7 +24,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     // Malformed beacon — rejected below.
   }
 
-  if (!/^[a-z0-9][a-z0-9-]{0,120}$/.test(slug)) {
+  if (!/^[a-z0-9][a-z0-9_-]{0,120}$/.test(slug)) {
     return NextResponse.json({ ok: false }, { status: 400, headers: rateHeaders });
   }
 

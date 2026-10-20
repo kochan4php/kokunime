@@ -15,10 +15,17 @@ export function middleware(request: NextRequest): NextResponse {
   // Canonical slugs are lowercase; uppercase variants only arrive from old
   // links or typos — 308 to the canonical URL (query preserved).
   const { pathname } = request.nextUrl;
-  if (pathname !== pathname.toLowerCase() && /^\/(anime|genres|seasons|years)\//.test(pathname)) {
+  if (pathname !== pathname.toLowerCase() && /^\/(anime|genres|seasons|years)\/[a-z0-9_-]+\/?$/i.test(pathname)) {
     const url = request.nextUrl.clone();
     url.pathname = pathname.toLowerCase();
     return NextResponse.redirect(url, 308);
+  }
+
+  // Reject impossible A–Z segments before the route streams a 200 shell and
+  // only then discovers that it has nothing to render.
+  const indexSegment = /^\/indeks\/([^/]+)\/?$/.exec(pathname)?.[1];
+  if (indexSegment && !/^(?:[a-z]|lain)$/i.test(indexSegment)) {
+    return new NextResponse("Not Found", { status: 404 });
   }
 
   const headers = new Headers(request.headers);

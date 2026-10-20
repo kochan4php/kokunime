@@ -14,6 +14,14 @@ export function cleanText(input?: string | null): string {
     .replace(/&gt;/gi, ">")
     .replace(/&#8211;|&#8212;/gi, "-")
     .replace(/&#8230;/gi, "...")
+    .replace(/&#x([0-9a-f]+);/gi, (_, hex: string) => {
+      const code = Number.parseInt(hex, 16);
+      return code > 0 && code <= 0x10ffff && (code < 0xd800 || code > 0xdfff) ? String.fromCodePoint(code) : "";
+    })
+    .replace(/&#(\d+);/g, (_, decimal: string) => {
+      const code = Number.parseInt(decimal, 10);
+      return code > 0 && code <= 0x10ffff && (code < 0xd800 || code > 0xdfff) ? String.fromCodePoint(code) : "";
+    })
     .replace(/<[^>]*>/g, "")
     .replace(/[\r\n\t]+/g, " ")
     .replace(/\s{2,}/g, " ")

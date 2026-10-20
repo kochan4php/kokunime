@@ -131,6 +131,20 @@ describe("upstream conditional GET", () => {
     expect((init.headers as Record<string, string>)["If-None-Match"]).toBe('"abc"');
   });
 
+  it("serves cached JSON on 304 when the HTML brand check is disabled", async () => {
+    vi.mocked(redisGet).mockImplementation(async (key: string) => {
+      if (key.startsWith("upstream:body:")) return '{"ok":true}';
+      if (key.startsWith("upstream:etag:")) return { etag: '"json"' };
+      return null;
+    });
+    const fetchMock = vi.fn().mockResolvedValue(new Response(null, { status: 304 }));
+    vi.stubGlobal("fetch", fetchMock);
+
+    const res = await upstream.getJson<{ ok: boolean }>("/wp-json/wp/v2/posts");
+    expect(res.data).toEqual({ ok: true });
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+
   it("stores validator + body after a 200 carrying an ETag", async () => {
     const fetchMock = vi
       .fn()

@@ -1,12 +1,18 @@
 import { getSitemapEntries, SITEMAP_CHUNK_SIZE } from "@/lib/sitemap-entries";
 import { SITE_URL } from "@/lib/site";
 
+export const dynamic = "force-dynamic";
+
 // Sitemap index: lists the chunk files in /sitemaps/[id].xml. The URL count is
 // derived from the same deterministic builder the chunks use.
 export async function GET(): Promise<Response> {
   const entries = await getSitemapEntries();
   const chunks = Math.max(1, Math.ceil(entries.length / SITEMAP_CHUNK_SIZE));
-  const lastmod = new Date().toISOString();
+  const latest = entries.reduce((value, entry) => {
+    const time = entry.lastModified ? new Date(entry.lastModified).getTime() : 0;
+    return Math.max(value, Number.isFinite(time) ? time : 0);
+  }, 0);
+  const lastmod = new Date(latest || Date.now()).toISOString();
 
   const body = Array.from(
     { length: chunks },

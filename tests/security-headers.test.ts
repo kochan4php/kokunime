@@ -3,7 +3,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { NextRequest } from "next/server";
 import { middleware } from "@/middleware";
 
-const makeRequest = (): NextRequest => new NextRequest(new URL("https://kokunime.example/anime/foo"));
+const makeRequest = (path = "/anime/foo"): NextRequest => new NextRequest(new URL(`https://kokunime.example${path}`));
 
 describe("security header matrix", () => {
   afterEach(() => vi.unstubAllEnvs());
@@ -32,6 +32,19 @@ describe("security header matrix", () => {
     const res = middleware(makeRequest());
     expect(res.headers.get("content-security-policy")).toContain("require-trusted-types-for 'script'");
     expect(res.headers.get("content-security-policy-report-only")).toBeNull();
+  });
+
+  it("rejects malformed A–Z segments instead of streaming a soft 404", () => {
+    const res = middleware(makeRequest("/indeks/AB"));
+    expect(res.status).toBe(404);
+    expect(middleware(makeRequest("/indeks/A")).status).toBe(200);
+    expect(middleware(makeRequest("/indeks/lain")).status).toBe(200);
+  });
+
+  it("does not redirect percent-encoded Unicode detail slugs", () => {
+    const res = middleware(makeRequest("/anime/futari-wa-precure-splash%e2%98%86star-batch-subtitle-indonesia"));
+    expect(res.status).toBe(200);
+    expect(res.headers.get("location")).toBeNull();
   });
 
   it("static config carries the transport/clickjacking header set", () => {

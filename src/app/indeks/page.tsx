@@ -1,78 +1,61 @@
 import Breadcrumbs from "@/components/breadcrumbs";
 import SectionHeader from "@/components/section-header";
+import SearchForm from "@/components/search-form";
 import MainLayout from "@/layouts/main-layout";
-import { getAnimePerPage } from "@/services/scraper";
+import { getCatalogIndex, INDEX_LETTERS, letterOf, letterSlug } from "@/lib/catalog-index";
+import { buildSubpageBreadcrumbJsonLd, safeJsonLd } from "@/lib/seo";
 import { SITE_URL } from "@/lib/site";
-import { animeSlug } from "@/utils/endpoint-slug";
 import { Metadata } from "next";
 import Link from "next/link";
 import { JSX } from "react";
 
-// The upstream catalog has no A–Z index endpoint, so the index is built from
-// the N newest catalog pages and labels its real coverage honestly.
-export const revalidate = 3600;
-
-const CATALOG_PAGES = 12;
-
-const LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Indeks Anime A–Z",
   description:
-    "Daftar judul anime berdasarkan abjad, disusun dari halaman katalog terbaru Kokunime — lengkap dengan tautan ke detail dan link download.",
+    "Daftar judul anime berdasarkan abjad dari seluruh arsip Kokunime — pilih huruf untuk melihat judul dan tautan ke detail serta link download.",
   alternates: { canonical: "/indeks" },
   openGraph: {
     title: "Indeks Anime A–Z · Kokunime",
-    description: "Telusuri judul anime per huruf awal.",
+    description: "Telusuri seluruh judul anime per huruf awal.",
     url: `${SITE_URL}/indeks`,
   },
 };
 
-interface IndexItem {
-  title: string;
-  slug: string;
-}
-
-const letterOf = (title: string): string => {
-  const first = title.trim().charAt(0).toUpperCase();
-  return LETTERS.includes(first) ? first : "#";
+const formatFetchedAt = (value: number): string => {
+  if (!value) return "";
+  try {
+    return new Intl.DateTimeFormat("id-ID", {
+      dateStyle: "medium",
+      timeStyle: "short",
+      timeZone: "Asia/Jakarta",
+    }).format(new Date(value));
+  } catch {
+    return "";
+  }
 };
 
 const IndexPage = async (): Promise<JSX.Element> => {
-  const results = await Promise.allSettled(
-    Array.from({ length: CATALOG_PAGES }, (_, index) => getAnimePerPage(index + 1)),
-  );
-
-  const seen = new Set<string>();
-  const items: IndexItem[] = [];
-  for (const result of results) {
-    if (result.status !== "fulfilled") continue;
-    for (const item of result.value.anime ?? []) {
-      const slug = animeSlug(item.link?.endpoint) || animeSlug(item.link?.url);
-      if (!slug || seen.has(slug) || !item.title) continue;
-      seen.add(slug);
-      items.push({ title: item.title, slug });
-    }
-  }
-
-  const groups = new Map<string, IndexItem[]>();
+  const { items, complete, fetchedAt } = await getCatalogIndex();
+  const counts = new Map<string, number>();
   for (const item of items) {
     const letter = letterOf(item.title);
-    const bucket = groups.get(letter);
-    if (bucket) bucket.push(item);
-    else groups.set(letter, [item]);
+    counts.set(letter, (counts.get(letter) ?? 0) + 1);
   }
-  for (const bucket of groups.values()) {
-    bucket.sort((a, b) => a.title.localeCompare(b.title, "id", { sensitivity: "base" }));
-  }
-  const letters = [...groups.keys()].sort((a, b) => {
-    if (a === "#") return 1;
-    if (b === "#") return -1;
-    return a.localeCompare(b);
-  });
+  const letters = [...INDEX_LETTERS, ...(counts.has("#") ? ["#"] : [])];
+  const updated = formatFetchedAt(fetchedAt);
 
   return (
     <MainLayout>
+      <script
+        id="indeks-breadcrumb-jsonld"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: safeJsonLd(buildSubpageBreadcrumbJsonLd([{ name: "Indeks A–Z", url: "/indeks" }])),
+        }}
+        suppressHydrationWarning
+      />
       <Breadcrumbs items={[{ name: "Indeks A–Z" }]} />
       <section className="container px-4 pt-6 pb-12 md:pt-10 md:pb-20">
         <SectionHeader
@@ -86,42 +69,43 @@ const IndexPage = async (): Promise<JSX.Element> => {
               {items.length} judul
             </span>
           }
-          description={`Disusun dari ${CATALOG_PAGES} halaman katalog terbaru (bukan seluruh arsip) — pilih judul untuk membuka detail dan link unduhannya.`}
+          description={
+            complete
+              ? "Seluruh arsip anime, dikelompokkan per huruf awal. Pilih huruf untuk membuka daftar judul dan link download."
+              : "Snapshot penuh belum tersedia. Sebagian arsip mungkin belum muncul; data akan dilengkapi saat sinkronisasi berikutnya."
+          }
         />
 
-        <nav aria-label="Lompat ke huruf" className="mb-8 flex flex-wrap gap-1.5">
-          {letters.map((letter) => (
-            <a
-              key={letter}
-              href={`#huruf-${letter === "#" ? "lain" : letter}`}
-              className="flex h-9 w-9 items-center justify-center rounded-sm border-2 border-border bg-surface font-mono text-xs font-bold text-ink-muted shadow-[2px_2px_0_0_var(--border)] transition-all hover:bg-nb-yellow hover:text-nb-ink"
-            >
-              {letter}
-            </a>
-          ))}
-        </nav>
-
-        <div className="space-y-8">
-          {letters.map((letter) => (
-            <section key={letter} id={`huruf-${letter === "#" ? "lain" : letter}`} className="card-shell scroll-mt-24">
-              <div className="card-core p-5 sm:p-6">
-                <h2 className="font-display text-2xl font-black text-ink">{letter}</h2>
-                <ul className="mt-3 grid grid-cols-1 gap-x-6 gap-y-1.5 sm:grid-cols-2 lg:grid-cols-3">
-                  {(groups.get(letter) ?? []).map((item) => (
-                    <li key={item.slug} className="min-w-0">
-                      <Link
-                        href={`/anime/${item.slug}`}
-                        className="block truncate text-sm text-ink-muted transition-colors hover:text-accent-text hover:underline"
-                      >
-                        {item.title}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </section>
-          ))}
+        <div className="mb-6 max-w-xl">
+          <SearchForm />
         </div>
+
+        <div className="mb-8 grid grid-cols-3 gap-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-9">
+          {letters.map((letter) => {
+            const count = counts.get(letter) ?? 0;
+            const common =
+              "flex min-h-16 flex-col items-center justify-center rounded-sm border-2 border-border px-2 py-2 text-center shadow-[2px_2px_0_0_var(--border)]";
+            return count > 0 ? (
+              <Link
+                key={letter}
+                href={`/indeks/${letterSlug(letter)}`}
+                className={`${common} bg-surface transition-all motion-safe:hover:-translate-y-0.5 hover:bg-nb-yellow`}
+              >
+                <span className="font-display text-xl font-black text-ink">{letter}</span>
+                <span className="font-mono text-[10px] text-ink-muted">{count} judul</span>
+              </Link>
+            ) : (
+              <span key={letter} aria-disabled="true" className={`${common} bg-surface-muted opacity-60`}>
+                <span className="font-display text-xl font-black text-ink-muted">{letter}</span>
+                <span className="font-mono text-[10px] text-ink-muted">kosong</span>
+              </span>
+            );
+          })}
+        </div>
+
+        <p className="max-w-2xl font-mono text-[11px] leading-relaxed text-ink-muted">
+          Sumber: arsip kusonime. {updated ? `Diperbarui ${updated} WIB.` : "Waktu pembaruan belum tersedia."}
+        </p>
       </section>
     </MainLayout>
   );

@@ -18,7 +18,7 @@ export const animeSlug = (endpoint: string | undefined): string | null => {
 
 // Trust-boundary check for values that get concatenated into upstream URLs or
 // stored as slugs: single path segment, no separators, quotes, or whitespace.
-export const isSafeSlug = (value: string): boolean => /^[a-z0-9][a-z0-9-]{0,159}$/i.test(value);
+export const isSafeSlug = (value: string): boolean => /^[a-z0-9][a-z0-9_-]{0,159}$/i.test(value);
 
 // Decode + lowercase + validate in one step; null means "reject before fetch".
 export const normalizeSlug = (value: string): string | null => {

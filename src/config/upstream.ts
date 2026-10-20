@@ -23,6 +23,9 @@ export interface UpstreamErrorLike {
 interface UpstreamRequestConfig {
   headers?: Record<string, string>;
   timeoutMs?: number;
+  // JSON endpoints (WordPress REST) are still kusonime, but their payload does
+  // not contain the brand string the HTML challenge check looks for.
+  expectBrand?: boolean;
 }
 
 interface UpstreamResponse {
@@ -122,7 +125,7 @@ const request = async (path: string, attempt = 0, config?: UpstreamRequestConfig
 
     if (status === 304 && validator) {
       const cachedBody = await redisGet(bodyKey(absoluteUrl));
-      if (typeof cachedBody === "string" && cachedBody.includes("Kusonime")) {
+      if (typeof cachedBody === "string" && (config?.expectBrand === false || cachedBody.includes("Kusonime"))) {
         finishAttempt();
         recordSuccess(UPSTREAM_CIRCUIT_KEY);
         incrementMetric("upstream_success");
@@ -163,7 +166,7 @@ const request = async (path: string, attempt = 0, config?: UpstreamRequestConfig
 
     // Every genuine kusonime page carries the brand (title/footer/nav).
     // Anything else is a Cloudflare challenge/block page.
-    if (!data.includes("Kusonime")) {
+    if (config?.expectBrand !== false && !data.includes("Kusonime")) {
       throw new Error(`Upstream returned non-kusonime content (${data.length} bytes) — likely blocked or challenged`);
     }
 
@@ -208,6 +211,15 @@ const request = async (path: string, attempt = 0, config?: UpstreamRequestConfig
 // modules already consume: { data, status, headers, request, config }.
 const upstream = {
   get: (path: string, config?: UpstreamRequestConfig): Promise<UpstreamResponse> => request(path, 0, config),
+  // JSON endpoints skip only the HTML brand check; retries, circuit breaker,
+  // conditional GET, and the Redis body cache still apply.
+  getJson: async <T>(
+    path: string,
+    config?: UpstreamRequestConfig,
+  ): Promise<{ data: T; headers: Record<string, string> }> => {
+    const response = await request(path, 0, { ...config, expectBrand: false });
+    return { data: JSON.parse(response.data) as T, headers: response.headers };
+  },
 };
 
 export default upstream;
