@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { GET as getHealth } from "@/app/api/health/route";
 import { GET as getGenres } from "@/app/api/genres/route";
 import { GET as getSeasons } from "@/app/api/seasons/route";
@@ -8,7 +8,7 @@ import { NextRequest } from "next/server";
 
 describe("API Response Schema Validation Suite", () => {
   it("validates /api/health response schema", async () => {
-    vi.spyOn(upstream, "get").mockResolvedValueOnce({
+    vi.spyOn(upstream, "get").mockResolvedValue({
       status: 200,
       data: "<html><body>OK</body></html>",
     } as any);
@@ -75,4 +75,8 @@ describe("API Response Schema Validation Suite", () => {
     const json = await res.json();
     expect(json).toHaveProperty("error");
   });
+});
+
+afterEach(() => {
+  vi.restoreAllMocks();
 });
