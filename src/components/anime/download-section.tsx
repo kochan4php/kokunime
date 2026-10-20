@@ -7,7 +7,7 @@ import Reveal from "@/components/reveal";
 import SectionHeader from "@/components/section-header";
 import { AnimeDetail, DownloadOption, LinkHealthSnapshot } from "@/interfaces";
 import { parseEpisodeRange } from "@/services/scraper/sanitize";
-import { listEpisodeNumbers } from "@/utils/episodes";
+import { analyzeEpisodeCoverage, formatEpisodeRanges, listEpisodeNumbers } from "@/utils/episodes";
 import { parseTotalEpisodes } from "@/utils/progress";
 import { JSX, useMemo, useState } from "react";
 
@@ -23,6 +23,10 @@ const DownloadSection = ({
   const downloads = useMemo(() => anime.download ?? [], [anime.download]);
   const totalEpisodes = useMemo(() => parseTotalEpisodes(anime.total_episode), [anime.total_episode]);
   const episodeNumbers = useMemo(() => listEpisodeNumbers(downloads), [downloads]);
+  const coverage = useMemo(
+    () => analyzeEpisodeCoverage(downloads, anime.total_episode),
+    [downloads, anime.total_episode],
+  );
   const [selectedRes, setSelectedRes] = useState<string>("all");
   const [typeFilter, setTypeFilter] = useState<"all" | "batch" | "episode">("all");
 
@@ -154,6 +158,17 @@ const DownloadSection = ({
         </div>
       )}
       <EpisodeNavigator slug={slug} episodes={episodeNumbers} />
+      {coverage.verifiable && coverage.total && coverage.missing.length > 0 && (
+        <aside
+          aria-label="Kelengkapan episode"
+          className="mb-6 rounded-sm border-2 border-border bg-surface px-3 py-2 font-mono text-xs text-ink-muted"
+        >
+          <span className="font-bold text-ink">
+            {coverage.total - coverage.missing.length}/{coverage.total}
+          </span>{" "}
+          episode terdeteksi di halaman ini. Nomor {formatEpisodeRanges(coverage.missing)} belum terdeteksi.
+        </aside>
+      )}
       <div className="nb-cycle grid gap-6 min-w-0 max-w-full overflow-hidden">
         {(() => {
           // First occurrence of an episode number wins the anchor id — the

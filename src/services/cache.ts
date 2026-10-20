@@ -45,6 +45,9 @@ export type CacheTier = "memory" | "redis" | "next" | "miss" | "stale" | "fallba
 interface CachedResult<T> {
   value: T;
   tier: CacheTier;
+  // Epoch ms when the upstream value was fetched. 0 means "unknown" (a
+  // fallback, or a shared value written before this metadata existed).
+  fetchedAt: number;
 }
 
 const TIER_EVENT: Record<CacheTier, string> = {
@@ -64,6 +67,7 @@ export const xCacheHeaders = (tier: CacheTier): Record<string, string> => ({
 interface MemoryCacheEntry<T> {
   value: T;
   expiresAt: number;
+  fetchedAt: number;
 }
 
 // In-Memory L1 Fast Cache (Node process RAM) for sub-millisecond response times
@@ -72,7 +76,7 @@ const MAX_MEMORY_ENTRIES = 500;
 
 // Last known-good values kept past their TTL: an upstream outage degrades to
 // slightly stale data instead of an empty fallback.
-const staleCache = new Map<string, { value: unknown; staleUntil: number }>();
+const staleCache = new Map<string, { value: unknown; staleUntil: number; fetchedAt: number }>();
 const STALE_GRACE_MS = 24 * 60 * 60 * 1000;
 
 // Single-flight: concurrent misses for the same key share one upstream fetch.
@@ -95,17 +99,17 @@ const ensureInvalidation = (): void => {
   });
 };
 
-const getFromMemoryCache = <T>(key: string): T | null => {
+const getFromMemoryCache = <T>(key: string): { value: T; fetchedAt: number } | null => {
   const entry = memoryCache.get(key);
   if (!entry) return null;
   if (Date.now() > entry.expiresAt) {
     memoryCache.delete(key);
     return null;
   }
-  return entry.value as T;
+  return { value: entry.value as T, fetchedAt: entry.fetchedAt };
 };
 
-const setMemoryCache = <T>(key: string, value: T, ttlSeconds: number): void => {
+const setMemoryCache = <T>(key: string, value: T, ttlSeconds: number, fetchedAt: number): void => {
   if (memoryCache.size >= MAX_MEMORY_ENTRIES) {
     const firstKey = memoryCache.keys().next().value;
     if (firstKey) memoryCache.delete(firstKey);
@@ -113,35 +117,53 @@ const setMemoryCache = <T>(key: string, value: T, ttlSeconds: number): void => {
   memoryCache.set(key, {
     value,
     expiresAt: Date.now() + ttlSeconds * 1000,
+    fetchedAt,
   });
 };
 
-const rememberStale = (key: string, value: unknown, ttlSeconds: number): void => {
+const rememberStale = (key: string, value: unknown, ttlSeconds: number, fetchedAt: number): void => {
   if (staleCache.size >= MAX_MEMORY_ENTRIES && !staleCache.has(key)) {
     const firstKey = staleCache.keys().next().value;
     if (firstKey) staleCache.delete(firstKey);
   }
-  staleCache.set(key, { value, staleUntil: Date.now() + ttlSeconds * 1000 + STALE_GRACE_MS });
+  staleCache.set(key, {
+    value,
+    staleUntil: Date.now() + ttlSeconds * 1000 + STALE_GRACE_MS,
+    fetchedAt,
+  });
 };
 
-const getStale = <T>(key: string): T | null => {
+const getStale = <T>(key: string): { value: T; fetchedAt: number } | null => {
   const entry = staleCache.get(key);
   if (!entry) return null;
   if (Date.now() > entry.staleUntil) {
     staleCache.delete(key);
     return null;
   }
-  return entry.value as T;
+  return { value: entry.value as T, fetchedAt: entry.fetchedAt };
 };
 
-const rememberLocally = <T>(key: string, value: T, ttlSeconds: number): void => {
-  setMemoryCache(key, value, ttlSeconds);
-  rememberStale(key, value, ttlSeconds);
+const rememberLocally = <T>(key: string, value: T, ttlSeconds: number, fetchedAt: number): void => {
+  setMemoryCache(key, value, ttlSeconds, fetchedAt);
+  rememberStale(key, value, ttlSeconds, fetchedAt);
 };
 
-const storeFresh = async <T>(key: string, value: T, ttlSeconds: number): Promise<void> => {
-  rememberLocally(key, value, ttlSeconds);
+const metaKey = (key: string): string => `meta:${key}`;
+
+const getStoredFetchedAt = async (key: string): Promise<number> => {
+  // Redis is authoritative: a sibling instance may have refreshed the value
+  // after this process kept its older local copy.
+  const shared = await redisGet(metaKey(key));
+  if (typeof shared === "number" && Number.isFinite(shared) && shared > 0) return shared;
+  return memoryCache.get(key)?.fetchedAt ?? staleCache.get(key)?.fetchedAt ?? 0;
+};
+
+const storeFresh = async <T>(key: string, value: T, ttlSeconds: number, fetchedAt: number): Promise<void> => {
+  rememberLocally(key, value, ttlSeconds, fetchedAt);
   await redisSet(key, value, ttlSeconds);
+  // Keep the fetch timestamp beside the value; detail pages read it to show
+  // "diperbarui" without pretending a cache hit is fresh upstream data.
+  await redisSet(metaKey(key), fetchedAt, ttlSeconds + Math.floor(STALE_GRACE_MS / 1000));
   // Tell sibling instances to drop their local copies of this key.
   void publishCacheInvalidate(key);
 };
@@ -158,7 +180,7 @@ export const cachedWithMeta = async <T>(
   const memCached = getFromMemoryCache<T>(key);
   if (memCached !== null) {
     incrementMetric(TIER_EVENT.memory);
-    return { value: memCached, tier: "memory" };
+    return { value: memCached.value, tier: "memory", fetchedAt: memCached.fetchedAt };
   }
 
   // Single-flight gate: callers racing on the same cold key await one fetch.
@@ -174,8 +196,9 @@ export const cachedWithMeta = async <T>(
     if (redisCached !== null) {
       const value = redisCached as T;
       // Already in shared cache — only hydrate local tiers (no write-back).
-      rememberLocally(key, value, ttlSeconds);
-      return { value, tier: "redis" };
+      const fetchedAt = await getStoredFetchedAt(key);
+      rememberLocally(key, value, ttlSeconds, fetchedAt);
+      return { value, tier: "redis", fetchedAt };
     }
 
     // 2. Tier 2: Check Next.js unstable_cache (when in Next.js runtime)
@@ -183,10 +206,13 @@ export const cachedWithMeta = async <T>(
     // the callback would be persisted as if it were valid data (cache poisoning).
     if (typeof unstable_cache === "function" && process.env.NODE_ENV !== "test") {
       class UpstreamFailure extends Error {}
+      let fetchedThisCall = 0;
       const cachedFn = unstable_cache(
         async () => {
           try {
-            return await timed(fn);
+            const value = await timed(fn);
+            fetchedThisCall = Date.now();
+            return value;
           } catch {
             throw new UpstreamFailure();
           }
@@ -196,16 +222,19 @@ export const cachedWithMeta = async <T>(
       );
       try {
         const result = await cachedFn();
+        // On a Next cache hit the callback did not run; reuse the stored
+        // timestamp instead of claiming the data was refreshed now.
+        const fetchedAt = fetchedThisCall || (await getStoredFetchedAt(key));
         if (result !== null && result !== undefined) {
-          await storeFresh(key, result, ttlSeconds);
+          await storeFresh(key, result, ttlSeconds, fetchedAt);
         }
-        return { value: result, tier: "next" };
+        return { value: result, tier: "next", fetchedAt };
       } catch (err) {
         if (err instanceof UpstreamFailure) {
           // Upstream failed: prefer the last known-good value over the fallback.
           const stale = getStale<T>(key);
-          if (stale !== null) return { value: stale, tier: "stale" };
-          return { value: fallback, tier: "fallback" };
+          if (stale !== null) return { value: stale.value, tier: "stale", fetchedAt: stale.fetchedAt };
+          return { value: fallback, tier: "fallback", fetchedAt: 0 };
         }
         // Cache layer itself is unavailable (no request context / infra error):
         // fall through to honest direct execution instead of masking data.
@@ -215,14 +244,15 @@ export const cachedWithMeta = async <T>(
     // 3. Direct execution with In-Memory cache storage
     try {
       const result = await timed(fn);
+      const fetchedAt = Date.now();
       if (result !== null && result !== undefined) {
-        await storeFresh(key, result, ttlSeconds);
+        await storeFresh(key, result, ttlSeconds, fetchedAt);
       }
-      return { value: result, tier: "miss" };
+      return { value: result, tier: "miss", fetchedAt };
     } catch {
       const stale = getStale<T>(key);
-      if (stale !== null) return { value: stale, tier: "stale" };
-      return { value: fallback, tier: "fallback" };
+      if (stale !== null) return { value: stale.value, tier: "stale", fetchedAt: stale.fetchedAt };
+      return { value: fallback, tier: "fallback", fetchedAt: 0 };
     }
   })();
 

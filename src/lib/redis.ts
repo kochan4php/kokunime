@@ -78,6 +78,37 @@ export async function redisSet(key: string, value: unknown, ttlSeconds: number):
   } catch {}
 }
 
+// --- Report queue -----------------------------------------------------------
+// Hashes keep one field per report so concurrent submissions never
+// read-modify-write the whole queue. A false/null result means Redis is not
+// available; callers must surface that instead of pretending the write landed.
+export async function redisHSet(key: string, fields: Record<string, string>, ttlSeconds: number): Promise<boolean> {
+  const c = await getRedis();
+  if (!c) return false;
+  const fullKey = `${KEY_PREFIX}queue:${key}`;
+  try {
+    await c.hSet(fullKey, fields);
+  } catch {
+    return false;
+  }
+  try {
+    await c.expire(fullKey, Math.max(1, Math.floor(ttlSeconds)));
+  } catch {
+    // The report is already stored; a missed TTL only means it lives longer.
+  }
+  return true;
+}
+
+export async function redisHGetAll(key: string): Promise<Record<string, string> | null> {
+  const c = await getRedis();
+  if (!c) return null;
+  try {
+    return await c.hGetAll(`${KEY_PREFIX}queue:${key}`);
+  } catch {
+    return null;
+  }
+}
+
 // Returns the incremented counter for rate limiting, or null when Redis is
 // unavailable (caller falls back to the in-memory store).
 export async function redisRateLimit(key: string, windowMs: number): Promise<number | null> {

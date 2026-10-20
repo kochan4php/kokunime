@@ -15,9 +15,12 @@ import BookmarkButton from "./bookmark-button";
 import ShareButton from "./share-button";
 import PrintQrCard from "./print-qr-card";
 import AnimeTagsEditor from "@/components/anime-tags-editor";
+import DataProvenance from "./data-provenance";
+import ReportProblem from "./report-problem";
 import { parseTotalEpisodes } from "@/utils/progress";
 import { getAnimeLinkHealth } from "@/lib/link-health";
 import { SITE_URL } from "@/lib/site";
+import type { CacheTier } from "@/services/cache";
 
 // Link health is read-only here: an admin/cron run writes the snapshot, and a
 // page render never waits on a third-party mirror.
@@ -26,7 +29,17 @@ const DownloadWithHealth = async ({ anime, slug }: { anime: AnimeDetail; slug: s
   return <DownloadSection anime={anime} slug={slug} linkHealth={linkHealth} />;
 };
 
-const SectionDetail = ({ anime, slug }: { anime: AnimeDetail; slug: string }): JSX.Element => (
+const SectionDetail = ({
+  anime,
+  slug,
+  fetchedAt = 0,
+  tier,
+}: {
+  anime: AnimeDetail;
+  slug: string;
+  fetchedAt?: number;
+  tier?: CacheTier | undefined;
+}): JSX.Element => (
   <section className="container px-4 pb-24 pt-6 md:pb-12 md:pt-16">
     <DetailToc />
     <HistoryTracker
@@ -51,6 +64,7 @@ const SectionDetail = ({ anime, slug }: { anime: AnimeDetail; slug: string }): J
         </li>
       </ol>
     </nav>
+    <DataProvenance fetchedAt={fetchedAt} tier={tier} />
     <div id="hero">
       <DetailHero anime={anime} slug={slug} />
     </div>
@@ -64,6 +78,7 @@ const SectionDetail = ({ anime, slug }: { anime: AnimeDetail; slug: string }): J
       </Reveal>
     </div>
     <DownloadWithHealth anime={anime} slug={slug} />
+    <ReportProblem slug={slug} />
     <PrintQrCard url={`${SITE_URL}/anime/${slug}`} />
     <NewSeriesSection slug={slug} />
 

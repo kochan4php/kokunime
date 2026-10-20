@@ -5,6 +5,7 @@ import { getMetrics, resetMetrics } from "@/lib/metrics";
 describe("cachedWithMeta", () => {
   beforeEach(() => {
     vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-10-20T00:00:00.000Z"));
     resetMetrics();
   });
 
@@ -20,6 +21,8 @@ describe("cachedWithMeta", () => {
     expect(first.tier).toBe("miss");
     expect(second.tier).toBe("memory");
     expect(second.value).toEqual({ n: 1 });
+    expect(first.fetchedAt).toBeGreaterThan(0);
+    expect(second.fetchedAt).toBe(first.fetchedAt);
     expect(fn).toHaveBeenCalledTimes(1);
   });
 
@@ -50,6 +53,7 @@ describe("cachedWithMeta", () => {
     const result = await cachedWithMeta("k3", 60, failing, "fallback");
     expect(result.tier).toBe("stale");
     expect(result.value).toBe("fresh");
+    expect(result.fetchedAt).toBeGreaterThan(0);
   });
 
   it("falls back when the upstream fails with no prior value", async () => {
@@ -57,6 +61,7 @@ describe("cachedWithMeta", () => {
     const result = await cachedWithMeta("k4", 60, failing, "fallback");
     expect(result.tier).toBe("fallback");
     expect(result.value).toBe("fallback");
+    expect(result.fetchedAt).toBe(0);
   });
 
   it("counts cache tiers in metrics", async () => {

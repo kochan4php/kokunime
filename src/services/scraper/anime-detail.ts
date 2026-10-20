@@ -6,8 +6,10 @@ import { parseAnimeDetail } from "./parse";
 import { extractWithFallback } from "./parse-fallback";
 import { stripHtmlNoise } from "./sanitize";
 
-export async function getAnimeDetailWithMeta(slug: string): Promise<{ anime: AnimeDetail | null; tier: CacheTier }> {
-  const { value, tier } = await cachedWithMeta<AnimeDetail | null>(
+export async function getAnimeDetailWithMeta(
+  slug: string,
+): Promise<{ anime: AnimeDetail | null; tier: CacheTier; fetchedAt: number }> {
+  const { value, tier, fetchedAt } = await cachedWithMeta<AnimeDetail | null>(
     `anime-detail:${slug}`,
     TTL.detail,
     async () => {
@@ -27,7 +29,7 @@ export async function getAnimeDetailWithMeta(slug: string): Promise<{ anime: Ani
     null,
   );
 
-  return { anime: value, tier };
+  return { anime: value, tier, fetchedAt };
 }
 
 export const getAnimeDetail = async (slug: string): Promise<AnimeDetail | null> =>

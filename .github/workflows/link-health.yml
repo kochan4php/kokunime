@@ -1,0 +1,31 @@
+name: Scheduled link health
+
+on:
+  schedule:
+    # 03:17 UTC daily — after the nightly cache check, before peak traffic.
+    - cron: "17 3 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    name: Check recent catalog links
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      # The runner uses native fetch only; no install/build is needed.
+      - name: Run bounded link-health checks
+        env:
+          BASE_URL: ${{ vars.PRODUCTION_URL }}
+          ADMIN_TOKEN: ${{ secrets.ADMIN_TOKEN }}
+          LINK_HEALTH_SLUGS: ${{ vars.LINK_HEALTH_SLUGS }}
+          LINK_HEALTH_MAX_SLUGS: ${{ vars.LINK_HEALTH_MAX_SLUGS }}
+          LINK_HEALTH_FAIL_ON_DEAD: ${{ vars.LINK_HEALTH_FAIL_ON_DEAD }}
+        run: node scripts/check-link-health.mjs

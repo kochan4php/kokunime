@@ -5,12 +5,11 @@ import RecommendationSection from "@/sections/recommendation-section";
 import SimilarAnime from "@/sections/similar-anime";
 import SeasonRail from "@/sections/season-rail";
 import { endpointSlug } from "@/utils/endpoint-slug";
-import { getAnimeDetail } from "@/services/scraper";
+import { getAnimeDetailWithMeta } from "@/services/scraper";
 import { buildAnimeJsonLd, buildBreadcrumbJsonLd, buildFaqJsonLd, safeJsonLd } from "@/lib/seo";
 import { buildDetailMetadata } from "@/lib/detail-metadata";
 import MainLayout from "@/layouts/main-layout";
 import RailSkeleton from "@/components/cards/rail-skeleton";
-import { AnimeDetail } from "@/interfaces";
 import { Metadata } from "next";
 import { notFound, permanentRedirect } from "next/navigation";
 import { JSX, Suspense } from "react";
@@ -41,7 +40,7 @@ const Anime = async ({ params }: { params: Promise<{ slug: string }> }): Promise
     permanentRedirect(`/anime/${normalized}`);
   }
 
-  const anime: AnimeDetail | null = await getAnimeDetail(slug);
+  const { anime, tier, fetchedAt } = await getAnimeDetailWithMeta(slug);
 
   if (!anime?.title) {
     notFound();
@@ -71,7 +70,7 @@ const Anime = async ({ params }: { params: Promise<{ slug: string }> }): Promise
       />
       <ViewTracker slug={slug} />
       <CatalogRecorder slug={slug} detail={anime} />
-      <SectionDetail anime={anime} slug={slug} />
+      <SectionDetail anime={anime} slug={slug} fetchedAt={fetchedAt} tier={tier} />
       <Suspense fallback={<RailSkeleton />}>
         <SimilarAnime slug={slug} title={anime.title ?? ""} />
       </Suspense>

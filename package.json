@@ -34,6 +34,7 @@
     "css:report": "node scripts/css-usage-report.mjs",
     "verify": "pnpm format:check && pnpm lint && pnpm test && pnpm build && node scripts/no-third-party.mjs && node scripts/deps-allowlist.mjs && pnpm bundle:budget && pnpm size:budget && node scripts/find-unused-exports.mjs",
     "indexnow": "node scripts/indexnow.mjs",
+    "links:check": "node scripts/check-link-health.mjs",
     "audit:meta": "node scripts/audit-meta.mjs",
     "prepare": "husky",
     "check:third-party": "node scripts/no-third-party.mjs",

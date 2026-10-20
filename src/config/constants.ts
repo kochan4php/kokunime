@@ -18,6 +18,7 @@ export const RATE_LIMITS = {
   recommend: 30,
   cspReport: 30,
   reportError: 10,
+  reportBroken: 5,
   reportVitals: 30,
   search: 60,
   suggest: 120,

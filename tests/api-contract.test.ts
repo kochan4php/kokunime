@@ -57,7 +57,11 @@ const fakeDetail = {
 
 beforeEach(() => {
   vi.mocked(scraper.getAnimeDetail).mockResolvedValue(fakeDetail as never);
-  vi.mocked(scraper.getAnimeDetailWithMeta).mockResolvedValue({ anime: fakeDetail as never, tier: "miss" });
+  vi.mocked(scraper.getAnimeDetailWithMeta).mockResolvedValue({
+    anime: fakeDetail as never,
+    tier: "miss",
+    fetchedAt: Date.now(),
+  });
 });
 
 describe("GET /api/anime/bulk (contract)", () => {

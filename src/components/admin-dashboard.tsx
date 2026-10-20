@@ -2,9 +2,16 @@
 
 import { adminRequest, useAdminConsole } from "@/hooks/use-admin-console";
 import SectionHeader from "@/components/section-header";
+import type { ReportKind, ReportRecord } from "@/interfaces";
 import { JSX, useState } from "react";
 
 const PRESET_PATHS = ["/", "/update", "/genres", "/years", "/roulette"];
+
+const REPORT_LABELS: Record<ReportKind, string> = {
+  dead_link: "Tautan mati",
+  missing_episode: "Episode hilang",
+  metadata: "Metadata",
+};
 
 interface FeatureFlagView {
   key: string;
@@ -18,6 +25,8 @@ const AdminDashboard = (): JSX.Element => {
   const { token, logs, busy, saveToken, run } = useAdminConsole();
   const [flags, setFlags] = useState<FeatureFlagView[]>([]);
   const [linkSlug, setLinkSlug] = useState("");
+  const [reports, setReports] = useState<ReportRecord[]>([]);
+  const [reportQueue, setReportQueue] = useState<"unknown" | "available" | "unavailable">("unknown");
 
   const buttonClass =
     "inline-flex h-10 items-center rounded-sm border-2 border-border bg-surface px-4 font-mono text-xs font-bold uppercase tracking-wide text-ink shadow-[2px_2px_0_0_var(--border)] transition-all motion-safe:hover:-translate-y-0.5 active:translate-y-0 active:shadow-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed";
@@ -32,6 +41,37 @@ const AdminDashboard = (): JSX.Element => {
     await run("Feature flags", async () => {
       const result = await adminRequest("/api/admin/flags", token.trim(), { method: "GET" });
       applyFlags(result.body);
+      return result;
+    });
+  };
+
+  const applyReports = (body: unknown): void => {
+    if (!body || typeof body !== "object") return;
+    const payload = body as { available?: unknown; reports?: unknown };
+    setReportQueue(payload.available === false ? "unavailable" : "available");
+    if (Array.isArray(payload.reports)) setReports(payload.reports as ReportRecord[]);
+  };
+
+  const loadReports = async (): Promise<void> => {
+    await run("Report queue", async () => {
+      const result = await adminRequest("/api/admin/reports", token.trim(), { method: "GET" });
+      if (result.ok) applyReports(result.body);
+      return result;
+    });
+  };
+
+  const resolveReport = (id: string): void => {
+    void run(`Resolve report ${id}`, async () => {
+      const result = await adminRequest("/api/admin/reports", token.trim(), {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ id }),
+      });
+      if (result.ok) {
+        setReports((current) =>
+          current.map((report) => (report.id === id ? { ...report, status: "resolved" } : report)),
+        );
+      }
       return result;
     });
   };
@@ -158,6 +198,9 @@ const AdminDashboard = (): JSX.Element => {
         <button type="button" disabled={busy} className={buttonClass} onClick={() => void loadFlags()}>
           Feature flags
         </button>
+        <button type="button" disabled={busy} className={buttonClass} onClick={() => void loadReports()}>
+          Laporan
+        </button>
       </div>
 
       <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:items-end">
@@ -218,6 +261,46 @@ const AdminDashboard = (): JSX.Element => {
         Metrics butuh METRICS_TOKEN; endpoint admin menerima ADMIN_TOKEN atau METRICS_TOKEN. Tanpa token terkonfigurasi,
         semua endpoint membalas 404.
       </p>
+
+      {reportQueue !== "unknown" && (
+        <div className="mt-4 rounded-sm border-2 border-border bg-surface p-3">
+          <p className="font-mono text-[10px] font-bold uppercase tracking-wide text-ink-muted">Antrean laporan</p>
+          {reportQueue === "unavailable" ? (
+            <p className="mt-2 text-sm text-ink-muted">
+              Redis tidak aktif — laporan publik ditolak dengan 503, bukan disimpan palsu.
+            </p>
+          ) : reports.length === 0 ? (
+            <p className="mt-2 text-sm text-ink-muted">Tidak ada laporan.</p>
+          ) : (
+            <ul className="mt-2 space-y-2">
+              {reports.map((report) => (
+                <li key={report.id} className="rounded-sm border border-border p-2 text-sm">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <a href={`/anime/${report.slug}`} className="font-mono font-bold underline decoration-dotted">
+                      {report.slug}
+                    </a>
+                    <span className="chip">{REPORT_LABELS[report.kind]}</span>
+                    <span className="font-mono text-[10px] text-ink-muted">
+                      {report.status === "resolved" ? "selesai" : "terbuka"} · {report.createdAt.slice(0, 10)}
+                    </span>
+                  </div>
+                  {report.note && <p className="mt-1 text-ink-muted">{report.note}</p>}
+                  {report.status === "open" && (
+                    <button
+                      type="button"
+                      disabled={busy}
+                      className={`${buttonClass} mt-2 !h-8 !px-2`}
+                      onClick={() => resolveReport(report.id)}
+                    >
+                      Tandai selesai
+                    </button>
+                  )}
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      )}
 
       <div className="mt-6 space-y-2" aria-live="polite">
         {logs.length === 0 ? (
