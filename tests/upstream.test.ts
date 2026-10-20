@@ -118,7 +118,7 @@ describe("upstream conditional GET", () => {
   it("sends If-None-Match from the stored validator and serves the cached body on 304", async () => {
     vi.mocked(redisGet).mockImplementation(async (key: string) => {
       if (key.startsWith("upstream:body:")) return "<html><body>Kusonime cached</body></html>";
-      if (key.startsWith("upstream:etag:")) return { etag: '"abc"' };
+      if (key.startsWith("upstream:etag:")) return { etag: '"abc"', finalUrl: "https://kusonime.com/cached-page/" };
       return null;
     });
     const fetchMock = vi.fn().mockResolvedValue(new Response(null, { status: 304 }));
@@ -127,6 +127,7 @@ describe("upstream conditional GET", () => {
     const res = await upstream.get("/cached-page");
     expect(res.status).toBe(200);
     expect(res.data).toContain("Kusonime cached");
+    expect(res.request.responseURL).toBe("https://kusonime.com/cached-page/");
     const [, init] = fetchMock.mock.calls[0] as [string, RequestInit];
     expect((init.headers as Record<string, string>)["If-None-Match"]).toBe('"abc"');
   });
@@ -159,7 +160,7 @@ describe("upstream conditional GET", () => {
     );
     expect(vi.mocked(redisSet)).toHaveBeenCalledWith(
       expect.stringMatching(/^upstream:etag:/),
-      expect.objectContaining({ etag: '"v2"' }),
+      expect.objectContaining({ etag: '"v2"', finalUrl: "https://kusonime.com/fresh-page" }),
       expect.any(Number),
     );
   });

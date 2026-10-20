@@ -60,6 +60,9 @@ const DEFAULT_HEADERS: Record<string, string> = {
 interface Validator {
   etag?: string;
   lastModified?: string;
+  // Final URL after redirects, replayed on 304 so callers can still reject a
+  // redirected page (e.g. unknown slugs landing on the homepage).
+  finalUrl?: string;
 }
 
 const sha1 = (value: string): string => createHash("sha1").update(value).digest("hex");
@@ -133,7 +136,7 @@ const request = async (path: string, attempt = 0, config?: UpstreamRequestConfig
           data: cachedBody,
           status: 200,
           headers: toHeaderRecord(response.headers),
-          request: { responseURL: absoluteUrl },
+          request: { responseURL: validator.finalUrl ?? absoluteUrl },
           config: { url: path },
         };
       }
@@ -174,7 +177,11 @@ const request = async (path: string, attempt = 0, config?: UpstreamRequestConfig
     const etag = response.headers.get("etag") ?? undefined;
     const lastModified = response.headers.get("last-modified") ?? undefined;
     if (etag || lastModified) {
-      void redisSet(validatorKey(absoluteUrl), { etag, lastModified }, VALIDATOR_TTL_SECONDS);
+      void redisSet(
+        validatorKey(absoluteUrl),
+        { etag, lastModified, finalUrl: response.url || absoluteUrl },
+        VALIDATOR_TTL_SECONDS,
+      );
       void redisSet(bodyKey(absoluteUrl), data, VALIDATOR_TTL_SECONDS);
     }
 
