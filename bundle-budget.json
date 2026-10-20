@@ -1,24 +1,133 @@
 {
-  "generatedAt": "2026-10-18T22:29:49.458Z",
+  "generatedAt": "2026-10-20T16:11:23.265Z",
   "routes": {
-    "/admin": 689552,
-    "/api": 711768,
-    "/bookmarks": 805774,
-    "/genres": 711471,
-    "/indeks": 673623,
-    "/offline": 720038,
-    "/privacy": 673623,
-    "/roulette": 740199,
-    "/seasons": 712436,
-    "/settings": 739541,
-    "/share": 714987,
-    "/stats": 736679,
-    "/status": 707553,
-    "/tag": 727881,
-    "/update": 748622,
-    "/wrapped": 733066,
-    "/_global-error": 567218,
-    "/_not-found": 673623
+    "/admin": {
+      "js": 696531,
+      "css": 84265,
+      "fonts": 67752,
+      "images": 0,
+      "requests": 17
+    },
+    "/aksesibilitas": {
+      "js": 678789,
+      "css": 84265,
+      "fonts": 67752,
+      "images": 0,
+      "requests": 16
+    },
+    "/api": {
+      "js": 718534,
+      "css": 84265,
+      "fonts": 67752,
+      "images": 0,
+      "requests": 18
+    },
+    "/bookmarks": {
+      "js": 809999,
+      "css": 84265,
+      "fonts": 67752,
+      "images": 0,
+      "requests": 20
+    },
+    "/genres": {
+      "js": 718137,
+      "css": 84265,
+      "fonts": 67752,
+      "images": 0,
+      "requests": 18
+    },
+    "/offline": {
+      "js": 739004,
+      "css": 84265,
+      "fonts": 67752,
+      "images": 0,
+      "requests": 18
+    },
+    "/privacy": {
+      "js": 678789,
+      "css": 84265,
+      "fonts": 67752,
+      "images": 0,
+      "requests": 16
+    },
+    "/roulette": {
+      "js": 746121,
+      "css": 84265,
+      "fonts": 67752,
+      "images": 0,
+      "requests": 18
+    },
+    "/seasons": {
+      "js": 719101,
+      "css": 84265,
+      "fonts": 67752,
+      "images": 0,
+      "requests": 18
+    },
+    "/settings": {
+      "js": 760080,
+      "css": 84265,
+      "fonts": 67752,
+      "images": 0,
+      "requests": 18
+    },
+    "/share": {
+      "js": 721413,
+      "css": 84265,
+      "fonts": 67752,
+      "images": 0,
+      "requests": 18
+    },
+    "/stats": {
+      "js": 742320,
+      "css": 84265,
+      "fonts": 67752,
+      "images": 0,
+      "requests": 18
+    },
+    "/status": {
+      "js": 714065,
+      "css": 84265,
+      "fonts": 67752,
+      "images": 0,
+      "requests": 17
+    },
+    "/tag": {
+      "js": 733622,
+      "css": 84265,
+      "fonts": 67752,
+      "images": 0,
+      "requests": 18
+    },
+    "/update": {
+      "js": 754137,
+      "css": 84265,
+      "fonts": 67752,
+      "images": 0,
+      "requests": 54
+    },
+    "/wrapped": {
+      "js": 738877,
+      "css": 84265,
+      "fonts": 67752,
+      "images": 0,
+      "requests": 18
+    },
+    "/_global-error": {
+      "js": 571616,
+      "css": 0,
+      "fonts": 0,
+      "images": 0,
+      "requests": 7
+    },
+    "/_not-found": {
+      "js": 678789,
+      "css": 84265,
+      "fonts": 67752,
+      "images": 0,
+      "requests": 16
+    }
   },
-  "totalClientJs": 1760356
+  "totalClientJs": 1828643,
+  "totalCss": 84265
 }
