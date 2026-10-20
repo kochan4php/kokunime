@@ -57,7 +57,7 @@ const SearchHistoryChips = ({ query }: { query: string }): JSX.Element | null =>
   if (visible.length === 0) return null;
 
   return (
-    <div className="mt-4 flex flex-wrap items-center gap-1.5 print:hidden" aria-label="Pencarian terakhir">
+    <div role="group" className="mt-4 flex flex-wrap items-center gap-1.5 print:hidden" aria-label="Pencarian terakhir">
       <span className="font-mono text-[10px] uppercase tracking-wide text-ink-muted">Terakhir:</span>
       {visible.map((item) => (
         <span

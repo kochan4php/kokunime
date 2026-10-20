@@ -267,7 +267,9 @@ export const importBookmarksJson = async (file: File): Promise<number> => {
 
     const current = getBookmarks();
     const map = new Map<string, BookmarkItem>();
-    current.forEach((item) => map.set(item.slug, item));
+    current.forEach((item) => {
+      map.set(item.slug, item);
+    });
     let addedCount = 0;
 
     imported.forEach((item) => {

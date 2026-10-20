@@ -29,6 +29,7 @@ const BookmarkListRow = ({
   onRemove,
   onEditMeta,
 }: BookmarkListRowProps): JSX.Element => (
+  // biome-ignore lint/a11y/noStaticElementInteractions: drag is a mouse-only enhancement; every row action stays keyboard reachable.
   <div
     key={item.slug}
     draggable={isBookmarkTab}

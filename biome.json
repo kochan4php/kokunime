@@ -1,5 +1,5 @@
 {
-  "$schema": "https://biomejs.dev/schemas/1.9.4/schema.json",
+  "$schema": "https://biomejs.dev/schemas/2.5.15/schema.json",
   "vcs": {
     "enabled": true,
     "clientKind": "git",
@@ -7,13 +7,27 @@
   },
   "files": {
     "ignoreUnknown": true,
-    "ignore": [".next/**", "node_modules/**", "dist/**", "coverage/**", "pnpm-lock.yaml", "public/**"]
+    "includes": [
+      "**",
+      "!**/.next",
+      "!**/node_modules",
+      "!**/dist",
+      "!**/coverage",
+      "!**/pnpm-lock.yaml",
+      "!**/public",
+      "!**/tests/fixtures"
+    ]
   },
   "formatter": {
     "enabled": true,
     "indentStyle": "space",
     "indentWidth": 2,
     "lineWidth": 120
+  },
+  "css": {
+    "parser": {
+      "tailwindDirectives": true
+    }
   },
   "javascript": {
     "formatter": {
@@ -22,25 +36,11 @@
       "trailingCommas": "all"
     }
   },
-  "organizeImports": {
-    "enabled": false
-  },
-  "overrides": [
-    {
-      "include": ["scripts/**", "tests/**"],
-      "linter": {
-        "rules": {
-          "suspicious": {
-            "noConsoleLog": "off"
-          }
-        }
-      }
-    }
-  ],
+  "assist": { "actions": { "source": { "organizeImports": "off" } } },
   "linter": {
     "enabled": true,
     "rules": {
-      "recommended": true,
+      "preset": "recommended",
       "a11y": {
         "useValidAnchor": "off",
         "useAnchorContent": "off",
@@ -75,14 +75,14 @@
         "noDangerouslySetInnerHtml": "off"
       },
       "suspicious": {
-        "noConsoleLog": "error",
         "noArrayIndexKey": "off",
         "noAssignInExpressions": "off",
         "noControlCharactersInRegex": "off",
         "noMisleadingCharacterClass": "off",
         "noShadowRestrictedNames": "off",
         "noExplicitAny": "off",
-        "noGlobalIsNan": "off"
+        "noGlobalIsNan": "off",
+        "noConsole": { "level": "error", "options": { "allow": ["log", "info", "warn", "error"] } }
       }
     }
   }

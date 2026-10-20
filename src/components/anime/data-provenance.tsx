@@ -16,13 +16,7 @@ const formatFetchedAt = (value: number): string => {
 
 // The timestamp comes from the cache entry that served this page, not from
 // "now": a cache hit must never look freshly scraped.
-const DataProvenance = ({
-  fetchedAt,
-  tier,
-}: {
-  fetchedAt: number;
-  tier?: CacheTier | undefined;
-}): JSX.Element => {
+const DataProvenance = ({ fetchedAt, tier }: { fetchedAt: number; tier?: CacheTier | undefined }): JSX.Element => {
   const iso = fetchedAt > 0 && fetchedAt <= 8.64e15 ? new Date(fetchedAt).toISOString() : "";
   return (
     <p className="mb-6 flex flex-wrap items-center gap-x-2 gap-y-1 font-mono text-[11px] text-ink-muted">

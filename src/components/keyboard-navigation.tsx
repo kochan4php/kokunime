@@ -171,6 +171,7 @@ const KeyboardNavigation = (): JSX.Element | null => {
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4"
       onClick={() => setShowHelp(false)}
     >
+      {/* biome-ignore lint/a11y/noStaticElementInteractions: backdrop close is pointer-only; Escape closes. */}
       <div
         className="w-full max-w-md rounded-sm border-2 border-border bg-surface-solid p-6 shadow-[6px_6px_0_0_var(--border)]"
         onClick={(e) => e.stopPropagation()}

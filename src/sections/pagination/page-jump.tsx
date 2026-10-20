@@ -9,7 +9,11 @@ const PageJump = ({
   current,
   total,
   basePath,
-}: { current: number; total: number; basePath?: string | undefined }): JSX.Element => {
+}: {
+  current: number;
+  total: number;
+  basePath?: string | undefined;
+}): JSX.Element => {
   const router = useRouter();
   const [value, setValue] = useState("");
 

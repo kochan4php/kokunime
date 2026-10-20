@@ -20,6 +20,7 @@ const LinkHealthBadge = ({ record }: { record?: LinkHealthRecord | undefined }):
   const title = `Status tautan: ${meta.label} · dicek ${checkedOn(record)}`;
   return (
     <span
+      role="status"
       title={title}
       aria-label={title}
       className={`inline-flex shrink-0 items-center rounded-sm border-2 border-border px-1.5 py-0.5 font-mono text-[9px] font-bold uppercase tracking-wide ${meta.className}`}

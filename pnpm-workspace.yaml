@@ -2,3 +2,8 @@ allowBuilds:
   '@biomejs/biome': true
   sharp: true
   unrs-resolver: true
+
+# next > styled-jsx > @babel/core pins browserslist 4.24.x, which the audit
+# flags (GHSA-c83g-rgw3-j3cx, GHSA-73wf-gq98-2v4g). Force the patched line.
+overrides:
+  browserslist: ^4.28.7

@@ -6,7 +6,6 @@ import { beginShutdown } from "@/lib/lifecycle";
 const SHUTDOWN_GRACE_MS = 5_000;
 
 const logLifecycle = (event: string, detail?: Record<string, unknown>): void => {
-  // biome-ignore lint/suspicious/noConsoleLog: structured lifecycle JSON is the intended stdout sink.
   console.log(JSON.stringify({ level: "info", type: "lifecycle", event, ...detail }));
 };
 

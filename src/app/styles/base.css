@@ -108,12 +108,18 @@
     font-family: var(--font-mono, monospace);
     /* Brutalist blueprint backdrop: a warm glow at the top, then a heavy
        160px major grid over the fine 32px graph-paper cells. */
-    background-image: radial-gradient(1100px 520px at 50% -12%, rgba(255, 217, 61, 0.18), transparent 72%),
+    background-image:
+      radial-gradient(1100px 520px at 50% -12%, rgba(255, 217, 61, 0.18), transparent 72%),
       linear-gradient(var(--grid-ink-strong) 1px, transparent 1px),
       linear-gradient(90deg, var(--grid-ink-strong) 1px, transparent 1px),
       linear-gradient(var(--grid-ink) 1px, transparent 1px),
       linear-gradient(90deg, var(--grid-ink) 1px, transparent 1px);
-    background-size: 100% 100%, 160px 160px, 160px 160px, 32px 32px, 32px 32px;
+    background-size:
+      100% 100%,
+      160px 160px,
+      160px 160px,
+      32px 32px,
+      32px 32px;
     line-height: 1.6;
     max-width: 100%;
     overflow-x: clip;
@@ -292,8 +298,11 @@ dialog {
   border: 3px solid var(--border);
   border-radius: var(--radius-nb);
   box-shadow: var(--shadow-hard-lg);
-  transition: opacity 180ms cubic-bezier(0.16, 1, 0.3, 1), transform 180ms cubic-bezier(0.16, 1, 0.3, 1), overlay 180ms
-    allow-discrete, display 180ms allow-discrete;
+  transition:
+    opacity 180ms cubic-bezier(0.16, 1, 0.3, 1),
+    transform 180ms cubic-bezier(0.16, 1, 0.3, 1),
+    overlay 180ms allow-discrete,
+    display 180ms allow-discrete;
 }
 
 dialog[open] {
@@ -311,7 +320,10 @@ dialog[open] {
 dialog::backdrop {
   opacity: 0;
   background-color: rgba(0, 0, 0, 0.65);
-  transition: opacity 180ms ease-out, overlay 180ms allow-discrete, display 180ms allow-discrete;
+  transition:
+    opacity 180ms ease-out,
+    overlay 180ms allow-discrete,
+    display 180ms allow-discrete;
 }
 
 dialog[open]::backdrop {
@@ -328,7 +340,9 @@ dialog[open]::backdrop {
 dialog.is-closing {
   opacity: 0 !important;
   transform: translateY(-8px) !important;
-  transition: opacity 180ms ease-in, transform 180ms ease-in !important;
+  transition:
+    opacity 180ms ease-in,
+    transform 180ms ease-in !important;
 }
 
 dialog.is-closing::backdrop {

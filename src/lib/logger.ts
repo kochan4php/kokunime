@@ -43,7 +43,6 @@ const rotateIfNeeded = (file: string, incomingBytes: number): void => {
 const writeLine = (line: string, level: LogLevel): void => {
   if (level === "error") console.error(line);
   else if (level === "warn") console.warn(line);
-  // biome-ignore lint/suspicious/noConsoleLog: single JSON log line is the intended stdout sink.
   else console.log(line);
 
   const file = process.env.LOG_FILE?.trim();

@@ -42,7 +42,9 @@ const REQUIRED_FIELDS = {
 // required structure is missing, plus types this map does not know yet.
 function checkNode(node, short, problems, warnings, path = "") {
   if (Array.isArray(node)) {
-    node.forEach((entry, index) => checkNode(entry, short, problems, warnings, `${path}[${index}]`));
+    node.forEach((entry, index) => {
+      checkNode(entry, short, problems, warnings, `${path}[${index}]`);
+    });
     return;
   }
   if (!node || typeof node !== "object") return;

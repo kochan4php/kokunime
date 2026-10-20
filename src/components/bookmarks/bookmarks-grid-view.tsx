@@ -33,6 +33,7 @@ const BookmarksGridView = ({
     {items.map((item, index) => {
       const bookmark = activeTab === "bookmarks" ? (item as BookmarkItem) : null;
       return (
+        // biome-ignore lint/a11y/noStaticElementInteractions: drag is a mouse-only enhancement; card links stay keyboard reachable.
         <div
           key={item.slug}
           draggable={activeTab === "bookmarks"}

@@ -63,7 +63,6 @@ export function middleware(request: NextRequest): NextResponse {
   if (Math.random() < SAMPLE_RATE) {
     const proxyStart = Number(request.headers.get("x-request-start"));
     const ageMs = Number.isFinite(proxyStart) && proxyStart > 0 ? Math.round(startedAt - proxyStart) : undefined;
-    // biome-ignore lint/suspicious/noConsoleLog: sampled access log is the intended stdout sink.
     console.log(
       JSON.stringify({
         level: "info",

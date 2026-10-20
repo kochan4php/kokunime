@@ -32,7 +32,10 @@
     background: var(--accent);
     border: 2px solid var(--border);
     box-shadow: var(--shadow-hard);
-    transition: transform 120ms ease, box-shadow 120ms ease, background-color 120ms ease;
+    transition:
+      transform 120ms ease,
+      box-shadow 120ms ease,
+      background-color 120ms ease;
   }
 
   .btn-primary:hover {
@@ -63,7 +66,9 @@
     background: var(--surface);
     border: 2px solid var(--border);
     box-shadow: var(--shadow-hard);
-    transition: transform 120ms ease, box-shadow 120ms ease;
+    transition:
+      transform 120ms ease,
+      box-shadow 120ms ease;
   }
 
   .btn-secondary:hover {

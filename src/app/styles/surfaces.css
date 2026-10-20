@@ -10,7 +10,9 @@
     border-radius: var(--radius-nb);
     background: var(--surface-solid);
     box-shadow: var(--shadow-hard);
-    transition: transform 120ms ease, box-shadow 120ms ease;
+    transition:
+      transform 120ms ease,
+      box-shadow 120ms ease;
   }
 
   @media (hover: hover) {

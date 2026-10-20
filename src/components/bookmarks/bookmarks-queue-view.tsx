@@ -45,7 +45,10 @@ const BookmarksQueueView = (): JSX.Element => {
     clearQueue();
     showToast(`${snapshot.length} anime dikeluarkan dari antrean`, {
       actionLabel: "Urungkan",
-      onAction: () => snapshot.forEach((item, index) => restoreQueueItem(item, index)),
+      onAction: () =>
+        snapshot.forEach((item, index) => {
+          restoreQueueItem(item, index);
+        }),
     });
   };
 

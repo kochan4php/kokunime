@@ -36,7 +36,10 @@ describe("progress utility", () => {
     vi.stubGlobal("window", {
       localStorage: mockStorage,
       dispatchEvent: (event: { type?: string }) => {
-        if (event?.type) (listeners[event.type] ?? []).forEach((cb) => cb());
+        if (event?.type)
+          (listeners[event.type] ?? []).forEach((cb) => {
+            cb();
+          });
         return true;
       },
       addEventListener: (type: string, cb: () => void) => {

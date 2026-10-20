@@ -27,7 +27,7 @@ export const HeroSkeleton = (): JSX.Element => (
 // recommendation rail. Reusing the listing skeleton keeps the grid geometry
 // identical when the real HomeContent swaps in.
 const HomeSkeleton = (): JSX.Element => (
-  <div aria-label="Memuat halaman">
+  <div role="status" aria-label="Memuat halaman">
     <HeroSkeleton />
     <ListingSkeleton className="py-16 md:py-24" />
     <div className="container px-4 pb-16 md:pb-20">
