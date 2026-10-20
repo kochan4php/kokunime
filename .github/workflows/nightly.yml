@@ -75,21 +75,31 @@ jobs:
         if: vars.PRODUCTION_URL != ''
         id: feed-cache
         with:
-          path: .indexnow-state
+          path: .indexnow-state/feed-hash
           key: indexnow-feed-${{ steps.feed.outputs.hash }}
 
-      - name: IndexNow ping (only when the feed changed)
+      # Rolling state of already-submitted URLs so only new/changed lastmods
+      # are sent. restore-keys picks up the latest run's save.
+      - uses: actions/cache/restore@v4
+        if: vars.PRODUCTION_URL != '' && steps.feed-cache.outputs.cache-hit != 'true'
+        with:
+          path: .indexnow-state/submitted.json
+          key: indexnow-submitted-${{ github.run_id }}
+          restore-keys: |
+            indexnow-submitted-
+
+      - name: IndexNow ping (only URLs whose lastmod changed)
         if: vars.PRODUCTION_URL != '' && steps.feed-cache.outputs.cache-hit != 'true'
         env:
           SITE_URL: ${{ vars.PRODUCTION_URL }}
         run: node scripts/indexnow.mjs
 
       - uses: actions/cache/save@v4
-        if: vars.PRODUCTION_URL != '' && steps.feed-cache.outputs.cache-hit != 'true'
+        if: always() && vars.PRODUCTION_URL != '' && steps.feed-cache.outputs.cache-hit != 'true'
         continue-on-error: true
         with:
-          path: .indexnow-state
-          key: indexnow-feed-${{ steps.feed.outputs.hash }}
+          path: .indexnow-state/submitted.json
+          key: indexnow-submitted-${{ github.run_id }}
 
       - name: Alert (optional webhook)
         if: failure()

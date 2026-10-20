@@ -46,3 +46,5 @@ graphify-out/
 /backups/
 # visual smoke failure screenshots
 .smoke/
+# local IndexNow submission state
+.indexnow-state/

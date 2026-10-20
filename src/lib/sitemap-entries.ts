@@ -21,7 +21,18 @@ const validDate = (value: string, fallback: Date): Date => {
 // routes (/sitemaps/[id].xml): chunk N always contains the same slice while
 // the upstream catalog is stable, because ordering only depends on the crawl.
 export const getSitemapEntries = async (): Promise<SitemapEntry[]> => {
-  const now = new Date(getLastUpstreamFetchAt() || Date.now());
+  const snapshot = await getCatalogSnapshot();
+  // Derived pages change only when catalog content changes. Using the freshest
+  // upstream modified date keeps lastmod stable across cache refreshes; crawl
+  // time would resubmit unchanged pages on every IndexNow run.
+  const modifiedTimes = (snapshot?.items ?? [])
+    .map((item) => new Date(item.modified).getTime())
+    .filter((time) => !Number.isNaN(time));
+  const catalogDate = new Date(
+    modifiedTimes.length > 0
+      ? modifiedTimes.reduce((latest, time) => Math.max(latest, time), 0)
+      : snapshot?.fetchedAt || getLastUpstreamFetchAt() || Date.now(),
+  );
   const entries = new Map<string, SitemapEntry>();
   const add = (entry: SitemapEntry): void => {
     const existing = entries.get(entry.url);
@@ -34,25 +45,23 @@ export const getSitemapEntries = async (): Promise<SitemapEntry[]> => {
   };
 
   for (const entry of [
-    { url: SITE_URL, lastModified: now, changeFrequency: "daily", priority: 1 },
-    { url: `${SITE_URL}/update`, lastModified: now, changeFrequency: "daily", priority: 0.8 },
-    { url: `${SITE_URL}/indeks`, lastModified: now, changeFrequency: "weekly", priority: 0.6 },
-    { url: `${SITE_URL}/genres`, lastModified: now, changeFrequency: "weekly", priority: 0.6 },
-    { url: `${SITE_URL}/seasons`, lastModified: now, changeFrequency: "weekly", priority: 0.6 },
-    { url: `${SITE_URL}/bookmarks`, lastModified: now, changeFrequency: "weekly", priority: 0.5 },
-    { url: `${SITE_URL}/compare`, lastModified: now, changeFrequency: "monthly", priority: 0.4 },
-    { url: `${SITE_URL}/api`, lastModified: now, changeFrequency: "monthly", priority: 0.4 },
-    { url: `${SITE_URL}/stats`, lastModified: now, changeFrequency: "monthly", priority: 0.3 },
-    { url: `${SITE_URL}/roulette`, lastModified: now, changeFrequency: "monthly", priority: 0.3 },
-    { url: `${SITE_URL}/wrapped`, lastModified: now, changeFrequency: "monthly", priority: 0.3 },
-    { url: `${SITE_URL}/privacy`, lastModified: now, changeFrequency: "yearly", priority: 0.2 },
-    { url: `${SITE_URL}/aksesibilitas`, lastModified: now, changeFrequency: "yearly", priority: 0.2 },
+    { url: SITE_URL, lastModified: catalogDate, changeFrequency: "daily", priority: 1 },
+    { url: `${SITE_URL}/update`, lastModified: catalogDate, changeFrequency: "daily", priority: 0.8 },
+    { url: `${SITE_URL}/indeks`, lastModified: catalogDate, changeFrequency: "weekly", priority: 0.6 },
+    { url: `${SITE_URL}/genres`, lastModified: catalogDate, changeFrequency: "weekly", priority: 0.6 },
+    { url: `${SITE_URL}/seasons`, lastModified: catalogDate, changeFrequency: "weekly", priority: 0.6 },
+    { url: `${SITE_URL}/bookmarks`, changeFrequency: "weekly", priority: 0.5 },
+    { url: `${SITE_URL}/compare`, changeFrequency: "monthly", priority: 0.4 },
+    { url: `${SITE_URL}/api`, changeFrequency: "monthly", priority: 0.4 },
+    { url: `${SITE_URL}/stats`, changeFrequency: "monthly", priority: 0.3 },
+    { url: `${SITE_URL}/roulette`, changeFrequency: "monthly", priority: 0.3 },
+    { url: `${SITE_URL}/wrapped`, changeFrequency: "monthly", priority: 0.3 },
+    { url: `${SITE_URL}/privacy`, changeFrequency: "yearly", priority: 0.2 },
+    { url: `${SITE_URL}/aksesibilitas`, changeFrequency: "yearly", priority: 0.2 },
   ] satisfies SitemapEntry[]) {
     add(entry);
   }
 
-  const snapshot = await getCatalogSnapshot();
-  const catalogDate = new Date(snapshot?.fetchedAt || getLastUpstreamFetchAt() || Date.now());
   const letterCounts = new Map<string, number>();
 
   if (snapshot) {

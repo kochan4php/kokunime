@@ -55,5 +55,13 @@ describe("sitemap entries", () => {
     expect(urls).toContain(`${SITE_URL}/page/2`);
     expect(urls).toContain(`${SITE_URL}/page/3`);
     expect(urls).not.toContain(`${SITE_URL}/page/4`);
+
+    // Derived pages use the freshest real upstream modified date, not the
+    // crawl clock, so IndexNow can diff lastmod across cache refreshes.
+    const catalogDate = new Date("2026-10-19T15:10:41.000Z");
+    expect(entries.find((entry) => entry.url === SITE_URL)?.lastModified).toEqual(catalogDate);
+    expect(entries.find((entry) => entry.url === `${SITE_URL}/page/2`)?.lastModified).toEqual(catalogDate);
+    // Pages that only change on deploy carry no lastmod.
+    expect(entries.find((entry) => entry.url === `${SITE_URL}/privacy`)?.lastModified).toBeUndefined();
   });
 });

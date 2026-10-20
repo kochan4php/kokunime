@@ -30,8 +30,24 @@ jobs:
       - name: Run Test Suites
         run: pnpm test
 
-      - name: Ping IndexNow with live sitemap
+      - uses: actions/cache/restore@v4
+        if: vars.PRODUCTION_URL != ''
+        with:
+          path: .indexnow-state/submitted.json
+          key: indexnow-submitted-${{ github.run_id }}
+          restore-keys: |
+            indexnow-submitted-
+
+      - name: Ping IndexNow with changed sitemap URLs
+        if: vars.PRODUCTION_URL != ''
         run: node scripts/indexnow.mjs
         continue-on-error: true
         env:
-          SITE_URL: https://kokunime.netlify.app
+          SITE_URL: ${{ vars.PRODUCTION_URL }}
+
+      - uses: actions/cache/save@v4
+        if: always() && vars.PRODUCTION_URL != ''
+        continue-on-error: true
+        with:
+          path: .indexnow-state/submitted.json
+          key: indexnow-submitted-${{ github.run_id }}
