@@ -69,6 +69,7 @@ lalu memverifikasi checksum. Backup tanpa Redis tetap valid (metadata saja).
 | `monitor` | 6 jam | e2e smoke production |
 | `nightly` | Harian 02:23 UTC | integritas cache, load gate quick, breakpoint (info), staging compose + e2e, size/hardening image |
 | `drill` | Senin 03:17 UTC | backup + verifikasi checksum |
+| `link-health` | Harian 03:17 UTC | cek mirror untuk sampel katalog/slug terjadwal, simpan snapshot |
 
 Alert: set secret `DISCORD_WEBHOOK_URL` (atau `ALERT_WEBHOOK_URL`); semua job
 memanggil `scripts/alert.mjs` dan **skip dengan notice** bila webhook kosong.
@@ -95,7 +96,26 @@ Redis (`feature-flags`); tanpa Redis toggle berlaku in-memory sampai restart.
 Flag saat ini: `suggest` (autocomplete), `report-vitals` (RUM). Kill switch
 tanpa redeploy.
 
-## 8. Cache
+## 8. Link health & laporan data
+
+```bash
+BASE_URL=https://<host> ADMIN_TOKEN=<token> LINK_HEALTH_SLUGS=one-piece,naruto pnpm links:check
+```
+
+Tanpa `LINK_HEALTH_SLUGS`, script mengambil sampel dari sitemap (maksimal 10
+slug, 20 URL/slug). Snapshot ditulis ke Redis; halaman detail hanya membaca
+snapshot, jadi render tidak pernah menunggu mirror. `403/429` diklasifikasikan
+sebagai **Dibatasi**, bukan mati. Set `LINK_HEALTH_FAIL_ON_DEAD=1` bila job
+harus gagal saat ada mirror mati.
+
+Laporan pembaca (`POST /api/report`) memakai honeypot, rate limit, dan antrean
+Redis. Buka `/admin` → **Laporan** untuk menandai selesai. Tanpa `REDIS_URL`
+antrean melaporkan `available:false` dan endpoint publik membalas **503**;
+jangan menganggap laporan tersimpan. Variabel workflow: `PRODUCTION_URL`
+(wajib), secret `ADMIN_TOKEN`, opsional `LINK_HEALTH_SLUGS`,
+`LINK_HEALTH_MAX_SLUGS`, `LINK_HEALTH_FAIL_ON_DEAD`.
+
+## 9. Cache
 
 - Microcache nginx 1 detik untuk HTML (header `X-Cache-Status`), `/api/*` tidak
   pernah di-cache. Konfigurasi digenerate `canary.sh` (seed: `deploy/nginx/canary.conf`).
@@ -103,7 +123,7 @@ tanpa redeploy.
   (`docs/adr/0002-optional-redis.md`).
 - `node scripts/validate-cache.mjs` (harian di nightly) memverifikasi wiring cache live.
 
-## 9. Release & tag
+## 10. Release & tag
 
 - Tag `v*` → GitHub Release otomatis (`release.yml` + `scripts/release-changelog.mjs`).
 - Tag semver otomatis dari conventional commits: jalankan workflow **Release**
@@ -114,7 +134,7 @@ pnpm version:bump            # dry-run: tampilkan bump yang akan dibuat
 pnpm version:bump --write    # commit chore(release) + tag vX.Y.Z (lalu push --tags)
 ```
 
-## 10. Incident checklist (5 menit pertama)
+## 11. Incident checklist (5 menit pertama)
 
 1. Cek `/status`, `/api/status`, `/api/health` — live atau degraded?
 2. `monitor` run terakhir + step summary (liveness/latency/rute/TLS).

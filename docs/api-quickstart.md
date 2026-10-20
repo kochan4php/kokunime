@@ -68,7 +68,20 @@ Persisted Queries) didukung: kirim `{ "extensions": { "persistedQuery": {
 `POST /api/anime/bulk` membalas header `Deprecation`, `Sunset`, dan
 `Link: <…/api/graphql>; rel="successor-version"`. Migrasikan ke GraphQL.
 
-## 6. Endpoint ops (tanpa auth)
+## 6. Laporan data
+
+Kirim laporan tanpa URL bebas. `kind`: `dead_link`, `missing_episode`, atau
+`metadata`; `note` opsional (maks. 300 karakter, tanpa tautan). Endpoint
+memakai rate limit + honeypot dan menyimpan ke antrean Redis; tanpa Redis
+jawabannya `503` (bukan sukses palsu).
+
+```bash
+curl -X POST "https://<host>/api/report" \
+  -H "content-type: application/json" \
+  -d '{"slug":"one-piece","kind":"dead_link","note":"server 720p tidak bisa dibuka"}'
+```
+
+## 7. Endpoint ops (tanpa auth)
 
 | Endpoint | Isi |
 | --- | --- |

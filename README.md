@@ -9,7 +9,7 @@ Katalog anime batch dan episode dengan subtitle Indonesia. Kokunime tidak menyed
 - Pencarian instan + pencarian offline (indeks lokal di perangkat), filter, tag pribadi, bookmark, koleksi, perbandingan, dan roulette.
 - PWA: halaman tersimpan offline, pencarian offline, antrean aksi, pembaruan service worker, dan badge inbox.
 - API publik REST + GraphQL, OpenAPI, feed RSS/Atom/JSON, sitemap, oEmbed, dan badge status.
-- Admin ops: warm-up indeks, revalidasi cache, feature flag, metrics, vitals, slow request, dan status uptime.
+- Admin ops: warm-up indeks, revalidasi cache, feature flag, metrics, vitals, slow request, status uptime, link health, dan antrean laporan.
 - Tanpa iklan, tanpa analytics pihak ketiga, dan tanpa cookie pelacak.
 
 ## Menjalankan
@@ -93,7 +93,7 @@ BASE_URL=http://localhost:3000 pnpm seo:v3
 
 - Tidak ada streaming, komentar, akun cloud, atau iklan.
 - Data dapat tertinggal satu TTL; halaman menampilkan status data basi bila terdeteksi.
-- Ketersediaan tautan unduhan bergantung pada mirror pihak ketiga; cek berkala tersedia lewat admin.
+- Ketersediaan tautan unduhan bergantung pada mirror pihak ketiga; cek berkala berjalan lewat workflow `link-health` atau tombol admin. Laporan pembaca masuk ke antrean Redis dan dibaca dari `/admin`; tanpa Redis endpoint laporan menjawab 503, bukan pura-pura sukses.
 - Situs ini tidak menyimpan berkas anime dan tidak mengklaim kepemilikan konten.
 
 ## Dokumentasi
