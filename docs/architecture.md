@@ -50,6 +50,12 @@ flowchart LR
 - API publik: `s-maxage` + `stale-while-revalidate` per route.
 - Redis mati → semua fitur turun ke fallback in-memory dengan aman
   (`tests/chaos.test.ts` menjaga kontrak ini).
+- Discovery: `/indeks` dan halaman huruf membaca snapshot katalog WordPress
+  REST (6 jam, satu request per 100 post) alih-alih meng-crawl ratusan halaman
+  listing. Snapshot yang tidak lengkap ditandai jujur dan tidak di-cache lama.
+  `/sitemap.xml` memakai snapshot yang sama untuk semua detail, halaman
+  pagination, genre, musim, tahun, dan halaman A–Z; `lastmod` detail memakai
+  `modified_gmt` asli.
 
 ## Resiliensi upstream
 
