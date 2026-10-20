@@ -37,7 +37,8 @@ jobs:
       - name: Start the compose stack
         env:
           NEXT_PUBLIC_SITE_URL: http://localhost:3000
-        run: docker compose up -d --build
+          REDIS_URL: redis://redis:6379
+        run: docker compose --profile cache up -d --build
 
       - name: Wait for app health
         run: |

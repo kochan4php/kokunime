@@ -2,7 +2,6 @@
 import fs from "fs";
 import path from "path";
 import zlib from "zlib";
-import { createClient } from "redis";
 
 const backupDir = () => path.resolve(process.cwd(), "backups");
 const REDIS_URL = process.env.REDIS_URL?.trim();
@@ -21,6 +20,8 @@ const listBackups = (dir) =>
 
 async function exportRedis() {
   if (!REDIS_URL) return { redis: "skipped" };
+  // Lazy import: metadata-only backups (and the CI drill) run without node_modules.
+  const { createClient } = await import("redis");
   const client = createClient({ url: REDIS_URL });
   await client.connect();
   try {

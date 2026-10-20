@@ -5,7 +5,9 @@ WORKDIR /app
 
 # Dependencies stage
 FROM base AS deps
-COPY package.json package-lock.json* pnpm-lock.yaml* yarn.lock* ./
+# pnpm-workspace.yaml carries allowBuilds/overrides — without it pnpm aborts
+# with ERR_PNPM_IGNORED_BUILDS in the container.
+COPY package.json package-lock.json* pnpm-lock.yaml* yarn.lock* pnpm-workspace.yaml* ./
 RUN \
   if [ -f package-lock.json ]; then npm ci; \
   elif [ -f yarn.lock ]; then yarn --frozen-lockfile; \
